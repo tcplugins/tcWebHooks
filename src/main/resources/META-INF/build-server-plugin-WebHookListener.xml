@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-autowire="constructor">
+
+	<bean id="webHookListener" 
+		class="webhook.teamcity.WebHookListener" 
+  		init-method="register" 
+  		/>
+  
+	<bean id="webHookProjectTabExtension"
+        class="webhook.teamcity.extension.WebHookProjectTabExtension"
+        init-method="register" 
+        />
+
+	<bean id="webHookBuildTabExtension"
+        class="webhook.teamcity.extension.WebHookBuildTabExtension"
+        init-method="register" 
+        />
+ 
+    <bean id="webHookIndexPageController" 
+     	class="webhook.teamcity.extension.WebHookIndexPageController" 
+     	init-method="register" 
+     	/>
+
+     <bean id="webHookAjaxSettingsListPageController" 
+     	class="webhook.teamcity.extension.WebHookAjaxSettingsListPageController" 
+     	init-method="register" 
+     	/>
+
+     <bean id="webHookAjaxEditPageController" 
+     	class="webhook.teamcity.extension.WebHookAjaxEditPageController" 
+     	init-method="register" 
+     	/>
+     			
+     <bean id="webHookProjectSettings" 
+     	class="webhook.teamcity.settings.WebHookProjectSettings" 
+     	/>
+
+     <bean id="webHookProjectSettingsFactory" 
+     	class="webhook.teamcity.settings.WebHookProjectSettingsFactory" 
+     	/>
+
+	<bean id="webHookMainSettings"
+		class="webhook.teamcity.settings.WebHookMainSettings"
+		init-method="register"
+		/>
+
+</beans>

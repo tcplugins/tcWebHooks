@@ -1,0 +1,92 @@
+<project name="TeamCityWebHooks" default="deploy" basedir="../.">
+	<description>
+        TeamCity 4.x WebHook Module 
+    </description>
+
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+	<property name="deploy" location="J:/IBteamcity/.BuildServer-TC4/plugins/GDSCertLoginModule/" />
+	<property name="lib-deploy" location="J:/IBteamcity/Current/webapps/teamcity/WEB-INF/lib/" />
+	<property name="listener-deploy" location="J:/IBteamcity/.BuildServer-TC4/plugins/WebHook/" />
+	<property name="jsp-deploy" location="J:/IBteamcity/Current/webapps/teamcity/WebHook/" />
+	
+	<property name="lib-list" 
+		location=" **/CertLoginFilter.class **/GdsUserThreadLocal* **/CertLoginModule* **/utils/*" />
+	
+	<property name="listener-list" location=" META-INF/build-server-plugin-WebHookListener.xml,**/webhook/**,**/WebHook/**" />
+
+	<target name="jarTheSource" depends="clean-dist">
+	  <jar destfile="${dist}/GdsRealmCertLoginModuleSrc.jar"
+	       basedir="${src}"
+	  />
+	</target>
+	
+	<target name="clean-dist">
+		<delete includeemptydirs="true">
+		  <fileset dir="${dist}" includes="**/*" />
+		</delete>
+
+	</target>
+	
+	<target name="jarThePlugin" depends="clean-dist">
+		  <copydir dest="${build}/classes/buildServerResources" src="${src}/buildServerResources"></copydir>
+		  <!--<jar destfile="${dist}/GdsRealmCertLoginModule.jar"
+		       basedir="${build}/classes"
+		       excludes="${lib-list} ${listener-list} build.xml "
+		  />-->
+	</target>
+		
+	<target name="jarTheLibs" depends="clean-dist">
+		  <!--<jar destfile="${dist}/GdsRealmCertLoginLibs.jar"
+		       basedir="${build}/classes"
+		  	   includes="${lib-list}"
+		  />-->
+	</target>
+	
+	<target name="jarTheListener" depends="clean-dist">
+		  <jar destfile="${dist}/WebHookListener.jar"
+		       basedir="${build}/classes"
+		  	   includes="${listener-list}"
+		  />
+	</target>
+
+	
+	<target name="deploy" depends="jarTheSource,jarThePlugin,jarTheLibs,jarTheListener,printTime,deployJsp">
+		<!--<copyfile dest="${deploy}/GdsRealmCertLoginModule.jar" src="${dist}/GdsRealmCertLoginModule.jar"/>-->
+		<!--<copyfile dest="${lib-deploy}/GdsRealmCertLoginLibs.jar" src="${dist}/GdsRealmCertLoginLibs.jar"/>-->
+		<copyfile dest="${listener-deploy}/WebHookListener.jar" src="${dist}/WebHookListener.jar"/>
+		<!--<copyfile dest="${jsp-deploy}/index.jsp" src="${src}/buildServerResources/WebHook/index.jsp"/>-->
+		
+	</target>
+
+	<target name="deployJsp">
+		<copyfile dest="${jsp-deploy}/index.jsp" src="${src}/buildServerResources/WebHook/index.jsp"/>
+		<copyfile dest="${jsp-deploy}/ajaxEdit.jsp" src="${src}/buildServerResources/WebHook/ajaxEdit.jsp"/>
+		<copyfile dest="${jsp-deploy}/webHookInclude.jsp" src="${src}/buildServerResources/WebHook/webHookInclude.jsp"/>
+		<copyfile dest="${jsp-deploy}/settingsList.jsp" src="${src}/buildServerResources/WebHook/settingsList.jsp"/>
+	</target>
+	
+	<target name="printTime">
+		<tstamp>
+		<format property="start" pattern="yyyy MMMM dd HH:mm:ss" locale="en"/>
+		</tstamp>
+	
+		<echo message="Current time and date: ${start}" />
+	</target>
+
+        <target name="clean" description="Removes the build directory">
+                <delete dir="${dir.target}" />
+        </target>
+        <target name="compile.src" depends="phoenix-common.package, phoenix-datamodel.package">
+                <compile src="${dir.main.src}" dest="${dir.main.classes}" classpath="classpath.compile" />
+        </target>
+        <target name="compile.test.unit" depends="compile.src">
+                <compile src="${dir.test.unit.src}" dest="${dir.test.unit.classes}" classpath="classpath.test.unit" />
+        </target>
+        <target name="test.unit" description="execute unit tests" depends="compile.test.unit">
+                <execute.junit tests="${dir.test.unit.classes}" classpath="classpath.test.unit" reports="${dir.test.unit.report}" />
+        </target>
+
+	
+</project>
