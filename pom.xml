@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>WebHooks</groupId>
 	<artifactId>TeamCityWebHookListener</artifactId>
-	<version>0.5</version>
+	<version>0.5.${build.vcs.number}.${build.number}-SNAPSHOT</version>
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<pluginManagement>
