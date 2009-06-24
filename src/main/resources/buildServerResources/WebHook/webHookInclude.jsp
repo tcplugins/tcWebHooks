@@ -72,7 +72,7 @@
 							
 							<tr style="border:none;">
 								<td>URL:</td>
-								<td colspan=2><input id="webHookUrl" name="URL" type=text size=64 maxlength=512 /></td>
+								<td colspan=2><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
 							</tr>
 							<tr><td colspan=2><span class="error" id="error_webHookName" style="margin-left: 5.5em;"></span></td></tr>
 							<tr style="border:none;">
