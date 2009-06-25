@@ -73,7 +73,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        	params.put("haveProject", "false");
 	        }
 
-	        return new ModelAndView("/plugins/WebHook/WebHook/settingsList.jsp", params);
+	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/settingsList.jsp", params);
 	        //return new ModelAndView("/WebHook/settingsList.jsp", params);
 	    }
 }

@@ -9,6 +9,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PagePlaces;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.project.ProjectTab;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,11 +21,14 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class WebHookProjectTabExtension extends ProjectTab {
 	WebHookProjectSettings settings;
 	ProjectSettingsManager projSettings;
+	String myPluginPath;
 
 	protected WebHookProjectTabExtension(
-			PagePlaces pagePlaces, ProjectManager projectManager, ProjectSettingsManager settings) {
+			PagePlaces pagePlaces, ProjectManager projectManager, 
+			ProjectSettingsManager settings, PluginDescriptor pluginDescriptor) {
 		super("webHooks", "WebHooks", pagePlaces, projectManager);
 		this.projSettings = settings;
+		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	}
 
 	public boolean isAvailable(@NotNull HttpServletRequest request) {
@@ -55,7 +59,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 
 	@Override
 	public String getIncludeUrl() {
-		return "/plugins/WebHook/WebHook/projectWebHookTab.jsp";
+		return myPluginPath+ "WebHook/projectWebHookTab.jsp";
 	}
 
 	

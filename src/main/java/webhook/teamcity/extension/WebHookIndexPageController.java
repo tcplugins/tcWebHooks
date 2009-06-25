@@ -74,7 +74,7 @@ public class WebHookIndexPageController extends BaseController {
 	        	params.put("haveProject", "false");
 	        }
 
-	        return new ModelAndView("/plugins/WebHook/WebHook/index.jsp", params);
+	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/index.jsp", params);
 	        //return new ModelAndView("/WebHook/index.jsp", params);
 	    }
 }

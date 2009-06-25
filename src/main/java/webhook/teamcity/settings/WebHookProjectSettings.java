@@ -14,7 +14,7 @@ import org.jdom.Element;
 public class WebHookProjectSettings implements ProjectSettings {
 	ProjectSettingsManager psm;
 	ProjectSettings ps;
-	private Boolean webHooksEnabled = false;
+	private Boolean webHooksEnabled = true;
 	private Boolean updateSucess = false;
 	private String updateMessage = "";
 	private CopyOnWriteArrayList<WebHookConfig> webHooksConfigs;
@@ -132,11 +132,13 @@ public class WebHookProjectSettings implements ProjectSettings {
 	public void addNewWebHook(String ProjectId, String URL, Boolean enabled,Integer buildState) {
 		this.webHooksConfigs.add(new WebHookConfig(URL,enabled,buildState));
 		Loggers.SERVER.debug(this.getClass().getName() + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
+		this.updateSucess = true;
 	}
 
 	public void addNewWebHook(String ProjectId, String uniqueKey, String URL, Boolean enabled,Integer buildState) {
 		this.webHooksConfigs.add(new WebHookConfig(uniqueKey,URL,enabled,buildState));
 		Loggers.SERVER.debug(this.getClass().getName() + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
+		this.updateSucess = true;
 	}	
 	
     public Boolean updateSuccessful(){

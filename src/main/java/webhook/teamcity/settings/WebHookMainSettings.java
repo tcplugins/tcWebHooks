@@ -42,7 +42,16 @@ public class WebHookMainSettings implements MainConfigProcessor {
     	WebHookMainConfig tempConfig = new WebHookMainConfig();
     	Element webhooksElement = rootElement.getChild("webhooks");
     	if(webhooksElement != null){
-			Element proxyElement = webhooksElement.getChild("proxy");
+			Element extraInfoElement = webhooksElement.getChild("info");
+	        if(extraInfoElement != null)
+	        {
+	        	if ((extraInfoElement.getAttribute("text") != null) 
+	        	 && (extraInfoElement.getAttribute("url")  != null)){
+	        		tempConfig.setWebhookInfoText(extraInfoElement.getAttributeValue("text"));
+	        		tempConfig.setWebhookInfoText(extraInfoElement.getAttributeValue("url"));
+	        	}	        	
+	        }
+    		Element proxyElement = webhooksElement.getChild("proxy");
 	        if(proxyElement != null)
 	        {
 	        	if (proxyElement.getAttribute("proxyShortNames") != null){
@@ -96,6 +105,14 @@ public class WebHookMainSettings implements MainConfigProcessor {
 			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: proxyHost " + webHookMainConfig.getProxyHost().toString());
 			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: proxyPort " + webHookMainConfig.getProxyPort().toString());
         }
+        
+        
+        if(webHookMainConfig != null && webHookMainConfig.getInfoUrlAsElement() != null){
+        	el.addContent(webHookMainConfig.getInfoUrlAsElement());
+			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: infoText " + webHookMainConfig.getWebhookInfoText().toString());
+			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: InfoUrl  " + webHookMainConfig.getWebhookInfoUrl().toString());
+        }
+        
         parentElement.addContent(el);
     }
     

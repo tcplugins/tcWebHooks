@@ -13,6 +13,7 @@ import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,13 +27,16 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private final WebControllerManager myWebManager;
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
+	    private final String myPluginPath;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings) {
+	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings,
+	    		PluginDescriptor pluginDescriptor) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
+	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	    }
 
 	    public void register(){
@@ -156,7 +160,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	params.put("haveProject", "false");
 	        }
 	        
-	        return new ModelAndView("/plugins/WebHook/WebHook/index.jsp", params);
+	        return new ModelAndView(myPluginPath + "WebHook/index.jsp", params);
 	        //return new ModelAndView("/WebHook/ajaxEdit.jsp", params);
 	    }
 }

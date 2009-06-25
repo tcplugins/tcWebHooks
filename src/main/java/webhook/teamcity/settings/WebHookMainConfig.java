@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.NameValuePair;
 import org.jdom.Element;
 
 import webhook.WebHookProxyConfig;
 
 
 public class WebHookMainConfig {
+	private String webhookInfoUrl = null;
+	private String webhookInfoText = null;
 	private Integer proxyPort = null;
 	private String proxyHost = null;
 	private String proxyUsername = null;
@@ -122,6 +123,20 @@ public class WebHookMainConfig {
 		return true;
 	}
 	
+	public Element getInfoUrlAsElement(){
+		if (this.webhookInfoUrl != null && this.webhookInfoUrl.length() > 0){
+			Element e = new Element("noproxy");
+			e.setAttribute("url", webhookInfoUrl);			
+			if (this.webhookInfoText != null && this.webhookInfoText.length() > 0){
+				e.setAttribute("text", webhookInfoText);
+			} else {
+				e.setAttribute("text", webhookInfoUrl);
+			}
+			return e;
+		}
+		return null;
+	}
+	
 	private Element getNoProxyAsElement(String noProxyUurl){
 		Element e = new Element("noproxy");
 		e.setAttribute("url", noProxyUurl);
@@ -204,6 +219,22 @@ public class WebHookMainConfig {
 
 	public void setNoProxyUrls(List<String> noProxyUrls) {
 		this.noProxyUrls = noProxyUrls;
+	}
+
+	public String getWebhookInfoUrl() {
+		return webhookInfoUrl;
+	}
+
+	public String getWebhookInfoText() {
+		return webhookInfoText;
+	}
+
+	public void setWebhookInfoUrl(String webhookInfoUrl) {
+		this.webhookInfoUrl = webhookInfoUrl;
+	}
+
+	public void setWebhookInfoText(String webhookInfoText) {
+		this.webhookInfoText = webhookInfoText;
 	}
 
 

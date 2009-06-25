@@ -5,17 +5,14 @@ import jetbrains.buildServer.serverSide.settings.ProjectSettingsFactory;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 public class WebHookProjectSettingsFactory implements ProjectSettingsFactory {
-	//WebHookProjectSettings whs;
 	
 	public WebHookProjectSettingsFactory(ProjectSettingsManager projectSettingsManager){
-	//WebHookProjectSettingsFactory(){
-		//whs = new WebHookProjectSettings();
 		Loggers.SERVER.info("WebHookProjectSettingsFactory :: Registering");
 		projectSettingsManager.registerSettingsFactory("webhooks", this);
 	}
 
 	public WebHookProjectSettings createProjectSettings(String projectId) {
-		Loggers.SERVER.info("WebHookProjectSettingsFactory::createProjectSettings : " + projectId);
+		Loggers.SERVER.info("WebHookProjectSettingsFactory: re-reading settings for " + projectId);
 		WebHookProjectSettings whs = new WebHookProjectSettings();
 		return whs;
 	}
