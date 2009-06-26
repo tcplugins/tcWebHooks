@@ -12,7 +12,7 @@
 			<c:forEach items="${webHookList}" var="hook">
 				<tr id="viewRow_${hook.uniqueKey}">
 					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.url}" /></td>
-					<td class="value highlight" style="width:20%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.enabled}" /></td>
+					<td class="value highlight" style="width:20%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.enabledListAsString}" /></td>
 					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');" href="javascript://">edit</a></td>
 					<td class="edit highlight"><a onclick='BS.WebHookForm.removeWebHook("${hook.uniqueKey}");' href="javascript://">delete</a></td>
 				</tr> 

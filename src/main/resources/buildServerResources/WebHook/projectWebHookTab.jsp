@@ -18,7 +18,7 @@
 		<thead><tr><th class=name>URL</th><th class=name>Enabled</th></tr></thead>
 		<tbody>
 		<c:forEach items="${webHookList}" var="hook">
-			<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabled}" /></td></tr>  
+			<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
 		</c:forEach>
 		</tbody>
 	</table>
