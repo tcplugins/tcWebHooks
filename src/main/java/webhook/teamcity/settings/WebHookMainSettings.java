@@ -48,7 +48,9 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	        	if ((extraInfoElement.getAttribute("text") != null) 
 	        	 && (extraInfoElement.getAttribute("url")  != null)){
 	        		tempConfig.setWebhookInfoText(extraInfoElement.getAttributeValue("text"));
-	        		tempConfig.setWebhookInfoText(extraInfoElement.getAttributeValue("url"));
+	        		tempConfig.setWebhookInfoUrl(extraInfoElement.getAttributeValue("url"));
+	        		Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: info text " + tempConfig.getWebhookInfoText());
+	        		Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: info url  " + tempConfig.getWebhookInfoUrl());
 	        	}	        	
 	        }
     		Element proxyElement = webhooksElement.getChild("proxy");
@@ -101,7 +103,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
            && webHookMainConfig.getProxyHost() != null && webHookMainConfig.getProxyHost().length() > 0
            && webHookMainConfig.getProxyPort() != null && webHookMainConfig.getProxyPort() > 0 )
         {
-        	el.addContent(webHookMainConfig.getAsElement());
+        	el.addContent(webHookMainConfig.getProxyAsElement());
 			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: proxyHost " + webHookMainConfig.getProxyHost().toString());
 			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: proxyPort " + webHookMainConfig.getProxyPort().toString());
         }
@@ -120,6 +122,13 @@ public class WebHookMainSettings implements MainConfigProcessor {
     	return this.webHookMainConfig.getProxyConfigForUrl(url).getProxyHost();
     }
 
+    public String getInfoText(){
+    	return this.webHookMainConfig.getWebhookInfoText();
+    }
+
+    public String getInfoUrl(){
+    	return this.webHookMainConfig.getWebhookInfoUrl();
+    }
     
 	public void dispose() {
 		Loggers.SERVER.debug(this.getClass().getName() + ":dispose() called");

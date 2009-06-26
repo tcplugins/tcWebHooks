@@ -34,9 +34,7 @@ public class WebHookMainConfig {
 	}
 
 	public String getProxyListasString(){
-    	String tmpString = "";
-    	tmpString = tmpString + " host:" + this.proxyHost + " port: " + this.proxyPort;
-    	return tmpString;
+    	return " host:" + this.proxyHost + " port: " + this.proxyPort;
 	}
 	
 	private Pattern generatePatternFromURL(String noProxyUrl){
@@ -124,8 +122,11 @@ public class WebHookMainConfig {
 	}
 	
 	public Element getInfoUrlAsElement(){
+		/*
+			<info url="http://acme.com/" text="Using WebHooks in Acme Inc." />
+		 */
 		if (this.webhookInfoUrl != null && this.webhookInfoUrl.length() > 0){
-			Element e = new Element("noproxy");
+			Element e = new Element("info");
 			e.setAttribute("url", webhookInfoUrl);			
 			if (this.webhookInfoText != null && this.webhookInfoText.length() > 0){
 				e.setAttribute("text", webhookInfoText);
@@ -143,7 +144,7 @@ public class WebHookMainConfig {
 		return e;
 	}
 	
-	public Element getAsElement(){
+	public Element getProxyAsElement(){
 		/*
     		  <proxy host="myproxy.mycompany.com" port="8080" >
       			<noproxy url=".mycompany.com" />

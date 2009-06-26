@@ -140,6 +140,35 @@ public class WebHookConfig {
 		this.uniqueKey = uniqueKey;
 	}
 	
+	public String getEnabledListAsString(){
+		if (this.statemask == BuildState.ALL_ENABLED){
+			return "All";
+		} else if (this.statemask == 0) {
+			return "None";
+		} else {
+			String enabledStates = "";
+			if (BuildState.enabled(BuildState.BUILD_STARTED,this.statemask)){
+				enabledStates += ", Build Started";
+			}
+			if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
+				enabledStates += ", Build Completed";
+			}
+			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
+				enabledStates += ", Build Changed Status";
+			}
+			if (BuildState.enabled(BuildState.BUILD_INTERRUPTED,this.statemask)){
+				enabledStates += ", Build Interrupted";
+			}
+			if (BuildState.enabled(BuildState.BEFORE_BUILD_FINISHED,this.statemask)){
+				enabledStates += ", Build Almost Completed";
+			}
+			if (BuildState.enabled(BuildState.RESPONSIBILITY_CHANGED,this.statemask)){
+				enabledStates += ", Build Responsibility Changed";
+			}
+			return enabledStates.substring(1);
+		}
+	}
+	
 	public String getWebHookEnabledAsChecked() {
 		if (this.enabled){
 			return "checked ";

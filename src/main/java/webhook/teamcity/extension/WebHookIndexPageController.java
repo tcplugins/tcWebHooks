@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -15,23 +16,27 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
+import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
 public class WebHookIndexPageController extends BaseController {
 
 	    private final WebControllerManager myWebManager;
+	    private final WebHookMainSettings myMainSettings;
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 
 	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor) {
+	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor,
+	    		WebHookMainSettings configSettings) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
+	        myMainSettings = configSettings;
 	    }
 
 	    public void register(){
@@ -58,6 +63,12 @@ public class WebHookIndexPageController extends BaseController {
 		    	params.put("messages", message);
 		    	params.put("projectId", project.getProjectId());
 		    	params.put("projectName", project.getName());
+		    	
+		    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
+		    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");
+		    	}
+		    	
+		    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 		    	
 		    	params.put("webHookCount", projSettings.getWebHooksCount());
 		    	if (projSettings.getWebHooksCount() == 0){
