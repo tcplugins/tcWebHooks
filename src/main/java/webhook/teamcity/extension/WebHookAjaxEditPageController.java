@@ -85,7 +85,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    			} else if ((request.getParameter("submitAction") != null ) 
 				    				&& (request.getParameter("submitAction").equals("updateWebHook"))){
 			    				if((request.getParameter("URL") != null ) 
-				    				&& (request.getParameter("URL").length() > 0 )){
+				    				&& (request.getParameter("URL").length() > 0 )
+				    				&& (request.getParameter("payloadFormat") != null)
+				    				&& (request.getParameter("payloadFormat").length() > 0)){
+			    					
 			    					if (request.getParameter("webHookId") != null){
 			    						Integer runningTotal = 0;
 			    						Boolean enabled = false;
@@ -102,7 +105,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){
-			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, runningTotal);
+			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
+			    														runningTotal,request.getParameter("payloadFormat"));
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -110,7 +114,9 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
 			    							}
 			    						} else {
-			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), request.getParameter("URL"), enabled, runningTotal);
+			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
+			    														request.getParameter("URL"), enabled, 
+			    														runningTotal, request.getParameter("payloadFormat"));
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");

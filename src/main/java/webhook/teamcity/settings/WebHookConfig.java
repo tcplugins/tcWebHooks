@@ -16,6 +16,8 @@ public class WebHookConfig {
 	private Integer statemask = 255; // Enable all eight bits by default. 
 	private String uniqueKey = "";
 	private String url;
+	private enum Formats { NVPAIRS, JSON};
+	private Formats payloadFormat = Formats.JSON;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e){
@@ -40,6 +42,12 @@ public class WebHookConfig {
 		if (e.getAttribute("key") != null){
 			this.setUniqueKey(e.getAttributeValue("key"));
 		}
+
+		if (e.getAttribute("format") != null){
+			if (e.getAttribute("format").equals("nvpairs")){
+				this.setPayloadFormat(Formats.NVPAIRS.toString());
+			}
+		}
 		
 		if(e.getChild("parameters") != null){
 			Element eParams = e.getChild("parameters");
@@ -57,7 +65,7 @@ public class WebHookConfig {
 		}
 	}
 	
-	public WebHookConfig (String url, Boolean enabled, Integer stateMask){
+	public WebHookConfig (String url, Boolean enabled, Integer stateMask, String payloadFormat){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
@@ -65,16 +73,17 @@ public class WebHookConfig {
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setStatemask(stateMask);
+		this.setPayloadFormat(payloadFormat);
 	}
 
-	public WebHookConfig (String key, String url, Boolean enabled, Integer stateMask){
+/*	public WebHookConfig (String key, String url, Boolean enabled, Integer stateMask){
 		this.params = new ArrayList<NameValuePair>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setStatemask(stateMask);
 		this.setUniqueKey(key);
 	}
-	
+*/	
 	private Element getNameValueAsElement(NameValuePair nv, String elementName){
 		Element e = new Element(elementName);
 		e.setAttribute("name", nv.getName());
@@ -87,6 +96,7 @@ public class WebHookConfig {
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute("enabled", String.valueOf(this.enabled));
 		el.setAttribute("statemask", String.valueOf(this.statemask));
+		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
 		
 		if (this.params.size() > 0){
 			Element paramsEl = new Element("parameters");
@@ -234,5 +244,30 @@ public class WebHookConfig {
 		return ""; 
 	}
 
+	public Formats getPayloadFormat() {
+		return payloadFormat;
+	}
+
+	public void setPayloadFormat(String payloadFormat) {
+		if (payloadFormat.toUpperCase().equals(Formats.NVPAIRS.toString())){
+			this.payloadFormat = Formats.NVPAIRS;
+		} else {
+			this.payloadFormat = Formats.JSON;
+		}
+		
+	}
 	
+	public String getPayloadFormatIsJsonAsChecked() {
+		if (this.payloadFormat.equals(Formats.JSON)){
+			return "checked ";
+		}
+		return "";
+	}
+	
+	public String getPayloadFormatIsNvpairsAsChecked() {
+		if (this.payloadFormat.equals(Formats.NVPAIRS)){
+			return "checked ";
+		}
+		return "";
+	}
 }

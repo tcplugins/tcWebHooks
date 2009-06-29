@@ -49,6 +49,7 @@ public class WebHookProjectSettings implements ProjectSettings {
 				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: url " + whConfig.getUrl());
 				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: enabled " + String.valueOf(whConfig.getEnabled()));
 				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: statemask " + String.valueOf(whConfig.getStatemask()));
+				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: payloadFormat " + String.valueOf(whConfig.getPayloadFormat()));
 	        }
 			this.webHooksConfigs = configs;
     	}
@@ -68,9 +69,10 @@ public class WebHookProjectSettings implements ProjectSettings {
                 WebHookConfig whc = whConf.next();
             	Element el = whc.getAsElement();
                 parentElement.addContent(el);
-				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: url " + whc.getUrl());
-				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: enabled " + String.valueOf(whc.getEnabled()));
-				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: statemask " + String.valueOf(whc.getStatemask()));
+				Loggers.SERVER.debug(this.getClass().getName() + ":writeTo :: url " + whc.getUrl());
+				Loggers.SERVER.debug(this.getClass().getName() + ":writeTo :: enabled " + String.valueOf(whc.getEnabled()));
+				Loggers.SERVER.debug(this.getClass().getName() + ":writeTo :: statemask " + String.valueOf(whc.getStatemask()));
+				Loggers.SERVER.debug(this.getClass().getName() + ":writeTo :: payloadFormat " + String.valueOf(whc.getPayloadFormat()));
             }
 
         }
@@ -110,7 +112,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    	
     }
 
-	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, Integer buildState) {
+	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, Integer buildState, String format) {
         if(this.webHooksConfigs != null)
         {
         	updateSucess = false;
@@ -122,6 +124,7 @@ public class WebHookProjectSettings implements ProjectSettings {
                 	whc.setEnabled(enabled);
                 	whc.setUrl(URL);
                 	whc.setStatemask(buildState);
+                	whc.setPayloadFormat(format);
                 	Loggers.SERVER.debug(this.getClass().getName() + ":updateWebHook :: Updating webhook from " + ProjectId + " with URL " + whc.getUrl());
                    	this.updateSucess = true;
                 }
@@ -129,18 +132,18 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    			
 	}
 
-	public void addNewWebHook(String ProjectId, String URL, Boolean enabled,Integer buildState) {
-		this.webHooksConfigs.add(new WebHookConfig(URL,enabled,buildState));
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled,Integer buildState, String format) {
+		this.webHooksConfigs.add(new WebHookConfig(URL,enabled,buildState, format));
 		Loggers.SERVER.debug(this.getClass().getName() + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSucess = true;
 	}
 
-	public void addNewWebHook(String ProjectId, String uniqueKey, String URL, Boolean enabled,Integer buildState) {
+/*	public void addNewWebHook(String ProjectId, String uniqueKey, String URL, Boolean enabled,Integer buildState) {
 		this.webHooksConfigs.add(new WebHookConfig(uniqueKey,URL,enabled,buildState));
 		Loggers.SERVER.debug(this.getClass().getName() + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSucess = true;
 	}	
-	
+*/	
     public Boolean updateSuccessful(){
     	return this.updateSucess;
     }
