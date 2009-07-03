@@ -3,7 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>netwolfuk.TeamCity.Plugins</groupId>
 	<artifactId>tcWebHooks</artifactId>
-	<version>0.7.${build.number}.${build.vcs.number}-SNAPSHOT</version>
+	<version>0.7.${build.number}.${build.vcs.number}</version>
+	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<pluginManagement>
@@ -11,6 +12,21 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>				
+			</plugin>
+			
+		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -39,11 +55,27 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.0.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.1</version>
+			</plugin>
+		</plugins>
+	</reporting>
+	
 	<repositories>
-    <repository>
+<!--     <repository>
       <id>tcwebhooks.sourceforge</id>
       <url>http://tcwebhooks.svn.sourceforge.net/svnroot/tcwebhooks/maven2-repo</url>
-    </repository>
+    </repository>  -->
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -137,7 +169,19 @@
 			<version>6.1.16</version>
 			<scope>test</scope>
 		</dependency>
-
-
 	</dependencies>
+	
+
+	<developers>
+		<developer>
+			<id>netwolfuk</id>
+			<name>Net Wolf</name>
+			<url>http://netwolfuk.wordpress.com</url>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>	
+	
 </project>
