@@ -46,4 +46,13 @@
 		init-method="register"
 		/>
 
+	<bean id="webHookPayloadManager"
+		class="webhook.teamcity.WebHookPayloadManager"
+		/>
+
+	<bean id="webHookPayloadNameValuePairs"
+		class="webhook.teamcity.WebHookPayloadNameValuePairs"
+		init-method="register"
+		/>
+
 </beans>

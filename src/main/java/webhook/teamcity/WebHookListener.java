@@ -33,13 +33,16 @@ public class WebHookListener extends BuildServerAdapter {
     private final SBuildServer myBuildServer;
     private final ProjectSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
+    private final WebHookPayloadManager myManager;
 
     
-    public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, WebHookMainSettings configSettings) {
+    public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
+    						WebHookMainSettings configSettings, WebHookPayloadManager manager) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
         myMainSettings = configSettings;
+        myManager = manager;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -72,10 +75,11 @@ public class WebHookListener extends BuildServerAdapter {
 				WebHook wh = new WebHook();
 				this.getFromConfig(wh, whc);
 				wh.addParam("notifyType", state);
-				addMessageParam(sRunningBuild, wh, stateShort);
+				//addMessageParam(sRunningBuild, wh, stateShort);
 				wh.addParam("buildStatus", sRunningBuild.getStatusDescriptor().getText());
-				addCommonParams(sRunningBuild, wh);
+				//addCommonParams(sRunningBuild, wh);
 				doPost(wh, stateInt);
+				Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat("nvpairs").getFormatDescription());
 			}
     	} else {
     		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + sRunningBuild.getProjectId());
@@ -110,11 +114,11 @@ public class WebHookListener extends BuildServerAdapter {
 				WebHook wh = new WebHook();
 				this.getFromConfig(wh, whc);
 				wh.addParam("notifyType", "statusChanged");
-				addMessageParam(sRunningBuild, wh, "changed Status from "  + oldStatus.getText() + " to " + newStatus.getText());
+				//addMessageParam(sRunningBuild, wh, "changed Status from "  + oldStatus.getText() + " to " + newStatus.getText());
 				wh.addParam("buildStatus", newStatus.getText());
 				wh.addParam("buildStatusPrevious", oldStatus.getText());
 				
-				addCommonParams(sRunningBuild, wh);
+				//addCommonParams(sRunningBuild, wh);
 				doPost(wh, BuildState.BUILD_CHANGED_STATUS);
 			}
     	} else {
@@ -150,7 +154,7 @@ public class WebHookListener extends BuildServerAdapter {
 						+ responsibilityInfoNew.getUser().getUsername()
 					);
 				
-				addCommonParams(sBuildType, wh);
+				//addCommonParams(sBuildType, wh);
 				wh.addParam("comment", responsibilityInfoNew.getComment());
 				doPost(wh, BuildState.BUILD_INTERRUPTED);
 			}
@@ -195,40 +199,6 @@ public class WebHookListener extends BuildServerAdapter {
 					+ "An IOException occurred while attempting to execute WebHook. See the following stacktrace");
 			Loggers.SERVER.warn(e.toString());
 		}
-	}
-
-	private void addMessageParam(SRunningBuild sRunningBuild, WebHook webHook, String msgType){
-		// Message is a long form message, for on webpages or in email.
-		webHook.addParam("message", "Build " + sRunningBuild.getBuildType().getFullName().toString() 
-				+ " has " + msgType + ". This is build number " + sRunningBuild.getBuildNumber() 
-				+ " and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
-		// Text is designed to be shorter, for use in Text messages and the like.
-		webHook.addParam("text", sRunningBuild.getBuildType().getFullName().toString() 
-				+ " has " + msgType + ".");
-
-	}
-
-	private void addCommonParams(SRunningBuild sRunningBuild, WebHook webHook) {
-		webHook.addParam("buildRunner", sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
-		webHook.addParam("buildFullName", sRunningBuild.getBuildType().getFullName().toString());
-		webHook.addParam("buildName", sRunningBuild.getBuildType().getName());
-		webHook.addParam("buildId", sRunningBuild.getBuildType().getBuildTypeId());
-		webHook.addParam("projectName", sRunningBuild.getBuildType().getProjectName());
-		webHook.addParam("projectId", sRunningBuild.getBuildType().getProjectId());
-		webHook.addParam("buildNumber", sRunningBuild.getBuildNumber());
-		webHook.addParam("agentName", sRunningBuild.getAgentName());
-		webHook.addParam("agentOs", sRunningBuild.getAgent().getOperatingSystemName());
-		webHook.addParam("agentHostname", sRunningBuild.getAgent().getHostName());
-		webHook.addParam("triggeredBy", sRunningBuild.getTriggeredBy().getAsString());
-	}
-	
-	private void addCommonParams(SBuildType buildType, WebHook webHook) {
-		webHook.addParam("buildRunner", buildType.getBuildRunner().getDisplayName());
-		webHook.addParam("buildFullName", buildType.getFullName().toString());
-		webHook.addParam("buildName", buildType.getName());
-		webHook.addParam("buildId", buildType.getBuildTypeId());
-		webHook.addParam("projectName", buildType.getProjectName());
-		webHook.addParam("projectId", buildType.getProjectId());
 	}
 
 }

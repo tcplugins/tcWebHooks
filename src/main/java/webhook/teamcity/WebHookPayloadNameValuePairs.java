@@ -3,25 +3,30 @@
  */
 package webhook.teamcity;
 
+import java.util.HashMap;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.jetbrains.annotations.NotNull;
-
 import webhook.WebHookPayload;
 
 public class WebHookPayloadNameValuePairs implements WebHookPayload {
-
-	public StringRequestEntity getRequestStream() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	SortedMap<String,Object> paramList;
+	WebHookPayloadManager myManager;
+	
+	@SuppressWarnings("unchecked")
+	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager){
+		myManager = manager;
+		paramList =  (SortedMap<String, Object>) new HashMap();
 	}
 
+	public void register(){
+		myManager.registerPayloadFormat(this);
+	}
+	
 	public String getFormatDescription() {
 		return "Name Value Pairs";
 	}
@@ -29,31 +34,6 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 	public String getFormatShortName() {
 		return "nvpairs";
 	}
-
-    public void buildStarted(SRunningBuild sRunningBuild){
-    	processBuildEvent(sRunningBuild, "buildStarted", "Started", BuildState.BUILD_STARTED);
-    }	
-	
-    public void buildFinished(SRunningBuild sRunningBuild){
-    	processBuildEvent(sRunningBuild, "buildFinished", "Finished", BuildState.BUILD_FINISHED);
-    }    
-
-    public void buildInterrupted(SRunningBuild sRunningBuild) {
-    	processBuildEvent(sRunningBuild, "buildInterrupted", "been Interrupted", BuildState.BUILD_INTERRUPTED);
-    }      
-
-    public void beforeBuildFinish(SRunningBuild sRunningBuild) {
-    	processBuildEvent(sRunningBuild, "buildNearlyFinished", "nearly Finished", BuildState.BEFORE_BUILD_FINISHED);
-	}
-    
-    public void buildChangedStatus(SRunningBuild sRunningBuild, Status oldStatus, Status newStatus) {
-    	
-    }
-	
-    public void responsibleChanged(@NotNull SBuildType sBuildType, 
-    		@NotNull ResponsibilityInfo responsibilityInfoOld, @NotNull ResponsibilityInfo responsibilityInfoNew, boolean b) {
-    	
-    }
 
 	public String beforeBuildFinish(SRunningBuild runningBuild,
 			SortedMap<String, String> extraParameters) {
@@ -94,4 +74,40 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		return null;
 	}
 
+
+	private void addCommonParams(SRunningBuild sRunningBuild) {
+		paramList.put("buildRunner", sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
+		paramList.put("buildFullName", sRunningBuild.getBuildType().getFullName().toString());
+		paramList.put("buildName", sRunningBuild.getBuildType().getName());
+		paramList.put("buildId", sRunningBuild.getBuildType().getBuildTypeId());
+		paramList.put("projectName", sRunningBuild.getBuildType().getProjectName());
+		paramList.put("projectId", sRunningBuild.getBuildType().getProjectId());
+		paramList.put("buildNumber", sRunningBuild.getBuildNumber());
+		paramList.put("agentName", sRunningBuild.getAgentName());
+		paramList.put("agentOs", sRunningBuild.getAgent().getOperatingSystemName());
+		paramList.put("agentHostname", sRunningBuild.getAgent().getHostName());
+		paramList.put("triggeredBy", sRunningBuild.getTriggeredBy().getAsString());
+	}
+	
+	private void addCommonParams(SBuildType buildType) {
+		paramList.put("buildRunner", buildType.getBuildRunner().getDisplayName());
+		paramList.put("buildFullName", buildType.getFullName().toString());
+		paramList.put("buildName", buildType.getName());
+		paramList.put("buildId", buildType.getBuildTypeId());
+		paramList.put("projectName", buildType.getProjectName());
+		paramList.put("projectId", buildType.getProjectId());
+	}
+	
+	private void addMessageParam(SRunningBuild sRunningBuild, String msgType){
+		// Message is a long form message, for on webpages or in email.
+		paramList.put("message", "Build " + sRunningBuild.getBuildType().getFullName().toString() 
+				+ " has " + msgType + ". This is build number " + sRunningBuild.getBuildNumber() 
+				+ " and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
+		// Text is designed to be shorter, for use in Text messages and the like.
+		paramList.put("text", sRunningBuild.getBuildType().getFullName().toString() 
+				+ " has " + msgType + ".");
+
+	}
+
+	
 }
