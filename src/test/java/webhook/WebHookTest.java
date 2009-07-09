@@ -6,8 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,18 @@ public class WebHookTest{
 	public String proxyUsername = "foo";
 	public String proxyPassword = "bar";
 	
+	
+	@Test
+	public void test_BuildStates(){
+		assertTrue(BuildState.getShortName(BuildState.BUILD_STARTED).equals("buildStarted"));
+		assertTrue(BuildState.getShortName(BuildState.BUILD_FINISHED).equals("buildFinished"));
+		assertTrue(BuildState.getShortName(BuildState.BUILD_CHANGED_STATUS).equals("statusChanged"));
+		assertTrue(BuildState.getShortName(BuildState.BEFORE_BUILD_FINISHED).equals("beforeBuildFinish"));
+		assertTrue(BuildState.getShortName(BuildState.RESPONSIBILITY_CHANGED).equals("responsibilityChanged"));
+		assertTrue(BuildState.getShortName(BuildState.BUILD_INTERRUPTED).equals("buildInterrupted"));
+
+		
+	}
 	
 	
 	@Test

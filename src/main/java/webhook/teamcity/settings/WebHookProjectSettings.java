@@ -45,6 +45,7 @@ public class WebHookProjectSettings implements ProjectSettings {
 	        {
 				Element e = i.next();
 				WebHookConfig whConfig = new WebHookConfig(e);
+				Loggers.SERVER.debug(e.toString());
 				configs.add(whConfig);
 				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: url " + whConfig.getUrl());
 				Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: enabled " + String.valueOf(whConfig.getEnabled()));
@@ -68,6 +69,7 @@ public class WebHookProjectSettings implements ProjectSettings {
             {
                 WebHookConfig whc = whConf.next();
             	Element el = whc.getAsElement();
+            	Loggers.SERVER.debug(el.toString());
                 parentElement.addContent(el);
 				Loggers.SERVER.debug(this.getClass().getName() + ":writeTo :: url " + whc.getUrl());
 				Loggers.SERVER.debug(this.getClass().getName() + ":writeTo :: enabled " + String.valueOf(whc.getEnabled()));

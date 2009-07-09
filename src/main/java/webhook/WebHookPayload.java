@@ -98,4 +98,46 @@ public interface WebHookPayload {
     		@NotNull ResponsibilityInfo responsibilityInfoOld, 
     		@NotNull ResponsibilityInfo responsibilityInfoNew, 
     		boolean isUserAction, SortedMap<String,String> extraParameters);
+
+	/**
+	 * Gets the content type of the format.
+	 * Should return a string like "application/json"
+	 * 
+	 * @return contentType;
+	 */
+    String getContentType();
+    
+    /**
+     * Gets in Integer for order. The Higher the number, the more likely 
+     * it is to appear higher in the list of options.
+     * The highest number will be the default when showing the list of webhooks
+     * in the web UI.
+     *  
+     * Suggestion : When registering your plugin with Spring, you could set with a bean property
+     * in the spring XML file. That way it can be edited by the end user if required.
+     * 
+     * @return rank (higher numbers are ranked first)
+     */
+    Integer getRank();
+    
+    /**
+     * Set in Integer for order. The Higher the number, the more likely 
+     * it is to appear higher in the list of options.
+     * The highest number will be the default when showing the list of webhooks
+     * in the web UI.
+     *  
+     * Suggestion : When registering your plugin with Spring, you could set with a bean property
+     * in the spring XML file. That way it can be edited by the end user if required.
+     * 
+     * @param rank (higher numbers are ranked first)
+     */
+    void setRank(Integer rank);
+
+    /**
+     * Get the character set that the payload is in. This is probably UTF-8, but is up to the 
+     * implementation. 
+     * @return charset (string like "UTF-8")
+     */
+	String getCharset(); 
+
 }

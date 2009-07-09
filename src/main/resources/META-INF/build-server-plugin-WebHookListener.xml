@@ -52,7 +52,10 @@
 
 	<bean id="webHookPayloadNameValuePairs"
 		class="webhook.teamcity.WebHookPayloadNameValuePairs"
-		init-method="register"
-		/>
+		init-method="register">
+		<property name="rank">
+			<value>5</value>
+		</property>
+	</bean>
 
 </beans>

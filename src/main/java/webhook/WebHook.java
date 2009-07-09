@@ -1,9 +1,13 @@
 package webhook;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +18,8 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.io.IOUtils;
 
 
 public class WebHook {
@@ -23,6 +29,9 @@ public class WebHook {
 	private String proxyPassword;
 	private String url;
 	private String content;
+	private String contentType;
+	private String charset;
+	private String payload;
 	private Integer resultCode;
 	private HttpClient client;
 	private String filename = "";
@@ -118,7 +127,9 @@ public class WebHook {
 			    httppost.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(file)));
 			    httppost.setContentChunked(true);
 			}
-			if (this.params.size() > 0){
+			if (this.payload.length() > 0 && this.contentType.length() > 0){
+				httppost.setRequestEntity(new StringRequestEntity(this.payload, this.contentType, this.charset));
+			} else if (this.params.size() > 0){
 				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
 				httppost.setRequestBody(paramsArray);
 			}
@@ -254,5 +265,18 @@ public class WebHook {
 
 	public void setProxyPassword(String proxyPassword) {
 		this.proxyPassword = proxyPassword;
+	}
+
+	public void setPayload(String payloadContent) {
+		this.payload = payloadContent;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 }

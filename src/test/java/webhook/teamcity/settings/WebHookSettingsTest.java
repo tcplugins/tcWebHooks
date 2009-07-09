@@ -216,7 +216,7 @@ public class WebHookSettingsTest {
 			WebHookConfig c = i.next();
 			WebHook wh = new WebHook(c.getUrl());
 			wh.setEnabled(c.getEnabled());
-			wh.addParams(c.getParams());
+			//wh.addParams(c.getParams());
 			System.out.println(wh.getUrl());
 			System.out.println(wh.isEnabled().toString());
 

@@ -1,23 +1,24 @@
 package webhook.teamcity.settings;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import org.apache.commons.httpclient.NameValuePair;
 import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
 
 
 public class WebHookConfig {
-	private List<NameValuePair> params;
+	private SortedMap<String,String> extraParameters;
 	private Boolean enabled = true;
 	private Integer statemask = 255; // Enable all eight bits by default. 
 	private String uniqueKey = "";
 	private String url;
-	private enum Formats { NVPAIRS, JSON};
-	private Formats payloadFormat = Formats.JSON;
+	//private enum Formats { NVPAIRS, JSON};
+	private String payloadFormat = null;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e){
@@ -25,7 +26,7 @@ public class WebHookConfig {
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
-		this.params = new ArrayList<NameValuePair>();
+		this.extraParameters = new TreeMap<String,String>();
 		
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -44,9 +45,10 @@ public class WebHookConfig {
 		}
 
 		if (e.getAttribute("format") != null){
-			if (e.getAttribute("format").equals("nvpairs")){
-				this.setPayloadFormat(Formats.NVPAIRS.toString());
-			}
+			this.setPayloadFormat(e.getAttributeValue("format"));
+		} else {
+			// Set to nvpairs by default for backward compatibility.
+			this.setPayloadFormat("nvpairs");
 		}
 		
 		if(e.getChild("parameters") != null){
@@ -56,26 +58,38 @@ public class WebHookConfig {
 				for(Iterator<Element> param = paramsList.iterator(); param.hasNext();)
 				{
 					Element eParam = param.next();
-					this.params.add(new NameValuePair(
+					this.extraParameters.put(
 							eParam.getAttributeValue("name"), 
 							eParam.getAttributeValue("value")
-							));
+							);
 				}
 			}
 		}
 	}
 	
+	/**
+	 * WebHooksConfig constructor. Unchecked version. Use with caution!!
+	 * This constructor does not check if the payloadFormat is valid.
+	 * It will still allow you to add the format, but the webhook might not
+	 * fire at runtime if the payloadFormat configured is not available.
+	 *  
+	 * @param url
+	 * @param enabled
+	 * @param stateMask
+	 * @param payloadFormat (unvalidated)
+	 */
 	public WebHookConfig (String url, Boolean enabled, Integer stateMask, String payloadFormat){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
-		this.params = new ArrayList<NameValuePair>();
+		this.extraParameters = new TreeMap<String,String>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setStatemask(stateMask);
 		this.setPayloadFormat(payloadFormat);
 	}
 
+	
 /*	public WebHookConfig (String key, String url, Boolean enabled, Integer stateMask){
 		this.params = new ArrayList<NameValuePair>();
 		this.setUrl(url);
@@ -84,10 +98,12 @@ public class WebHookConfig {
 		this.setUniqueKey(key);
 	}
 */	
-	private Element getNameValueAsElement(NameValuePair nv, String elementName){
+	private Element getKeyAndValueAsElement(String key, String elementName){
 		Element e = new Element(elementName);
-		e.setAttribute("name", nv.getName());
-		e.setAttribute("value",nv.getValue());
+		if (this.extraParameters.containsKey(key)){
+			e.setAttribute("name", key);
+			e.setAttribute("value",this.extraParameters.get(key));
+		}
 		return e;
 	}
 	
@@ -98,10 +114,10 @@ public class WebHookConfig {
 		el.setAttribute("statemask", String.valueOf(this.statemask));
 		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
 		
-		if (this.params.size() > 0){
+		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
-			for (Iterator<NameValuePair> i = this.params.iterator(); i.hasNext();){
-				paramsEl.addContent(this.getNameValueAsElement(i.next(), "param"));
+			for (Iterator<String> i = this.extraParameters.values().iterator(); i.hasNext();){
+				paramsEl.addContent(this.getKeyAndValueAsElement(i.next(), "param"));
 			}
 			el.addContent(paramsEl);
 		}
@@ -110,13 +126,13 @@ public class WebHookConfig {
 	
 	// Getters and Setters..
 
-	public List<NameValuePair> getParams() {
-		return params;
+	public SortedMap<String,String> getParams() {
+		return extraParameters;
 	}
-
-	public void setParams(List<NameValuePair> params) {
-		this.params = params;
-	}
+//
+//	public void setParams(List<NameValuePair> params) {
+//		this.params = params;
+//	}
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -244,30 +260,31 @@ public class WebHookConfig {
 		return ""; 
 	}
 
-	public Formats getPayloadFormat() {
+	public String getPayloadFormat() {
 		return payloadFormat;
 	}
 
+	/**
+	 * Sets the payload format to whatever string is passed.
+	 * It does NOT check that the payload format has a valid implimentation loaded.
+	 * 
+	 * @param payloadFormat
+	 */
 	public void setPayloadFormat(String payloadFormat) {
-		if (payloadFormat.toUpperCase().equals(Formats.NVPAIRS.toString())){
-			this.payloadFormat = Formats.NVPAIRS;
-		} else {
-			this.payloadFormat = Formats.JSON;
+		this.payloadFormat = payloadFormat;
+	}	
+	/**
+	 * Sets the payload format, but only if it is in the set.
+	 *  
+	 * @param payloadFormat
+	 * @param availableFormats
+	 */
+	public Boolean setPayloadFormat(String payloadFormat, Set<String> availableFormats) {
+		if (availableFormats.contains(payloadFormat)){
+			this.payloadFormat = payloadFormat;
+			return true;
 		}
-		
+		return false;
 	}
 	
-	public String getPayloadFormatIsJsonAsChecked() {
-		if (this.payloadFormat.equals(Formats.JSON)){
-			return "checked ";
-		}
-		return "";
-	}
-	
-	public String getPayloadFormatIsNvpairsAsChecked() {
-		if (this.payloadFormat.equals(Formats.NVPAIRS)){
-			return "checked ";
-		}
-		return "";
-	}
 }
