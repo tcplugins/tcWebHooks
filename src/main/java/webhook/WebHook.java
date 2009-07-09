@@ -127,7 +127,8 @@ public class WebHook {
 			    httppost.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(file)));
 			    httppost.setContentChunked(true);
 			}
-			if (this.payload.length() > 0 && this.contentType.length() > 0){
+			if (   this.payload != null && this.payload.length() > 0 
+				&& this.contentType != null && this.contentType.length() > 0){
 				httppost.setRequestEntity(new StringRequestEntity(this.payload, this.contentType, this.charset));
 			} else if (this.params.size() > 0){
 				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
