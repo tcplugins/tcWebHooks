@@ -1,5 +1,6 @@
 package webhook.teamcity;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -33,5 +34,9 @@ public class WebHookPayloadManager {
 	
 	public Set<String> getRegisteredFormats(){
 		return formats.keySet();
+	}
+	
+	public Collection<WebHookPayload> getRegisteredFormatsAsCollection(){
+		return this.formats.values();
 	}
 }

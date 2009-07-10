@@ -2,6 +2,7 @@ package webhook.teamcity.extension;
 
 import java.util.HashMap;
 
+import javax.naming.ldap.ManageReferralControl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,6 +17,7 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
+import webhook.teamcity.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -27,9 +29,10 @@ public class WebHookIndexPageController extends BaseController {
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
+	    private final WebHookPayloadManager myManager;
 
 	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor,
+	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
 	    		WebHookMainSettings configSettings) {
 	        super(server);
 	        myWebManager = webManager;
@@ -37,6 +40,7 @@ public class WebHookIndexPageController extends BaseController {
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
 	        myMainSettings = configSettings;
+	        myManager = manager;
 	    }
 
 	    public void register(){
@@ -77,6 +81,8 @@ public class WebHookIndexPageController extends BaseController {
 		    	} else {
 		    		params.put("noWebHooks", "false");
 		    		params.put("webHooks", "true");
+		    		params.put("webHookList", projSettings.getWebHooksAsList());
+		    		params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 		    		params.put("webHookList", projSettings.getWebHooksAsList());
 		    		params.put("webHooksDisabled", !projSettings.isEnabled());
 		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());

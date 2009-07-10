@@ -28,8 +28,15 @@
 						<input id="BuildInterrupted_${hook.uniqueKey}" value="BuildInterrupted" name="BuildInterrupted" type=checkbox ${hook.stateBuildInterruptedAsChecked}/>
 						<input id="BeforeFinished_${hook.uniqueKey}" value="BeforeFinished" name="BeforeFinished" type=checkbox ${hook.stateBeforeFinishedAsChecked}/>
 						<input id="ResponsibilityChanged_${hook.uniqueKey}" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox ${hook.stateResponsibilityChangedAsChecked}/>
-						<input id="payloadFormatJSON_${hook.uniqueKey}" name="payloadFormat" type="radio" value="JSON" ${hook.payloadFormatIsJsonAsChecked} />
-						<input id="payloadFormatNVPAIRS_${hook.uniqueKey}" name="payloadFormat" type="radio" value="NVPAIRS" ${hook.payloadFormatIsNvpairsAsChecked} />
+			<!-- ${ hook.payloadFormat} -->
+						<c:forEach items="${formatList}" var="format">
+							<c:if test="${format.formatShortName == hook.payloadFormat}">
+								<input id="payloadFormat_${format.formatShortName}_${hook.uniqueKey}" name="payloadFormat" type="radio" value="${format.formatShortName}" checked />
+							</c:if>
+							<c:if test="${format.formatShortName != hook.payloadFormat}">
+								<input id="payloadFormat_${format.formatShortName}_${hook.uniqueKey}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
+							</c:if>
+						</c:forEach>
     				</form>
 					</td>
 				</tr>
@@ -49,8 +56,14 @@
 						<input id="BuildInterrupted_new" value="BuildInterrupted" name="BuildInterrupted" type=checkbox checked />
 						<input id="BeforeFinished_new" value="BeforeFinished" name="BeforeFinished" type=checkbox checked />
 						<input id="ResponsibilityChanged_new" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox checked />
-						<input id="payloadFormatJSON_new" name="payloadFormat" type="radio" value="JSON" checked />
-						<input id="payloadFormatNVPAIRS_new" name="payloadFormat" type="radio" value="NVPAIRS" />
+						<c:forEach items="${formatList}" var="format">
+							<c:if test="${format.formatShortName == 'JSON'}">
+								<input id="payloadFormat_${format.formatShortName}_new" name="payloadFormat" type="radio" value="${format.formatShortName}" checked />
+							</c:if>
+							<c:if test="${format.formatShortName != hook.payloadFormat}">
+								<input id="payloadFormat_${format.formatShortName}_new" name="payloadFormat" type="radio" value="${format.formatShortName}" />
+							</c:if>
+						</c:forEach>
     				</form>
 					</td>
 				</tr>
@@ -120,17 +133,20 @@
 								</td>
 							</tr>
 							<tr style="border:none;"><td>Payload Format:</td>
-								<td colspan=2><label style='white-space:nowrap;'>
+								<td colspan=2>
+								<!--  <label style='white-space:nowrap;'>
 									<input class="payloadFormat" id="payloadFormatJSON" name="payloadFormat" type="radio" value="JSON"/>
 									 JSON</label>
 								</td>
-							</tr>
-							<tr style="border:none;"><td>&nbsp;</td>
-								<td><label style='white-space:nowrap;'>
-									<input class="payloadFormat" id="payloadFormatNVPAIRS" name="payloadFormat" type="radio" value="NVPAIRS" />
-									 Name Value Pairs (normal POST)</label>
-								</td>
-							</tr>
+							</tr>-->
+								<table>
+									<c:forEach items="${formatList}" var="format">
+										<tr><td><label style='white-space:nowrap;'>
+											<input class="payloadFormat" id="payloadFormat_${format.formatShortName}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
+											${format.formatDescription}</label>
+											</td></tr>
+									</c:forEach>
+								</table></td></tr>
     					</table>            
             
             <!--

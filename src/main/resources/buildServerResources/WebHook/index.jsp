@@ -89,8 +89,8 @@
 			    jQuery('#BuildInterrupted').attr('checked', jQuery('#BuildInterrupted_'+id).is(':checked'));
 			    jQuery('#BeforeFinished').attr('checked', jQuery('#BeforeFinished_'+id).is(':checked'));
 			    jQuery('#ResponsibilityChanged').attr('checked', jQuery('#ResponsibilityChanged_'+id).is(':checked'));
-			    jQuery('#payloadFormatJSON').attr('checked', jQuery('#payloadFormatJSON_'+id).is(':checked'));
-			    jQuery('#payloadFormatNVPAIRS').attr('checked', jQuery('#payloadFormatNVPAIRS_'+id).is(':checked'));
+			    jQuery('#payloadFormat').attr('checked', jQuery('#payloadFormat_'+id).is(':checked'));
+			    //jQuery('#payloadFormatNVPAIRS').attr('checked', jQuery('#payloadFormatNVPAIRS_'+id).is(':checked'));
 			    
 			    $('webHookId').value = id;
 			    

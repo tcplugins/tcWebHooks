@@ -1,7 +1,7 @@
 /**
  * 
  */
-package webhook.teamcity;
+package webhook.teamcity.payloadformat;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -15,6 +15,8 @@ import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import webhook.WebHookPayload;
+import webhook.teamcity.BuildState;
+import webhook.teamcity.WebHookPayloadManager;
 
 public class WebHookPayloadNameValuePairs implements WebHookPayload {
 	

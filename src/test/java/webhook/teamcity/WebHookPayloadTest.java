@@ -17,6 +17,7 @@ import webhook.WebHook;
 import webhook.WebHookPayload;
 import webhook.WebHookTest;
 import webhook.WebHookTestServer;
+import webhook.teamcity.payloadformat.WebHookPayloadNameValuePairs;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
