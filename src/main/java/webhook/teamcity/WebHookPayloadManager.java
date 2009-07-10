@@ -31,7 +31,7 @@ public class WebHookPayloadManager {
 		return formats.containsKey(format);
 	}
 	
-	public Set getRegisteredFormats(){
+	public Set<String> getRegisteredFormats(){
 		return formats.keySet();
 	}
 }

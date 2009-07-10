@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import jetbrains.buildServer.messages.Status;
+
 import org.junit.Test;
 
 import webhook.WebHook;
@@ -26,7 +28,7 @@ public class WebHookPayloadTest {
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy);
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
 		
@@ -53,7 +55,7 @@ public class WebHookPayloadTest {
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy);
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
 		

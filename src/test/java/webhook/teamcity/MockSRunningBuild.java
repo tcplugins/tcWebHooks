@@ -40,9 +40,9 @@ public class MockSRunningBuild implements SRunningBuild {
 	private String buildNumber;
 	private MockTriggeredBy triggeredBy;
 	private Status status;
-	private StatusDescriptor statusDescriptor;
+	private String statusText;
 
-	public MockSRunningBuild(MockSBuildType buildType, String triggeredBy) {
+	public MockSRunningBuild(MockSBuildType buildType, String triggeredBy, Status status, String statusText) {
 		this.sBuildType = buildType;
 		this.sBuildAgent = new MockSBuildAgent("Test Agent", 
 									"agent.hostname.domain.name", 
@@ -51,7 +51,8 @@ public class MockSRunningBuild implements SRunningBuild {
 									"Linux, version 2.6.27.21" );
 		sBuildAgent.setRunningBuild(this);
 		this.triggeredBy = new MockTriggeredBy(triggeredBy);
-		//this.status = new Status
+		this.status = status;
+		this.statusText = statusText;
 	}
 
 	public void addBuildMessage(BuildMessage1 arg0) {
@@ -118,8 +119,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public void setBuildStatus(Status arg0) {
-		// TODO Auto-generated method stub
-
+		this.status = arg0;
 	}
 
 	public void setInterrupted(RunningBuildState arg0, User arg1, String arg2) {
@@ -321,8 +321,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public Status getBuildStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.status;
 	}
 
 	public String getBuildTypeId() {
@@ -369,9 +368,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public StatusDescriptor getStatusDescriptor() {
-		// TODO Auto-generated method stub
-		//return new StatusDescriptor(Status.NORMAL, "blah", "blah"), "MockRunning");
-		return null;
+		return new StatusDescriptor(this.status, this.statusText);
 	}
 
 	public List<TestInfo> getTestMessages(int arg0) {
