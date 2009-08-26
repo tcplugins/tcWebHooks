@@ -72,10 +72,10 @@
 	</reporting>
 	
 	<repositories>
-<!--     <repository>
+	 <repository>
       <id>tcwebhooks.sourceforge</id>
       <url>http://tcwebhooks.svn.sourceforge.net/svnroot/tcwebhooks/maven2-repo</url>
-    </repository>  -->
+     </repository>
 	</repositories>
 	<dependencies>
 		<dependency>
