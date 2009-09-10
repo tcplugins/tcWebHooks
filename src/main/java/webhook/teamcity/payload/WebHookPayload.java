@@ -1,4 +1,4 @@
-package webhook;
+package webhook.teamcity.payload;
 
 import java.util.SortedMap;
 

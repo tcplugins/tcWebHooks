@@ -68,6 +68,16 @@
 			}
 		}
 
+		function selectCorrectRadio(id){
+			jQuery('#webHookFormContents input.payloadFormat').each(function(i){
+				if(this.value == jQuery('#payloadFormat_'+id).val()){
+					this.checked = true;
+				} else {
+					this.checked = false;
+				}
+			});
+		}
+
 		BS.EditWebHookDialog = OO.extend(BS.AbstractModalDialog, {
 			  getContainer : function() {
 			    return $('editParameterDialog');
@@ -89,7 +99,8 @@
 			    jQuery('#BuildInterrupted').attr('checked', jQuery('#BuildInterrupted_'+id).is(':checked'));
 			    jQuery('#BeforeFinished').attr('checked', jQuery('#BeforeFinished_'+id).is(':checked'));
 			    jQuery('#ResponsibilityChanged').attr('checked', jQuery('#ResponsibilityChanged_'+id).is(':checked'));
-			    jQuery('#payloadFormat').attr('checked', jQuery('#payloadFormat_'+id).is(':checked'));
+			    //jQuery('#payloadFormat').attr('checked', jQuery('#payloadFormat_'+id).is(':checked'));
+			    selectCorrectRadio(id);
 			    //jQuery('#payloadFormatNVPAIRS').attr('checked', jQuery('#payloadFormatNVPAIRS_'+id).is(':checked'));
 			    
 			    $('webHookId').value = id;

@@ -15,6 +15,7 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
+import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -24,14 +25,16 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
+	    private final WebHookPayloadManager myManager;
 
 	    public WebHookAjaxSettingsListPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor) {
+	    		ProjectSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
+	        myManager = manager;
 	    }
 
 	    public void register(){
@@ -57,6 +60,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    	params.put("messages", message);
 		    	params.put("projectId", project.getProjectId());
 		    	params.put("projectName", project.getName());
+		    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 		    	
 		    	params.put("webHookCount", projSettings.getWebHooksCount());
 		    	if (projSettings.getWebHooksCount() == 0){

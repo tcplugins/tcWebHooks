@@ -573,6 +573,7 @@ public class MockSBuildType implements SBuildType {
 		return 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Option[] getChangedOptions() {
 		// TODO Auto-generated method stub
 		return null;

@@ -88,19 +88,19 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>1.4</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
@@ -108,7 +108,7 @@
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
 			<version>4.0.2</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/runtime-util.jar -->
@@ -116,7 +116,7 @@
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>runtime-util</artifactId>
 			<version>4.0.2</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server-model.jar -->
@@ -131,30 +131,44 @@
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
 			<version>4.0.2</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
 			<version>2.0.1</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.intellij</groupId>
 			<artifactId>openapi</artifactId>
 			<version>6.0.5</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		
+		<dependency>
+			<groupId>xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+				
+		<dependency>
+    		<groupId>org.codehaus.jettison</groupId>
+    		<artifactId>jettison</artifactId>
+    		<version>1.1</version>
+    		<scope>compile</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
@@ -182,6 +196,7 @@
 			<version>1.2.12</version>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
 	
 

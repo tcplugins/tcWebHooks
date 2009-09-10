@@ -1,7 +1,7 @@
 /**
  * 
  */
-package webhook.teamcity.payloadformat;
+package webhook.teamcity.payload.format;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,9 +14,9 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import webhook.WebHookPayload;
 import webhook.teamcity.BuildState;
-import webhook.teamcity.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookPayload;
+import webhook.teamcity.payload.WebHookPayloadManager;
 
 public class WebHookPayloadNameValuePairs implements WebHookPayload {
 	
@@ -141,7 +141,7 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 					pair = "";
 				}
 				returnString += pair;
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString);
+				//Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString);
 			}
 		}
 		
@@ -159,7 +159,8 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		paramList.put("buildRunner", sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
 		paramList.put("buildFullName", sRunningBuild.getBuildType().getFullName().toString());
 		paramList.put("buildName", sRunningBuild.getBuildType().getName());
-		paramList.put("buildId", sRunningBuild.getBuildType().getBuildTypeId());
+		paramList.put("buildTypeId", sRunningBuild.getBuildType().getBuildTypeId());
+		paramList.put("buildId", sRunningBuild.getBuildId());
 		paramList.put("projectName", sRunningBuild.getBuildType().getProjectName());
 		paramList.put("projectId", sRunningBuild.getBuildType().getProjectId());
 		paramList.put("buildNumber", sRunningBuild.getBuildNumber());
@@ -174,7 +175,7 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		paramList.put("buildRunner", buildType.getBuildRunner().getDisplayName());
 		paramList.put("buildFullName", buildType.getFullName().toString());
 		paramList.put("buildName", buildType.getName());
-		paramList.put("buildId", buildType.getBuildTypeId());
+		paramList.put("buildTypeId", buildType.getBuildTypeId());
 		paramList.put("projectName", buildType.getProjectName());
 		paramList.put("projectId", buildType.getProjectId());
 	}

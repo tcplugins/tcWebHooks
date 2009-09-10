@@ -11,14 +11,15 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -28,15 +29,17 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
+	    private final WebHookPayloadManager myManager;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings,
+	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
 	    		PluginDescriptor pluginDescriptor) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
+	        myManager = manager;
 	    }
 
 	    public void register(){
@@ -137,6 +140,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    		}
 	    	}
 
+	    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
 	        		&& request.getParameter("projectId") != null 

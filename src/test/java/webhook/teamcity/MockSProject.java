@@ -21,7 +21,6 @@ public class MockSProject implements SProject {
 	private String name;
 	private String description;
 	private String projectId;
-	private File artifactsDirectory;
 	private File configDirectory;
 	private Status status;
 	private SBuildType buildType;

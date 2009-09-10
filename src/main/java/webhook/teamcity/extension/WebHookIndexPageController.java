@@ -2,7 +2,6 @@ package webhook.teamcity.extension;
 
 import java.util.HashMap;
 
-import javax.naming.ldap.ManageReferralControl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +16,7 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
-import webhook.teamcity.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -45,7 +44,6 @@ public class WebHookIndexPageController extends BaseController {
 
 	    public void register(){
 	      myWebManager.registerController("/webhooks/index.html", this);
-	      //myWebManager.registerController("/webhooks/settingsList.html", this);
 	    }
 
 	    @Nullable
@@ -75,6 +73,8 @@ public class WebHookIndexPageController extends BaseController {
 		    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 		    	
 		    	params.put("webHookCount", projSettings.getWebHooksCount());
+		    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+		    	
 		    	if (projSettings.getWebHooksCount() == 0){
 		    		params.put("noWebHooks", "true");
 		    		params.put("webHooks", "false");
@@ -82,7 +82,6 @@ public class WebHookIndexPageController extends BaseController {
 		    		params.put("noWebHooks", "false");
 		    		params.put("webHooks", "true");
 		    		params.put("webHookList", projSettings.getWebHooksAsList());
-		    		params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 		    		params.put("webHookList", projSettings.getWebHooksAsList());
 		    		params.put("webHooksDisabled", !projSettings.isEnabled());
 		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
@@ -92,6 +91,5 @@ public class WebHookIndexPageController extends BaseController {
 	        }
 
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/index.jsp", params);
-	        //return new ModelAndView("/WebHook/index.jsp", params);
 	    }
 }

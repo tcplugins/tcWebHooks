@@ -14,10 +14,11 @@ import jetbrains.buildServer.messages.Status;
 import org.junit.Test;
 
 import webhook.WebHook;
-import webhook.WebHookPayload;
 import webhook.WebHookTest;
 import webhook.WebHookTestServer;
-import webhook.teamcity.payloadformat.WebHookPayloadNameValuePairs;
+import webhook.teamcity.payload.WebHookPayload;
+import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -36,11 +37,6 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager();
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
-		//WebHookProjectSettings whps = new WebHookProjectSettings();
-		WebHookTest test = new WebHookTest();
-		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";
-		//WebHookConfig whc = new WebHookConfig(url, true, BuildState.BUILD_STARTED, "nvpairs");
-		
 		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
 		extraParameters.put("something", "somewhere");
 		//String content = wpm.getFormat("nvpairs").buildStarted(sRunningBuild, extraParameters);

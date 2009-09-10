@@ -14,10 +14,9 @@ import webhook.teamcity.BuildState;
 public class WebHookConfig {
 	private SortedMap<String,String> extraParameters;
 	private Boolean enabled = true;
-	private Integer statemask = 255; // Enable all eight bits by default. 
+	private Integer statemask = BuildState.ALL_ENABLED; // Enable all eight bits by default. 
 	private String uniqueKey = "";
 	private String url;
-	//private enum Formats { NVPAIRS, JSON};
 	private String payloadFormat = null;
 	
 	@SuppressWarnings("unchecked")
@@ -167,9 +166,11 @@ public class WebHookConfig {
 	}
 	
 	public String getEnabledListAsString(){
-		if (this.statemask == BuildState.ALL_ENABLED){
+		if (!this.enabled){
+			return "Disabled";
+		} else if (this.statemask.equals(BuildState.ALL_ENABLED)){
 			return "All";
-		} else if (this.statemask == 0) {
+		} else if (this.statemask.equals(0)) {
 			return "None";
 		} else {
 			String enabledStates = "";
