@@ -9,9 +9,12 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import jetbrains.buildServer.web.util.SessionUser;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,6 +62,9 @@ public class WebHookIndexPageController extends BaseController {
 		    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 		    	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 		    	
+		        SUser myUser = SessionUser.getUser(request);
+		        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
+		    	
 		    	String message = projSettings.getWebHooksAsString();
 		    	
 		    	params.put("haveProject", "true");
@@ -68,8 +74,17 @@ public class WebHookIndexPageController extends BaseController {
 		    	
 		    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
 		    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");
+		    		if (myMainSettings.getWebhookShowFurtherReading()){
+		    			params.put("ShowFurtherReading", "ALL");
+		    		} else {
+		    			params.put("ShowFurtherReading", "SINGLE");
+		    		}
+		    	} else if (myMainSettings.getWebhookShowFurtherReading()){
+		    		params.put("ShowFurtherReading", "DEFAULT");
+		    	} else {
+		    		params.put("ShowFurtherReading", "NONE");
 		    	}
-		    	
+		    				    	
 		    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 		    	
 		    	params.put("webHookCount", projSettings.getWebHooksCount());

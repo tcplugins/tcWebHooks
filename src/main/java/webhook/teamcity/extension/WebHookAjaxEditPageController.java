@@ -130,7 +130,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					} // TODO Need to handle webHookId being null
 			    						
 			    				} else {
-			    					params.put("messages", "<errors><error id=\"error_webHookName\">Please enter a URL.</error></errors>");
+			    					params.put("messages", "<errors><error id=\"emptyWebHookUrl\">Please enter a URL.</error></errors>");
 			    				}
 				    			
 			    			}
@@ -170,7 +170,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	params.put("haveProject", "false");
 	        }
 	        
-	        return new ModelAndView(myPluginPath + "WebHook/index.jsp", params);
-	        //return new ModelAndView("/WebHook/ajaxEdit.jsp", params);
+	        return new ModelAndView(myPluginPath + "WebHook/ajaxEdit.jsp", params);
 	    }
 }
