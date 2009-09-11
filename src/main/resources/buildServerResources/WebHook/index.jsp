@@ -226,11 +226,18 @@
 	    <div id="systemParams"><!--  begine systemParams div -->
 
 		<c:choose>
-			<c:when test="${hasPermission}">
-			<%@ include file="webHookInclude.jsp" %>
+			<c:when test="${not haveProject}">
+				<strong>${errorReason}</strong><br/>Please access this page via the WebHooks tab on a project or build overview page. 
 			</c:when>
 			<c:otherwise>
-				<strong>You must have Project Administrator permission to edit WebHooks</strong>
+				<c:choose>
+					<c:when test="${hasPermission}">
+					<%@ include file="webHookInclude.jsp" %>
+					</c:when>
+					<c:otherwise>
+						<strong>You must have Project Administrator permission to edit WebHooks</strong>
+					</c:otherwise>
+				</c:choose>
 			</c:otherwise>
 		</c:choose>
 

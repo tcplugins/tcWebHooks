@@ -55,6 +55,19 @@ public class WebHookIndexPageController extends BaseController {
 	        HashMap<String,Object> params = new HashMap<String,Object>();
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
 	        
+	    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
+	    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");
+	    		if (myMainSettings.getWebhookShowFurtherReading()){
+	    			params.put("ShowFurtherReading", "ALL");
+	    		} else {
+	    			params.put("ShowFurtherReading", "SINGLE");
+	    		}
+	    	} else if (myMainSettings.getWebhookShowFurtherReading()){
+	    		params.put("ShowFurtherReading", "DEFAULT");
+	    	} else {
+	    		params.put("ShowFurtherReading", "NONE");
+	    	}
+	        
 	        if(request.getParameter("projectId") != null 
 	        		&& request.getParameter("projectId").startsWith("project")){
 	        	
@@ -62,47 +75,41 @@ public class WebHookIndexPageController extends BaseController {
 		    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 		    	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 		    	
-		        SUser myUser = SessionUser.getUser(request);
-		        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
-		    	
-		    	String message = projSettings.getWebHooksAsString();
-		    	
-		    	params.put("haveProject", "true");
-		    	params.put("messages", message);
-		    	params.put("projectId", project.getProjectId());
-		    	params.put("projectName", project.getName());
-		    	
-		    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
-		    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");
-		    		if (myMainSettings.getWebhookShowFurtherReading()){
-		    			params.put("ShowFurtherReading", "ALL");
-		    		} else {
-		    			params.put("ShowFurtherReading", "SINGLE");
-		    		}
-		    	} else if (myMainSettings.getWebhookShowFurtherReading()){
-		    		params.put("ShowFurtherReading", "DEFAULT");
+		    	if (project != null){
+			    	
+			        SUser myUser = SessionUser.getUser(request);
+			        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
+			    	
+			    	String message = projSettings.getWebHooksAsString();
+			    	
+			    	params.put("haveProject", "true");
+			    	params.put("messages", message);
+			    	params.put("projectId", project.getProjectId());
+			    	params.put("projectName", project.getName());
+			    	
+			    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
+			    	
+			    	params.put("webHookCount", projSettings.getWebHooksCount());
+			    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+			    	
+			    	if (projSettings.getWebHooksCount() == 0){
+			    		params.put("noWebHooks", "true");
+			    		params.put("webHooks", "false");
+			    	} else {
+			    		params.put("noWebHooks", "false");
+			    		params.put("webHooks", "true");
+			    		params.put("webHookList", projSettings.getWebHooksAsList());
+			    		params.put("webHookList", projSettings.getWebHooksAsList());
+			    		params.put("webHooksDisabled", !projSettings.isEnabled());
+			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
+			    	}
 		    	} else {
-		    		params.put("ShowFurtherReading", "NONE");
-		    	}
-		    				    	
-		    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
-		    	
-		    	params.put("webHookCount", projSettings.getWebHooksCount());
-		    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
-		    	
-		    	if (projSettings.getWebHooksCount() == 0){
-		    		params.put("noWebHooks", "true");
-		    		params.put("webHooks", "false");
-		    	} else {
-		    		params.put("noWebHooks", "false");
-		    		params.put("webHooks", "true");
-		    		params.put("webHookList", projSettings.getWebHooksAsList());
-		    		params.put("webHookList", projSettings.getWebHooksAsList());
-		    		params.put("webHooksDisabled", !projSettings.isEnabled());
-		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
+		    		params.put("haveProject", "false");
+		    		params.put("errorReason", "The project requested does not appear to be valid.");
 		    	}
 	        } else {
 	        	params.put("haveProject", "false");
+	        	params.put("errorReason", "No project specified.");
 	        }
 
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/index.jsp", params);
