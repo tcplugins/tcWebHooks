@@ -54,11 +54,11 @@ public class WebHookPayloadJsonContent {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
     				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". This is build number " + sRunningBuild.getBuildNumber() 
-    				+ " and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
+    				+ ", has a status of \"" + sRunningBuild.getStatusDescriptor().getText() + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
     		
 			// Text is designed to be shorter, for use in Text messages and the like.    		
     		setText(sRunningBuild.getBuildType().getFullName().toString() 
-    				+ " has " + BuildState.getDescriptionSuffix(buildState) + ".");
+    				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". Status: " + sRunningBuild.getStatusDescriptor().getText());
 		}
 
 		private void populateCommonContent(SRunningBuild sRunningBuild,

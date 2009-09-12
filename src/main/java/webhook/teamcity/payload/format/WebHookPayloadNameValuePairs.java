@@ -184,10 +184,10 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		// Message is a long form message, for on webpages or in email.
 		paramList.put("message", "Build " + sRunningBuild.getBuildType().getFullName().toString() 
 				+ " has " + msgType + ". This is build number " + sRunningBuild.getBuildNumber() 
-				+ " and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
+				+ ", has a status of \"" + sRunningBuild.getStatusDescriptor().getText() + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
 		// Text is designed to be shorter, for use in Text messages and the like.
 		paramList.put("text", sRunningBuild.getBuildType().getFullName().toString() 
-				+ " has " + msgType + ".");
+				+ " has " + msgType + ". Status: " + sRunningBuild.getStatusDescriptor().getText());
 
 	}
 
