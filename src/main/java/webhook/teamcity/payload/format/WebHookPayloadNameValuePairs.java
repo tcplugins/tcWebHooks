@@ -93,9 +93,15 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		
 		this.addCommonParams(buildType, BuildState.RESPONSIBILITY_CHANGED);
 		
+		
+		paramList.put("oldResponsibility", responsibilityInfoOld.getUser().getDescriptiveName().toString());
+		paramList.put("newResponsibility", responsibilityInfoOld.getUser().getDescriptiveName().toString());
+		paramList.put("oldResponsibility1", responsibilityInfoOld.getUser().getDescriptiveName());
+		paramList.put("newResponsibility1", responsibilityInfoOld.getUser().getDescriptiveName());
+
 		paramList.put("message", "Build " + buildType.getFullName().toString()
 				+ " has changed responsibility from " 
-				+ " " + responsibilityInfoOld.getUser().getDescriptiveName()
+				+ responsibilityInfoOld.getUser().getDescriptiveName()
 				+ " to "
 				+ responsibilityInfoNew.getUser().getDescriptiveName()
 			);
