@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>netwolfuk.TeamCity.Plugins</groupId>
 	<artifactId>tcWebHooks</artifactId>
-	<version>0.7.${build.number}.${build.vcs.number}</version>
+	<version>0.8.${build.number}.${build.vcs.number}</version>
 	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
 	<build>
 		<defaultGoal>package</defaultGoal>
