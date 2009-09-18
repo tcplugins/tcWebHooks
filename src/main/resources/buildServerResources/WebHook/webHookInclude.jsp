@@ -1,10 +1,11 @@
 
-	    <p><label for="webHookEnabled" style="width:30em;"><input id="webHookEnabled" type="checkbox" ${webHooksEnabledAsChecked}/> Process WebHooks for this project</label></p>
+	    <!-- <p><label for="webHookEnabled" style="width:30em;"><input id="webHookEnabled" type="checkbox" ${webHooksEnabledAsChecked}/> Process WebHooks for this project</label></p>-->
 	    <br/>
 	    <table id="webHookTable" class="settings">
 	   		<thead>
 		   		<tr style="background-color: rgb(245, 245, 245);">
 					<th class="name">URL</th>
+					<th class="name">Format</th>
 					<th class="value" style="width:20%;" colspan="3">Enabled</th>
 			</tr>
 			</thead>
@@ -12,7 +13,12 @@
 			<c:forEach items="${webHookList}" var="hook">
 				<tr id="viewRow_${hook.uniqueKey}">
 					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.url}" /></td>
-					<td class="value highlight" style="width:20%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.enabledListAsString}" /></td>
+						<c:forEach items="${formatList}" var="format">
+							<c:if test="${format.formatShortName == hook.payloadFormat}">
+								<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${format.formatDescription}" /></td>
+							</c:if>
+						</c:forEach>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.enabledListAsString}" /></td>
 					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');" href="javascript://">edit</a></td>
 					<td class="edit highlight"><a onclick='BS.WebHookForm.removeWebHook("${hook.uniqueKey}");' href="javascript://">delete</a></td>
 				</tr> 
@@ -28,12 +34,22 @@
 						<input id="BuildInterrupted_${hook.uniqueKey}" value="BuildInterrupted" name="BuildInterrupted" type=checkbox ${hook.stateBuildInterruptedAsChecked}/>
 						<input id="BeforeFinished_${hook.uniqueKey}" value="BeforeFinished" name="BeforeFinished" type=checkbox ${hook.stateBeforeFinishedAsChecked}/>
 						<input id="ResponsibilityChanged_${hook.uniqueKey}" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox ${hook.stateResponsibilityChangedAsChecked}/>
+						<input id="payloadFormat_${hook.uniqueKey}" name="payloadFormat2" type="hidden" value="${hook.payloadFormat}" />
+			<!-- ${ hook.payloadFormat} -->
+						<c:forEach items="${formatList}" var="format">
+							<c:if test="${format.formatShortName == hook.payloadFormat}">
+								<input id="payloadFormat_${format.formatShortName}_${hook.uniqueKey}" name="payloadFormat" type="radio" value="${format.formatShortName}" checked />
+							</c:if>
+							<c:if test="${format.formatShortName != hook.payloadFormat}">
+								<input id="payloadFormat_${format.formatShortName}_${hook.uniqueKey}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
+							</c:if>
+						</c:forEach>
     				</form>
 					</td>
 				</tr>
 			</c:forEach>
 				<tr>
-					<td colspan="4" class="highlight"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
+					<td colspan="5" class="highlight"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
 				</tr>
 				<tr style="display:none;" id="editRow_new">
 					<td colspan="4" id="wrapper_new">
@@ -47,6 +63,7 @@
 						<input id="BuildInterrupted_new" value="BuildInterrupted" name="BuildInterrupted" type=checkbox checked />
 						<input id="BeforeFinished_new" value="BeforeFinished" name="BeforeFinished" type=checkbox checked />
 						<input id="ResponsibilityChanged_new" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox checked />
+						<input id="payloadFormat_new" name="payloadFormat" type="hidden" value="${format.formatShortName}" />
     				</form>
 					</td>
 				</tr>
@@ -74,7 +91,7 @@
 								<td>URL:</td>
 								<td colspan=2><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
 							</tr>
-							<tr><td colspan=2><span class="error" id="error_webHookName" style="margin-left: 5.5em;"></span></td></tr>
+							<tr><td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 5.5em;"></span></td></tr>
 							<tr style="border:none;">
 								<td><label for="webHooksEnabled">Enabled:</label></td>
 								<td colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
@@ -113,6 +130,18 @@
 								<td><label style='white-space:nowrap;'>
 									<input onclick='selectBuildState();' class="buildState" id="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox />
 									 Build Responsibility Changed</label>
+								</td>
+							</tr>
+							<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
+								<td colspan=2>
+									<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
+										<c:forEach items="${formatList}" var="format">
+											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+												<input style="vertical-align:text-bottom;" class="payloadFormat" id="payloadFormat_${format.formatShortName}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
+												${format.formatDescription}</label>
+												</td></tr>
+										</c:forEach>
+									</tbody></table>
 								</td>
 							</tr>
     					</table>            

@@ -11,14 +11,15 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -28,15 +29,17 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
+	    private final WebHookPayloadManager myManager;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings,
+	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
 	    		PluginDescriptor pluginDescriptor) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
+	        myManager = manager;
 	    }
 
 	    public void register(){
@@ -85,7 +88,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    			} else if ((request.getParameter("submitAction") != null ) 
 				    				&& (request.getParameter("submitAction").equals("updateWebHook"))){
 			    				if((request.getParameter("URL") != null ) 
-				    				&& (request.getParameter("URL").length() > 0 )){
+				    				&& (request.getParameter("URL").length() > 0 )
+				    				&& (request.getParameter("payloadFormat") != null)
+				    				&& (request.getParameter("payloadFormat").length() > 0)){
+			    					
 			    					if (request.getParameter("webHookId") != null){
 			    						Integer runningTotal = 0;
 			    						Boolean enabled = false;
@@ -102,7 +108,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){
-			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, runningTotal);
+			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
+			    														runningTotal,request.getParameter("payloadFormat"));
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -110,7 +117,9 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
 			    							}
 			    						} else {
-			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), request.getParameter("URL"), enabled, runningTotal);
+			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
+			    														request.getParameter("URL"), enabled, 
+			    														runningTotal, request.getParameter("payloadFormat"));
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -121,7 +130,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					} // TODO Need to handle webHookId being null
 			    						
 			    				} else {
-			    					params.put("messages", "<errors><error id=\"error_webHookName\">Please enter a URL.</error></errors>");
+			    					params.put("messages", "<errors><error id=\"emptyWebHookUrl\">Please enter a URL.</error></errors>");
 			    				}
 				    			
 			    			}
@@ -131,6 +140,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    		}
 	    	}
 
+	    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
 	        		&& request.getParameter("projectId") != null 
@@ -160,7 +170,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	params.put("haveProject", "false");
 	        }
 	        
-	        return new ModelAndView(myPluginPath + "WebHook/index.jsp", params);
-	        //return new ModelAndView("/WebHook/ajaxEdit.jsp", params);
+	        return new ModelAndView(myPluginPath + "WebHook/ajaxEdit.jsp", params);
 	    }
 }

@@ -46,4 +46,23 @@
 		init-method="register"
 		/>
 
+	<bean id="webHookPayloadManager"
+		class="webhook.teamcity.payload.WebHookPayloadManager"
+		/>
+
+	<bean id="webHookPayloadNameValuePairs"
+		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairs"
+		init-method="register">
+		<property name="rank">
+			<value>15</value>
+		</property>
+	</bean>
+
+	<bean id="webHookPayloadJson"
+		class="webhook.teamcity.payload.format.WebHookPayloadJson"
+		init-method="register">
+		<property name="rank">
+			<value>10</value>
+		</property>
+	</bean>
 </beans>

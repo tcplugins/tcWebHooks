@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/DECORATION/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+  <body>
+  
+    <breadcrumbs>
+      <item name="Net Wolf's TeamCity Plugins" href="http://netwolfuk.wordpress.com/teamcity-plugins/" />
+      <item name="tcWebHooks" href="index.html" />
+    </breadcrumbs>
+  
+  
+    <menu name="Introduction">
+      <item name="Introduction" href="index.html"/>
+      <item name="Download" href="http://sourceforge.net/project/platformdownload.php?group_id=265686"/>
+      <item name="Usage" href="http://sourceforge.net/apps/trac/tcwebhooks/"/>
+      <item name="Screenshots" href="http://sourceforge.net/project/screenshots.php?group_id=265686" />
+      <item name="JavaDocs" href="apidocs/index.html"/>
+    </menu>
+    
+    <menu ref="reports" collapse="false" />
+    <menu ref="modules" collapse="false" />
+    
+  </body>
+</project>

@@ -51,7 +51,11 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	        		tempConfig.setWebhookInfoUrl(extraInfoElement.getAttributeValue("url"));
 	        		Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: info text " + tempConfig.getWebhookInfoText());
 	        		Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: info url  " + tempConfig.getWebhookInfoUrl());
-	        	}	        	
+	        	}
+	        	if (extraInfoElement.getAttribute("show-reading") != null){
+	        		tempConfig.setWebhookShowFurtherReading(Boolean.parseBoolean(extraInfoElement.getAttributeValue("show-reading")));
+	        		Loggers.SERVER.debug(this.getClass().getName() + ":readFrom :: show reading " + tempConfig.getWebhookShowFurtherReading().toString());
+	        	}
 	        }
     		Element proxyElement = webhooksElement.getChild("proxy");
 	        if(proxyElement != null)
@@ -113,6 +117,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
         	el.addContent(webHookMainConfig.getInfoUrlAsElement());
 			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: infoText " + webHookMainConfig.getWebhookInfoText().toString());
 			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: InfoUrl  " + webHookMainConfig.getWebhookInfoUrl().toString());
+			Loggers.SERVER.debug(this.getClass().getName() + "writeTo :: show-reading  " + webHookMainConfig.getWebhookShowFurtherReading().toString());
         }
         
         parentElement.addContent(el);
@@ -128,6 +133,10 @@ public class WebHookMainSettings implements MainConfigProcessor {
 
     public String getInfoUrl(){
     	return this.webHookMainConfig.getWebhookInfoUrl();
+    }
+
+    public Boolean getWebhookShowFurtherReading(){
+    	return this.webHookMainConfig.getWebhookShowFurtherReading();
     }
     
 	public void dispose() {

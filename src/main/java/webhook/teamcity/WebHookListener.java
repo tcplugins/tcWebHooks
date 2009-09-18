@@ -2,8 +2,6 @@ package webhook.teamcity;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
@@ -18,6 +16,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.WebHook;
+import webhook.teamcity.payload.WebHookPayload;
+import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -33,13 +33,16 @@ public class WebHookListener extends BuildServerAdapter {
     private final SBuildServer myBuildServer;
     private final ProjectSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
+    private final WebHookPayloadManager myManager;
 
     
-    public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, WebHookMainSettings configSettings) {
+    public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
+    						WebHookMainSettings configSettings, WebHookPayloadManager manager) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
         myMainSettings = configSettings;
+        myManager = manager;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -52,164 +55,137 @@ public class WebHookListener extends BuildServerAdapter {
 	public void getFromConfig(WebHook webHook, WebHookConfig webHookConfig){
 		webHook.setUrl(webHookConfig.getUrl());
 		webHook.setEnabled(webHookConfig.getEnabled());
-		webHook.addParams(webHookConfig.getParams());
+		//webHook.addParams(webHookConfig.getParams());
 		webHook.setTriggerStateBitMask(webHookConfig.getStatemask());
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
 		Loggers.ACTIVITIES.debug("WebHookListener :: Webhook proxy set to " 
 				+ webHook.getProxyHost() + " for " + webHookConfig.getUrl());
 	}
     
-    public void buildStarted(SRunningBuild sRunningBuild){
-    	WebHookProjectSettings projSettings = 
+	private void processBuildEvent(SRunningBuild sRunningBuild, Integer stateInt) {
+		WebHookProjectSettings projSettings = 
     		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
     	if (projSettings.isEnabled()){
-	    	List<WebHookConfig> whcl = projSettings.getWebHooksConfigs();
 	    	Loggers.SERVER.debug("About to process WebHooks for " + 
-	    			sRunningBuild.getProjectId() + " at buildState buildStarted");
-	    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-				WebHookConfig whc = i.next();
-				WebHook wh = new WebHook();
-				this.getFromConfig(wh, whc);
-				wh.addParam("notifyType", "buildStarted");
-				addMessageParam(sRunningBuild, wh, "Started");
-				wh.addParam("buildStatus", sRunningBuild.getStatusDescriptor().getText());
-				addCommonParams(sRunningBuild, wh);
-				doPost(wh, BuildState.BUILD_STARTED);
-			}
-    	} else {
-    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + sRunningBuild.getProjectId());
-    	}
-    }
-
-    public void buildFinished(SRunningBuild sRunningBuild){
-    	WebHookProjectSettings projSettings = 
-    		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
-    	if (projSettings.isEnabled()){
-	    	List<WebHookConfig> whcl = projSettings.getWebHooksConfigs();
-	    	Loggers.SERVER.debug("About to process WebHooks for " + 
-	    			sRunningBuild.getProjectId() + " at buildState buildFinished");
-	    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-				WebHookConfig whc = i.next();
-				WebHook wh = new WebHook();
-				this.getFromConfig(wh, whc);
-				wh.addParam("notifyType", "buildFinished");
-				addMessageParam(sRunningBuild, wh, "Finished");
-				wh.addParam("buildStatus", sRunningBuild.getStatusDescriptor().getText());
-				addCommonParams(sRunningBuild, wh);
-				doPost(wh, BuildState.BUILD_FINISHED);
-			}
-    	} else {
-    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + sRunningBuild.getProjectId());
-    	}
-    }    
-
-    
-    public void buildChangedStatus(SRunningBuild sRunningBuild, Status oldStatus, Status newStatus) {
-    	WebHookProjectSettings projSettings = 
-    		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
-    	if (projSettings.isEnabled()){
-	    	List<WebHookConfig> whcl = projSettings.getWebHooksConfigs();
-	    	Loggers.SERVER.debug("About to process WebHooks for " + 
-	    			sRunningBuild.getProjectId() + " at buildState statusChanged");
-	    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-				WebHookConfig whc = i.next();
-				WebHook wh = new WebHook();
-				this.getFromConfig(wh, whc);
-				wh.addParam("notifyType", "statusChanged");
-				addMessageParam(sRunningBuild, wh, "changed Status from "  + oldStatus.getText() + " to " + newStatus.getText());
-				wh.addParam("buildStatus", newStatus.getText());
-				wh.addParam("buildStatusPrevious", oldStatus.getText());
-				
-				addCommonParams(sRunningBuild, wh);
-				doPost(wh, BuildState.BUILD_CHANGED_STATUS);
-			}
-    	} else {
-    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + sRunningBuild.getProjectId());
-    	}
-    }
-
-    public void beforeBuildFinish(SRunningBuild sRunningBuild) {
-    	WebHookProjectSettings projSettings = 
-    		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
-    	if (projSettings.isEnabled()){
-	    	List<WebHookConfig> whcl = projSettings.getWebHooksConfigs();
-	    	Loggers.SERVER.debug("About to process WebHooks for " + 
-	    			sRunningBuild.getProjectId() + " at buildState buildNearlyFinished");
-	    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-				WebHookConfig whc = i.next();
-				WebHook wh = new WebHook();
-				this.getFromConfig(wh, whc);
-				wh.addParam("notifyType", "buildNearlyFinished");
-				addMessageParam(sRunningBuild, wh, "nearly Finished");
-				wh.addParam("buildStatus", sRunningBuild.getStatusDescriptor().getText());
-				addCommonParams(sRunningBuild, wh);
-				doPost(wh, BuildState.BEFORE_BUILD_FINISHED);
+	    			sRunningBuild.getProjectId() + " at buildState " + BuildState.getShortName(stateInt));
+	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
+	    		if (whc.getEnabled()){
+					WebHook wh = new WebHook();
+					this.getFromConfig(wh, whc);
+					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
+						wh.setContentType(payloadFormat.getContentType());
+						if (stateInt.equals(BuildState.BUILD_STARTED)){
+							wh.setPayload(payloadFormat.buildStarted(sRunningBuild, whc.getParams()));
+						} else if (stateInt.equals(BuildState.BUILD_INTERRUPTED)){
+							wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, whc.getParams()));
+						} else if (stateInt.equals(BuildState.BEFORE_BUILD_FINISHED)){
+							wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, whc.getParams()));
+						} else if (stateInt.equals(BuildState.BUILD_FINISHED)){
+							wh.setPayload(payloadFormat.buildFinished(sRunningBuild, whc.getParams()));
+						}
+						
+						doPost(wh, stateInt, whc.getPayloadFormat());
+						
+						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+					} else {
+						Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
+					}
+	    		} else {
+	    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
+	    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
+	    		}
 			}
     	} else {
     		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + sRunningBuild.getProjectId());
     	}
 	}
 
+    public void buildStarted(SRunningBuild sRunningBuild){
+    	processBuildEvent(sRunningBuild, BuildState.BUILD_STARTED);
+    }	
+	
+    public void buildFinished(SRunningBuild sRunningBuild){
+    	processBuildEvent(sRunningBuild, BuildState.BUILD_FINISHED);
+    }    
+
+    public void buildInterrupted(SRunningBuild sRunningBuild) {
+    	processBuildEvent(sRunningBuild, BuildState.BUILD_INTERRUPTED);
+    }      
+
+    public void beforeBuildFinish(SRunningBuild sRunningBuild) {
+    	processBuildEvent(sRunningBuild, BuildState.BEFORE_BUILD_FINISHED);
+	}
+    
+    public void buildChangedStatus(SRunningBuild sRunningBuild, Status oldStatus, Status newStatus) {
+    	WebHookProjectSettings projSettings = 
+    		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
+    	if (projSettings.isEnabled()){
+	    	Loggers.SERVER.debug("About to process WebHooks for " + 
+	    			sRunningBuild.getProjectId() + " at buildState statusChanged");
+	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
+	    		if (whc.getEnabled()){
+					WebHook wh = new WebHook();
+					this.getFromConfig(wh, whc);
+					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
+						wh.setContentType(payloadFormat.getContentType());
+						wh.setPayload(payloadFormat.buildChangedStatus(sRunningBuild, oldStatus, newStatus, whc.getParams()));
+						
+	
+						doPost(wh, BuildState.BUILD_CHANGED_STATUS, whc.getPayloadFormat());
+						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+					} else {
+						Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
+					}
+	    		} else {
+	    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
+	    					+ ":buildChangedStatus() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
+	    		}
+	    	}
+    	} else {
+    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + sRunningBuild.getProjectId());
+    	}
+    }
+
     public void responsibleChanged(@NotNull SBuildType sBuildType, 
-    		@NotNull ResponsibilityInfo responsibilityInfoOld, @NotNull ResponsibilityInfo responsibilityInfoNew, boolean b) {
+    		@NotNull ResponsibilityInfo responsibilityInfoOld, @NotNull ResponsibilityInfo responsibilityInfoNew, boolean isUserAction) {
      	WebHookProjectSettings projSettings = 
     		(WebHookProjectSettings) mySettings.getSettings(sBuildType.getProjectId(), "webhooks");
      	if (projSettings.isEnabled()){
-	    	List<WebHookConfig> whcl = projSettings.getWebHooksConfigs();
 	    	Loggers.SERVER.debug("About to process WebHooks for " + 
 	    			sBuildType.getProjectId() + " at buildState responsibilityChanged");
-	    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-				WebHookConfig whc = i.next();
-				WebHook wh = new WebHook();
-				this.getFromConfig(wh, whc);
-				wh.addParam("notifyType", "responsibilityChanged");
-				
-				wh.addParam("message", "Build " + sBuildType.getFullName().toString()
-						+ " has changed responsibility from " 
-						+ " " + responsibilityInfoOld.getUser().getDescriptiveName()
-						+ " to "
-						+ responsibilityInfoNew.getUser().getDescriptiveName()
-					);
-				
-				wh.addParam("text", sBuildType.getFullName().toString()
-						+ " changed responsibility from " 
-						+ responsibilityInfoOld.getUser().getUsername()
-						+ " to "
-						+ responsibilityInfoNew.getUser().getUsername()
-					);
-				
-				addCommonParams(sBuildType, wh);
-				wh.addParam("comment", responsibilityInfoNew.getComment());
-				doPost(wh, BuildState.BUILD_INTERRUPTED);
+	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
+	    		if (whc.getEnabled()){
+					WebHook wh = new WebHook();
+					this.getFromConfig(wh, whc);
+	
+					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
+						wh.setContentType(payloadFormat.getContentType());
+						wh.setPayload(payloadFormat.responsibleChanged(sBuildType, 
+									responsibilityInfoOld, 
+									responsibilityInfoNew, 
+									isUserAction, 
+									whc.getParams()));
+						
+						doPost(wh, BuildState.RESPONSIBILITY_CHANGED, whc.getPayloadFormat());
+						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+					
+					} else {
+						Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
+					}
+	    		} else {
+	    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
+	    					+ ":responsibleChanged() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
+	    		}
 			}
     	} else {
     		Loggers.ACTIVITIES.debug("WebHooks are disasbled for  " + sBuildType.getProjectId());
      	}
      }
 
-     public void buildInterrupted(SRunningBuild sRunningBuild) {
-     	WebHookProjectSettings projSettings = 
-    		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
-     	if (projSettings.isEnabled()){
-	    	List<WebHookConfig> whcl = projSettings.getWebHooksConfigs();
-	    	Loggers.SERVER.debug("About to process WebHooks for " + 
-	    			sRunningBuild.getProjectId() + " at buildState buildInterrupted");
-	    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-				WebHookConfig whc = i.next();
-				WebHook wh = new WebHook();
-				this.getFromConfig(wh, whc);
-				wh.addParam("notifyType", "buildInterrupted");
-				addMessageParam(sRunningBuild, wh, "been Interrupted");
-				wh.addParam("buildStatus", sRunningBuild.getStatusDescriptor().getText());
-				addCommonParams(sRunningBuild, wh);
-				doPost(wh, BuildState.BUILD_INTERRUPTED);
-			}
-    	} else {
-    		Loggers.ACTIVITIES.debug("WebHooks are disasbled for  " + sRunningBuild.getProjectId());
-     	}
-    }    
-    
-	private void doPost(WebHook wh, Integer bitMask) {
+	private void doPost(WebHook wh, Integer bitMask, String payloadFormat) {
 		try {
 			/* Get the mask from the webhook.
 			 * by default it will be all ones unless it is set 
@@ -221,11 +197,12 @@ public class WebHookListener extends BuildServerAdapter {
 			 */
 			if (BuildState.enabled(wh.getEventListBitMask(), bitMask)){
 				wh.post();
-				Loggers.SERVER.debug("WebHook triggered : " 
-						+ wh.getParam("buildStatus") + " " + wh.getUrl() 
+				Loggers.SERVER.debug(this.getClass().getSimpleName() + ":doPost :: WebHook triggered : " 
+						+ wh.getUrl() + " using format " + payloadFormat 
 						+ " returned " + wh.getStatus() 
 						+ " from bitMask " + bitMask.toString() 
 						+ " " + wh.getErrorReason());	
+				Loggers.SERVER.debug(this.getClass().getSimpleName() + ":doPost :: content dump: " + wh.getPayload());
 				if (wh.isErrored()){
 					Loggers.SERVER.error(wh.getErrorReason());
 				}
@@ -238,47 +215,13 @@ public class WebHookListener extends BuildServerAdapter {
 			}
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
-					+ "A FileNotFoundException occurred while attempting to execute WebHook. See the following stacktrace");
-			Loggers.SERVER.warn(e.toString());
+					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following stacktrace");
+			Loggers.SERVER.warn(e);
 		} catch (IOException e) {
 			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
-					+ "An IOException occurred while attempting to execute WebHook. See the following stacktrace");
-			Loggers.SERVER.warn(e.toString());
+					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following stacktrace");
+			Loggers.SERVER.warn(e);
 		}
-	}
-
-	private void addMessageParam(SRunningBuild sRunningBuild, WebHook webHook, String msgType){
-		// Message is a long form message, for on webpages or in email.
-		webHook.addParam("message", "Build " + sRunningBuild.getBuildType().getFullName().toString() 
-				+ " has " + msgType + ". This is build number " + sRunningBuild.getBuildNumber() 
-				+ " and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
-		// Text is designed to be shorter, for use in Text messages and the like.
-		webHook.addParam("text", sRunningBuild.getBuildType().getFullName().toString() 
-				+ " has " + msgType + ".");
-
-	}
-
-	private void addCommonParams(SRunningBuild sRunningBuild, WebHook webHook) {
-		webHook.addParam("buildRunner", sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
-		webHook.addParam("buildFullName", sRunningBuild.getBuildType().getFullName().toString());
-		webHook.addParam("buildName", sRunningBuild.getBuildType().getName());
-		webHook.addParam("buildId", sRunningBuild.getBuildType().getBuildTypeId());
-		webHook.addParam("projectName", sRunningBuild.getBuildType().getProjectName());
-		webHook.addParam("projectId", sRunningBuild.getBuildType().getProjectId());
-		webHook.addParam("buildNumber", sRunningBuild.getBuildNumber());
-		webHook.addParam("agentName", sRunningBuild.getAgentName());
-		webHook.addParam("agentOs", sRunningBuild.getAgent().getOperatingSystemName());
-		webHook.addParam("agentHostname", sRunningBuild.getAgent().getHostName());
-		webHook.addParam("triggeredBy", sRunningBuild.getTriggeredBy().getAsString());
-	}
-	
-	private void addCommonParams(SBuildType buildType, WebHook webHook) {
-		webHook.addParam("buildRunner", buildType.getBuildRunner().getDisplayName());
-		webHook.addParam("buildFullName", buildType.getFullName().toString());
-		webHook.addParam("buildName", buildType.getName());
-		webHook.addParam("buildId", buildType.getBuildTypeId());
-		webHook.addParam("projectName", buildType.getProjectName());
-		webHook.addParam("projectId", buildType.getProjectId());
 	}
 
 }

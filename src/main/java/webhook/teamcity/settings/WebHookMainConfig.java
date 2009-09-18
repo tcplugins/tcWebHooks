@@ -14,6 +14,7 @@ import webhook.WebHookProxyConfig;
 public class WebHookMainConfig {
 	private String webhookInfoUrl = null;
 	private String webhookInfoText = null;
+	private Boolean webhookShowFurtherReading = true;
 	private Integer proxyPort = null;
 	private String proxyHost = null;
 	private String proxyUsername = null;
@@ -127,12 +128,14 @@ public class WebHookMainConfig {
 		 */
 		if (this.webhookInfoUrl != null && this.webhookInfoUrl.length() > 0){
 			Element e = new Element("info");
-			e.setAttribute("url", webhookInfoUrl);			
+			e.setAttribute("url", webhookInfoUrl);	
 			if (this.webhookInfoText != null && this.webhookInfoText.length() > 0){
 				e.setAttribute("text", webhookInfoText);
 			} else {
 				e.setAttribute("text", webhookInfoUrl);
 			}
+			e.setAttribute("show-reading", webhookShowFurtherReading.toString());
+			
 			return e;
 		}
 		return null;
@@ -236,6 +239,14 @@ public class WebHookMainConfig {
 
 	public void setWebhookInfoText(String webhookInfoText) {
 		this.webhookInfoText = webhookInfoText;
+	}
+
+	public void setWebhookShowFurtherReading(Boolean webhookShowFurtherReading) {
+		this.webhookShowFurtherReading = webhookShowFurtherReading;
+	}
+
+	public Boolean getWebhookShowFurtherReading() {
+		return webhookShowFurtherReading;
 	}
 
 

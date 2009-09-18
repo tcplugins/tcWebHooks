@@ -10,10 +10,52 @@ public final class BuildState {
     
     public static final Integer ALL_ENABLED				= Integer.parseInt("11111111",2);
     
-	public static boolean enabled(Integer eventListBitMask, Integer bitMask) {
+    /**
+     * Takes the currentBuildState, for which the WebHook is being triggered
+     * and compares it against the build states for which this WebHook is configured
+     * to notify.
+     * 
+     * @param currentBuildState
+     * @param buildStatesToNotify
+     * @return Whether or not the webhook should trigger for the current build state.
+     */
+    public static boolean enabled(Integer currentBuildState, Integer buildStatesToNotify) {
 		 
-		return ((eventListBitMask & bitMask) > 0);
+		return ((currentBuildState & buildStatesToNotify) > 0);
+	}
+
+    /**
+     * Convert build state Integer into short string 
+     * 
+     * @param  Build state as an Integer constant.
+     * @return A string representing the shortname of the state. Is used in messages.
+     */
+	public static String getShortName(Integer stateInt) {
+		
+		if (stateInt.equals(BUILD_STARTED)) 		{	return "buildStarted"; }
+		if (stateInt.equals(BUILD_FINISHED))		{	return "buildFinished"; }
+		if (stateInt.equals(BUILD_CHANGED_STATUS)) 	{ 	return "statusChanged"; }
+		if (stateInt.equals(BEFORE_BUILD_FINISHED)) {	return "beforeBuildFinish"; }
+		if (stateInt.equals(RESPONSIBILITY_CHANGED)){ 	return "responsibilityChanged"; }
+		if (stateInt.equals(BUILD_INTERRUPTED))		{ 	return "buildInterrupted"; }
+		return null;
+	}
+	
+	/**
+	 * Convert build state Integer into descriptive string 
+	 * 
+	 * @param  Build state as an Integer constant.
+	 * @return A string that fits into the sentence "The build has...<state>"
+	 */
+	public static String getDescriptionSuffix(Integer stateInt) {
+
+		if (stateInt.equals(BUILD_STARTED)) 		{	 return "started"; }
+		if (stateInt.equals(BUILD_FINISHED)) 		{	 return "finished"; }
+		if (stateInt.equals(BUILD_CHANGED_STATUS)) 	{	 return "changed status"; }
+		if (stateInt.equals(BEFORE_BUILD_FINISHED)) {	 return "nearly finished"; }
+		if (stateInt.equals(RESPONSIBILITY_CHANGED)){	 return "changed responsibility"; }
+		if (stateInt.equals(BUILD_INTERRUPTED)) 	{	 return "been interrupted"; }
+		return null;
 	}
     
-
 }

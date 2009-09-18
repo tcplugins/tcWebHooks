@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 
 public class WebHook {
@@ -23,6 +24,9 @@ public class WebHook {
 	private String proxyPassword;
 	private String url;
 	private String content;
+	private String contentType;
+	private String charset;
+	private String payload;
 	private Integer resultCode;
 	private HttpClient client;
 	private String filename = "";
@@ -118,7 +122,10 @@ public class WebHook {
 			    httppost.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(file)));
 			    httppost.setContentChunked(true);
 			}
-			if (this.params.size() > 0){
+			if (   this.payload != null && this.payload.length() > 0 
+				&& this.contentType != null && this.contentType.length() > 0){
+				httppost.setRequestEntity(new StringRequestEntity(this.payload, this.contentType, this.charset));
+			} else if (this.params.size() > 0){
 				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
 				httppost.setRequestBody(paramsArray);
 			}
@@ -254,5 +261,22 @@ public class WebHook {
 
 	public void setProxyPassword(String proxyPassword) {
 		this.proxyPassword = proxyPassword;
+	}
+
+	public String getPayload() {
+		return payload;
+	}
+
+	public void setPayload(String payloadContent) {
+		this.payload = payloadContent;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 }

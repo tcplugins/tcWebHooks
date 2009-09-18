@@ -68,6 +68,16 @@
 			}
 		}
 
+		function selectCorrectRadio(id){
+			jQuery('#webHookFormContents input.payloadFormat').each(function(i){
+				if(this.value == jQuery('#payloadFormat_'+id).val()){
+					this.checked = true;
+				} else {
+					this.checked = false;
+				}
+			});
+		}
+
 		BS.EditWebHookDialog = OO.extend(BS.AbstractModalDialog, {
 			  getContainer : function() {
 			    return $('editParameterDialog');
@@ -89,7 +99,9 @@
 			    jQuery('#BuildInterrupted').attr('checked', jQuery('#BuildInterrupted_'+id).is(':checked'));
 			    jQuery('#BeforeFinished').attr('checked', jQuery('#BeforeFinished_'+id).is(':checked'));
 			    jQuery('#ResponsibilityChanged').attr('checked', jQuery('#ResponsibilityChanged_'+id).is(':checked'));
-			    //jQuery('#WebHookIsEnabled').attr('checked', jQuery('#ResponsibilityChanged_'+id).is(':checked'));
+			    //jQuery('#payloadFormat').attr('checked', jQuery('#payloadFormat_'+id).is(':checked'));
+			    selectCorrectRadio(id);
+			    //jQuery('#payloadFormatNVPAIRS').attr('checked', jQuery('#payloadFormatNVPAIRS_'+id).is(':checked'));
 			    
 			    $('webHookId').value = id;
 			    
@@ -117,7 +129,26 @@
 			  }
 			});
 
-		BS.BaseSaveWebHookListener = OO.extend(BS.SaveBuildTypeListener, {
+		BS.SaveWebHookListener = OO.extend(BS.ErrorsAwareListener, {
+			  onSaveProjectErrorError : function(elem) {
+			    alert(elem.firstChild.nodeValue);
+			  },
+
+			  onProjectNotFoundError : function(elem) {
+			    document.location.reload();
+			  },
+
+			  onBuildTypeNotFoundError : function(elem) {
+			    document.location.reload();
+			  },
+
+			  onMaxNumberOfBuildTypesReachedError: function(elem) {
+			    alert(elem.firstChild.nodeValue);
+			  }
+			});
+					
+		
+		BS.BaseSaveWebHookListener = OO.extend(BS.SaveWebHookListener, {
 			  onBeginSave : function(form) {
 			    form.formElement().webHookUrl.value = BS.Util.trimSpaces(form.formElement().webHookUrl.value);
 			    form.clearErrors();
@@ -147,9 +178,9 @@
 
 			    BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.BaseSaveWebHookListener,
 			 {
-			      onEmptyParameterNameError : function(elem) {
+			      onEmptyWebHookUrlError : function(elem) {
 				      alert(elem.firstChild.nodeValue);
-			        $("error_webHookName").innerHTML = elem.firstChild.nodeValue;
+			        $("error_webHookUrl").innerHTML = elem.firstChild.nodeValue;
 			        that.highlightErrorField($('webHookUrl'));
 			      },
 
@@ -194,7 +225,21 @@
   		<div id="messageArea"></div>
 	    <div id="systemParams"><!--  begine systemParams div -->
 
-<%@ include file="webHookInclude.jsp" %>
+		<c:choose>
+			<c:when test="${not haveProject}">
+				<strong>${errorReason}</strong><br/>Please access this page via the WebHooks tab on a project or build overview page. 
+			</c:when>
+			<c:otherwise>
+				<c:choose>
+					<c:when test="${hasPermission}">
+					<%@ include file="webHookInclude.jsp" %>
+					</c:when>
+					<c:otherwise>
+						<strong>You must have Project Administrator permission to edit WebHooks</strong>
+					</c:otherwise>
+				</c:choose>
+			</c:otherwise>
+		</c:choose>
 
         </div><!--  end systemParams div -->
       </div>
@@ -203,13 +248,31 @@
       	<h2>WebHook Information</h2>
           <p>WebHooks are simply HTTP POST requests or "callbacks" triggered by events. They allow one web application (in this case TeamCity) to notify another web app of events.</p>
           <p>When an event occurs, the tcWebHooks plugin will submit an HTTP POST to the URL configured. The receiving webapp is then able to use the information for any purpose. It could be used to light a lava lamp, or post a message on an IRC channel.</p>
-          <p>Further Reading:
-          <ul>${moreInfoText}
-          	<li><a href="http://netwolfuk.wordpress.com/teamcity-plugins/">tcWebHooks plugin</a></li>
-          	<li><a href="http://blog.webhooks.org/">Jeff Lindsay's WebHooks blog</a></li>
-          	<li><a href="http://www.postbin.org/">PostBin</a></li>
-          </ul>	
-          
+
+			<c:choose>
+				<c:when test="${ShowFurtherReading == 'ALL'}">
+				          <p>Further Reading:
+				          <ul>${moreInfoText}
+				          	<li><a href="http://netwolfuk.wordpress.com/teamcity-plugins/">tcWebHooks plugin</a></li>
+				          	<li><a href="http://blog.webhooks.org/">Jeff Lindsay's WebHooks blog</a></li>
+				          	<li><a href="http://www.postbin.org/">PostBin</a></li>
+				          </ul>	
+				</c:when>
+		
+				<c:when test="${ShowFurtherReading == 'DEFAULT'}">
+				          <p>Further Reading:
+				          <ul><li><a href="http://netwolfuk.wordpress.com/teamcity-plugins/">tcWebHooks plugin</a></li>
+				          	<li><a href="http://blog.webhooks.org/">Jeff Lindsay's WebHooks blog</a></li>
+				          	<li><a href="http://www.postbin.org/">PostBin</a></li>
+				          </ul>	
+				</c:when>
+		
+				<c:when test="${ShowFurtherReading == 'SINGLE'}">
+				          <p>Further Reading:
+				          <ul>${moreInfoText}</ul>
+				</c:when>
+			</c:choose>
+
       </div>
     </div>
     <script type=text/javascript>

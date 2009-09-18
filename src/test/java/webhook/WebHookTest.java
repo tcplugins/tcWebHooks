@@ -32,6 +32,18 @@ public class WebHookTest{
 	public String proxyPassword = "bar";
 	
 	
+	@Test
+	public void test_BuildStates(){
+		assertTrue(BuildState.getShortName(BuildState.BUILD_STARTED).equals("buildStarted"));
+		assertTrue(BuildState.getShortName(BuildState.BUILD_FINISHED).equals("buildFinished"));
+		assertTrue(BuildState.getShortName(BuildState.BUILD_CHANGED_STATUS).equals("statusChanged"));
+		assertTrue(BuildState.getShortName(BuildState.BEFORE_BUILD_FINISHED).equals("beforeBuildFinish"));
+		assertTrue(BuildState.getShortName(BuildState.RESPONSIBILITY_CHANGED).equals("responsibilityChanged"));
+		assertTrue(BuildState.getShortName(BuildState.BUILD_INTERRUPTED).equals("buildInterrupted"));
+
+		
+	}
+	
 	
 	@Test
 	public void test_ProxyPort() {
