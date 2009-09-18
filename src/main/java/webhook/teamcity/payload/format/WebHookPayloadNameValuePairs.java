@@ -166,7 +166,7 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		paramList.put("buildFullName", sRunningBuild.getBuildType().getFullName().toString());
 		paramList.put("buildName", sRunningBuild.getBuildType().getName());
 		paramList.put("buildTypeId", sRunningBuild.getBuildType().getBuildTypeId());
-		paramList.put("buildId", sRunningBuild.getBuildId());
+		paramList.put("buildId", String.valueOf(sRunningBuild.getBuildId()));
 		paramList.put("projectName", sRunningBuild.getBuildType().getProjectName());
 		paramList.put("projectId", sRunningBuild.getBuildType().getProjectId());
 		paramList.put("buildNumber", sRunningBuild.getBuildNumber());
