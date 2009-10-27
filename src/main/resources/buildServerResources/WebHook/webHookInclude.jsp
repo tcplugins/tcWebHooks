@@ -63,6 +63,8 @@
 						<input id="BuildInterrupted_new" value="BuildInterrupted" name="BuildInterrupted" type=checkbox checked />
 						<input id="BeforeFinished_new" value="BeforeFinished" name="BeforeFinished" type=checkbox checked />
 						<input id="ResponsibilityChanged_new" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox checked />
+						<input id="BuildFixed_new" value="BuildFixed" name="BuildFixed" type=checkbox checked />
+						<input id="BuildBroken_new" value="BuildBroken" name="BuildBroken" type=checkbox checked />
 						<input id="payloadFormat_new" name="payloadFormat" type="hidden" value="${format.formatShortName}" />
     				</form>
 					</td>
@@ -94,7 +96,7 @@
 							<tr><td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 5.5em;"></span></td></tr>
 							<tr style="border:none;">
 								<td><label for="webHooksEnabled">Enabled:</label></td>
-								<td colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
+								<td style="padding-left:3px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
 							</tr>
 							<tr style="border:none;">
 								<td colspan=2>Trigger on Events:</td>
@@ -103,7 +105,7 @@
 								</td>
 							</tr>
 							<tr style="border:none;"><td>&nbsp;</td>
-								<td><label style='white-space:nowrap;'>
+								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
 									<input onclick='selectBuildState();' class="buildState" id="BuildStarted" name="BuildStarted"  type=checkbox />
 									 Build Started</label>
 								</td>
@@ -113,7 +115,7 @@
 								</td>
 							</tr>
 							<tr style="border:none;"><td>&nbsp;</td>
-								<td><label style='white-space:nowrap;'>
+								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
 									<input onclick='selectBuildState();' class="buildState" id="StatusChanged" name="StatusChanged" type=checkbox />
 									 Build Changed Status</label>
 								</td>
@@ -123,7 +125,7 @@
 								</td>
 							</tr>
 							<tr style="border:none;"><td>&nbsp;</td>
-								<td><label style='white-space:nowrap;'>
+								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
 									<input onclick='selectBuildState();' class="buildState" id="BeforeFinished" name="BeforeFinished" type=checkbox />
 									 Build Almost Completed</label>
 								</td>
@@ -132,6 +134,22 @@
 									 Build Responsibility Changed</label>
 								</td>
 							</tr>
+
+							<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top; padding-top:0.33em;">On Completion:</td>
+								<td colspan=2 >
+									<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
+											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+												<input class="buildStateBroken" id="BuildBroken" name="BuildBroken" type=checkbox />
+												 Only trigger when build changes from Success to Failure</label>
+												</td></tr>
+											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+												<input class="buildStateFixed" id="BuildFixed" name="BuildFixed" type=checkbox />
+												 Only trigger when build changes from Failure to Success</label>
+												</td></tr>
+									</tbody></table>
+								</td>
+							</tr>
+
 							<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
 								<td colspan=2>
 									<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">

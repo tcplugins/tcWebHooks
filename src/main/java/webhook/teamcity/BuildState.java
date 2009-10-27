@@ -7,6 +7,8 @@ public final class BuildState {
     public static final Integer BEFORE_BUILD_FINISHED 	= Integer.parseInt("00001000",2);
     public static final Integer RESPONSIBILITY_CHANGED 	= Integer.parseInt("00010000",2);
     public static final Integer BUILD_INTERRUPTED 		= Integer.parseInt("00100000",2);
+    public static final Integer BUILD_FIXED		 		= Integer.parseInt("01000000",2);
+    public static final Integer BUILD_BROKEN		 	= Integer.parseInt("10000000",2);
     
     public static final Integer ALL_ENABLED				= Integer.parseInt("11111111",2);
     
@@ -38,6 +40,8 @@ public final class BuildState {
 		if (stateInt.equals(BEFORE_BUILD_FINISHED)) {	return "beforeBuildFinish"; }
 		if (stateInt.equals(RESPONSIBILITY_CHANGED)){ 	return "responsibilityChanged"; }
 		if (stateInt.equals(BUILD_INTERRUPTED))		{ 	return "buildInterrupted"; }
+		if (stateInt.equals(BUILD_FIXED))			{ 	return "buildFixed"; }
+		if (stateInt.equals(BUILD_BROKEN))			{ 	return "buildBroken"; }
 		return null;
 	}
 	
@@ -55,6 +59,8 @@ public final class BuildState {
 		if (stateInt.equals(BEFORE_BUILD_FINISHED)) {	 return "nearly finished"; }
 		if (stateInt.equals(RESPONSIBILITY_CHANGED)){	 return "changed responsibility"; }
 		if (stateInt.equals(BUILD_INTERRUPTED)) 	{	 return "been interrupted"; }
+		if (stateInt.equals(BUILD_FIXED))			{ 	 return "been fixed"; }
+		if (stateInt.equals(BUILD_BROKEN))			{ 	 return "broken"; }
 		return null;
 	}
     

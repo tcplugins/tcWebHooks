@@ -14,6 +14,8 @@
     /css/settingsTable.css
     /css/profilePage.css
     /css/userRoles.css
+    
+    ${jspHome}WebHook/css/styles.css
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -41,7 +43,7 @@
     
       
     <jsp:attribute name="body_include">
-    <script type=text/javascript src="..${jspHome}WebHook/jquery-1.3.2.min.js"></script>
+    <script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.3.2.min.js"></script>
     <script type=text/javascript>
 		jQuery.noConflict();
 		jQuery(document).ready( function() {
@@ -58,6 +60,7 @@
 			jQuery('#webHookFormContents input.buildState').each(function(i){
 				this.checked = state;
 			});
+			doExtraCompleted();
 		}
 
 		function selectBuildState(){
@@ -66,6 +69,17 @@
 			} else {
 				jQuery('#selectAll').attr('checked', false);
 			}
+			doExtraCompleted();
+		}
+
+		function doExtraCompleted(){
+			if(jQuery('#BuildFinished').is(':checked')){
+				jQuery('.onCompletion').removeClass('onCompletionDisabled');
+				jQuery('tr.onCompletion td input').removeAttr('disabled');
+			} else {
+				jQuery('.onCompletion').addClass('onCompletionDisabled');
+				jQuery('tr.onCompletion td input').attr('disabled', 'disabled');
+			} 
 		}
 
 		function selectCorrectRadio(id){
@@ -99,12 +113,15 @@
 			    jQuery('#BuildInterrupted').attr('checked', jQuery('#BuildInterrupted_'+id).is(':checked'));
 			    jQuery('#BeforeFinished').attr('checked', jQuery('#BeforeFinished_'+id).is(':checked'));
 			    jQuery('#ResponsibilityChanged').attr('checked', jQuery('#ResponsibilityChanged_'+id).is(':checked'));
+			    jQuery('#BuildBroken').attr('checked', jQuery('#BuildBroken_'+id).is(':checked'));
+			    jQuery('#BuildFixed').attr('checked', jQuery('#BuildFixed_'+id).is(':checked'));
 			    //jQuery('#payloadFormat').attr('checked', jQuery('#payloadFormat_'+id).is(':checked'));
 			    selectCorrectRadio(id);
 			    //jQuery('#payloadFormatNVPAIRS').attr('checked', jQuery('#payloadFormatNVPAIRS_'+id).is(':checked'));
 			    
 			    $('webHookId').value = id;
 			    
+			    doExtraCompleted();
 			    
 			    //$('BuildStarted').checked = $('BuildStarted_'+id).checked;
 

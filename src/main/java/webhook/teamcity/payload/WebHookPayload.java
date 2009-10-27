@@ -5,11 +5,25 @@ import java.util.SortedMap;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 
 import org.jetbrains.annotations.NotNull;
 
 public interface WebHookPayload {
+	
+	/** 
+	 * Sets the PayloadManger so that register() can register this payload with that manager.
+	 * 
+	 * @param webhookPayloadManager
+	 */
+	void setPayloadManager (WebHookPayloadManager webhookPayloadManager);
+	
+	/**
+	 * Registers with the PayloadManager
+	 * 
+	 */
+	void register();
 	
 	/**
 	 * Returns a Description of the format type. This is used for display on the config page
@@ -19,6 +33,16 @@ public interface WebHookPayload {
 	 * @return	Text for display on the WebHook config page.
 	 */
 	String getFormatDescription();
+
+	/**
+	 * Returns a sightly longer Description of the format type. This is used in the "title" 
+	 * tags for providing a "tool tip" when a user hovers over the format description. 
+	 * The output will be used with <c:out in the JSP so 
+	 * any HTML tags will get escaped into &amp;lt; tag &amp;gt; etc.
+	 *  
+	 * @return	Tool Tip Text for display on the WebHook config page.
+	 */
+	String getFormatToolTipText();
 	
 	/**
 	 * Returns a short name for the format type. This string is used in the HTML form when 
@@ -28,6 +52,8 @@ public interface WebHookPayload {
 	 * @return	Text for referring to the format type. eg, JSON.
 	 */
 	String getFormatShortName();
+
+	
 	
 	/**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -37,7 +63,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildStarted event.
 	 */
-    String buildStarted(SRunningBuild sRunningBuild, SortedMap<String,String> extraParameters);
+    String buildStarted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -47,7 +73,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildFinished event.
 	 */
-    String buildFinished(SRunningBuild sRunningBuild, SortedMap<String,String> extraParameters);
+    String buildFinished(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -57,7 +83,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildInterrupted event.
 	 */
-    String buildInterrupted(SRunningBuild sRunningBuild, SortedMap<String,String> extraParameters);
+    String buildInterrupted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -67,7 +93,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the beforeBuildFinish event.
 	 */
-    String beforeBuildFinish(SRunningBuild sRunningBuild, SortedMap<String,String> extraParameters);
+    String beforeBuildFinish(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters);
     
     /**
 	 * Extracts the required information from the sRunningBuild, oldStatus, newStatus and extraParameters 
@@ -79,7 +105,7 @@ public interface WebHookPayload {
      * @param extraParameters
      * @return Formatted payload for the WebHook to send for the buildChangedStatus event.
      */
-    String buildChangedStatus(SRunningBuild sRunningBuild, 
+    String buildChangedStatus(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
     		Status oldStatus, 
     		Status newStatus, 
     		SortedMap<String,String> extraParameters);

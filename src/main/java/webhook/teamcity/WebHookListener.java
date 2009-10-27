@@ -2,18 +2,23 @@ package webhook.teamcity;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
+import jetbrains.buildServer.Build;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import webhook.WebHook;
 import webhook.teamcity.payload.WebHookPayload;
@@ -76,13 +81,31 @@ public class WebHookListener extends BuildServerAdapter {
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
 						wh.setContentType(payloadFormat.getContentType());
 						if (stateInt.equals(BuildState.BUILD_STARTED)){
-							wh.setPayload(payloadFormat.buildStarted(sRunningBuild, whc.getParams()));
+							wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 						} else if (stateInt.equals(BuildState.BUILD_INTERRUPTED)){
-							wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, whc.getParams()));
+							wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 						} else if (stateInt.equals(BuildState.BEFORE_BUILD_FINISHED)){
-							wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, whc.getParams()));
+							wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 						} else if (stateInt.equals(BuildState.BUILD_FINISHED)){
-							wh.setPayload(payloadFormat.buildFinished(sRunningBuild, whc.getParams()));
+							if (sRunningBuild.getBuildStatus().isFailed()
+									&& BuildState.enabled(BuildState.BUILD_BROKEN, wh.getEventListBitMask())
+									&& this.hasBuildChangedHistoricalState(sRunningBuild) ){
+								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							} else if (sRunningBuild.getBuildStatus().isSuccessful()
+									&& BuildState.enabled(BuildState.BUILD_FIXED, wh.getEventListBitMask())
+									&& this.hasBuildChangedHistoricalState(sRunningBuild) ){
+								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							} else if (sRunningBuild.getBuildStatus().isFailed()
+									&& BuildState.enabled(BuildState.BUILD_BROKEN, wh.getEventListBitMask())
+									&& !this.hasBuildChangedHistoricalState(sRunningBuild)){
+								continue;
+							} else if (sRunningBuild.getBuildStatus().isSuccessful()
+									&& BuildState.enabled(BuildState.BUILD_FIXED, wh.getEventListBitMask())
+									&& !this.hasBuildChangedHistoricalState(sRunningBuild)){
+								continue;
+							} else {
+								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							}
 						}
 						
 						doPost(wh, stateInt, whc.getPayloadFormat());
@@ -91,6 +114,7 @@ public class WebHookListener extends BuildServerAdapter {
 					} else {
 						Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
 					}
+					wh = null;
 	    		} else {
 	    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
 	    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
@@ -130,7 +154,7 @@ public class WebHookListener extends BuildServerAdapter {
 					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
 						wh.setContentType(payloadFormat.getContentType());
-						wh.setPayload(payloadFormat.buildChangedStatus(sRunningBuild, oldStatus, newStatus, whc.getParams()));
+						wh.setPayload(payloadFormat.buildChangedStatus(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), oldStatus, newStatus, whc.getParams()));
 						
 	
 						doPost(wh, BuildState.BUILD_CHANGED_STATUS, whc.getPayloadFormat());
@@ -222,6 +246,29 @@ public class WebHookListener extends BuildServerAdapter {
 					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following stacktrace");
 			Loggers.SERVER.warn(e);
 		}
+	}
+
+	  @Nullable
+	  private SFinishedBuild getPreviousNonPersonalBuild(SRunningBuild paramSRunningBuild)
+	  {
+	    List<SFinishedBuild> localList = this.myBuildServer.getHistory().getEntriesBefore(paramSRunningBuild, false);
+
+	    for (SFinishedBuild localSFinishedBuild : localList)
+	      if (!(localSFinishedBuild.isPersonal())) return localSFinishedBuild;
+	    return null;
+	  }
+	
+	private boolean hasBuildChangedHistoricalState(SRunningBuild sRunningBuild){
+		SFinishedBuild previous = getPreviousNonPersonalBuild(sRunningBuild);
+		if (previous != null){
+			if (sRunningBuild.getBuildStatus().isSuccessful()){
+				return previous.getBuildStatus().isFailed();
+			} else if (sRunningBuild.getBuildStatus().isFailed()) {
+				return previous.getBuildStatus().isSuccessful();
+			}
+		}
+		return true; 
+
 	}
 
 }

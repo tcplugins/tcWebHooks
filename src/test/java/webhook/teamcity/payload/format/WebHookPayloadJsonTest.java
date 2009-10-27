@@ -2,39 +2,103 @@ package webhook.teamcity.payload.format;
 
 import static org.junit.Assert.*;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import jetbrains.buildServer.messages.Status;
-
 import org.junit.Test;
 
-import webhook.teamcity.MockSBuildType;
-import webhook.teamcity.MockSProject;
-import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.format.WebHookPayloadJson;
-
 
 public class WebHookPayloadJsonTest {
-	
+
 	@Test
-	public void test_Json(){
-		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
-		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
-		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
-		sBuildType.setProject(sProject);
-		
+	public void testRegister() {
 		WebHookPayloadManager wpm = new WebHookPayloadManager();
 		WebHookPayloadJson whp = new WebHookPayloadJson(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
-		extraParameters.put("something", "somewhere");
-		//String content = wpm.getFormat("nvpairs").buildStarted(sRunningBuild, extraParameters);
-		System.out.println(sRunningBuild.getBuildDescription());
-		assertTrue(wpm.getFormat("json").getContentType().equals("application/json"));
-		assertTrue(wpm.getFormat("json").getFormatDescription().equals("JSON (beta)"));
-		System.out.println(wpm.getFormat("json").buildStarted(sRunningBuild, extraParameters));
+		assertEquals(whp, wpm.getFormat(whp.getFormatShortName()));
 	}
+
+	@Test
+	public void testGetContentType() {
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		assertEquals(whp.getContentType().toString(), "application/json");
+
+	}
+
+	@Test
+	public void testGetRank() {
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		assertTrue(whp.getRank() == 100);
+	}
+
+	@Test
+	public void testSetRank() {
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		whp.setRank(10);
+		assertTrue(whp.getRank() == 10);
+	}
+
+	@Test
+	public void testGetCharset() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testWebHookPayloadJson() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testGetFormatDescription() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testGetFormatShortName() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testGetFormatToolTipText() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testWebHookPayloadGeneric() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testSetPayloadManager() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testBeforeBuildFinish() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testBuildChangedStatus() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testBuildFinished() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testBuildInterrupted() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testBuildStarted() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testResponsibleChanged() {
+		fail("Not yet implemented");
+	}
+
 }

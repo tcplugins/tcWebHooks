@@ -13,6 +13,7 @@ import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.payload.WebHookPayload;
@@ -22,16 +23,19 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 	
 	SortedMap<String,Object> paramList;
 	WebHookPayloadManager myManager;
-	Integer rank = 1;
+	Integer rank = 100;
 	String charset = "UTF-8";
 	
 	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager){
-		myManager = manager;
+		this.setPayloadManager(manager);
 		paramList =  new TreeMap<String,Object>();
 	}
 
+	public void setPayloadManager(WebHookPayloadManager manager){
+		myManager = manager;
+	}
+	
 	public void register(){
-
 		myManager.registerPayloadFormat(this);
 	}
 	
@@ -43,18 +47,25 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		return "nvpairs";
 	}
 
+	public String getFormatToolTipText() {
+		return "Send the payload as a set of normal Name/Value Pairs";
+	}
+
+	
 	public String beforeBuildFinish(SRunningBuild runningBuild,
+			SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		this.addCommonParams(runningBuild, BuildState.BEFORE_BUILD_FINISHED);
+		this.addCommonParams(runningBuild, previousBuild, BuildState.BEFORE_BUILD_FINISHED);
 		this.addMessageParam(runningBuild, BuildState.getDescriptionSuffix(BuildState.BEFORE_BUILD_FINISHED));
 		paramList.putAll(extraParameters);
 		return this.getStatusAsString();
 	}
 
 	public String buildChangedStatus(SRunningBuild runningBuild,
+			SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
 			SortedMap<String, String> extraParameters) {
-		this.addCommonParams(runningBuild, BuildState.BUILD_CHANGED_STATUS);
+		this.addCommonParams(runningBuild, previousBuild, BuildState.BUILD_CHANGED_STATUS);
 		this.addMessageParam(runningBuild, "changed Status from "  + oldStatus.getText() + " to " + newStatus.getText());
 		paramList.put("buildStatus", newStatus.getText());
 		paramList.put("buildStatusPrevious", oldStatus.getText());
@@ -63,24 +74,27 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 	}
 
 	public String buildFinished(SRunningBuild runningBuild,
+			SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		this.addCommonParams(runningBuild, BuildState.BUILD_FINISHED);
+		this.addCommonParams(runningBuild, previousBuild, BuildState.BUILD_FINISHED);
 		this.addMessageParam(runningBuild, BuildState.getDescriptionSuffix(BuildState.BUILD_FINISHED));
 		paramList.putAll(extraParameters);
 		return this.getStatusAsString();
 	}
 
 	public String buildInterrupted(SRunningBuild runningBuild,
+			SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		this.addCommonParams(runningBuild, BuildState.BUILD_INTERRUPTED);
+		this.addCommonParams(runningBuild, previousBuild, BuildState.BUILD_INTERRUPTED);
 		this.addMessageParam(runningBuild, BuildState.getDescriptionSuffix(BuildState.BUILD_INTERRUPTED));
 		paramList.putAll(extraParameters);
 		return this.getStatusAsString();
 	}
 
 	public String buildStarted(SRunningBuild runningBuild,
+			SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		this.addCommonParams(runningBuild, BuildState.BUILD_STARTED);
+		this.addCommonParams(runningBuild, previousBuild, BuildState.BUILD_STARTED);
 		this.addMessageParam(runningBuild, BuildState.getDescriptionSuffix(BuildState.BUILD_STARTED));
 		paramList.putAll(extraParameters);
 		return this.getStatusAsString();
@@ -159,7 +173,7 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		}
 	}
 
-	private void addCommonParams(SRunningBuild sRunningBuild, Integer buildState) {
+	private void addCommonParams(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, Integer buildState) {
 		paramList.put("buildStatus", sRunningBuild.getStatusDescriptor().getText());
 		paramList.put("notifyType", BuildState.getShortName(buildState));
 		paramList.put("buildRunner", sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
@@ -174,6 +188,24 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		paramList.put("agentOs", sRunningBuild.getAgent().getOperatingSystemName());
 		paramList.put("agentHostname", sRunningBuild.getAgent().getHostName());
 		paramList.put("triggeredBy", sRunningBuild.getTriggeredBy().getAsString());
+		if (sRunningBuild.isFinished()){ 
+			if (sRunningBuild.getStatusDescriptor().isSuccessful()){
+				paramList.put("buildResult","success");
+			} else {
+				paramList.put("buildResult","failure");
+			}
+		} else {
+			paramList.put("buildResult","running");
+		}
+		if (previousBuild.isFinished()){ 
+			if (previousBuild.getStatusDescriptor().isSuccessful()){
+				paramList.put("buildResultPrevious","success");
+			} else {
+				paramList.put("buildResultPrevious","failure");
+			}
+		} else {
+			paramList.put("buildResultPrevious","running");
+		}
 	}
 	
 	private void addCommonParams(SBuildType buildType, Integer buildState) {

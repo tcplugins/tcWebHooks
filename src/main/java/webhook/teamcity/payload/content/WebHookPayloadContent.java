@@ -1,13 +1,16 @@
-package webhook.teamcity.payload.format;
+package webhook.teamcity.payload.content;
 
 import java.util.SortedMap;
 
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.artifacts.ArtifactsInfo;
 import webhook.teamcity.BuildState;
 
-public class WebHookPayloadJsonContent {
+public class WebHookPayloadContent {
 		String buildStatus, buildStatusPrevious,
+		buildResult, buildResultPrevious,
 		notifyType,
 		buildRunner,
 		buildFullName,
@@ -25,17 +28,28 @@ public class WebHookPayloadJsonContent {
 		message,
 		text;
 		
+		ExtraParametersMap extraParameters;
 		
-		public WebHookPayloadJsonContent(SBuildType buildType, Integer buildState, SortedMap<String, String> params) {
+		
+		public WebHookPayloadContent(SBuildType buildType, Integer buildState, SortedMap<String, String> extraParameters) {
 			populateCommonContent(buildType, buildState);
+			this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
-		public WebHookPayloadJsonContent(SRunningBuild sRunningBuild,
+		public WebHookPayloadContent(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
 				Integer buildState, 
 				SortedMap<String, String> extraParameters) {
 			
-    		populateCommonContent(sRunningBuild, buildState);
+    		populateCommonContent(sRunningBuild, previousBuild, buildState);
     		populateMessageAndText(sRunningBuild, buildState);
+    		populateArtifacts(sRunningBuild);
+    		this.extraParameters =  new ExtraParametersMap(extraParameters);
+		}
+
+		private void populateArtifacts(SRunningBuild runningBuild) {
+			ArtifactsInfo artInfo = new ArtifactsInfo(runningBuild);
+			//artInfo.
+			
 		}
 
 		private void populateCommonContent(SBuildType buildType,
@@ -61,9 +75,10 @@ public class WebHookPayloadJsonContent {
     				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". Status: " + sRunningBuild.getStatusDescriptor().getText());
 		}
 
-		private void populateCommonContent(SRunningBuild sRunningBuild,
+		private void populateCommonContent(SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
 				Integer buildState) {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
+			setBuildResult(sRunningBuild, previousBuild);
     		setNotifyType(BuildState.getShortName(buildState));
     		setBuildRunner(sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
@@ -79,6 +94,28 @@ public class WebHookPayloadJsonContent {
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
 		}
 		
+		private void setBuildResult(SRunningBuild sRunningBuild,
+				SFinishedBuild previousBuild) {
+			if (sRunningBuild.isFinished()){ 
+				if (sRunningBuild.getStatusDescriptor().isSuccessful()){
+					this.buildResult = "success";
+				} else {
+					this.buildResult = "failure";
+				}
+			} else {
+				this.buildResult = "running";
+			}
+			if (previousBuild.isFinished()){ 
+				if (previousBuild.getStatusDescriptor().isSuccessful()){
+					this.buildResultPrevious = "success";
+				} else {
+					this.buildResultPrevious = "failure";
+				}
+			} else {
+				this.buildResultPrevious = "running";
+			}
+		}
+
 		// Getters and setters
 		
 		public String getBuildStatus() {
@@ -227,6 +264,19 @@ public class WebHookPayloadJsonContent {
 
 		public void setText(String text) {
 			this.text = text;
+		}
+
+		public ExtraParametersMap getExtraParameters() {
+			if (this.extraParameters.size() > 0){
+				return extraParameters;
+			} else {
+				return null;
+			}
+				
+		}
+
+		public void setExtraParameters(SortedMap<String, String> extraParameters) {
+			this.extraParameters = new ExtraParametersMap(extraParameters);
 		}
 
 		
