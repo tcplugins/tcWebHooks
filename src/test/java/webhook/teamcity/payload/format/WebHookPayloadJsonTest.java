@@ -38,67 +38,25 @@ public class WebHookPayloadJsonTest {
 
 	@Test
 	public void testGetCharset() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testWebHookPayloadJson() {
-		fail("Not yet implemented");
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		assertTrue(whp.getCharset().equals("UTF-8".toString()));
 	}
 
 	@Test
 	public void testGetFormatDescription() {
-		fail("Not yet implemented");
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		assertTrue(whp.getFormatDescription().equals("JSON (beta)".toString()));
 	}
 
 	@Test
 	public void testGetFormatShortName() {
-		fail("Not yet implemented");
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		assertTrue(whp.getFormatShortName().equals("json".toString()));
 	}
 
 	@Test
 	public void testGetFormatToolTipText() {
-		fail("Not yet implemented");
+		WebHookPayloadJson whp = new WebHookPayloadJson(null);
+		assertTrue(whp.getFormatToolTipText().equals("Send the payload formatted in JSON".toString()));
 	}
-
-	@Test
-	public void testWebHookPayloadGeneric() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetPayloadManager() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testBeforeBuildFinish() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testBuildChangedStatus() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testBuildFinished() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testBuildInterrupted() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testBuildStarted() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testResponsibleChanged() {
-		fail("Not yet implemented");
-	}
-
 }
