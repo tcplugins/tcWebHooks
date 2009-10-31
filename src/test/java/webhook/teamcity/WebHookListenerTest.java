@@ -1,6 +1,6 @@
 package webhook.teamcity;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -14,12 +14,14 @@ import org.junit.Test;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookMainSettings;
+import webhook.teamcity.settings.WebHookProjectSettings;
 
 public class WebHookListenerTest {
 	SBuildServer sBuildServer = mock(SBuildServer.class);
 	ProjectSettingsManager settings = mock(ProjectSettingsManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
+	WebHookProjectSettings projSettings = mock(WebHookProjectSettings.class);
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -56,9 +58,15 @@ public class WebHookListenerTest {
 
 	@Test
 	public void testBuildStartedSRunningBuild() {
+		
+		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(projSettings.isEnabled()).thenReturn(true);
+		
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -72,6 +80,10 @@ public class WebHookListenerTest {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(projSettings.isEnabled()).thenReturn(true);
+		
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -85,6 +97,10 @@ public class WebHookListenerTest {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(projSettings.isEnabled()).thenReturn(true);
+		
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -98,6 +114,10 @@ public class WebHookListenerTest {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(projSettings.isEnabled()).thenReturn(true);
+		
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -111,6 +131,10 @@ public class WebHookListenerTest {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(projSettings.isEnabled()).thenReturn(true);
+		
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
