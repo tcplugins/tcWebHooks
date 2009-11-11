@@ -1,5 +1,6 @@
 package webhook.teamcity.payload.format;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -118,9 +119,27 @@ public class WebHookPayloadTest {
 		extraParameters.put("item5", "content5");
 		
 		System.out.println(sRunningBuild.getBuildDescription());
+		wpm.getFormat("empty").setRank(5000);
+		
+		assertTrue(wpm.getFormat("empty").getRank().equals(5000));
 		assertTrue(wpm.getFormat("empty").getContentType().equals("text/plain"));
 		assertTrue(wpm.getFormat("empty").getFormatDescription().equals("None"));
-		System.out.println(wpm.getFormat("empty").buildStarted(sRunningBuild, previousBuild, extraParameters));
+		assertTrue(wpm.getFormat("empty").getCharset().equals("UTF-8"));
+		assertTrue(wpm.getFormat("empty").buildStarted(sRunningBuild, previousBuild, extraParameters).equals(""));
+		assertTrue(wpm.getFormat("empty").beforeBuildFinish(sRunningBuild, previousBuild, extraParameters).equals(""));
+		assertTrue(wpm.getFormat("empty").buildChangedStatus(sRunningBuild, previousBuild, Status.NORMAL, Status.ERROR, extraParameters).equals(""));
+		assertTrue(wpm.getFormat("empty").buildFinished(sRunningBuild, previousBuild, extraParameters).equals(""));
+		assertTrue(wpm.getFormat("empty").buildInterrupted(sRunningBuild, previousBuild, extraParameters).equals(""));
+		
 	}
+	
+	@Test
+	public void test_Null(){
+		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		assertTrue(wpm.getRegisteredFormats().isEmpty());
+		assertTrue(wpm.getRegisteredFormatsAsCollection().isEmpty());
+		assertNull(wpm.getFormat("SomethingThatDoesNotExist"));
+	}
+	
 	
 }
