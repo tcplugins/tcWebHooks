@@ -50,7 +50,6 @@ public class WebHookListenerTest {
 		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager);
 		whl.register();
 		verify(sBuildServer).addListener(whl);
-		verify(sBuildServer).findBuildInstanceById(1);
 	}
 
 //	@Test
