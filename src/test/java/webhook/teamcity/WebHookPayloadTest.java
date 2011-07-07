@@ -1,12 +1,10 @@
 package webhook.teamcity;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -70,10 +68,8 @@ public class WebHookPayloadTest {
 		WebHookProjectSettings whps = new WebHookProjectSettings();
 		
 		whps.addNewWebHook("project1", url, true, BuildState.ALL_ENABLED, "nvpairs");
-		List<WebHookConfig> whcl = whps.getWebHooksConfigs();
 		
-    	for (Iterator<WebHookConfig> i = whcl.iterator(); i.hasNext();){
-			WebHookConfig whc = i.next();
+    	for (WebHookConfig whc : whps.getWebHooksConfigs()){
 			WebHook wh = new WebHook();
 			wh.setUrl(whc.getUrl());
 			wh.setEnabled(whc.getEnabled());

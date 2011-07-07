@@ -165,7 +165,7 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 			}
 		}
 		
-		Loggers.SERVER.debug(this.getClass().getSimpleName() + ": finished payload is " + returnString);
+		Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString);
 		if (returnString.length() > 0){
 			return returnString.substring(1);
 		} else {
@@ -197,7 +197,7 @@ public class WebHookPayloadNameValuePairs implements WebHookPayload {
 		} else {
 			paramList.put("buildResult","running");
 		}
-		if (previousBuild.isFinished()){ 
+		if (previousBuild != null && previousBuild.isFinished()){ 
 			if (previousBuild.getStatusDescriptor().isSuccessful()){
 				paramList.put("buildResultPrevious","success");
 			} else {

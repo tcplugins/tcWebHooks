@@ -7,10 +7,11 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.artifacts.ArtifactsInfo;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.payload.WebHookPayload;
 
 public class WebHookPayloadContent {
 		String buildStatus, buildStatusPrevious,
-		buildResult, buildResultPrevious,
+		buildResult, buildResultPrevious, buildResultDelta,
 		notifyType,
 		buildRunner,
 		buildFullName,
@@ -78,7 +79,7 @@ public class WebHookPayloadContent {
 		private void populateCommonContent(SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
 				Integer buildState) {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
-			setBuildResult(sRunningBuild, previousBuild);
+			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(BuildState.getShortName(buildState));
     		setBuildRunner(sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
@@ -95,25 +96,43 @@ public class WebHookPayloadContent {
 		}
 		
 		private void setBuildResult(SRunningBuild sRunningBuild,
-				SFinishedBuild previousBuild) {
-			if (sRunningBuild.isFinished()){ 
+				SFinishedBuild previousBuild, Integer buildState) {
+
+			if (previousBuild != null){
+				if (previousBuild.isFinished()){ 
+					if (previousBuild.getStatusDescriptor().isSuccessful()){
+						this.buildResultPrevious = WebHookPayload.BUILD_STATUS_SUCCESS;
+					} else {
+						this.buildResultPrevious = WebHookPayload.BUILD_STATUS_FAILURE;
+					}
+				} else {
+					this.buildResultPrevious = WebHookPayload.BUILD_STATUS_RUNNING;
+				}
+			} else {
+				this.buildResultPrevious = WebHookPayload.BUILD_STATUS_UNKNOWN;
+			}
+
+			if (buildState == BuildState.BEFORE_BUILD_FINISHED || buildState == BuildState.BUILD_FINISHED){ 
 				if (sRunningBuild.getStatusDescriptor().isSuccessful()){
-					this.buildResult = "success";
+					this.buildResult = WebHookPayload.BUILD_STATUS_SUCCESS;
+					if (this.buildResultPrevious.equals(this.buildResult)){
+						this.buildResultDelta = WebHookPayload.BUILD_STATUS_NO_CHANGE;
+					} else {
+						this.buildResultDelta = WebHookPayload.BUILD_STATUS_FIXED;
+					}
 				} else {
-					this.buildResult = "failure";
+					this.buildResult = WebHookPayload.BUILD_STATUS_FAILURE;
+					if (this.buildResultPrevious.equals(this.buildResult)){
+						this.buildResultDelta = WebHookPayload.BUILD_STATUS_NO_CHANGE;
+					} else {
+						this.buildResultDelta = WebHookPayload.BUILD_STATUS_BROKEN;
+					}
 				}
 			} else {
-				this.buildResult = "running";
+				this.buildResult = WebHookPayload.BUILD_STATUS_RUNNING;
+				this.buildResultDelta = WebHookPayload.BUILD_STATUS_UNKNOWN;
 			}
-			if (previousBuild.isFinished()){ 
-				if (previousBuild.getStatusDescriptor().isSuccessful()){
-					this.buildResultPrevious = "success";
-				} else {
-					this.buildResultPrevious = "failure";
-				}
-			} else {
-				this.buildResultPrevious = "running";
-			}
+			
 		}
 
 		// Getters and setters
@@ -132,6 +151,14 @@ public class WebHookPayloadContent {
 
 		public void setBuildStatusPrevious(String buildStatusPrevious) {
 			this.buildStatusPrevious = buildStatusPrevious;
+		}
+
+		public String getBuildResultDelta() {
+			return buildResultDelta;
+		}
+
+		public void setBuildResultDelta(String buildResultDelta) {
+			this.buildResultDelta = buildResultDelta;
 		}
 
 		public String getNotifyType() {

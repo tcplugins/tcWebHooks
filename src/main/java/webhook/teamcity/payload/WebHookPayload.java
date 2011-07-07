@@ -12,6 +12,14 @@ import org.jetbrains.annotations.NotNull;
 
 public interface WebHookPayload {
 	
+	public final static String BUILD_STATUS_FAILURE   = "failure";
+	public final static String BUILD_STATUS_SUCCESS   = "success";
+	public final static String BUILD_STATUS_RUNNING   = "running";
+	public final static String BUILD_STATUS_NO_CHANGE = "unchanged";
+	public final static String BUILD_STATUS_FIXED     = "fixed";
+	public final static String BUILD_STATUS_BROKEN    = "broken";
+	public final static String BUILD_STATUS_UNKNOWN   = "unknown";
+	
 	/** 
 	 * Sets the PayloadManger so that register() can register this payload with that manager.
 	 * 
