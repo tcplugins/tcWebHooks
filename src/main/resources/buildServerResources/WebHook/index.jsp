@@ -43,48 +43,56 @@
     
       
     <jsp:attribute name="body_include">
-    <script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.3.2.min.js"></script>
+    <script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.4.3.min.js"></script>
     <script type=text/javascript>
-		jQuery.noConflict();
-		jQuery(document).ready( function() {
-			//jQuery("input.buildState
+		var jQueryWebhook = jQuery.noConflict();
+		jQueryWebhook(document).ready( function() {
+			//jQueryWebhook("input.buildState
 		});
 
 		function showEditForm(formID){
-			jQuery('tr#viewRow_' + formID).hide();
-			jQuery('tr#editRow_' + formID).show();
+			jQueryWebhook('tr#viewRow_' + formID).hide();
+			jQueryWebhook('tr#editRow_' + formID).show();
 		}
 
 		function selectAllBuildStates(){
-			var state = jQuery('#selectAll').is(':checked');
-			jQuery('#webHookFormContents input.buildState').each(function(i){
-				this.checked = state;
-			});
+			//var state = jQueryWebhook('#selectAll').is(':checked');
+			//jQueryWebhook('#webHookFormContents input.buildState').each(function(i){
+			//	this.checked = state;
+			//});
 			doExtraCompleted();
 		}
 
 		function selectBuildState(){
-			if(jQuery('#webHookFormContents input.buildState:checked').length == 6){
-				jQuery('#selectAll').attr('checked', true);
-			} else {
-				jQuery('#selectAll').attr('checked', false);
-			}
+			//if(jQueryWebhook('#webHookFormContents input.buildState:checked').length == 6){
+			//	jQueryWebhook('#selectAll').attr('checked', true);
+			//} else {
+			//	jQueryWebhook('#selectAll').attr('checked', false);
+			//}
 			doExtraCompleted();
 		}
 
 		function doExtraCompleted(){
-			if(jQuery('#BuildFinished').is(':checked')){
-				jQuery('.onCompletion').removeClass('onCompletionDisabled');
-				jQuery('tr.onCompletion td input').removeAttr('disabled');
+			if(jQueryWebhook('#BuildSuccessful').is(':checked')){
+				jQueryWebhook('.onBuildFixed').removeClass('onCompletionDisabled');
+				jQueryWebhook('tr.onBuildFixed td input').removeAttr('disabled');
 			} else {
-				jQuery('.onCompletion').addClass('onCompletionDisabled');
-				jQuery('tr.onCompletion td input').attr('disabled', 'disabled');
+				jQueryWebhook('.onBuildFixed').addClass('onCompletionDisabled');
+				jQueryWebhook('tr.onBuildFixed td input').attr('disabled', 'disabled');
 			} 
+			if(jQueryWebhook('#BuildFailed').is(':checked')){
+				jQueryWebhook('.onBuildFailed').removeClass('onCompletionDisabled');
+				jQueryWebhook('tr.onBuildFailed td input').removeAttr('disabled');
+			} else {
+				jQueryWebhook('.onBuildFailed').addClass('onCompletionDisabled');
+				jQueryWebhook('tr.onBuildFailed td input').attr('disabled', 'disabled');
+			}
+			//selectBuildState(); 
 		}
 
 		function selectCorrectRadio(id){
-			jQuery('#webHookFormContents input.payloadFormat').each(function(i){
-				if(this.value == jQuery('#payloadFormat_'+id).val()){
+			jQueryWebhook('#webHookFormContents input.payloadFormat').each(function(i){
+				if(this.value == jQueryWebhook('#payloadFormat_'+id).val()){
 					this.checked = true;
 				} else {
 					this.checked = false;
@@ -94,44 +102,33 @@
 
 		BS.EditWebHookDialog = OO.extend(BS.AbstractModalDialog, {
 			  getContainer : function() {
-			    return $('editParameterDialog');
+			    return $('editWebHookDialog');
 			  },
 
 			  showDialog : function(id) {
-			    BS.BuildParamsForm.clearErrors();
-
-				//alert($('form_'+id).innerHTML);
-				//Element.replace('webHookFormContents', $('form_' + id).innerHTML);
-			    //$('modalDialogBody').replace($('form_' + id).innerHTML);
+				BS.WebHookForm.clearErrors();
 			    
 			    $('webHookUrl').value = $('url_'+id).value;
-			    jQuery('#webHooksEnabled').attr('checked', jQuery('#webHooksEnabled_'+id).is(':checked'));
-			    jQuery('#selectAll').attr('checked', jQuery('#selectAll_'+id).is(':checked'));
-			    jQuery('#BuildStarted').attr('checked', jQuery('#BuildStarted_'+id).is(':checked'));
-			    jQuery('#BuildFinished').attr('checked', jQuery('#BuildFinished_'+id).is(':checked'));
-			    jQuery('#StatusChanged').attr('checked', jQuery('#StatusChanged_'+id).is(':checked'));
-			    jQuery('#BuildInterrupted').attr('checked', jQuery('#BuildInterrupted_'+id).is(':checked'));
-			    jQuery('#BeforeFinished').attr('checked', jQuery('#BeforeFinished_'+id).is(':checked'));
-			    jQuery('#ResponsibilityChanged').attr('checked', jQuery('#ResponsibilityChanged_'+id).is(':checked'));
-			    jQuery('#BuildBroken').attr('checked', jQuery('#BuildBroken_'+id).is(':checked'));
-			    jQuery('#BuildFixed').attr('checked', jQuery('#BuildFixed_'+id).is(':checked'));
-			    //jQuery('#payloadFormat').attr('checked', jQuery('#payloadFormat_'+id).is(':checked'));
+			    jQueryWebhook('#webHooksEnabled').attr('checked', jQueryWebhook('#webHooksEnabled_'+id).is(':checked'));
+			    //jQueryWebhook('#selectAll').attr('checked', jQueryWebhook('#selectAll_'+id).is(':checked'));
+			    jQueryWebhook('#BuildStarted').attr('checked', jQueryWebhook('#BuildStarted_'+id).is(':checked'));
+			    jQueryWebhook('#BuildFinished').attr('checked', jQueryWebhook('#BuildFinished_'+id).is(':checked'));
+			    jQueryWebhook('#StatusChanged').attr('checked', jQueryWebhook('#StatusChanged_'+id).is(':checked'));
+			    jQueryWebhook('#BuildInterrupted').attr('checked', jQueryWebhook('#BuildInterrupted_'+id).is(':checked'));
+			    jQueryWebhook('#BeforeFinished').attr('checked', jQueryWebhook('#BeforeFinished_'+id).is(':checked'));
+			    jQueryWebhook('#ResponsibilityChanged').attr('checked', jQueryWebhook('#ResponsibilityChanged_'+id).is(':checked'));
+			    jQueryWebhook('#BuildSuccessful').attr('checked', jQueryWebhook('#BuildSuccessful_'+id).is(':checked'));
+			    jQueryWebhook('#BuildFixed').attr('checked', jQueryWebhook('#BuildFixed_'+id).is(':checked'));
+			    jQueryWebhook('#BuildFailed').attr('checked', jQueryWebhook('#BuildFailed_'+id).is(':checked'));
+			    jQueryWebhook('#BuildBroken').attr('checked', jQueryWebhook('#BuildBroken_'+id).is(':checked'));
+			    //jQueryWebhook('#payloadFormat').attr('checked', jQueryWebhook('#payloadFormat_'+id).is(':checked'));
 			    selectCorrectRadio(id);
-			    //jQuery('#payloadFormatNVPAIRS').attr('checked', jQuery('#payloadFormatNVPAIRS_'+id).is(':checked'));
+			    //jQueryWebhook('#payloadFormatNVPAIRS').attr('checked', jQueryWebhook('#payloadFormatNVPAIRS_'+id).is(':checked'));
 			    
 			    $('webHookId').value = id;
 			    
 			    doExtraCompleted();
 			    
-			    //$('BuildStarted').checked = $('BuildStarted_'+id).checked;
-
-
-			    //BuildStarted_${hook.uniqueKey}
-			    //$('currentName').value = name;
-			    //$('parameterName').value = name;
-			    //$('parameterValue').value = value;
-			    //$('systemProperty').value = systemProperty;
-
 			    var title = id == "new" ? "Add New" : "Edit";
 			    title += " WebHook";
 
@@ -146,26 +143,7 @@
 			  }
 			});
 
-		BS.SaveWebHookListener = OO.extend(BS.ErrorsAwareListener, {
-			  onSaveProjectErrorError : function(elem) {
-			    alert(elem.firstChild.nodeValue);
-			  },
-
-			  onProjectNotFoundError : function(elem) {
-			    document.location.reload();
-			  },
-
-			  onBuildTypeNotFoundError : function(elem) {
-			    document.location.reload();
-			  },
-
-			  onMaxNumberOfBuildTypesReachedError: function(elem) {
-			    alert(elem.firstChild.nodeValue);
-			  }
-			});
-					
-		
-		BS.BaseSaveWebHookListener = OO.extend(BS.SaveWebHookListener, {
+		BS.BaseSaveWebHookListener = OO.extend(BS.SaveConfigurationListener, {
 			  onBeginSave : function(form) {
 			    form.formElement().webHookUrl.value = BS.Util.trimSpaces(form.formElement().webHookUrl.value);
 			    form.clearErrors();
@@ -175,7 +153,6 @@
 			  }
 			});
 
-		
 		BS.WebHookForm = OO.extend(BS.AbstractWebForm, {
 			  setSaving : function(saving) {
 			    if (saving) {
@@ -193,22 +170,24 @@
 			    this.formElement().submitAction.value = 'updateWebHook';
 			    var that = this;
 
-			    BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.BaseSaveWebHookListener,
-			 {
+			    BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener,
+			 	{
 			      onEmptyWebHookUrlError : function(elem) {
-				      alert(elem.firstChild.nodeValue);
 			        $("error_webHookUrl").innerHTML = elem.firstChild.nodeValue;
 			        that.highlightErrorField($('webHookUrl'));
 			      },
 
-			      onCompleteSave : function(form, responseXML, err) {
-			        BS.SaveBuildTypeListener.onCompleteSave(form, responseXML, err);
+			      onEmptyPayloadFormatError : function(elem) {
+			        $("error_payloadFormat").innerHTML = elem.firstChild.nodeValue;
+			        that.highlightErrorField($('payloadFormatTable'));
+			      },
 
+			      onCompleteSave : function(form, responseXML, err) {
+			    	BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 			        form.enable();
 			        if (!err) {
-			          //that.updateParamLists();
 			          $('systemParams').updateContainer();
-			          BS.EditParameterDialog.close();
+			          BS.EditWebHookDialog.close();
 			        }
 			      }
 			    }));
@@ -226,10 +205,10 @@
 			    BS.ajaxRequest(url, {
 			      onComplete: function() {
 			        //that.updateParamLists();
-			        //jQuery('#viewRow_' + paramId).hide();
+			        //jQueryWebhook('#viewRow_' + paramId).hide();
 			        //BS.util.hide('viewRow_' + paramId);
 			        $('systemParams').updateContainer();
-			        BS.EditParameterDialog.close();
+			        BS.EditWebHookDialog.close();
 			      }
 			    });
 			  }

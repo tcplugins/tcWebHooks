@@ -71,15 +71,15 @@ public class WebHookCollection {
             		}
             	} else {
 	            	if (tokens[WEBHOOK_KEY].equals("url")){
-	            		WebHook wh = new WebHook(val);
+	            		WebHook wh = new WebHookImpl(val);
 	            		this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
             		} else if ((tokens[WEBHOOK_KEY].equals("bitmask"))
             				&& (this.canConvertToInt(val))){
-            			WebHook wh = new WebHook();
+            			WebHook wh = new WebHookImpl();
                 		wh.setTriggerStateBitMask(this.convertToInt(val)); 	 
                 		this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
 	            	} else if (tokens[WEBHOOK_KEY].equals("enabled")){
-	            		WebHook wh = new WebHook();
+	            		WebHook wh = new WebHookImpl();
             			wh.setEnabled(true);
             			this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
             		} else if (tokens[WEBHOOK_KEY].equals("parameter") 
@@ -89,12 +89,12 @@ public class WebHookCollection {
             			try {
 							String myVal = this.getValue("system.webhook." + tokens[WEBHOOK_ID] + ".parameter." 
 									+ tokens[WEBHOOK_PARAMETER_ID] + ".value");
-							WebHook wh = new WebHook();
+							WebHook wh = new WebHookImpl();
 							wh.addParam(val, myVal);
 							this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
 							
 						} catch (WebHookParameterReferenceException e) {
-							WebHook wh = new WebHook();
+							WebHook wh = new WebHookImpl();
 							wh.setErrored(true);
 							wh.setErrorReason("WebHook Listener: The configured webhook parameter (" 
 									+ name + ") references an alternate non-existant parameter");

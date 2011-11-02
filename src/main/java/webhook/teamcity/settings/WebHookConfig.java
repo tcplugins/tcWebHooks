@@ -37,6 +37,29 @@ public class WebHookConfig {
 
 		if (e.getAttribute("statemask") != null){
 			this.setStatemask(Integer.parseInt(e.getAttributeValue("statemask")));
+			
+			// upgrade from old bit mask to new bit mask.
+			int oldState = statemask;
+			if (BuildState.enabled(BuildState.BUILD_FINISHED, oldState)){
+				// Remove the BUILD_FINISHED and BUILD_CHANGED_STATUS states by 
+				// ANDing with ALL_ENABLED which has BUILD_FINISHED and 
+				// BUILD_CHANGED_STATUS set to zero.
+				this.statemask = (this.statemask & BuildState.ALL_ENABLED);
+				// Now OR with SUCCESSFUL
+				this.statemask = (this.statemask | BuildState.BUILD_SUCCESSFUL);
+				// and OR with FAILED
+				this.statemask = (this.statemask | BuildState.BUILD_FAILED);
+			}
+			
+			// upgrade from old bit mask to new bit mask for BUILD_CHANGED_STATUS
+			// Most times, we'll end up doing it twice, but it's better than none.
+			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS, oldState)){
+				// Remove the BUILD_FINISHED and BUILD_CHANGED_STATUS states by 
+				// ANDing with ALL_ENABLED which has BUILD_FINISHED and 
+				// BUILD_CHANGED_STATUS set to zero.
+				this.statemask = (this.statemask & BuildState.ALL_ENABLED);
+			}
+			
 		}
 
 		if (e.getAttribute("key") != null){
@@ -169,7 +192,7 @@ public class WebHookConfig {
 		if (!this.enabled){
 			return "Disabled";
 		} else if (this.statemask.equals(BuildState.ALL_ENABLED)){
-			return "All";
+			return "All Builds";
 		} else if (this.statemask.equals(0)) {
 			return "None";
 		} else {
@@ -177,9 +200,9 @@ public class WebHookConfig {
 			if (BuildState.enabled(BuildState.BUILD_STARTED,this.statemask)){
 				enabledStates += ", Build Started";
 			}
-			if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
-				enabledStates += ", Build Completed";
-			}
+//			if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
+//				enabledStates += ", Build Completed";
+//			}
 			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
 				enabledStates += ", Build Changed Status";
 			}
@@ -192,7 +215,25 @@ public class WebHookConfig {
 			if (BuildState.enabled(BuildState.RESPONSIBILITY_CHANGED,this.statemask)){
 				enabledStates += ", Build Responsibility Changed";
 			}
-			return enabledStates.substring(1);
+			if (BuildState.enabled(BuildState.BUILD_FAILED,this.statemask)){
+				if (BuildState.enabled(BuildState.BUILD_BROKEN, this.statemask)){
+					enabledStates += ", Build Broken";
+				} else {
+					enabledStates += ", Build Failed";
+				}
+			}
+			if (BuildState.enabled(BuildState.BUILD_SUCCESSFUL,this.statemask)){
+				if (BuildState.enabled(BuildState.BUILD_FIXED, this.statemask)){
+					enabledStates += ", Build Fixed";
+				} else {
+					enabledStates += ", Build Successful";
+				}
+			}
+			if (enabledStates.length() > 0){
+				return enabledStates.substring(1);
+			} else {
+				return "None";
+			}
 		}
 	}
 	
@@ -204,7 +245,7 @@ public class WebHookConfig {
 	}
 	
 	public String getStateAllAsChecked() {
-		if (this.statemask == 255){
+		if (this.statemask.equals(BuildState.ALL_ENABLED)){
 			return "checked ";
 		}		
 		return ""; 
@@ -260,7 +301,35 @@ public class WebHookConfig {
 		}
 		return ""; 
 	}
+	
+	public String getStateBuildSuccessfulAsChecked() {
+		if (BuildState.enabled(BuildState.BUILD_SUCCESSFUL,this.statemask)){
+			return "checked ";
+		}
+		return ""; 
+	}
+	
+	public String getStateBuildFixedAsChecked() {
+		if (BuildState.enabled(BuildState.BUILD_FIXED,this.statemask)){
+			return "checked ";
+		}
+		return ""; 
+	}
+	
+	public String getStateBuildFailedAsChecked() {
+		if (BuildState.enabled(BuildState.BUILD_FAILED,this.statemask)){
+			return "checked ";
+		}
+		return ""; 
+	}
 
+	public String getStateBuildBrokenAsChecked() {
+		if (BuildState.enabled(BuildState.BUILD_BROKEN,this.statemask)){
+			return "checked ";
+		}
+		return ""; 
+	}
+	
 	public String getPayloadFormat() {
 		return payloadFormat;
 	}

@@ -27,13 +27,17 @@
 					<form id="form_${hook.uniqueKey}">
 						<input id="url_${hook.uniqueKey}" name="URL" type=text size=64 maxlength=512 value="<c:out value="${hook.url}"/>" />
 						<input id="webHooksEnabled_${hook.uniqueKey}" type=checkbox ${hook.webHookEnabledAsChecked}/>
-						<input id="selectAll_${hook.uniqueKey}" type=checkbox ${hook.stateAllAsChecked}/>
+						<!--input id="selectAll_${hook.uniqueKey}" type=checkbox ${hook.stateAllAsChecked}/-->
 						<input id="BuildStarted_${hook.uniqueKey}" value="BuildStarted" name="BuildStarted"  type=checkbox ${hook.stateBuildStartedAsChecked}/>
 						<input id="BuildFinished_${hook.uniqueKey}" value="BuildFinished" name="BuildFinished" type=checkbox ${hook.stateBuildFinishedAsChecked}/>
 						<input id="StatusChanged_${hook.uniqueKey}" value="StatusChanged" name="StatusChanged" type=checkbox ${hook.stateBuildChangedStatusAsChecked}/>
 						<input id="BuildInterrupted_${hook.uniqueKey}" value="BuildInterrupted" name="BuildInterrupted" type=checkbox ${hook.stateBuildInterruptedAsChecked}/>
 						<input id="BeforeFinished_${hook.uniqueKey}" value="BeforeFinished" name="BeforeFinished" type=checkbox ${hook.stateBeforeFinishedAsChecked}/>
 						<input id="ResponsibilityChanged_${hook.uniqueKey}" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox ${hook.stateResponsibilityChangedAsChecked}/>
+						<input id="BuildSuccessful_${hook.uniqueKey}" value="BuildSuccessful" name="BuildSuccessful" type=checkbox ${hook.stateBuildSuccessfulAsChecked}/>
+						<input id="BuildFailed_${hook.uniqueKey}" value="BuildFailed" name="BuildFailed" type=checkbox ${hook.stateBuildFailedAsChecked}/>
+						<input id="BuildFixed_${hook.uniqueKey}" value="BuildFixed" name="BuildFixed" type=checkbox ${hook.stateBuildFixedAsChecked}/>
+						<input id="BuildBroken_${hook.uniqueKey}" value="BuildBroken" name="BuildBroken" type=checkbox ${hook.stateBuildBrokenAsChecked}/>
 						<input id="payloadFormat_${hook.uniqueKey}" name="payloadFormat2" type="hidden" value="${hook.payloadFormat}" />
 			<!-- ${ hook.payloadFormat} -->
 						<c:forEach items="${formatList}" var="format">
@@ -56,22 +60,24 @@
 					<form id="form_new">
 						<input id="url_new" name="URL" type=text size=64 maxlength=512 />
 						<input id="webHooksEnabled_new" type=checkbox checked />
-						<input id="selectAll_new" type=checkbox checked />
+						<!--input id="selectAll_new" type=checkbox checked /-->
 						<input id="BuildStarted_new" value="BuildStarted" name="BuildStarted"  type=checkbox checked />
 						<input id="BuildFinished_new" value="BuildFinished" name="BuildFinished" type=checkbox checked />
 						<input id="StatusChanged_new" value="StatusChanged" name="StatusChanged" type=checkbox checked />
 						<input id="BuildInterrupted_new" value="BuildInterrupted" name="BuildInterrupted" type=checkbox checked />
 						<input id="BeforeFinished_new" value="BeforeFinished" name="BeforeFinished" type=checkbox checked />
 						<input id="ResponsibilityChanged_new" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox checked />
-						<input id="BuildFixed_new" value="BuildFixed" name="BuildFixed" type=checkbox checked />
-						<input id="BuildBroken_new" value="BuildBroken" name="BuildBroken" type=checkbox checked />
+						<input id="BuildSuccessful_new" value="BuildSuccessful" name="BuildSuccessful" type=checkbox checked />
+						<input id="BuildFixed_new" value="BuildFixed" name="BuildFixed" type=checkbox />
+						<input id="BuildFailed_new" value="BuildFailed" name="BuildFailed" type=checkbox checked />
+						<input id="BuildBroken_new" value="BuildBroken" name="BuildBroken" type=checkbox />
 						<input id="payloadFormat_new" name="payloadFormat" type="hidden" value="${format.formatShortName}" />
     				</form>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-      <div id="editParameterDialog" class="editParameterDialog modalDialog"  style="width:50em;">
+      <div id="editWebHookDialog" class="editParameterDialog modalDialog"  style="width:50em;">
         <div class="dialogHeader">
           <div class="closeWindow">
             <a title="Close dialog window" href="javascript://" showdiscardchangesmessage="false"
@@ -93,31 +99,19 @@
 								<td>URL:</td>
 								<td colspan=2><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
 							</tr>
-							<tr><td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 5.5em;"></span></td></tr>
+							<tr>
+								<td></td>
+								<td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 0.5em;"></span></td>
+							</tr>
 							<tr style="border:none;">
 								<td><label for="webHooksEnabled">Enabled:</label></td>
 								<td style="padding-left:3px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
 							</tr>
 							<tr style="border:none;">
-								<td colspan=2>Trigger on Events:</td>
-								<td><label style='white-space:nowrap;'>
-									<input onclick='selectAllBuildStates();' name="selectAll" id="selectAll" type=checkbox /> All</label>
-								</td>
-							</tr>
-							<tr style="border:none;"><td>&nbsp;</td>
+								<td>Trigger on Events:</td>
 								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
 									<input onclick='selectBuildState();' class="buildState" id="BuildStarted" name="BuildStarted"  type=checkbox />
 									 Build Started</label>
-								</td>
-								<td><label style='white-space:nowrap;'>
-									<input onclick='selectBuildState();' class="buildState" id="BuildFinished" name="BuildFinished" type=checkbox />
-									 Build Completed</label>
-								</td>
-							</tr>
-							<tr style="border:none;"><td>&nbsp;</td>
-								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
-									<input onclick='selectBuildState();' class="buildState" id="StatusChanged" name="StatusChanged" type=checkbox />
-									 Build Changed Status</label>
 								</td>
 								<td><label style='white-space:nowrap;'>
 									<input onclick='selectBuildState();' class="buildState" id="BuildInterrupted" name="BuildInterrupted" type=checkbox />
@@ -139,12 +133,20 @@
 								<td colspan=2 >
 									<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
 											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-												<input class="buildStateBroken" id="BuildBroken" name="BuildBroken" type=checkbox />
-												 Only trigger when build changes from Success to Failure</label>
+												<input onclick='doExtraCompleted();' class="buildState" id="BuildSuccessful" name="BuildSuccessful" type=checkbox />
+												 Trigger when build is Successful</label>
 												</td></tr>
-											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+											<tr class="onBuildFixed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
 												<input class="buildStateFixed" id="BuildFixed" name="BuildFixed" type=checkbox />
 												 Only trigger when build changes from Failure to Success</label>
+												</td></tr>
+											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+												<input onclick='doExtraCompleted();' class="buildState" id="BuildFailed" name="BuildFailed" type=checkbox />
+												 Trigger when build Fails</label>
+												</td></tr>
+											<tr class="onBuildFailed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
+												<input class="buildStateBroken" id="BuildBroken" name="BuildBroken" type=checkbox />
+												 Only trigger when build changes from Success to Failure</label>
 												</td></tr>
 									</tbody></table>
 								</td>
@@ -152,7 +154,7 @@
 
 							<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
 								<td colspan=2>
-									<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
+									<table style="padding:0; margin:0; left: 0px;" id="payloadFormatTable"><tbody style="padding:0; margin:0; left: 0px;">
 										<c:forEach items="${formatList}" var="format">
 											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
 												<input style="vertical-align:text-bottom;" class="payloadFormat" id="payloadFormat_${format.formatShortName}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
@@ -161,6 +163,10 @@
 										</c:forEach>
 									</tbody></table>
 								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td colspan=2><span class="error" id="error_payloadFormat" style="margin-left: 0.5em;"></span></td>
 							</tr>
     					</table>            
             

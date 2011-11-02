@@ -39,15 +39,18 @@ public class WebHookListener extends BuildServerAdapter {
     private final ProjectSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
     private final WebHookPayloadManager myManager;
+    private final WebHookFactory webHookFactory;
 
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
-    						WebHookMainSettings configSettings, WebHookPayloadManager manager) {
+    						WebHookMainSettings configSettings, WebHookPayloadManager manager,
+    						WebHookFactory factory) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
         myMainSettings = configSettings;
         myManager = manager;
+        webHookFactory = factory;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -75,7 +78,7 @@ public class WebHookListener extends BuildServerAdapter {
 	    			sRunningBuild.getProjectId() + " at buildState " + BuildState.getShortName(stateInt));
 	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 	    		if (whc.getEnabled()){
-					WebHook wh = new WebHook();
+					WebHook wh = webHookFactory.getWebHook();
 					this.getFromConfig(wh, whc);
 					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
@@ -96,15 +99,15 @@ public class WebHookListener extends BuildServerAdapter {
 									&& this.hasBuildChangedHistoricalState(sRunningBuild) ){
 								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 							} else if (sRunningBuild.getBuildStatus().isFailed()
-									&& BuildState.enabled(BuildState.BUILD_BROKEN, wh.getEventListBitMask())
+									&& BuildState.enabled(BuildState.BUILD_FAILED, wh.getEventListBitMask())
 									&& !this.hasBuildChangedHistoricalState(sRunningBuild)){
-								continue;
+								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));;
 							} else if (sRunningBuild.getBuildStatus().isSuccessful()
-									&& BuildState.enabled(BuildState.BUILD_FIXED, wh.getEventListBitMask())
+									&& BuildState.enabled(BuildState.BUILD_SUCCESSFUL, wh.getEventListBitMask())
 									&& !this.hasBuildChangedHistoricalState(sRunningBuild)){
-								continue;
-							} else {
-								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));;
+//							} else {
+//								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 							}
 						}
 						
@@ -149,7 +152,7 @@ public class WebHookListener extends BuildServerAdapter {
 	    			sRunningBuild.getProjectId() + " at buildState statusChanged");
 	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 	    		if (whc.getEnabled()){
-					WebHook wh = new WebHook();
+					WebHook wh = webHookFactory.getWebHook();
 					this.getFromConfig(wh, whc);
 					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
@@ -181,7 +184,7 @@ public class WebHookListener extends BuildServerAdapter {
 	    			sBuildType.getProjectId() + " at buildState responsibilityChanged");
 	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 	    		if (whc.getEnabled()){
-					WebHook wh = new WebHook();
+	    			WebHook wh = webHookFactory.getWebHook();
 					this.getFromConfig(wh, whc);
 	
 					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){

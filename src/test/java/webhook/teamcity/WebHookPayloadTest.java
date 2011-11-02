@@ -14,6 +14,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import org.junit.Test;
 
 import webhook.WebHook;
+import webhook.WebHookImpl;
 import webhook.WebHookTest;
 import webhook.WebHookTestServer;
 import webhook.teamcity.payload.WebHookPayload;
@@ -70,7 +71,7 @@ public class WebHookPayloadTest {
 		whps.addNewWebHook("project1", url, true, BuildState.ALL_ENABLED, "nvpairs");
 		
     	for (WebHookConfig whc : whps.getWebHooksConfigs()){
-			WebHook wh = new WebHook();
+			WebHook wh = new WebHookImpl();
 			wh.setUrl(whc.getUrl());
 			wh.setEnabled(whc.getEnabled());
 			//webHook.addParams(webHookConfig.getParams());

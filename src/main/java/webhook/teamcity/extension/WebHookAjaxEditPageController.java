@@ -99,7 +99,11 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								&& (request.getParameter("webHooksEnabled").equalsIgnoreCase("on"))){
 			    							enabled = true;
 			    						}
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.ALL_ENABLED, "selectAll");
+			    						//runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.ALL_ENABLED, "selectAll");
+			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_SUCCESSFUL, "BuildSuccessful");
+			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_FAILED, "BuildFailed");
+			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_FIXED, "BuildFixed");
+			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_BROKEN, "BuildBroken");
 			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_STARTED, "BuildStarted");
 			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_INTERRUPTED, "BuildInterrupted");	
 			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BEFORE_BUILD_FINISHED, "BeforeFinished");
@@ -130,7 +134,13 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					} // TODO Need to handle webHookId being null
 			    						
 			    				} else {
-			    					params.put("messages", "<errors><error id=\"emptyWebHookUrl\">Please enter a URL.</error></errors>");
+			    					if ((request.getParameter("URL") == null ) 
+				    				|| (request.getParameter("URL").length() == 0)){
+			    						params.put("messages", "<errors><error id=\"emptyWebHookUrl\">Please enter a URL.</error></errors>");
+			    					} else if ((request.getParameter("payloadFormat") == null)
+				    				|| (request.getParameter("payloadFormat").length() == 0)){
+			    						params.put("messages", "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
+			    					}
 			    				}
 				    			
 			    			}
