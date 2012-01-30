@@ -113,7 +113,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
-			<version>4.0.2</version>
+			<version>6.5.4</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -121,7 +121,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>runtime-util</artifactId>
-			<version>4.0.2</version>
+			<version>6.5.4</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -136,7 +136,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>4.0.2</version>
+			<version>6.5.4</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -216,6 +216,12 @@
 			<version>1.8.0</version>
 			<scope>test</scope>
   		</dependency>
+  		 
+  		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.3</version>
+		</dependency>
   		 
 	</dependencies>
 	

@@ -3,19 +3,22 @@ package webhook.teamcity.settings;
 import java.util.Iterator;
 import java.util.List;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.MainConfigProcessor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 
 import org.jdom.Element;
 
 import webhook.WebHookProxyConfig;
+import webhook.teamcity.Loggers;
+
+import com.intellij.openapi.diagnostic.Logger;
 
 
 public class WebHookMainSettings implements MainConfigProcessor {
 	private WebHookMainConfig webHookMainConfig;
 	private SBuildServer server;
-
+	final Logger logger = Logger.getInstance(WebHookMainSettings.class.getName());
+	
 	public WebHookMainSettings(SBuildServer server){
 		Loggers.SERVER.debug(this.getClass().getName() + " :: Constructor called");
 		this.server = server;

@@ -1,20 +1,20 @@
 package webhook.teamcity;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
-import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.junit.After;
@@ -22,12 +22,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer;
-
-import com.intellij.javaee.NewAbstractDataHolder;
 
 import webhook.WebHook;
+import webhook.WebHookImpl;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
@@ -43,7 +40,9 @@ public class WebHookListenerTest {
 	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
-	WebHook webhook = mock(WebHook.class);
+	WebHook webhook = mock (WebHook.class);
+	WebHook webHookImpl;
+	WebHook spyWebHook;
 	SFinishedBuild previousSuccessfulBuild = mock(SFinishedBuild.class);
 	SFinishedBuild previousFailedBuild = mock(SFinishedBuild.class);
 	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<SFinishedBuild>();
@@ -63,12 +62,17 @@ public class WebHookListenerTest {
 
 	@Before
 	public void setUp() throws Exception {
+		
+		webHookImpl = new WebHookImpl();
+		spyWebHook = spy(webHookImpl);   
 		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory);
 		projSettings = new WebHookProjectSettings();
-		when(factory.getWebHook()).thenReturn(webhook);
+		when(factory.getWebHook()).thenReturn(spyWebHook);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payload);
+		when(manager.getServer()).thenReturn(sBuildServer);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
+		when(sBuildServer.getRootUrl()).thenReturn("http://test.server");
 		when(previousSuccessfulBuild.getBuildStatus()).thenReturn(Status.NORMAL);
 		when(previousSuccessfulBuild.isPersonal()).thenReturn(false);
 		when(previousFailedBuild.getBuildStatus()).thenReturn(Status.FAILURE);
@@ -84,6 +88,7 @@ public class WebHookListenerTest {
 	public void tearDown() throws Exception {
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public void testWebHookListener() {
 		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory);

@@ -32,7 +32,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	
 	public String beforeBuildFinish(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(runningBuild, previousBuild, BuildState.BEFORE_BUILD_FINISHED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildState.BEFORE_BUILD_FINISHED, extraParameters);
 		return getStatusAsString(content);
 	}
 
@@ -40,7 +40,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			Status oldStatus, Status newStatus,
 			SortedMap<String, String> extraParameters) {
 		
-		WebHookPayloadContent content = new WebHookPayloadContent(runningBuild, previousBuild, BuildState.BUILD_CHANGED_STATUS, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildState.BUILD_CHANGED_STATUS, extraParameters);
 
 		// Message is a long form message, for on webpages or in email.
 		content.setMessage("Build " + runningBuild.getBuildType().getFullName().toString() 
@@ -59,19 +59,19 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 
 	public String buildFinished(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(runningBuild, previousBuild, BuildState.BUILD_FINISHED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildState.BUILD_FINISHED, extraParameters);
 		return getStatusAsString(content);
 	}
 
 	public String buildInterrupted(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(runningBuild, previousBuild, BuildState.BUILD_INTERRUPTED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildState.BUILD_INTERRUPTED, extraParameters);
 		return getStatusAsString(content);
 	}
 
 	public String buildStarted(SRunningBuild runningBuild, SFinishedBuild previousBuild, 
 			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(runningBuild, previousBuild, BuildState.BUILD_STARTED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildState.BUILD_STARTED, extraParameters);
 		return getStatusAsString(content);
 	}
 
@@ -80,18 +80,18 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
 			SortedMap<String, String> extraParameters) {
 		
-		WebHookPayloadContent content = new WebHookPayloadContent(buildType, BuildState.RESPONSIBILITY_CHANGED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildState.RESPONSIBILITY_CHANGED, extraParameters);
 		content.setMessage("Build " + buildType.getFullName().toString()
 				+ " has changed responsibility from " 
-				+ " " + responsibilityInfoOld.getUser().getDescriptiveName()
+				+ " " + responsibilityInfoOld.getResponsibleUser().getDescriptiveName()
 				+ " to "
-				+ responsibilityInfoNew.getUser().getDescriptiveName()
+				+ responsibilityInfoNew.getResponsibleUser().getDescriptiveName()
 			);
 		content.setText(buildType.getFullName().toString()
 				+ " changed responsibility from " 
-				+ responsibilityInfoOld.getUser().getUsername()
+				+ responsibilityInfoOld.getResponsibleUser().getUsername()
 				+ " to "
-				+ responsibilityInfoNew.getUser().getUsername()
+				+ responsibilityInfoNew.getResponsibleUser().getUsername()
 			);
 		
 		content.setComment(responsibilityInfoNew.getComment());

@@ -2,7 +2,6 @@ package webhook;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import org.junit.Test;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.WebHookFactory;
+import webhook.teamcity.WebHookFactoryImpl;
 
 
 public class WebHookTest{
@@ -33,8 +33,7 @@ public class WebHookTest{
 	public String proxyUsername = "foo";
 	public String proxyPassword = "bar";
 	
-	WebHookFactory factory = mock(WebHookFactory.class);
-	WebHook webhook = mock(WebHook.class);
+	WebHookFactory factory = new WebHookFactoryImpl();
 	
 	@Test
 	public void test_BuildStates(){

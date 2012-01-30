@@ -1,7 +1,7 @@
 package webhook.teamcity;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
 import org.junit.Test;
@@ -35,8 +36,10 @@ public class WebHookPayloadTest {
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class); 	
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
@@ -58,12 +61,14 @@ public class WebHookPayloadTest {
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		
 		WebHookTest test = new WebHookTest();
 		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";
 		WebHookTestServer s = test.startWebServer();
 		
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
 		WebHookProjectSettings whps = new WebHookProjectSettings();

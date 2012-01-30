@@ -1,11 +1,14 @@
 package webhook.teamcity.payload.content;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedMap;
 
+import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
+import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.artifacts.ArtifactsInfo;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.payload.WebHookPayload;
 
@@ -13,11 +16,11 @@ public class WebHookPayloadContent {
 		String buildStatus, buildStatusPrevious,
 		buildResult, buildResultPrevious, buildResultDelta,
 		notifyType,
-		buildRunner,
 		buildFullName,
 		buildName,
 		buildId,
 		buildTypeId,
+		buildStatusUrl,
 		projectName,
 		projectId,
 		buildNumber,
@@ -29,39 +32,40 @@ public class WebHookPayloadContent {
 		message,
 		text;
 		
+		List<String> buildRunners;
 		ExtraParametersMap extraParameters;
 		
 		
-		public WebHookPayloadContent(SBuildType buildType, Integer buildState, SortedMap<String, String> extraParameters) {
-			populateCommonContent(buildType, buildState);
+		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, Integer buildState, SortedMap<String, String> extraParameters) {
+			populateCommonContent(server, buildType, buildState);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
-		public WebHookPayloadContent(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
+		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
 				Integer buildState, 
 				SortedMap<String, String> extraParameters) {
 			
-    		populateCommonContent(sRunningBuild, previousBuild, buildState);
+    		populateCommonContent(server, sRunningBuild, previousBuild, buildState);
     		populateMessageAndText(sRunningBuild, buildState);
     		populateArtifacts(sRunningBuild);
     		this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
 		private void populateArtifacts(SRunningBuild runningBuild) {
-			ArtifactsInfo artInfo = new ArtifactsInfo(runningBuild);
+			//ArtifactsInfo artInfo = new ArtifactsInfo(runningBuild);
 			//artInfo.
 			
 		}
 
-		private void populateCommonContent(SBuildType buildType,
-				Integer buildState) {
+		private void populateCommonContent(SBuildServer server, SBuildType buildType, Integer buildState) {
 			setNotifyType(BuildState.getShortName(buildState));
-			setBuildRunner(buildType.getBuildRunner().getDisplayName());
+			setBuildRunner(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
 			setBuildName(buildType.getName());
 			setBuildTypeId(buildType.getBuildTypeId());
 			setProjectName(buildType.getProjectName());
 			setProjectId(buildType.getProjectId());
+			setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
 		}
 		
 		private void populateMessageAndText(SRunningBuild sRunningBuild,
@@ -69,19 +73,19 @@ public class WebHookPayloadContent {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
     				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". This is build number " + sRunningBuild.getBuildNumber() 
-    				+ ", has a status of \"" + sRunningBuild.getStatusDescriptor().getText() + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
+    				+ ", has a status of \"" + this.buildResult + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
     		
 			// Text is designed to be shorter, for use in Text messages and the like.    		
     		setText(sRunningBuild.getBuildType().getFullName().toString() 
-    				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". Status: " + sRunningBuild.getStatusDescriptor().getText());
+    				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". Status: " + this.buildResult);
 		}
 
-		private void populateCommonContent(SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
+		private void populateCommonContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
 				Integer buildState) {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(BuildState.getShortName(buildState));
-    		setBuildRunner(sRunningBuild.getBuildType().getBuildRunner().getDisplayName());
+    		setBuildRunner(sRunningBuild.getBuildType().getBuildRunners());
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
     		setBuildName(sRunningBuild.getBuildType().getName());
 			setBuildId(Long.toString(sRunningBuild.getBuildId()));
@@ -93,6 +97,7 @@ public class WebHookPayloadContent {
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
+    		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
 		}
 		
 		private void setBuildResult(SRunningBuild sRunningBuild,
@@ -169,12 +174,17 @@ public class WebHookPayloadContent {
 			this.notifyType = notifyType;
 		}
 
-		public String getBuildRunner() {
-			return buildRunner;
+		public List<String> getBuildRunner() {
+			return buildRunners;
 		}
 
-		public void setBuildRunner(String buildRunner) {
-			this.buildRunner = buildRunner;
+		public void setBuildRunner(List<SBuildRunnerDescriptor> list) {
+			if (list != null){
+				buildRunners = new ArrayList<String>(); 
+				for (SBuildRunnerDescriptor runner : list){
+					buildRunners.add(runner.getRunType().getDisplayName());
+				}
+			}
 		}
 
 		public String getBuildFullName() {
@@ -265,6 +275,13 @@ public class WebHookPayloadContent {
 			this.triggeredBy = triggeredBy;
 		}
 
+		public String getBuildStatusUrl() {
+			return buildStatusUrl;
+		}
+
+		public void setBuildStatusUrl(String buildStatusUrl) {
+			this.buildStatusUrl = buildStatusUrl;
+		}
 
 		public String getComment() {
 			return comment;

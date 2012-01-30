@@ -38,7 +38,7 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected void fillModel(Map model, HttpServletRequest request,
 			 @NotNull SBuildType buildType, SUser user) {

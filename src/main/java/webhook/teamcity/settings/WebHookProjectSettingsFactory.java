@@ -1,8 +1,9 @@
 package webhook.teamcity.settings;
 
-import jetbrains.buildServer.log.Loggers;
+import webhook.teamcity.Loggers;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsFactory;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+
 
 public class WebHookProjectSettingsFactory implements ProjectSettingsFactory {
 	

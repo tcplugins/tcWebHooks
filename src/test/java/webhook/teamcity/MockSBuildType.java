@@ -4,45 +4,60 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.jdom.Element;
+import java.util.regex.PatternSyntaxException;
 
 import jetbrains.buildServer.Build;
 import jetbrains.buildServer.BuildAgent;
 import jetbrains.buildServer.BuildTypeDescriptor;
-import jetbrains.buildServer.buildTriggers.BuildTrigger;
+import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.serverSide.AgentCompatibility;
+import jetbrains.buildServer.serverSide.AgentDescription;
 import jetbrains.buildServer.serverSide.BuildNumbers;
 import jetbrains.buildServer.serverSide.BuildTypeRenamingFailedException;
+import jetbrains.buildServer.serverSide.BuildTypeTemplate;
+import jetbrains.buildServer.serverSide.CompatibilityResult;
+import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
 import jetbrains.buildServer.serverSide.InvalidVcsRootScopeException;
 import jetbrains.buildServer.serverSide.Parameter;
+import jetbrains.buildServer.serverSide.PersistFailedException;
+import jetbrains.buildServer.serverSide.ResolvedSettings;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.SBuildFeatureDescriptor;
+import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.artifacts.SArtifactDependency;
+import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.serverSide.dependency.CyclicDependencyFoundException;
 import jetbrains.buildServer.serverSide.dependency.Dependency;
 import jetbrains.buildServer.serverSide.dependency.Dependent;
-import jetbrains.buildServer.serverSide.vcs.VcsLabelingSettings.LabelingType;
+import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.util.Option;
 import jetbrains.buildServer.vcs.CheckoutRules;
 import jetbrains.buildServer.vcs.FilteredVcsChange;
+import jetbrains.buildServer.vcs.PathMapping;
 import jetbrains.buildServer.vcs.SVcsModification;
 import jetbrains.buildServer.vcs.SVcsRoot;
+import jetbrains.buildServer.vcs.VcsException;
 import jetbrains.buildServer.vcs.VcsRoot;
 import jetbrains.buildServer.vcs.VcsRootEntry;
+import jetbrains.buildServer.vcs.VcsRootInstance;
+import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 import jetbrains.buildServer.vcs.VcsRootNotFoundException;
+
+import org.jdom.Element;
 
 public class MockSBuildType implements SBuildType {
 	
@@ -62,11 +77,6 @@ public class MockSBuildType implements SBuildType {
 	}
 
 	public void addBuildParameter(Parameter arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void addBuildTrigger(BuildTrigger arg0) {
 		// TODO Auto-generated method stub
 
 	}
@@ -91,11 +101,6 @@ public class MockSBuildType implements SBuildType {
 		return null;
 	}
 
-	public void addVcsRoot(SVcsRoot arg0) throws InvalidVcsRootScopeException,
-			VcsRootNotFoundException {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void clearRunParameters() {
 		// TODO Auto-generated method stub
@@ -165,11 +170,6 @@ public class MockSBuildType implements SBuildType {
 		return this.runType ;
 	}
 
-	public Collection<BuildTrigger> getBuildTriggers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public <T extends BuildAgent> List<T> getCanRunAgents() {
 		// TODO Auto-generated method stub
 		return null;
@@ -187,11 +187,6 @@ public class MockSBuildType implements SBuildType {
 	}
 
 	public CheckoutRules getCheckoutRules(VcsRoot arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public <T extends BuildAgent> Collection<T> getCompatibleAgents() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -361,11 +356,6 @@ public class MockSBuildType implements SBuildType {
 		return null;
 	}
 
-	public String getVcsSettingsHash(List<VcsRootEntry> arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public boolean isAllowExternalStatus() {
 		// TODO Auto-generated method stub
 		return false;
@@ -396,17 +386,13 @@ public class MockSBuildType implements SBuildType {
 
 	}
 
-	public void removeBuildTrigger(BuildTrigger arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void removeRequirement(String arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void removeVcsRoot(SVcsRoot arg0) {
+	public boolean removeVcsRoot(SVcsRoot arg0) {
+		return false;
 		// TODO Auto-generated method stub
 
 	}
@@ -426,11 +412,6 @@ public class MockSBuildType implements SBuildType {
 
 	}
 
-	public void setCheckoutRules(VcsRoot arg0, CheckoutRules arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void setCheckoutType(CheckoutType arg0) {
 		// TODO Auto-generated method stub
 
@@ -446,7 +427,8 @@ public class MockSBuildType implements SBuildType {
 
 	}
 
-	public void setLabelingRoots(List<VcsRoot> arg0) {
+	public Collection<VcsRoot> setLabelingRoots(List<VcsRoot> arg0) {
+		return null;
 		// TODO Auto-generated method stub
 
 	}
@@ -573,7 +555,7 @@ public class MockSBuildType implements SBuildType {
 		return 0;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Option[] getChangedOptions() {
 		// TODO Auto-generated method stub
 		return null;
@@ -627,6 +609,324 @@ public class MockSBuildType implements SBuildType {
 
 	public void setProject(SProject project2) {
 		this.project = project2;
+	}
+
+	public Map<String, String> getParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void removeResponsible(boolean arg0, User arg1, String arg2,
+			User arg3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setResponsible(User arg0, String arg1, User arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Collection<String> getRunnerTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void addBuildFeature(SBuildFeatureDescriptor arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public SBuildFeatureDescriptor addBuildFeature(String arg0,
+			Map<String, String> arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void addBuildRunner(SBuildRunnerDescriptor arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public SBuildRunnerDescriptor addBuildRunner(String arg0, String arg1,
+			Map<String, String> arg2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean addBuildTrigger(BuildTriggerDescriptor arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void addConfigParameter(Parameter arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void applyRunnersOrder(String[] arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public SBuildRunnerDescriptor findBuildRunnerById(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String findRunnerParameter(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<SBuildFeatureDescriptor> getBuildFeatures() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getBuildNumberPattern() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<SBuildRunnerDescriptor> getBuildRunners() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<BuildTriggerDescriptor> getBuildTriggersCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> getConfigParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<Parameter> getConfigParametersCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<Parameter> getRunParametersCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public BuildTypeTemplate getTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getTemplateId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<String> getUndefinedParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isTemplateBased() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void removeAllBuildRunners() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public SBuildFeatureDescriptor removeBuildFeature(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SBuildRunnerDescriptor removeBuildRunner(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean removeBuildTrigger(BuildTriggerDescriptor arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void removeConfigParameter(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean replaceInValues(String arg0, String arg1)
+			throws PatternSyntaxException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setBuildNumberPattern(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean updateBuildFeature(String arg0, String arg1,
+			Map<String, String> arg2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean updateBuildRunner(String arg0, String arg1, String arg2,
+			Map<String, String> arg3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void addParameter(Parameter arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Collection<Parameter> getParametersCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void removeParameter(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public CompatibilityResult getAgentCompatibility(AgentDescription arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<SBuildAgent, CompatibilityResult> getCompatibilityMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<SBuildType> getChildDependencies() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ParametersProvider getParametersProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void attachToTemplate(BuildTypeTemplate arg0, boolean arg1)
+			throws InvalidVcsRootScopeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void detachFromTemplate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public SBuildRunnerDescriptor findBuildRunnerByType(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public CustomDataStorage getCustomDataStorage(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getExtendedName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public byte[] getFileContent(String arg0) throws VcsException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Dependency> getOwnDependencies() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Comment getPauseComment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<SUser> getPendingChangesCommitters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResolvedSettings getResolvedSettings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<VcsRootInstanceEntry> getVcsRootInstanceEntries() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public VcsRootInstance getVcsRootInstanceForParent(SVcsRoot arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<VcsRootInstance> getVcsRootInstances() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getVcsSettingsHash() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getVcsSettingsHash(List<VcsRootInstanceEntry> arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PathMapping mapVcsPath(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void moveToProject(SProject arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void persist() throws PersistFailedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setPaused(boolean arg0, User arg1, String arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean addVcsRoot(SVcsRoot arg0)
+			throws InvalidVcsRootScopeException, VcsRootNotFoundException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean setCheckoutRules(VcsRoot arg0, CheckoutRules arg1) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Collection<SBuildAgent> getCompatibleAgents() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

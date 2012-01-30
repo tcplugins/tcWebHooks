@@ -7,6 +7,11 @@
 		class="webhook.teamcity.WebHookListener" 
   		init-method="register" 
   		/>
+  		
+	<bean id="testListener" 
+		class="webhook.teamcity.TestListener" 
+  		init-method="register" 
+  		/>
   
 	<bean id="webHookProjectTabExtension"
         class="webhook.teamcity.extension.WebHookProjectTabExtension"
@@ -31,6 +36,10 @@
      <bean id="webHookAjaxEditPageController" 
      	class="webhook.teamcity.extension.WebHookAjaxEditPageController" 
      	init-method="register" 
+     	/>
+     			
+     <bean id="webHookFactory" 
+     	class="webhook.teamcity.WebHookFactoryImpl" 
      	/>
      			
      <bean id="webHookProjectSettings" 

@@ -1,25 +1,22 @@
 package webhook.teamcity.settings;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import java.io.IOException;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildServer;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.junit.Before;
 import org.junit.Test;
 
 import webhook.WebHookProxyConfig;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 public class WebHookConfigTest {
 	SBuildServer server = mock(SBuildServer.class);
-	Loggers Loggers = mock(Loggers.class);
 	Integer proxyPort = 8080;
 	String proxyHost = "myproxy.mycompany.com";
 	

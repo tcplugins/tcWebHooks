@@ -8,15 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import jetbrains.buildServer.log.Loggers;
+import webhook.teamcity.Loggers;
+
+import jetbrains.buildServer.serverSide.SBuildServer;
 
 public class WebHookPayloadManager {
 	
 	HashMap<String, WebHookPayload> formats = new HashMap<String,WebHookPayload>();
 	Comparator<WebHookPayload> rankComparator = new WebHookPayloadRankingComparator();
 	List<WebHookPayload> orderedFormatCollection = new ArrayList<WebHookPayload>();
+	SBuildServer server;
 	
-	public WebHookPayloadManager(){
+	public WebHookPayloadManager(SBuildServer server){
+		this.server = server;
 		Loggers.SERVER.info("WebHookPayloadManager :: Starting");
 	}
 	
@@ -51,5 +55,11 @@ public class WebHookPayloadManager {
 	
 	public Collection<WebHookPayload> getRegisteredFormatsAsCollection(){
 		return orderedFormatCollection;
+	}
+
+	public SBuildServer getServer() {
+		return server;
 	}	
+	
+	
 }

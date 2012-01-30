@@ -1,6 +1,11 @@
 package webhook.teamcity.payload.format;
 
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import jetbrains.buildServer.serverSide.SBuildServer;
 
 import org.junit.Test;
 
@@ -10,7 +15,9 @@ public class WebHookPayloadJsonTest {
 
 	@Test
 	public void testRegister() {
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadJson whp = new WebHookPayloadJson(wpm);
 		whp.register();
 		assertEquals(whp, wpm.getFormat(whp.getFormatShortName()));

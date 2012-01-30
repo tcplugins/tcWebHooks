@@ -9,6 +9,7 @@ import jetbrains.buildServer.LicenseNotGrantedException;
 import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.users.SUser;
@@ -192,6 +193,51 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 	public int compareTo(BuildAgent o) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public List<String> getAvailableVcsPlugins() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> getBuildParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> getConfigurationParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isCaseInsensitiveEnvironment() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public List<SFinishedBuild> getBuildHistory(User arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Date getAgentStatusRestoringTimestamp() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Boolean getAgentStatusToRestore() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public long getIdleTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void setEnabled(boolean arg0, SUser arg1, String arg2, long arg3) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

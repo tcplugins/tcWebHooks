@@ -87,7 +87,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("projectId", project.getProjectId());
 			    	params.put("projectName", project.getName());
 			    	
-			    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
+			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
 			    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());

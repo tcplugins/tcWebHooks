@@ -1,13 +1,15 @@
 package webhook.teamcity.payload.format;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
 import org.junit.Test;
@@ -27,8 +29,11 @@ public class WebHookPayloadTest {
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+
 		
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadXml whp = new WebHookPayloadXml(wpm);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
@@ -54,8 +59,11 @@ public class WebHookPayloadTest {
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+
 		
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadJson whp = new WebHookPayloadJson(wpm);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
@@ -80,8 +88,11 @@ public class WebHookPayloadTest {
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+
 		
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
@@ -104,10 +115,11 @@ public class WebHookPayloadTest {
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
-		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
-		sBuildType.setProject(sProject);
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+
 		
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadEmpty whp = new WebHookPayloadEmpty(wpm);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
@@ -135,7 +147,11 @@ public class WebHookPayloadTest {
 	
 	@Test
 	public void test_Null(){
-		WebHookPayloadManager wpm = new WebHookPayloadManager();
+		SBuildServer mockServer = mock(SBuildServer.class);
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+
+		
+		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		assertTrue(wpm.getRegisteredFormats().isEmpty());
 		assertTrue(wpm.getRegisteredFormatsAsCollection().isEmpty());
 		assertNull(wpm.getFormat("SomethingThatDoesNotExist"));

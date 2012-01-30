@@ -25,9 +25,23 @@ public final class BuildState {
      * @return Whether or not the webhook should trigger for the current build state.
      */
     public static boolean enabled(Integer currentBuildState, Integer buildStatesToNotify) {
-		 
-		return ((currentBuildState & buildStatesToNotify) > 0);
+		int enabled = (currentBuildState & buildStatesToNotify);  
+		return (enabled > 0);
 	}
+    
+    /**
+     * Takes the currentBuildState, for which the WebHook is being triggered
+     * and compares it against the build states for which this WebHook is configured
+     * to notify.
+     * 
+     * @param currentBuildState
+     * @param buildStatesToNotify
+     * @return Whether or not the webhook should trigger for the current build state.
+     */
+    public static boolean exactly(Integer currentBuildState, Integer buildStatesToNotify) {
+    	int enabled = (currentBuildState & buildStatesToNotify);  
+    	return (enabled == currentBuildState);
+    }
 
     /**
      * Convert build state Integer into short string 

@@ -203,9 +203,9 @@ public class WebHookConfig {
 //			if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
 //				enabledStates += ", Build Completed";
 //			}
-			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
-				enabledStates += ", Build Changed Status";
-			}
+//			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
+//				enabledStates += ", Build Changed Status";
+//			}
 			if (BuildState.enabled(BuildState.BUILD_INTERRUPTED,this.statemask)){
 				enabledStates += ", Build Interrupted";
 			}

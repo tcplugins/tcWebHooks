@@ -37,7 +37,7 @@ public class ExtraParametersMapToJsonConvertor implements Converter {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public boolean canConvert(Class clazz) {
 		return ExtraParametersMap.class == clazz;
 	}

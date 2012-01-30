@@ -55,14 +55,6 @@ public class WebHookImpl implements WebHook {
 		this.params = new ArrayList<NameValuePair>();
 	}
 	
-	public WebHookImpl(String url, Boolean isEnabled, List<NameValuePair> params, Integer stateMask){
-		this.url = url;
-		this.client = new HttpClient();
-		this.enabled = isEnabled;
-		this.params = params;
-		this.setTriggerStateBitMask(stateMask);
-	}
-	
 	public WebHookImpl (String url, String proxyHost, String proxyPort){
 		this.url = url;
 		this.client = new HttpClient();

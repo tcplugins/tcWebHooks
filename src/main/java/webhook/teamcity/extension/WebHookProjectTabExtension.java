@@ -35,7 +35,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected void fillModel(Map model, HttpServletRequest request,
 			 @NotNull SProject project, SUser user) {

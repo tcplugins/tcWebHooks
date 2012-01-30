@@ -2,19 +2,21 @@ package webhook.teamcity;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
-import jetbrains.buildServer.Build;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.responsibility.ResponsibilityEntry;
+import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
-import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import jetbrains.buildServer.tests.TestName;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +29,7 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
+import webhook.teamcity.Loggers;
 
 
 /**
@@ -40,7 +43,7 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookMainSettings myMainSettings;
     private final WebHookPayloadManager myManager;
     private final WebHookFactory webHookFactory;
-
+    
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
@@ -83,6 +86,7 @@ public class WebHookListener extends BuildServerAdapter {
 					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
 						wh.setContentType(payloadFormat.getContentType());
+						
 						if (stateInt.equals(BuildState.BUILD_STARTED)){
 							wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 						} else if (stateInt.equals(BuildState.BUILD_INTERRUPTED)){
@@ -91,23 +95,23 @@ public class WebHookListener extends BuildServerAdapter {
 							wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 						} else if (stateInt.equals(BuildState.BUILD_FINISHED)){
 							if (sRunningBuild.getBuildStatus().isFailed()
-									&& BuildState.enabled(BuildState.BUILD_BROKEN, wh.getEventListBitMask())
+									&& BuildState.exactly(BuildState.BUILD_BROKEN, wh.getEventListBitMask())
 									&& this.hasBuildChangedHistoricalState(sRunningBuild) ){
 								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 							} else if (sRunningBuild.getBuildStatus().isSuccessful()
-									&& BuildState.enabled(BuildState.BUILD_FIXED, wh.getEventListBitMask())
+									&& BuildState.exactly(BuildState.BUILD_FIXED, wh.getEventListBitMask())
 									&& this.hasBuildChangedHistoricalState(sRunningBuild) ){
 								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
 							} else if (sRunningBuild.getBuildStatus().isFailed()
-									&& BuildState.enabled(BuildState.BUILD_FAILED, wh.getEventListBitMask())
+									&& BuildState.exactly(BuildState.BUILD_FAILED, wh.getEventListBitMask())
 									&& !this.hasBuildChangedHistoricalState(sRunningBuild)){
 								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));;
 							} else if (sRunningBuild.getBuildStatus().isSuccessful()
-									&& BuildState.enabled(BuildState.BUILD_SUCCESSFUL, wh.getEventListBitMask())
+									&& BuildState.exactly(BuildState.BUILD_SUCCESSFUL, wh.getEventListBitMask())
 									&& !this.hasBuildChangedHistoricalState(sRunningBuild)){
 								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));;
-//							} else {
-//								wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							} else {
+								wh.setEnabled(false);
 							}
 						}
 						
@@ -128,22 +132,27 @@ public class WebHookListener extends BuildServerAdapter {
     	}
 	}
 
+	@Override
     public void buildStarted(SRunningBuild sRunningBuild){
     	processBuildEvent(sRunningBuild, BuildState.BUILD_STARTED);
     }	
 	
+    @Override
     public void buildFinished(SRunningBuild sRunningBuild){
     	processBuildEvent(sRunningBuild, BuildState.BUILD_FINISHED);
     }    
 
+    @Override
     public void buildInterrupted(SRunningBuild sRunningBuild) {
     	processBuildEvent(sRunningBuild, BuildState.BUILD_INTERRUPTED);
     }      
 
+    @Override
     public void beforeBuildFinish(SRunningBuild sRunningBuild) {
     	processBuildEvent(sRunningBuild, BuildState.BEFORE_BUILD_FINISHED);
 	}
     
+    @Override
     public void buildChangedStatus(SRunningBuild sRunningBuild, Status oldStatus, Status newStatus) {
     	WebHookProjectSettings projSettings = 
     		(WebHookProjectSettings) mySettings.getSettings(sRunningBuild.getProjectId(), "webhooks");
@@ -175,6 +184,7 @@ public class WebHookListener extends BuildServerAdapter {
     	}
     }
 
+    @Override
     public void responsibleChanged(@NotNull SBuildType sBuildType, 
     		@NotNull ResponsibilityInfo responsibilityInfoOld, @NotNull ResponsibilityInfo responsibilityInfoNew, boolean isUserAction) {
      	WebHookProjectSettings projSettings = 
@@ -212,6 +222,23 @@ public class WebHookListener extends BuildServerAdapter {
      	}
      }
 
+	@Override
+	public void responsibleChanged(SProject project,
+			Collection<TestName> testNames, ResponsibilityEntry entry,
+			boolean isUserAction) {
+		// TODO Auto-generated method stub
+		super.responsibleChanged(project, testNames, entry, isUserAction);
+	}
+
+	@Override
+	public void responsibleChanged(SProject project,
+			TestNameResponsibilityEntry oldValue,
+			TestNameResponsibilityEntry newValue, boolean isUserAction) {
+		// TODO Auto-generated method stub
+		super.responsibleChanged(project, oldValue, newValue, isUserAction);
+	}
+    
+    
 	private void doPost(WebHook wh, Integer bitMask, String payloadFormat) {
 		try {
 			/* Get the mask from the webhook.
@@ -222,7 +249,7 @@ public class WebHookListener extends BuildServerAdapter {
 			 *  we are triggering on. If the result is greater than
 			 *  zero, fire off the webhook.
 			 */
-			if (BuildState.enabled(wh.getEventListBitMask(), bitMask)){
+			if (BuildState.enabled(wh.getEventListBitMask(), bitMask) && wh.isEnabled()){
 				wh.post();
 				Loggers.SERVER.debug(this.getClass().getSimpleName() + ":doPost :: WebHook triggered : " 
 						+ wh.getUrl() + " using format " + payloadFormat 

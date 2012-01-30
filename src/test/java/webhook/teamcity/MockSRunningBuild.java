@@ -1,12 +1,16 @@
 package webhook.teamcity;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import jetbrains.buildServer.StatusDescriptor;
+import jetbrains.buildServer.issueTracker.Issue;
 import jetbrains.buildServer.messages.BuildMessage1;
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
 import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.BuildRevision;
@@ -19,9 +23,14 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.ShortStatistics;
 import jetbrains.buildServer.serverSide.TriggeredBy;
+import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts;
+import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
+import jetbrains.buildServer.serverSide.artifacts.SArtifactDependency;
 import jetbrains.buildServer.serverSide.buildLog.BuildLog;
 import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.serverSide.impl.RunningBuildState;
+import jetbrains.buildServer.serverSide.problems.BuildProblem;
+import jetbrains.buildServer.serverSide.problems.BuildProblemsVisitor;
 import jetbrains.buildServer.serverSide.userChanges.CanceledInfo;
 import jetbrains.buildServer.serverSide.vcs.VcsLabel;
 import jetbrains.buildServer.tests.TestInfo;
@@ -31,7 +40,7 @@ import jetbrains.buildServer.users.UserSet;
 import jetbrains.buildServer.vcs.SVcsModification;
 import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
 import jetbrains.buildServer.vcs.VcsException;
-import jetbrains.buildServer.vcs.VcsRootEntry;
+import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 
 public class MockSRunningBuild implements SRunningBuild {
 
@@ -266,11 +275,6 @@ public class MockSRunningBuild implements SRunningBuild {
 		return null;
 	}
 
-	public List<VcsRootEntry> getVcsRootEntries() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public boolean isArtifactsExists() {
 		// TODO Auto-generated method stub
 		return false;
@@ -414,6 +418,91 @@ public class MockSRunningBuild implements SRunningBuild {
 	public long getEstimationForTimeLeft() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public List<SArtifactDependency> getArtifactDependencies() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public BuildArtifacts getArtifacts(BuildArtifactsViewMode arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> getBuildOwnParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<BuildProblem> getBuildProblems() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getFirstInternalError() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getFirstInternalErrorMessage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getRawBuildNumber() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<Issue> getRelatedIssues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isInternalError() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isStartedOnAgent() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setTags(User arg0, List<String> arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void visitBuildProblems(BuildProblemsVisitor arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public List<String> getCompilationErrorMessages() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<TestInfo> getTestMessages(int arg0, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ParametersProvider getParametersProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isOutdated() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public List<VcsRootInstanceEntry> getVcsRootEntries() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

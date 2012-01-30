@@ -1,13 +1,12 @@
 package webhook.teamcity.settings;
 
 
+import static org.mockito.Mockito.mock;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 public class WebHookProjectSettingsTest {
 	ProjectSettingsManager psm = mock(ProjectSettingsManager.class);

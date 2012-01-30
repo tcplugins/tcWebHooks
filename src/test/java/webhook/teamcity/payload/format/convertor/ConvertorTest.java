@@ -1,12 +1,12 @@
 package webhook.teamcity.payload.format.convertor;
 
-import static org.junit.Test.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToXmlConvertor;
 

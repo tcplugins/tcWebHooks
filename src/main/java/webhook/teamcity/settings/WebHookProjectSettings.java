@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.settings.ProjectSettings;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.jdom.Element;
+
+import webhook.teamcity.Loggers;
+
 
 public class WebHookProjectSettings implements ProjectSettings {
 	ProjectSettingsManager psm;

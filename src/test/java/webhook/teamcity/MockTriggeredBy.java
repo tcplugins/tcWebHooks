@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jetbrains.buildServer.serverSide.TriggeredBy;
 import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.util.filters.Filter;
 
 public class MockTriggeredBy implements TriggeredBy {
 
@@ -41,6 +42,11 @@ public class MockTriggeredBy implements TriggeredBy {
 	public boolean isTriggeredByUser() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public String getAsString(Filter<String> arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

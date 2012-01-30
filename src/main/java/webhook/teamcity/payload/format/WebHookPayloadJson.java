@@ -3,6 +3,7 @@
  */
 package webhook.teamcity.payload.format;
 
+import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
@@ -10,7 +11,7 @@ import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 
-public class WebHookPayloadJson extends WebHookPayloadGeneric {
+public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHookPayload {
 	
 	Integer rank = 100;
 	String charset = "UTF-8";
