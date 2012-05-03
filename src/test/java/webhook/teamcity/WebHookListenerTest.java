@@ -109,7 +109,7 @@ public class WebHookListenerTest {
 	@Test
 	public void testBuildStartedSRunningBuild() throws FileNotFoundException, IOException {
 		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.ALL_ENABLED, "JSON");
-		when(webhook.getEventListBitMask()).thenReturn(BuildState.ALL_ENABLED);
+		when(webhook.isEnabled()).thenReturn(true);
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.buildStarted(sRunningBuild);

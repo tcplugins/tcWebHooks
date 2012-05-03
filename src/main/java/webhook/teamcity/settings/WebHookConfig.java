@@ -1,5 +1,15 @@
 package webhook.teamcity.settings;
 
+import static webhook.teamcity.BuildStateEnum.BEFORE_BUILD_FINISHED;
+import static webhook.teamcity.BuildStateEnum.BUILD_BROKEN;
+import static webhook.teamcity.BuildStateEnum.BUILD_FAILED;
+import static webhook.teamcity.BuildStateEnum.BUILD_FINISHED;
+import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
+import static webhook.teamcity.BuildStateEnum.BUILD_INTERRUPTED;
+import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
+import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
+import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -9,15 +19,17 @@ import java.util.TreeMap;
 import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.settings.convertor.WebHookBuildStateConvertor;
 
 
 public class WebHookConfig {
 	private SortedMap<String,String> extraParameters;
 	private Boolean enabled = true;
-	private Integer statemask = BuildState.ALL_ENABLED; // Enable all eight bits by default. 
 	private String uniqueKey = "";
 	private String url;
 	private String payloadFormat = null;
+	private BuildState states = new BuildState();
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e){
@@ -36,30 +48,7 @@ public class WebHookConfig {
 		}
 
 		if (e.getAttribute("statemask") != null){
-			this.setStatemask(Integer.parseInt(e.getAttributeValue("statemask")));
-			
-			// upgrade from old bit mask to new bit mask.
-			int oldState = statemask;
-			if (BuildState.enabled(BuildState.BUILD_FINISHED, oldState)){
-				// Remove the BUILD_FINISHED and BUILD_CHANGED_STATUS states by 
-				// ANDing with ALL_ENABLED which has BUILD_FINISHED and 
-				// BUILD_CHANGED_STATUS set to zero.
-				this.statemask = (this.statemask & BuildState.ALL_ENABLED);
-				// Now OR with SUCCESSFUL
-				this.statemask = (this.statemask | BuildState.BUILD_SUCCESSFUL);
-				// and OR with FAILED
-				this.statemask = (this.statemask | BuildState.BUILD_FAILED);
-			}
-			
-			// upgrade from old bit mask to new bit mask for BUILD_CHANGED_STATUS
-			// Most times, we'll end up doing it twice, but it's better than none.
-			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS, oldState)){
-				// Remove the BUILD_FINISHED and BUILD_CHANGED_STATUS states by 
-				// ANDing with ALL_ENABLED which has BUILD_FINISHED and 
-				// BUILD_CHANGED_STATUS set to zero.
-				this.statemask = (this.statemask & BuildState.ALL_ENABLED);
-			}
-			
+			this.setBuildStates(WebHookBuildStateConvertor.convert(Integer.parseInt(e.getAttributeValue("statemask"))));
 		}
 
 		if (e.getAttribute("key") != null){
@@ -71,6 +60,21 @@ public class WebHookConfig {
 		} else {
 			// Set to nvpairs by default for backward compatibility.
 			this.setPayloadFormat("nvpairs");
+		}
+		
+		if(e.getChild("states") != null){
+			Element eStates = e.getChild("states");
+			List<Element> statesList = eStates.getChildren("state");
+			if (statesList.size() > 0){
+				for(Iterator<Element> state = statesList.iterator(); state.hasNext();)
+				{
+					Element eState = state.next();
+						states.setEnabled(
+									BuildStateEnum.findBuildState(eState.getAttributeValue("type")), 
+									Boolean.getBoolean(eState.getAttributeValue("enabled"))
+								);
+				}
+			}
 		}
 		
 		if(e.getChild("parameters") != null){
@@ -100,14 +104,14 @@ public class WebHookConfig {
 	 * @param stateMask
 	 * @param payloadFormat (unvalidated)
 	 */
-	public WebHookConfig (String url, Boolean enabled, Integer stateMask, String payloadFormat){
+	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
 		this.extraParameters = new TreeMap<String,String>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
-		this.setStatemask(stateMask);
+		this.setBuildStates(states);
 		this.setPayloadFormat(payloadFormat);
 	}
 
@@ -133,8 +137,16 @@ public class WebHookConfig {
 		Element el = new Element("webhook");
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute("enabled", String.valueOf(this.enabled));
-		el.setAttribute("statemask", String.valueOf(this.statemask));
 		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
+		
+		Element statesEl = new Element("states");
+		for (BuildStateEnum state : states.getStateSet()){
+			Element e = new Element("state");
+			e.setAttribute("type", state.getShortName());
+			e.setAttribute("enabled", Boolean.toString(states.enabled(state)));
+			statesEl.addContent(e);
+		}
+		el.addContent(statesEl);
 		
 		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
@@ -164,12 +176,12 @@ public class WebHookConfig {
 		this.enabled = enabled;
 	}
 
-	public Integer getStatemask() {
-		return statemask;
+	public BuildState getBuildStates() {
+		return states;
 	}
 
-	public void setStatemask(Integer statemask) {
-		this.statemask = statemask;
+	public void setBuildStates(BuildState states) {
+		this.states = states;
 	}
 
 	public String getUrl() {
@@ -191,13 +203,13 @@ public class WebHookConfig {
 	public String getEnabledListAsString(){
 		if (!this.enabled){
 			return "Disabled";
-		} else if (this.statemask.equals(BuildState.ALL_ENABLED)){
+		} else if (states.allEnabled()){
 			return "All Builds";
-		} else if (this.statemask.equals(0)) {
+		} else if (states.noneEnabled()) {
 			return "None";
 		} else {
 			String enabledStates = "";
-			if (BuildState.enabled(BuildState.BUILD_STARTED,this.statemask)){
+			if (states.enabled(BuildStateEnum.BUILD_STARTED)){
 				enabledStates += ", Build Started";
 			}
 //			if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
@@ -206,24 +218,24 @@ public class WebHookConfig {
 //			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
 //				enabledStates += ", Build Changed Status";
 //			}
-			if (BuildState.enabled(BuildState.BUILD_INTERRUPTED,this.statemask)){
+			if (states.enabled(BuildStateEnum.BUILD_INTERRUPTED)){
 				enabledStates += ", Build Interrupted";
 			}
-			if (BuildState.enabled(BuildState.BEFORE_BUILD_FINISHED,this.statemask)){
+			if (states.enabled(BuildStateEnum.BEFORE_BUILD_FINISHED)){
 				enabledStates += ", Build Almost Completed";
 			}
-			if (BuildState.enabled(BuildState.RESPONSIBILITY_CHANGED,this.statemask)){
+			if (states.enabled(BuildStateEnum.RESPONSIBILITY_CHANGED)){
 				enabledStates += ", Build Responsibility Changed";
 			}
-			if (BuildState.enabled(BuildState.BUILD_FAILED,this.statemask)){
-				if (BuildState.enabled(BuildState.BUILD_BROKEN, this.statemask)){
+			if (states.enabled(BuildStateEnum.BUILD_FAILED)){
+				if (states.enabled(BuildStateEnum.BUILD_BROKEN)){
 					enabledStates += ", Build Broken";
 				} else {
 					enabledStates += ", Build Failed";
 				}
 			}
-			if (BuildState.enabled(BuildState.BUILD_SUCCESSFUL,this.statemask)){
-				if (BuildState.enabled(BuildState.BUILD_FIXED, this.statemask)){
+			if (states.enabled(BuildStateEnum.BUILD_SUCCESSFUL)){
+				if (states.enabled(BuildStateEnum.BUILD_FIXED)){
 					enabledStates += ", Build Fixed";
 				} else {
 					enabledStates += ", Build Successful";
@@ -245,7 +257,7 @@ public class WebHookConfig {
 	}
 	
 	public String getStateAllAsChecked() {
-		if (this.statemask.equals(BuildState.ALL_ENABLED)){
+		if (states.allEnabled()){
 			return "checked ";
 		}		
 		return ""; 
@@ -261,70 +273,63 @@ public class WebHookConfig {
 	 */
 	
 	public String getStateBuildStartedAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_STARTED,this.statemask)){
+		if (states.enabled(BUILD_STARTED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildFinishedAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
-			return "checked ";
-		}
-		return ""; 
-	}
-
-	public String getStateBuildChangedStatusAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
+		if (states.enabled(BUILD_FINISHED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 
 	public String getStateBeforeFinishedAsChecked() {
-		if (BuildState.enabled(BuildState.BEFORE_BUILD_FINISHED,this.statemask)){
+		if (states.enabled(BEFORE_BUILD_FINISHED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 
 	public String getStateResponsibilityChangedAsChecked() {
-		if (BuildState.enabled(BuildState.RESPONSIBILITY_CHANGED,this.statemask)){
+		if (states.enabled(RESPONSIBILITY_CHANGED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 
 	public String getStateBuildInterruptedAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_INTERRUPTED,this.statemask)){
+		if (states.enabled(BUILD_INTERRUPTED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildSuccessfulAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_SUCCESSFUL,this.statemask)){
+		if (states.enabled(BUILD_SUCCESSFUL)){
 			return "checked ";
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildFixedAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_FIXED,this.statemask)){
+		if (states.enabled(BUILD_FIXED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildFailedAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_FAILED,this.statemask)){
+		if (states.enabled(BUILD_FAILED)){
 			return "checked ";
 		}
 		return ""; 
 	}
 
 	public String getStateBuildBrokenAsChecked() {
-		if (BuildState.enabled(BuildState.BUILD_BROKEN,this.statemask)){
+		if (states.enabled(BUILD_BROKEN)){
 			return "checked ";
 		}
 		return ""; 

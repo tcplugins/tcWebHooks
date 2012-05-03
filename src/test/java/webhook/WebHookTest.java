@@ -17,6 +17,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
 
@@ -37,12 +38,11 @@ public class WebHookTest{
 	
 	@Test
 	public void test_BuildStates(){
-		assertTrue(BuildState.getShortName(BuildState.BUILD_STARTED).equals("buildStarted"));
-		assertTrue(BuildState.getShortName(BuildState.BUILD_FINISHED).equals("buildFinished"));
-		assertTrue(BuildState.getShortName(BuildState.BUILD_CHANGED_STATUS).equals("statusChanged"));
-		assertTrue(BuildState.getShortName(BuildState.BEFORE_BUILD_FINISHED).equals("beforeBuildFinish"));
-		assertTrue(BuildState.getShortName(BuildState.RESPONSIBILITY_CHANGED).equals("responsibilityChanged"));
-		assertTrue(BuildState.getShortName(BuildState.BUILD_INTERRUPTED).equals("buildInterrupted"));
+		assertTrue(BuildStateEnum.BUILD_STARTED.getShortName().equals("buildStarted"));
+		assertTrue(BuildStateEnum.BUILD_FINISHED.getShortName().equals("buildFinished"));
+		assertTrue(BuildStateEnum.BEFORE_BUILD_FINISHED.getShortName().equals("beforeBuildFinish"));
+		assertTrue(BuildStateEnum.RESPONSIBILITY_CHANGED.getShortName().equals("responsibilityChanged"));
+		assertTrue(BuildStateEnum.BUILD_INTERRUPTED.getShortName().equals("buildInterrupted"));
 
 		
 	}
@@ -105,29 +105,6 @@ public class WebHookTest{
 		System.out.println(w.getContent());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_OK);
-	}
-	
-	@Test
-	public void test_TriggerStateMasks(){
-/*	    public static final Integer BUILD_STARTED  		= Integer.parseInt("00000001",2);
-	    public static final Integer BUILD_FINISHED 		= Integer.parseInt("00000010",2);
-	    public static final Integer BUILD_CHANGED_STATUS 	= Integer.parseInt("00000100",2);
-	    public static final Integer BEFORE_BUILD_FINISHED 	= Integer.parseInt("00001000",2);
-	    public static final Integer RESPONSIBILITY_CHANGED = Integer.parseInt("00010000",2);
-	    public static final Integer BUILD_INTERRUPTED 		= Integer.parseInt("00100000",2);
-*/		
-		System.out.println((Integer.parseInt("11111111",2) & BuildState.BUILD_STARTED));
-		assertTrue((Integer.parseInt("11111111",2) & BuildState.BUILD_STARTED)  		== Integer.parseInt("00000001",2));
-		System.out.println((Integer.parseInt("11111111",2) & BuildState.BUILD_FINISHED));
-		assertTrue((Integer.parseInt("11111111",2) & BuildState.BUILD_FINISHED) 		== Integer.parseInt("00000010",2));
-		System.out.println((Integer.parseInt("11111111",2) & BuildState.BUILD_CHANGED_STATUS));
-		assertTrue((Integer.parseInt("11111111",2) & BuildState.BUILD_CHANGED_STATUS)  	== Integer.parseInt("00000100",2));
-		System.out.println((Integer.parseInt("11111111",2) & BuildState.BEFORE_BUILD_FINISHED));
-		assertTrue((Integer.parseInt("11111111",2) & BuildState.BEFORE_BUILD_FINISHED)  == Integer.parseInt("00001000",2));
-		System.out.println((Integer.parseInt("11111111",2) & BuildState.RESPONSIBILITY_CHANGED));
-		assertTrue((Integer.parseInt("11111111",2) & BuildState.RESPONSIBILITY_CHANGED) == Integer.parseInt("00010000",2));
-		System.out.println((Integer.parseInt("11111111",2) & BuildState.BUILD_INTERRUPTED));
-		assertTrue((Integer.parseInt("11111111",2) & BuildState.BUILD_INTERRUPTED)  	== Integer.parseInt("00100000",2));
 	}
 	
 	@Test
@@ -357,9 +334,7 @@ public class WebHookTest{
 		for (Iterator<WebHook> i = whc.getWebHooksAsCollection().iterator(); i.hasNext();){
 			WebHook wh = i.next();
 			try {
-				if (BuildState.enabled(wh.getEventListBitMask(), BuildState.ALL_ENABLED)){
 					wh.post();					
-				}
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				//Loggers.SERVER.error(e.toString());

@@ -103,16 +103,11 @@ public interface WebHookPayload {
 	 */
     String beforeBuildFinish(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters);
     
-    /**
-	 * Extracts the required information from the sRunningBuild, oldStatus, newStatus and extraParameters 
-	 * configured in the webhook or build parameters and returns a String of the WebHook payload.
-	 * 
-	 * @param sRunningBuild
-     * @param oldStatus
-     * @param newStatus
-     * @param extraParameters
-     * @return Formatted payload for the WebHook to send for the buildChangedStatus event.
-     */
+	/**
+	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
+	 * It will no longer be called by the WebHookListener
+	 */
+	@Deprecated
     String buildChangedStatus(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
     		Status oldStatus, 
     		Status newStatus, 

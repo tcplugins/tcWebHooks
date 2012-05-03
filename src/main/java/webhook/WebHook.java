@@ -3,8 +3,13 @@ package webhook;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.NameValuePair;
+
+import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.BuildStateInterface;
 
 public interface WebHook {
 
@@ -56,9 +61,12 @@ public interface WebHook {
 
 	public abstract void setErrorReason(String errorReason);
 
-	public abstract Integer getEventListBitMask();
-
-	public abstract void setTriggerStateBitMask(Integer triggerStateBitMask);
+	public abstract BuildState getBuildStates();
+	
+	public abstract void setBuildStates(BuildState states);
+	
+	//public abstract Integer getEventListBitMask();
+	//public abstract void setTriggerStateBitMask(Integer triggerStateBitMask);
 
 	public abstract String getProxyUsername();
 

@@ -47,9 +47,9 @@ public class WebHookCollection {
             	if (webHooks.containsKey(this.convertToInt(tokens[WEBHOOK_ID]))){
             		if (tokens[WEBHOOK_KEY].equals("url")){
             			webHooks.get(this.convertToInt(tokens[WEBHOOK_ID])).setUrl(val);
-            		} else if ((tokens[WEBHOOK_KEY].equals("bitmask"))
-            				&& (this.canConvertToInt(val))){
-                		webHooks.get(this.convertToInt(tokens[WEBHOOK_ID])).setTriggerStateBitMask(this.convertToInt(val));            			
+//            		} else if ((tokens[WEBHOOK_KEY].equals("bitmask"))
+//            				&& (this.canConvertToInt(val))){
+//                		webHooks.get(this.convertToInt(tokens[WEBHOOK_ID])).setTriggerStateBitMask(this.convertToInt(val));            			
             		} else if (tokens[WEBHOOK_KEY].equals("enabled")){
             			webHooks.get(this.convertToInt(tokens[WEBHOOK_ID])).setEnabled(val);
             		} else if (tokens[WEBHOOK_KEY].equals("parameter") 
@@ -73,11 +73,11 @@ public class WebHookCollection {
 	            	if (tokens[WEBHOOK_KEY].equals("url")){
 	            		WebHook wh = new WebHookImpl(val);
 	            		this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
-            		} else if ((tokens[WEBHOOK_KEY].equals("bitmask"))
-            				&& (this.canConvertToInt(val))){
-            			WebHook wh = new WebHookImpl();
-                		wh.setTriggerStateBitMask(this.convertToInt(val)); 	 
-                		this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
+//            		} else if ((tokens[WEBHOOK_KEY].equals("bitmask"))
+//            				&& (this.canConvertToInt(val))){
+//            			WebHook wh = new WebHookImpl();
+//                		wh.setTriggerStateBitMask(this.convertToInt(val)); 	 
+//                		this.webHooks.put(this.convertToInt(tokens[WEBHOOK_ID]), wh);
 	            	} else if (tokens[WEBHOOK_KEY].equals("enabled")){
 	            		WebHook wh = new WebHookImpl();
             			wh.setEnabled(true);

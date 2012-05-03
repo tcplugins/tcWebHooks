@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <webhooks enabled="false">
+    <webhook enabled="true" url="http://something" statemask="255">
+      <parameters>
+	    <param name="foo" value="bar" />
+      </parameters>
+      <states>
+      	<state type="buildStarted" enabled="true" />
+      	<state type="buildFinished" enabled="true" onlyBuildFailed="true" onlyBuildFixed="true" onlyBuildFixed="true" />
+		<state type="beforeBuildFinish" enabled="true" />
+		<state type="responsibilityChanged" enabled="true" />
+		<state type="buildInterrupted" enabled="true" />
+		<state type="buildSuccessful" enabled="true" />
+      </states>
+    </webhook>
+    <webhook enabled="true" url="http://localhost.local.network/webhook/test/test">
+      <parameters>
+	    <param name="fromTeamCity" value="%system.test.1%" />
+      </parameters>
+      <states>
+      	<state type="buildStarted" enabled="false" />
+      	<state type="buildFinished" enabled="false" onlyBuildFailed="false" onlyBuildFixed="false" onlyBuildFixed="false" />
+		<state type="beforeBuildFinish" enabled="false" />
+		<state type="responsibilityChanged" enabled="false" />
+		<state type="buildInterrupted" enabled="false" />
+		<state type="buildSuccessful" enabled="false" />
+      </states>
+    </webhook>
+    <webhook enabled="false" url="http://localhost.local.network/webhook/test/teamcity" />
+      <states>
+      	<state type="buildStarted" enabled="true" />
+      	<state type="buildFinished" enabled="true" onlyBuildFailed="true" onlyBuildFixed="true" onlyBuildFixed="true" />
+		<state type="beforeBuildFinish" enabled="true" />
+		<state type="responsibilityChanged" enabled="true" />
+		<state type="buildInterrupted" enabled="true" />
+		<state type="buildSuccessful" enabled="true" />
+      </states>
+  </webhooks>
+</settings>

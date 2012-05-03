@@ -10,6 +10,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
 
 public class WebHookPayloadContent {
@@ -36,13 +37,13 @@ public class WebHookPayloadContent {
 		ExtraParametersMap extraParameters;
 		
 		
-		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, Integer buildState, SortedMap<String, String> extraParameters) {
+		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, BuildStateEnum buildState, SortedMap<String, String> extraParameters) {
 			populateCommonContent(server, buildType, buildState);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
 		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
-				Integer buildState, 
+				BuildStateEnum buildState, 
 				SortedMap<String, String> extraParameters) {
 			
     		populateCommonContent(server, sRunningBuild, previousBuild, buildState);
@@ -57,8 +58,8 @@ public class WebHookPayloadContent {
 			
 		}
 
-		private void populateCommonContent(SBuildServer server, SBuildType buildType, Integer buildState) {
-			setNotifyType(BuildState.getShortName(buildState));
+		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state) {
+			setNotifyType(state.getShortName());
 			setBuildRunner(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
 			setBuildName(buildType.getName());
@@ -69,22 +70,22 @@ public class WebHookPayloadContent {
 		}
 		
 		private void populateMessageAndText(SRunningBuild sRunningBuild,
-				Integer buildState) {
+				BuildStateEnum state) {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
-    				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". This is build number " + sRunningBuild.getBuildNumber() 
+    				+ " has " + state.getDescriptionSuffix() + ". This is build number " + sRunningBuild.getBuildNumber() 
     				+ ", has a status of \"" + this.buildResult + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
     		
 			// Text is designed to be shorter, for use in Text messages and the like.    		
     		setText(sRunningBuild.getBuildType().getFullName().toString() 
-    				+ " has " + BuildState.getDescriptionSuffix(buildState) + ". Status: " + this.buildResult);
+    				+ " has " + state.getDescriptionSuffix() + ". Status: " + this.buildResult);
 		}
 
 		private void populateCommonContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
-				Integer buildState) {
+				BuildStateEnum buildState) {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
-    		setNotifyType(BuildState.getShortName(buildState));
+    		setNotifyType(buildState.getShortName());
     		setBuildRunner(sRunningBuild.getBuildType().getBuildRunners());
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
     		setBuildName(sRunningBuild.getBuildType().getName());
@@ -101,7 +102,7 @@ public class WebHookPayloadContent {
 		}
 		
 		private void setBuildResult(SRunningBuild sRunningBuild,
-				SFinishedBuild previousBuild, Integer buildState) {
+				SFinishedBuild previousBuild, BuildStateEnum buildState) {
 
 			if (previousBuild != null){
 				if (previousBuild.isFinished()){ 
@@ -117,7 +118,7 @@ public class WebHookPayloadContent {
 				this.buildResultPrevious = WebHookPayload.BUILD_STATUS_UNKNOWN;
 			}
 
-			if (buildState == BuildState.BEFORE_BUILD_FINISHED || buildState == BuildState.BUILD_FINISHED){ 
+			if (buildState == BuildStateEnum.BEFORE_BUILD_FINISHED || buildState == BuildStateEnum.BUILD_FINISHED){ 
 				if (sRunningBuild.getStatusDescriptor().isSuccessful()){
 					this.buildResult = WebHookPayload.BUILD_STATUS_SUCCESS;
 					if (this.buildResultPrevious.equals(this.buildResult)){

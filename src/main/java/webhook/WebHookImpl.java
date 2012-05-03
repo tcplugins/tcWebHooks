@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -17,6 +18,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.BuildStateInterface;
 
 
 public class WebHookImpl implements WebHook {
@@ -36,11 +39,12 @@ public class WebHookImpl implements WebHook {
 	private Boolean errored = false;
 	private String errorReason = "";
 	private List<NameValuePair> params;
+	private BuildState states;
 	
 /*	This is a bit mask of states that should trigger a WebHook.
  *  All ones (11111111) means that all states will trigger the webhook
  *  We'll set that as the default, and then override if we get a more specific bit mask. */ 
-	private Integer EventListBitMask = BuildState.ALL_ENABLED;
+	//private Integer EventListBitMask = BuildState.ALL_ENABLED;
 	//private Integer EventListBitMask = Integer.parseInt("0",2);
 	
 	
@@ -233,13 +237,13 @@ public class WebHookImpl implements WebHook {
 		this.errorReason = errorReason;
 	}
 
-	public Integer getEventListBitMask() {
-		return EventListBitMask;
-	}
-
-	public void setTriggerStateBitMask(Integer triggerStateBitMask) {
-		EventListBitMask = triggerStateBitMask;
-	}
+//	public Integer getEventListBitMask() {
+//		return EventListBitMask;
+//	}
+//
+//	public void setTriggerStateBitMask(Integer triggerStateBitMask) {
+//		EventListBitMask = triggerStateBitMask;
+//	}
 
 	public String getProxyUsername() {
 		return proxyUsername;
@@ -272,5 +276,15 @@ public class WebHookImpl implements WebHook {
 
 	public void setCharset(String charset) {
 		this.charset = charset;
+	}
+
+	@Override
+	public BuildState getBuildStates() {
+		return states;
+	}
+
+	@Override
+	public void setBuildStates(BuildState states) {
+		this.states = states;
 	}
 }

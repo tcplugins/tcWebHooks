@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -46,14 +47,12 @@ public class WebHookAjaxEditPageController extends BaseController {
 	      myWebManager.registerController("/webhooks/ajaxEdit.html", this);
 	    }
 	    
-	    private Integer checkAndAddBuildState(HttpServletRequest r, Integer myRunningTotal, Integer myBuildState, String varName){
-	    	if(myRunningTotal.equals(BuildState.ALL_ENABLED.intValue())){
-	    		return BuildState.ALL_ENABLED;
-	    	} else if ((r.getParameter(varName) != null)
+	    private void checkAndAddBuildState(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
+	    	if ((r.getParameter(varName) != null)
 	    		&& (r.getParameter(varName).equalsIgnoreCase("on"))){
-	    		return myRunningTotal + myBuildState;
+	    		state.enable(myBuildState);
 	    	} else {
-		    	return myRunningTotal;
+	    		state.disable(myBuildState);;
 	    	}
 	    }
 
@@ -99,21 +98,23 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								&& (request.getParameter("webHooksEnabled").equalsIgnoreCase("on"))){
 			    							enabled = true;
 			    						}
+			    						BuildState states = new BuildState();
+			    						
 			    						//runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.ALL_ENABLED, "selectAll");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_SUCCESSFUL, "BuildSuccessful");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_FAILED, "BuildFailed");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_FIXED, "BuildFixed");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_BROKEN, "BuildBroken");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_STARTED, "BuildStarted");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_INTERRUPTED, "BuildInterrupted");	
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BEFORE_BUILD_FINISHED, "BeforeFinished");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_FINISHED, "BuildFinished");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_CHANGED_STATUS, "StatusChanged");
-			    						runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, "BuildSuccessful");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, "BuildFailed");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, "BuildFixed");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, "BuildBroken");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, "BuildStarted");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, "BuildInterrupted");	
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, "BeforeFinished");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildFinished");
+			    						//runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_CHANGED_STATUS, "StatusChanged");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
-			    														runningTotal,request.getParameter("payloadFormat"));
+			    														states,request.getParameter("payloadFormat"));
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -123,7 +124,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														runningTotal, request.getParameter("payloadFormat"));
+			    														states, request.getParameter("payloadFormat"));
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
