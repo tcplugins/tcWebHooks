@@ -1,9 +1,9 @@
-package webhook.teamcity.settings.convertor;
+package webhook.teamcity.settings.converter;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 
-public class WebHookBuildStateConvertor {
+public class WebHookBuildStateConverter {
 
 	public static BuildState convert(Integer oldState){
 		BuildState newStates = new BuildState();
