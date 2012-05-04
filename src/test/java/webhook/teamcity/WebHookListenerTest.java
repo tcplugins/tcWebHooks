@@ -108,8 +108,9 @@ public class WebHookListenerTest {
 
 	@Test
 	public void testBuildStartedSRunningBuild() throws FileNotFoundException, IOException {
-		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.ALL_ENABLED, "JSON");
-		when(webhook.isEnabled()).thenReturn(true);
+		BuildState state = new BuildState().setAllEnabled();
+		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON");
+		when(webhook.isEnabled()).thenReturn(state.allEnabled());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.buildStarted(sRunningBuild);
@@ -118,8 +119,9 @@ public class WebHookListenerTest {
 
 	@Test
 	public void testBuildFinishedSRunningBuild() throws FileNotFoundException, IOException {
-		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.ALL_ENABLED, "JSON");
-		when(webhook.getEventListBitMask()).thenReturn(BuildState.ALL_ENABLED);
+		BuildState state = new BuildState().setAllEnabled();
+		projSettings.addNewWebHook("1234", "http://text/test", true, state , "JSON");
+		when(webhook.isEnabled()).thenReturn(state.allEnabled());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.buildFinished(sRunningBuild);
@@ -128,8 +130,12 @@ public class WebHookListenerTest {
 	
 	@Test
 	public void testBuildFinishedSRunningBuildSuccessAfterFailure() throws FileNotFoundException, IOException {
-		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.BUILD_FIXED, "JSON");
-		when(webhook.getEventListBitMask()).thenReturn(BuildState.BUILD_FIXED);
+		BuildState state = new BuildState();
+		state.enable(BuildStateEnum.BUILD_FIXED);
+		state.enable(BuildStateEnum.BUILD_FINISHED);
+		state.enable(BuildStateEnum.BUILD_SUCCESSFUL);
+		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON");
+		when(webhook.isEnabled()).thenReturn(state.enabled(BuildStateEnum.BUILD_FIXED));
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedFailedBuilds);
 		
 		whl.buildFinished(sRunningBuild);
@@ -138,8 +144,10 @@ public class WebHookListenerTest {
 	
 	@Test
 	public void testBuildFinishedSRunningBuildSuccessAfterSuccess() throws FileNotFoundException, IOException {
-		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.BUILD_FIXED, "JSON");
-		when(webhook.getEventListBitMask()).thenReturn(BuildState.BUILD_FIXED);
+		BuildState state = new BuildState();
+		state.enable(BuildStateEnum.BUILD_FIXED);
+		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON");
+		when(webhook.isEnabled()).thenReturn(state.enabled(BuildStateEnum.BUILD_FIXED));
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.buildFinished(sRunningBuild);
@@ -148,7 +156,8 @@ public class WebHookListenerTest {
 
 	@Test
 	public void testBuildInterruptedSRunningBuild() throws FileNotFoundException, IOException {
-		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.ALL_ENABLED, "JSON");
+		BuildState state = new BuildState().setAllEnabled();
+		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON");
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.buildInterrupted(sRunningBuild);
@@ -157,7 +166,9 @@ public class WebHookListenerTest {
 
 	@Test
 	public void testBeforeBuildFinishSRunningBuild() throws FileNotFoundException, IOException {
-		projSettings.addNewWebHook("1234", "http://text/test", true, BuildState.BEFORE_BUILD_FINISHED, "JSON");
+		BuildState state = new BuildState();
+		state.enable(BuildStateEnum.BEFORE_BUILD_FINISHED);
+		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON");
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.beforeBuildFinish(sRunningBuild);

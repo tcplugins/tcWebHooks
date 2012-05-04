@@ -36,12 +36,26 @@ public class WebHookPayloadContent {
 		List<String> buildRunners;
 		ExtraParametersMap extraParameters;
 		
-		
+		/**
+		 * Constructor: Only called by RepsonsibilityChanged.
+		 * @param server
+		 * @param buildType
+		 * @param buildState
+		 * @param extraParameters
+		 */
 		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, BuildStateEnum buildState, SortedMap<String, String> extraParameters) {
 			populateCommonContent(server, buildType, buildState);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
+		/**
+		 * Constructor: Called by everything except RepsonsibilityChanged.
+		 * @param server
+		 * @param sRunningBuild
+		 * @param previousBuild
+		 * @param buildState
+		 * @param extraParameters
+		 */
 		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
 				SortedMap<String, String> extraParameters) {
@@ -58,6 +72,13 @@ public class WebHookPayloadContent {
 			
 		}
 
+		/**
+		 * Used by RepsonsiblityChanged.
+		 * Therefore, does not have access to a specific build instance.
+		 * @param server
+		 * @param buildType
+		 * @param state
+		 */
 		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state) {
 			setNotifyType(state.getShortName());
 			setBuildRunner(buildType.getBuildRunners());
@@ -81,6 +102,13 @@ public class WebHookPayloadContent {
     				+ " has " + state.getDescriptionSuffix() + ". Status: " + this.buildResult);
 		}
 
+		/**
+		 * Used by everything except ResponsibilityChanged. Is passed a valid build instance. 
+		 * @param server
+		 * @param sRunningBuild
+		 * @param previousBuild
+		 * @param buildState
+		 */
 		private void populateCommonContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState) {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
@@ -101,6 +129,13 @@ public class WebHookPayloadContent {
     		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
 		}
 		
+		/**
+		 * Determines a useful build result. The one from TeamCity can't be trusted because it
+		 * is not set until all the Notifiers have run, of which we are one. 
+		 * @param sRunningBuild
+		 * @param previousBuild
+		 * @param buildState
+		 */
 		private void setBuildResult(SRunningBuild sRunningBuild,
 				SFinishedBuild previousBuild, BuildStateEnum buildState) {
 
@@ -151,12 +186,12 @@ public class WebHookPayloadContent {
 			this.buildStatus = buildStatus;
 		}
 
-		public String getBuildStatusPrevious() {
-			return buildStatusPrevious;
+		public String getBuildResultPrevious() {
+			return buildResultPrevious;
 		}
 
-		public void setBuildStatusPrevious(String buildStatusPrevious) {
-			this.buildStatusPrevious = buildStatusPrevious;
+		public void setBuildResultPrevious(String buildResultPrevious) {
+			this.buildResultPrevious = buildResultPrevious;
 		}
 
 		public String getBuildResultDelta() {

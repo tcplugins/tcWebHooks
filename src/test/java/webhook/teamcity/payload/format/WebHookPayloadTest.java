@@ -76,7 +76,7 @@ public class WebHookPayloadTest {
 		
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("json").getContentType().equals("application/json"));
-		assertTrue(wpm.getFormat("json").getFormatDescription().equals("JSON (beta)"));
+		assertTrue(wpm.getFormat("json").getFormatDescription().equals("JSON"));
 		System.out.println(wpm.getFormat("json").buildStarted(sRunningBuild, previousBuild, extraParameters));
 	}
 	

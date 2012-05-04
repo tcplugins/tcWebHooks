@@ -30,7 +30,6 @@
 						<!--input id="selectAll_${hook.uniqueKey}" type=checkbox ${hook.stateAllAsChecked}/-->
 						<input id="BuildStarted_${hook.uniqueKey}" value="BuildStarted" name="BuildStarted"  type=checkbox ${hook.stateBuildStartedAsChecked}/>
 						<input id="BuildFinished_${hook.uniqueKey}" value="BuildFinished" name="BuildFinished" type=checkbox ${hook.stateBuildFinishedAsChecked}/>
-						<input id="StatusChanged_${hook.uniqueKey}" value="StatusChanged" name="StatusChanged" type=checkbox ${hook.stateBuildChangedStatusAsChecked}/>
 						<input id="BuildInterrupted_${hook.uniqueKey}" value="BuildInterrupted" name="BuildInterrupted" type=checkbox ${hook.stateBuildInterruptedAsChecked}/>
 						<input id="BeforeFinished_${hook.uniqueKey}" value="BeforeFinished" name="BeforeFinished" type=checkbox ${hook.stateBeforeFinishedAsChecked}/>
 						<input id="ResponsibilityChanged_${hook.uniqueKey}" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox ${hook.stateResponsibilityChangedAsChecked}/>
@@ -63,7 +62,6 @@
 						<!--input id="selectAll_new" type=checkbox checked /-->
 						<input id="BuildStarted_new" value="BuildStarted" name="BuildStarted"  type=checkbox checked />
 						<input id="BuildFinished_new" value="BuildFinished" name="BuildFinished" type=checkbox checked />
-						<input id="StatusChanged_new" value="StatusChanged" name="StatusChanged" type=checkbox checked />
 						<input id="BuildInterrupted_new" value="BuildInterrupted" name="BuildInterrupted" type=checkbox checked />
 						<input id="BeforeFinished_new" value="BeforeFinished" name="BeforeFinished" type=checkbox checked />
 						<input id="ResponsibilityChanged_new" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox checked />

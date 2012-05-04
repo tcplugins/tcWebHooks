@@ -108,7 +108,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, "BuildStarted");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, "BuildInterrupted");	
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, "BeforeFinished");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildFinished");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildSuccessful");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildFailed");
 			    						//runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_CHANGED_STATUS, "StatusChanged");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 		    						

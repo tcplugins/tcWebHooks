@@ -89,10 +89,13 @@ public class WebHookListener extends BuildServerAdapter {
 						
 						if (state.equals(BuildStateEnum.BUILD_STARTED)){
 							wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
 						} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
 							wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
 						} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
 							wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whc.getParams()));
+							wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
 						} else if (state.equals(BuildStateEnum.BUILD_FINISHED)){
 							wh.setEnabled(wh.getBuildStates().enabled(
 									BuildStateEnum.BUILD_FINISHED, 

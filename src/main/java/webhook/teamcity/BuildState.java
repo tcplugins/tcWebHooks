@@ -25,7 +25,7 @@ public class BuildState {
 		states.put(BuildStateEnum.BUILD_FAILED, 			new SimpleBuildState(BuildStateEnum.BUILD_FAILED, 			false));
 
 		states.put(BuildStateEnum.BUILD_BROKEN, 			new SimpleBuildState(BuildStateEnum.BUILD_BROKEN, 			false));
-		states.put(BuildStateEnum.BUILD_FIXED, 				new SimpleBuildState(BuildStateEnum.BUILD_FAILED, 			false));
+		states.put(BuildStateEnum.BUILD_FIXED, 				new SimpleBuildState(BuildStateEnum.BUILD_FIXED, 			false));
 		
 		states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 		false)); 		
 	}
@@ -72,6 +72,27 @@ public class BuildState {
     		enable(currentBuildState);
     	else
     		disable(currentBuildState);
+    }
+    
+    /**
+     * Enable all builds for notification
+     * Note: BROKEN and FIXED restrict builds, so don't set those.
+     */
+    public BuildState setAllEnabled(){
+    	for (BuildStateEnum state : states.keySet()){
+    		switch (state){
+    		case BUILD_BROKEN:
+    			disable(state);
+    			break;
+    		case BUILD_FIXED:
+    			disable(state);
+    			break;
+    		default:
+    			enable(state);
+    			break;
+    		}
+    	}
+    	return this;
     }
     
     public void enable(BuildStateEnum currentBuildState){

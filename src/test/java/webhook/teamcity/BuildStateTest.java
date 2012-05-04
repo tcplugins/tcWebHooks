@@ -185,5 +185,12 @@ public class BuildStateTest {
 		assertFalse(state.noneEnabled());
 	}
 
+	@Test
+	public void testSetAllEnabled(){
+		BuildState state = new BuildState();
+		assertTrue(state.noneEnabled());
+		state.setAllEnabled();
+		assertTrue(state.allEnabled());
+	}
 	
 }

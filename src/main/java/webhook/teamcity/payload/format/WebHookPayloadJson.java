@@ -25,7 +25,7 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 	}
 	
 	public String getFormatDescription() {
-		return "JSON (beta)";
+		return "JSON";
 	}
 
 	public String getFormatShortName() {

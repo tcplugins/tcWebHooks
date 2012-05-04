@@ -16,11 +16,13 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.jdom.Attribute;
+import org.jdom.DataConversionException;
 import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.settings.convertor.WebHookBuildStateConvertor;
+import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 
 public class WebHookConfig {
@@ -48,7 +50,7 @@ public class WebHookConfig {
 		}
 
 		if (e.getAttribute("statemask") != null){
-			this.setBuildStates(WebHookBuildStateConvertor.convert(Integer.parseInt(e.getAttributeValue("statemask"))));
+			this.setBuildStates(WebHookBuildStateConverter.convert(Integer.parseInt(e.getAttributeValue("statemask"))));
 		}
 
 		if (e.getAttribute("key") != null){
@@ -66,13 +68,12 @@ public class WebHookConfig {
 			Element eStates = e.getChild("states");
 			List<Element> statesList = eStates.getChildren("state");
 			if (statesList.size() > 0){
-				for(Iterator<Element> state = statesList.iterator(); state.hasNext();)
+				for(Element eState : statesList)
 				{
-					Element eState = state.next();
-						states.setEnabled(
-									BuildStateEnum.findBuildState(eState.getAttributeValue("type")), 
-									Boolean.getBoolean(eState.getAttributeValue("enabled"))
-								);
+					try {
+						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue("type")), 
+										  eState.getAttribute("enabled").getBooleanValue());
+					} catch (DataConversionException e1) {e1.printStackTrace();}
 				}
 			}
 		}

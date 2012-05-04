@@ -7,6 +7,30 @@
 	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
 	<build>
 		<defaultGoal>package</defaultGoal>
+		
+		<resources>
+	      <resource>
+	        <directory>src/main/resources</directory>
+	        <filtering>false</filtering>
+	      </resource>
+	      <resource>
+	        <directory>src/main/teamcity-plugin-resources</directory>
+	        <filtering>true</filtering>
+	        <includes>
+	          <include>*.xml</include>
+	          <include>*.properties</include>
+	        </includes>
+	      </resource>
+	      <resource>
+	        <directory>src/main/teamcity-plugin-resources</directory>
+	        <filtering>false</filtering>
+	        <excludes>
+	          <exclude>*.xml</exclude>
+	          <exclude>*.properties</exclude>
+	        </excludes>
+	      </resource>
+	    </resources>
+		
 		<pluginManagement>
 			<plugins>
 			</plugins>
@@ -53,6 +77,45 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+		        <artifactId>maven-antrun-plugin</artifactId>
+		        <executions>
+		          <execution>
+		            <phase>package</phase>
+		            <configuration>
+		              <tasks>
+						<echo message="Attempting to build dist zip file" />
+						<mkdir dir="${project.build.directory}/dist" />
+						<mkdir dir="${project.build.directory}/dist/server" />
+						
+						<echo message=" - Copying resources to dist" />
+						<copy todir="${project.build.directory}/dist/">
+							<fileset dir="${project.build.directory}/classes/">
+								<include name="teamcity-plugin.xml"/>
+							</fileset>
+						</copy> 
+		
+						<echo message=" - Copying dep jar to dist/server" />
+						<copy todir="${project.build.directory}/dist/server/">
+							  <fileset dir="${project.build.directory}/">
+		    						<include name="${artifactId}-${version}.jar" />
+		    				  </fileset>
+		    			</copy>
+		    			
+		    			<echo message=" - Creating ZIP file" />
+		    			<zip destfile="${project.build.directory}/tcWebHooksPlugin-${version}.zip" 
+		    				 basedir="${project.build.directory}/dist"
+		    			 />
+		
+		               </tasks>
+		            </configuration>
+		            <goals>
+		              <goal>run</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+      		</plugin>
 		</plugins>
 	</build>
 	<reporting>

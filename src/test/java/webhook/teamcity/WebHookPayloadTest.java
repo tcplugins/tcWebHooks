@@ -73,14 +73,15 @@ public class WebHookPayloadTest {
 		whp.register();
 		WebHookProjectSettings whps = new WebHookProjectSettings();
 		
-		whps.addNewWebHook("project1", url, true, BuildState.ALL_ENABLED, "nvpairs");
+		BuildState state = new BuildState().setAllEnabled();
+		whps.addNewWebHook("project1", url, true, state, "nvpairs");
 		
     	for (WebHookConfig whc : whps.getWebHooksConfigs()){
 			WebHook wh = new WebHookImpl();
 			wh.setUrl(whc.getUrl());
 			wh.setEnabled(whc.getEnabled());
 			//webHook.addParams(webHookConfig.getParams());
-			wh.setTriggerStateBitMask(whc.getStatemask());
+			wh.setBuildStates(whc.getBuildStates());
 			//wh.setProxy(whps. getProxyConfigForUrl(whc.getUrl()));
 			//this.getFromConfig(wh, whc);
 			
@@ -93,7 +94,7 @@ public class WebHookPayloadTest {
 				wh.setContentType(payloadFormat.getContentType());
 				wh.setCharset(payloadFormat.getCharset());
 				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams()));
-				if (BuildState.enabled(wh.getEventListBitMask(), BuildState.BUILD_STARTED)){
+				if (wh.isEnabled()){
 					try {
 						wh.post();
 					} catch (FileNotFoundException e) {

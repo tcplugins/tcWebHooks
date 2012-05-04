@@ -52,7 +52,7 @@ public class WebHookPayloadJsonTest {
 	@Test
 	public void testGetFormatDescription() {
 		WebHookPayloadJson whp = new WebHookPayloadJson(null);
-		assertTrue(whp.getFormatDescription().equals("JSON (beta)".toString()));
+		assertTrue(whp.getFormatDescription().equals("JSON".toString()));
 	}
 
 	@Test

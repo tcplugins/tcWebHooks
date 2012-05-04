@@ -29,6 +29,11 @@ public enum BuildStateEnum {
 	}
 	
 	public static BuildStateEnum findBuildState(String stateString){
-		return BuildStateEnum.valueOf(stateString);
+		for (BuildStateEnum b : BuildStateEnum.values()) {
+			if (b.shortName.equalsIgnoreCase(stateString)){
+				return b;
+			}
+		}
+		return null;
 	}
 }
