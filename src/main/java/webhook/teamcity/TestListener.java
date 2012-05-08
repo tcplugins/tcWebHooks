@@ -57,6 +57,17 @@ public class TestListener extends BuildServerAdapter {
 	public void responsibleChanged(SBuildType bt, ResponsibilityInfo oldValue,
 			ResponsibilityInfo newValue, boolean isUserAction) {
 		logit("responsibleChanged(SBuildType bt, ResponsibilityInfo oldValue,	ResponsibilityInfo newValue, boolean isUserAction)");
+		String oldUser = "Nobody";
+		String newUser = "Nobody";
+		try {
+			oldUser = oldValue.getResponsibleUser().getDescriptiveName();
+		} catch (Exception e) {}
+		try {
+			newUser = newValue.getResponsibleUser().getDescriptiveName();
+		} catch (Exception e) {}
+		logit("Build " + bt.getFullName().toString()
+				+ " has changed responsibility from " 
+				+ oldUser + " to " + newUser);
 	}
 
 	@Override

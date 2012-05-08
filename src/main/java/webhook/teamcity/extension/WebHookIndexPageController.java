@@ -54,6 +54,7 @@ public class WebHookIndexPageController extends BaseController {
 	    	
 	        HashMap<String,Object> params = new HashMap<String,Object>();
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
+        	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
 	        
 	    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
 	    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");

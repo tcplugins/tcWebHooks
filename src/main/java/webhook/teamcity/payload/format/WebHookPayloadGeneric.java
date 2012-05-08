@@ -10,7 +10,6 @@ import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -72,17 +71,25 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			SortedMap<String, String> extraParameters) {
 		
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters);
+		String oldUser = "Nobody";
+		String newUser = "Nobody";
+		try {
+			oldUser = responsibilityInfoOld.getResponsibleUser().getDescriptiveName();
+		} catch (Exception e) {}
+		try {
+			newUser = responsibilityInfoNew.getResponsibleUser().getDescriptiveName();
+		} catch (Exception e) {}
 		content.setMessage("Build " + buildType.getFullName().toString()
 				+ " has changed responsibility from " 
-				+ " " + responsibilityInfoOld.getResponsibleUser().getDescriptiveName()
+				+ oldUser
 				+ " to "
-				+ responsibilityInfoNew.getResponsibleUser().getDescriptiveName()
+				+ newUser
 			);
 		content.setText(buildType.getFullName().toString()
 				+ " changed responsibility from " 
-				+ responsibilityInfoOld.getResponsibleUser().getUsername()
+				+ oldUser
 				+ " to "
-				+ responsibilityInfoNew.getResponsibleUser().getUsername()
+				+ newUser
 			);
 		
 		content.setComment(responsibilityInfoNew.getComment());

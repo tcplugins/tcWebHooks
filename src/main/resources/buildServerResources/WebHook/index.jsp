@@ -43,7 +43,9 @@
     
       
     <jsp:attribute name="body_include">
-    <script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.4.3.min.js"></script>
+    <c:if test="${includeJquery}">
+    	<script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.4.3.min.js"></script>
+    </c:if>
     <script type=text/javascript>
 		var jQueryWebhook = jQuery.noConflict();
 		jQueryWebhook(document).ready( function() {

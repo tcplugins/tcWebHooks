@@ -8,10 +8,10 @@
   		init-method="register" 
   		/>
   		
-	<bean id="testListener" 
+	<!-- bean id="testListener" 
 		class="webhook.teamcity.TestListener" 
   		init-method="register" 
-  		/>
+  		/-->
   
 	<bean id="webHookProjectTabExtension"
         class="webhook.teamcity.extension.WebHookProjectTabExtension"

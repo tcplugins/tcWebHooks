@@ -73,9 +73,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 				String pair = "&";
 				try {
 					if (key != null){
-						System.out.println(this.getClass().getSimpleName() + ": key is " + key);
 						pair += URLEncoder.encode(key, this.charset);
-						System.out.println(this.getClass().getSimpleName() + ": value is " + (String)contentMap.get(key));
 						if (contentMap.get(key) != null){
 							pair += "=" + URLEncoder.encode((String)contentMap.get(key), this.charset);
 						} else {

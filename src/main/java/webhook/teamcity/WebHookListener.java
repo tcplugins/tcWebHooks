@@ -198,17 +198,9 @@ public class WebHookListener extends BuildServerAdapter {
     
 	private void doPost(WebHook wh, String payloadFormat) {
 		try {
-			/* Get the mask from the webhook.
-			 * by default it will be all ones unless it is set 
-			 * in the options for the webhook. 
-			 * 
-			 *  Then, "AND" that with the bitmask of the event 
-			 *  we are triggering on. If the result is greater than
-			 *  zero, fire off the webhook.
-			 */
 			if (wh.isEnabled()){
 				wh.post();
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + ":doPost :: WebHook triggered : " 
+				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: WebHook triggered : " 
 						+ wh.getUrl() + " using format " + payloadFormat 
 						+ " returned " + wh.getStatus() 
 						+ " " + wh.getErrorReason());	
@@ -233,15 +225,15 @@ public class WebHookListener extends BuildServerAdapter {
 		}
 	}
 
-	  @Nullable
-	  private SFinishedBuild getPreviousNonPersonalBuild(SRunningBuild paramSRunningBuild)
+	@Nullable
+	private SFinishedBuild getPreviousNonPersonalBuild(SRunningBuild paramSRunningBuild)
 	  {
 	    List<SFinishedBuild> localList = this.myBuildServer.getHistory().getEntriesBefore(paramSRunningBuild, false);
 
 	    for (SFinishedBuild localSFinishedBuild : localList)
 	      if (!(localSFinishedBuild.isPersonal())) return localSFinishedBuild;
 	    return null;
-	  }
+	}
 	
 	private boolean hasBuildChangedHistoricalState(SRunningBuild sRunningBuild){
 		SFinishedBuild previous = getPreviousNonPersonalBuild(sRunningBuild);
@@ -253,7 +245,6 @@ public class WebHookListener extends BuildServerAdapter {
 			}
 		}
 		return true; 
-
 	}
 
 }
