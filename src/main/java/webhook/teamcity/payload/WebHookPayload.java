@@ -3,6 +3,7 @@ package webhook.teamcity.payload;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -115,7 +116,7 @@ public interface WebHookPayload {
 	
 
     /**
-     * 
+     * Used by TC 6.5 and below
      * @param sBuildType
      * @param responsibilityInfoOld
      * @param responsibilityInfoNew
@@ -128,6 +129,19 @@ public interface WebHookPayload {
     		@NotNull ResponsibilityInfo responsibilityInfoNew, 
     		boolean isUserAction, SortedMap<String,String> extraParameters);
 
+    /**
+     * Used by TC 7.x and above
+     * @param sBuildType
+     * @param responsibilityEntryOld
+     * @param responsibilityEntryNew
+     * @param params
+     * @return Formatted payload for the WebHook to send for the responsibleChanged event.
+     */
+	String responsibleChanged(SBuildType sBuildType,
+			ResponsibilityEntry responsibilityEntryOld,
+			ResponsibilityEntry responsibilityEntryNew,
+			SortedMap<String, String> params); 
+    
 	/**
 	 * Gets the content type of the format.
 	 * Should return a string like "application/json"
@@ -167,6 +181,6 @@ public interface WebHookPayload {
      * implementation. 
      * @return charset (string like "UTF-8")
      */
-	String getCharset(); 
+	String getCharset();
 
 }

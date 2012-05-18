@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import jetbrains.buildServer.AgentRestrictor;
 import jetbrains.buildServer.StatusDescriptor;
 import jetbrains.buildServer.issueTracker.Issue;
 import jetbrains.buildServer.messages.BuildMessage1;
@@ -501,6 +503,30 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public List<VcsRootInstanceEntry> getVcsRootEntries() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TimeZone getClientTimeZone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isHasInternalArtifactsOnly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isHasRelatedIssues() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public AgentRestrictor getQueuedAgentRestrictor() {
 		// TODO Auto-generated method stub
 		return null;
 	}

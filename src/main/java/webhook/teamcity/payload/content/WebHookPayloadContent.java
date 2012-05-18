@@ -22,6 +22,7 @@ public class WebHookPayloadContent {
 		buildId,
 		buildTypeId,
 		buildStatusUrl,
+		buildStatusHtml,
 		projectName,
 		projectId,
 		buildNumber,
@@ -127,6 +128,7 @@ public class WebHookPayloadContent {
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
     		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
+			setBuildStatusHtml(server.getRootUrl(), buildState);
 		}
 		
 		/**
@@ -319,6 +321,33 @@ public class WebHookPayloadContent {
 			this.buildStatusUrl = buildStatusUrl;
 		}
 
+		public String getBuildStatusHtml() {
+			return buildStatusHtml;
+		}
+
+		public void setBuildStatusHtml(String buildStatusHtml) {
+			this.buildStatusHtml = buildStatusHtml;
+		}
+
+		private void setBuildStatusHtml(String rootUrl, BuildStateEnum buildState) {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("<span class=\"tcWebHooksMessage\"><a href=\"").append(rootUrl).append("/project.html?projectId=").append(getProjectId()).append("\">")
+						.append(getProjectName()).append("</a> :: <a href=\"").append(rootUrl).append("/viewType.html?buildTypeId=")
+						.append(getBuildTypeId()).append("\">").append(getBuildName()).append("</a>");
+			
+			sb.append(" # <a href=\"").append(rootUrl).append("/viewLog.html?buildTypeId=").append(getBuildTypeId())
+						.append("&buildId=").append(getBuildId()).append("\"><strong>").append(getBuildNumber())
+						.append("</strong></a>	has <strong>").append(buildState.getDescriptionSuffix()).append("</strong>");
+			
+			sb.append(" with a status of ")
+						.append("<a href=\"").append(rootUrl).append("/viewLog.html?buildTypeId=").append(getBuildTypeId())
+						.append("&buildId=").append(getBuildId()).append("\"> <strong>").append(this.buildResult)
+						.append("</strong></a> and was triggered by <strong>").append(this.triggeredBy).append("</strong></span>");
+			
+			this.buildStatusHtml = sb.toString();
+		}
+		
 		public String getComment() {
 			return comment;
 		}

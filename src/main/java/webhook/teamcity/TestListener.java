@@ -2,6 +2,8 @@ package webhook.teamcity;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
+
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
@@ -27,7 +29,11 @@ public class TestListener extends BuildServerAdapter {
 		logit("TestListener :: Registering");
 	}
 
-	@Override
+	/** No longer used in TC 7.x
+	 * 
+	 * @param runningBuild
+	 * @param buildFailed
+	 */
 	public void beforeBuildFinish(SRunningBuild runningBuild,
 			boolean buildFailed) {
 		logit("beforeBuildFinish(SRunningBuild runningBuild,boolean buildFailed)");
@@ -69,7 +75,20 @@ public class TestListener extends BuildServerAdapter {
 				+ " has changed responsibility from " 
 				+ oldUser + " to " + newUser);
 	}
-
+	
+	/**   
+	 * @param bt
+	 * @param oldValue
+	 * @param newValue
+	 * @since 7.0
+	 */
+	@Override
+	public void responsibleChanged(@NotNull SBuildType bt,
+            @NotNull ResponsibilityEntry oldValue,
+            @NotNull ResponsibilityEntry newValue){
+		logit("responsibleChanged(@NotNull SBuildType bt, @NotNull ResponsibilityEntry oldValue, @NotNull ResponsibilityEntry newValue)");
+	}
+	
 	@Override
 	public void responsibleChanged(SProject project,
 			Collection<TestName> testNames, ResponsibilityEntry entry,

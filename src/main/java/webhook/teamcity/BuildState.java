@@ -75,7 +75,7 @@ public class BuildState {
     }
     
     /**
-     * Enable all builds for notification
+     * Enable all build events for notification
      * Note: BROKEN and FIXED restrict builds, so don't set those.
      */
     public BuildState setAllEnabled(){

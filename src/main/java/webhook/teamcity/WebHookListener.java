@@ -141,9 +141,19 @@ public class WebHookListener extends BuildServerAdapter {
     	processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED);
 	}
     
+    /** Old version of responsibleChanged.
+     * Only call this one is TC is less than 7.0
+     * 
+     */
     @Override
     public void responsibleChanged(@NotNull SBuildType sBuildType, 
-    		@NotNull ResponsibilityInfo responsibilityInfoOld, @NotNull ResponsibilityInfo responsibilityInfoNew, boolean isUserAction) {
+    							   @NotNull ResponsibilityInfo responsibilityInfoOld, 
+    							   @NotNull ResponsibilityInfo responsibilityInfoNew, 
+    							   boolean isUserAction) {
+    	
+    	if (myBuildServer.getServerMajorVersion() >= 7){
+    		return;
+    	}
      	WebHookProjectSettings projSettings = 
     		(WebHookProjectSettings) mySettings.getSettings(sBuildType.getProjectId(), "webhooks");
      	if (projSettings.isEnabled()){
@@ -153,6 +163,7 @@ public class WebHookListener extends BuildServerAdapter {
 	    		if (whc.getEnabled()){
 	    			WebHook wh = webHookFactory.getWebHook();
 					this.getFromConfig(wh, whc);
+					
 	
 					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
@@ -179,23 +190,60 @@ public class WebHookListener extends BuildServerAdapter {
      	}
      }
 
-	@Override
-	public void responsibleChanged(SProject project,
-			Collection<TestName> testNames, ResponsibilityEntry entry,
-			boolean isUserAction) {
-		// TODO Auto-generated method stub
-		super.responsibleChanged(project, testNames, entry, isUserAction);
-	}
 
+	/**
+	 * New version of responsibleChanged, which has some bugfixes, but 
+	 * is only available in versions 7.0 and above.    
+	 * @param bt
+	 * @param oldValue
+	 * @param newValue
+	 * @since 7.0
+	 */
 	@Override
-	public void responsibleChanged(SProject project,
-			TestNameResponsibilityEntry oldValue,
-			TestNameResponsibilityEntry newValue, boolean isUserAction) {
-		// TODO Auto-generated method stub
-		super.responsibleChanged(project, oldValue, newValue, isUserAction);
+	public void responsibleChanged(@NotNull SBuildType sBuildType,
+            @NotNull ResponsibilityEntry responsibilityEntryOld,
+            @NotNull ResponsibilityEntry responsibilityEntryNew){
+		
+     	WebHookProjectSettings projSettings = 
+    		(WebHookProjectSettings) mySettings.getSettings(sBuildType.getProjectId(), "webhooks");
+     	if (projSettings.isEnabled()){
+	    	Loggers.SERVER.debug("About to process WebHooks for " + 
+	    			sBuildType.getProjectId() + " at buildState responsibilityChanged");
+	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
+	    		if (whc.getEnabled()){
+	    			WebHook wh = webHookFactory.getWebHook();
+					this.getFromConfig(wh, whc);
+					
+	
+					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
+						wh.setContentType(payloadFormat.getContentType());
+						wh.setPayload(payloadFormat.responsibleChanged(sBuildType, 
+									responsibilityEntryOld, 
+									responsibilityEntryNew, 
+									whc.getParams()));
+						wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
+						doPost(wh, whc.getPayloadFormat());
+						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+					
+					} else {
+						Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
+					}
+	    		} else {
+	    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
+	    					+ ":responsibleChanged() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
+	    		}
+			}
+    	} else {
+    		Loggers.ACTIVITIES.debug("WebHooks are disasbled for  " + sBuildType.getProjectId());
+     	}
 	}
     
-    
+	/** doPost used by responsibleChanged
+	 * 
+	 * @param wh
+	 * @param payloadFormat
+	 */
 	private void doPost(WebHook wh, String payloadFormat) {
 		try {
 			if (wh.isEnabled()){

@@ -240,4 +240,10 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 		
 	}
 
+	@Override
+	public int getAgentTypeId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

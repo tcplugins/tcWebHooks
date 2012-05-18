@@ -11,6 +11,8 @@ import org.jdom.Element;
 import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.parameters.ParametersProvider;
+import jetbrains.buildServer.parameters.ValueResolver;
 import jetbrains.buildServer.serverSide.BuildTypeTemplate;
 import jetbrains.buildServer.serverSide.CopyOptions;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
@@ -275,6 +277,18 @@ public class MockSProject implements SProject {
 	public void setArchived(boolean arg0, User arg1) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ParametersProvider getParametersProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ValueResolver getValueResolver() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

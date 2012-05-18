@@ -176,7 +176,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
-			<version>6.5.4</version>
+			<version>7.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -184,7 +184,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>runtime-util</artifactId>
-			<version>6.5.4</version>
+			<version>7.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -199,7 +199,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>6.5.4</version>
+			<version>7.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		

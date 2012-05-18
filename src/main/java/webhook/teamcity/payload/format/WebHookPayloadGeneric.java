@@ -6,6 +6,7 @@ package webhook.teamcity.payload.format;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -23,6 +24,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		this.setPayloadManager(manager);
 	}
 
+	@Override
 	public void setPayloadManager(WebHookPayloadManager manager){
 		myManager = manager;
 	}
@@ -30,6 +32,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	public abstract void register();
 		
 	
+	@Override
 	public String beforeBuildFinish(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters);
@@ -41,30 +44,37 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	 * It will no longer be called by the WebHookListener
 	 */
 	@Deprecated
+	@Override
 	public String buildChangedStatus(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
 			SortedMap<String, String> extraParameters) {
 		return "";
 	}
 
+	@Override
 	public String buildFinished(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters);
 		return getStatusAsString(content);
 	}
 
+	@Override
 	public String buildInterrupted(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String, String> extraParameters) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters);
 		return getStatusAsString(content);
 	}
 
+	@Override
 	public String buildStarted(SRunningBuild runningBuild, SFinishedBuild previousBuild, 
 			SortedMap<String, String> extraParameters) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters);
 		return getStatusAsString(content);
 	}
 
+	/** Used by versions of TeamCity less than 7.0
+	 */
+	@Override
 	public String responsibleChanged(SBuildType buildType,
 			ResponsibilityInfo responsibilityInfoOld,
 			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
@@ -84,18 +94,64 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 				+ oldUser
 				+ " to "
 				+ newUser
+				+ " with comment '" 
+				+ responsibilityInfoNew.getComment().toString().trim()
+				+ "'"
 			);
 		content.setText(buildType.getFullName().toString()
 				+ " changed responsibility from " 
 				+ oldUser
 				+ " to "
 				+ newUser
+				+ " with comment '" 
+				+ responsibilityInfoNew.getComment().toString().trim()
+				+ "'"
 			);
 		
 		content.setComment(responsibilityInfoNew.getComment());
 		return getStatusAsString(content);
 	}
 
+	/** Used by versions of TeamCity 7.0 and above
+	 */
+	@Override
+	public String responsibleChanged(SBuildType buildType,
+			ResponsibilityEntry responsibilityInfoOld,
+			ResponsibilityEntry responsibilityInfoNew,
+			SortedMap<String, String> extraParameters) {
+		
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters);
+		String oldUser = "Nobody";
+		String newUser = "Nobody";
+		if (responsibilityInfoOld.getState() != ResponsibilityEntry.State.NONE) {
+			  oldUser = responsibilityInfoOld.getResponsibleUser().getDescriptiveName();
+		}
+		if (responsibilityInfoNew.getState() != ResponsibilityEntry.State.NONE) {
+			newUser = responsibilityInfoOld.getResponsibleUser().getDescriptiveName();
+		}
+		content.setMessage("Build " + buildType.getFullName().toString()
+				+ " has changed responsibility from " 
+				+ oldUser
+				+ " to "
+				+ newUser
+				+ " with comment '" 
+				+ responsibilityInfoNew.getComment()
+				+ "'"
+			);
+		content.setText(buildType.getFullName().toString().toString().trim()
+				+ " changed responsibility from " 
+				+ oldUser
+				+ " to "
+				+ newUser
+				+ " with comment '" 
+				+ responsibilityInfoNew.getComment().toString().trim()
+				+ "'"
+			);
+		
+		content.setComment(responsibilityInfoNew.getComment());
+		return getStatusAsString(content);
+	}
+	
 	protected abstract String getStatusAsString(WebHookPayloadContent content);
 
 	public abstract String getContentType();

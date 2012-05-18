@@ -929,4 +929,36 @@ public class MockSBuildType implements SBuildType {
 		return null;
 	}
 
+	@Override
+	public BuildTriggerDescriptor addBuildTrigger(String arg0,
+			Map<String, String> arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTriggerDescriptor findTriggerById(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEnabled(String arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setEnabled(String arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean updateBuildTrigger(String arg0, String arg1,
+			Map<String, String> arg2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -205,7 +205,7 @@ public class WebHookConfig {
 		if (!this.enabled){
 			return "Disabled";
 		} else if (states.allEnabled()){
-			return "All Builds";
+			return "All Build Events";
 		} else if (states.noneEnabled()) {
 			return "None";
 		} else {

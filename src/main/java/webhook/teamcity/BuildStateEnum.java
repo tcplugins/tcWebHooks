@@ -20,14 +20,29 @@ public enum BuildStateEnum {
     	this.descriptionSuffix = descriptionSuffix;
     }
     
+    /**
+     * 
+     * @return A short name for the Enum. This is used to uniquely identify the BuildStateEnum
+     * as a text string.
+     * eg, "buildFixed"
+     */
     public String getShortName(){
     	return this.shortName;
     }
 
+    /**
+     * @return a string that fits into the sentence "build blahblah has..."
+     * eg, "been fixed"
+     */
 	public String getDescriptionSuffix() {
 		return this.descriptionSuffix;
 	}
 	
+	/**
+	 * Takes a string and tries to find a BuildStateEnum that that matches it.
+	 * @param stateString
+	 * @return BuildStateEnum or null.
+	 */
 	public static BuildStateEnum findBuildState(String stateString){
 		for (BuildStateEnum b : BuildStateEnum.values()) {
 			if (b.shortName.equalsIgnoreCase(stateString)){
