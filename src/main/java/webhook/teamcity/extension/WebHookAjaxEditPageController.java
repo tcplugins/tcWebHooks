@@ -92,7 +92,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 				    				&& (request.getParameter("payloadFormat").length() > 0)){
 			    					
 			    					if (request.getParameter("webHookId") != null){
-			    						Integer runningTotal = 0;
 			    						Boolean enabled = false;
 			    						if ((request.getParameter("webHooksEnabled") != null )
 			    								&& (request.getParameter("webHooksEnabled").equalsIgnoreCase("on"))){
@@ -100,7 +99,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						BuildState states = new BuildState();
 			    						
-			    						//runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.ALL_ENABLED, "selectAll");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, "BuildSuccessful");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, "BuildFailed");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, "BuildFixed");
@@ -110,7 +108,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, "BeforeFinished");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildSuccessful");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildFailed");
-			    						//runningTotal = this.checkAndAddBuildState(request, runningTotal, BuildState.BUILD_CHANGED_STATUS, "StatusChanged");
 			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){

@@ -9,12 +9,11 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
 
 public class WebHookPayloadContent {
-		String buildStatus, buildStatusPrevious,
+		String buildStatus,
 		buildResult, buildResultPrevious, buildResultDelta,
 		notifyType,
 		buildFullName,
@@ -82,7 +81,7 @@ public class WebHookPayloadContent {
 		 */
 		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state) {
 			setNotifyType(state.getShortName());
-			setBuildRunner(buildType.getBuildRunners());
+			setBuildRunners(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
 			setBuildName(buildType.getName());
 			setBuildTypeId(buildType.getBuildTypeId());
@@ -115,7 +114,7 @@ public class WebHookPayloadContent {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(buildState.getShortName());
-    		setBuildRunner(sRunningBuild.getBuildType().getBuildRunners());
+    		setBuildRunners(sRunningBuild.getBuildType().getBuildRunners());
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
     		setBuildName(sRunningBuild.getBuildType().getName());
 			setBuildId(Long.toString(sRunningBuild.getBuildId()));
@@ -188,6 +187,14 @@ public class WebHookPayloadContent {
 			this.buildStatus = buildStatus;
 		}
 
+		public String getBuildResult() {
+			return buildResult;
+		}
+
+		public void setBuildResult(String buildResult) {
+			this.buildResult = buildResult;
+		}
+
 		public String getBuildResultPrevious() {
 			return buildResultPrevious;
 		}
@@ -212,11 +219,11 @@ public class WebHookPayloadContent {
 			this.notifyType = notifyType;
 		}
 
-		public List<String> getBuildRunner() {
+		public List<String> getBuildRunners() {
 			return buildRunners;
 		}
 
-		public void setBuildRunner(List<SBuildRunnerDescriptor> list) {
+		public void setBuildRunners(List<SBuildRunnerDescriptor> list) {
 			if (list != null){
 				buildRunners = new ArrayList<String>(); 
 				for (SBuildRunnerDescriptor runner : list){

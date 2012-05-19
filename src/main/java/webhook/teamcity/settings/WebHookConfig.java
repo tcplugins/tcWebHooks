@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.jdom.Attribute;
 import org.jdom.DataConversionException;
 import org.jdom.Element;
 

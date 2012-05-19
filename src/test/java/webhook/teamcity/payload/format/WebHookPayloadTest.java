@@ -109,6 +109,7 @@ public class WebHookPayloadTest {
 		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void test_Empty(){
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");

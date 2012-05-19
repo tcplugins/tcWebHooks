@@ -16,7 +16,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;

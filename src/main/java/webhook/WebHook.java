@@ -3,13 +3,10 @@ package webhook;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.httpclient.NameValuePair;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.BuildStateInterface;
 
 public interface WebHook {
 
