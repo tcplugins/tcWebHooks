@@ -48,7 +48,7 @@ public class WebHookListenerTest {
 	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<SFinishedBuild>();
 	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
 	MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
-	MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running");
+	MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
 	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 	WebHookListener whl;
 	
@@ -179,7 +179,7 @@ public class WebHookListenerTest {
 	public void testBuildChangedStatusSRunningBuildStatusStatus() throws FileNotFoundException, IOException {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		
 		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		

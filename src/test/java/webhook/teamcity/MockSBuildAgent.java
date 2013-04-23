@@ -239,11 +239,14 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	// From tc 7.1
 
 	@Override
 	public int getAgentTypeId() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
 
 }

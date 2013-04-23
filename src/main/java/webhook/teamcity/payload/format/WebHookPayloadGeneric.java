@@ -3,14 +3,19 @@
  */
 package webhook.teamcity.payload.format;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
+import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -34,8 +39,8 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	
 	@Override
 	public String beforeBuildFinish(SRunningBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters);
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, templates);
 		return getStatusAsString(content);
 	}
 
@@ -47,28 +52,28 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	@Override
 	public String buildChangedStatus(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
 	@Override
 	public String buildFinished(SRunningBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters);
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, templates);
 		return getStatusAsString(content);
 	}
 
 	@Override
 	public String buildInterrupted(SRunningBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters);
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, templates);
 		return getStatusAsString(content);
 	}
 
 	@Override
 	public String buildStarted(SRunningBuild runningBuild, SFinishedBuild previousBuild, 
-			SortedMap<String, String> extraParameters) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters);
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, templates);
 		return getStatusAsString(content);
 	}
 
@@ -78,9 +83,9 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	public String responsibleChanged(SBuildType buildType,
 			ResponsibilityInfo responsibilityInfoOld,
 			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		String oldUser = "Nobody";
 		String newUser = "Nobody";
 		try {
@@ -116,18 +121,18 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	 */
 	@Override
 	public String responsibleChanged(SBuildType buildType,
-			ResponsibilityEntry responsibilityInfoOld,
-			ResponsibilityEntry responsibilityInfoNew,
-			SortedMap<String, String> extraParameters) {
+			ResponsibilityEntry responsibilityEntryOld,
+			ResponsibilityEntry responsibilityEntryNew,
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		String oldUser = "Nobody";
 		String newUser = "Nobody";
-		if (responsibilityInfoOld.getState() != ResponsibilityEntry.State.NONE) {
-			  oldUser = responsibilityInfoOld.getResponsibleUser().getDescriptiveName();
+		if (responsibilityEntryOld.getState() != ResponsibilityEntry.State.NONE) {
+			  oldUser = responsibilityEntryOld.getResponsibleUser().getDescriptiveName();
 		}
-		if (responsibilityInfoNew.getState() != ResponsibilityEntry.State.NONE) {
-			newUser = responsibilityInfoOld.getResponsibleUser().getDescriptiveName();
+		if (responsibilityEntryNew.getState() != ResponsibilityEntry.State.NONE) {
+			newUser = responsibilityEntryOld.getResponsibleUser().getDescriptiveName();
 		}
 		content.setMessage("Build " + buildType.getFullName().toString()
 				+ " has changed responsibility from " 
@@ -135,7 +140,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 				+ " to "
 				+ newUser
 				+ " with comment '" 
-				+ responsibilityInfoNew.getComment()
+				+ responsibilityEntryNew.getComment()
 				+ "'"
 			);
 		content.setText(buildType.getFullName().toString().toString().trim()
@@ -144,12 +149,29 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 				+ " to "
 				+ newUser
 				+ " with comment '" 
-				+ responsibilityInfoNew.getComment().toString().trim()
+				+ responsibilityEntryNew.getComment().toString().trim()
 				+ "'"
 			);
 		
-		content.setComment(responsibilityInfoNew.getComment());
+		content.setComment(responsibilityEntryNew.getComment());
 		return getStatusAsString(content);
+	}
+	
+	@Override
+	public String responsibleChanged(SProject project,
+			TestNameResponsibilityEntry oldTestNameResponsibilityEntry,
+			TestNameResponsibilityEntry newTestNameResponsibilityEntry,
+			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String responsibleChanged(SProject project,
+			Collection<TestName> testNames, ResponsibilityEntry entry,
+			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	protected abstract String getStatusAsString(WebHookPayloadContent content);

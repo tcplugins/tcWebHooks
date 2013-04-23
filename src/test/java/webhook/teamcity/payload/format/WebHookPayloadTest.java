@@ -17,6 +17,7 @@ import org.junit.Test;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 
 public class WebHookPayloadTest {
@@ -25,7 +26,7 @@ public class WebHookPayloadTest {
 	public void test_Xml(){
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -47,7 +48,7 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("xml").getContentType().equals("text/xml"));
 		assertTrue(wpm.getFormat("xml").getFormatDescription().equals("XML"));
-		System.out.println(wpm.getFormat("xml").buildFinished(sRunningBuild, previousBuild, extraParameters));
+		System.out.println(wpm.getFormat("xml").buildFinished(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
 	}
 	
 	
@@ -55,7 +56,7 @@ public class WebHookPayloadTest {
 	public void test_Json(){
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -77,14 +78,14 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("json").getContentType().equals("application/json"));
 		assertTrue(wpm.getFormat("json").getFormatDescription().equals("JSON"));
-		System.out.println(wpm.getFormat("json").buildStarted(sRunningBuild, previousBuild, extraParameters));
+		System.out.println(wpm.getFormat("json").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
 	}
 	
 	@Test
 	public void test_NvPairs(){
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -106,7 +107,7 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("nvpairs").getContentType().equals("application/x-www-form-urlencoded"));
 		assertTrue(wpm.getFormat("nvpairs").getFormatDescription().equals("Name Value Pairs"));
-		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters));
+		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -114,7 +115,7 @@ public class WebHookPayloadTest {
 	public void test_Empty(){
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running","TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
@@ -138,11 +139,11 @@ public class WebHookPayloadTest {
 		assertTrue(wpm.getFormat("empty").getContentType().equals("text/plain"));
 		assertTrue(wpm.getFormat("empty").getFormatDescription().equals("None"));
 		assertTrue(wpm.getFormat("empty").getCharset().equals("UTF-8"));
-		assertTrue(wpm.getFormat("empty").buildStarted(sRunningBuild, previousBuild, extraParameters).equals(""));
-		assertTrue(wpm.getFormat("empty").beforeBuildFinish(sRunningBuild, previousBuild, extraParameters).equals(""));
-		assertTrue(wpm.getFormat("empty").buildChangedStatus(sRunningBuild, previousBuild, Status.NORMAL, Status.ERROR, extraParameters).equals(""));
-		assertTrue(wpm.getFormat("empty").buildFinished(sRunningBuild, previousBuild, extraParameters).equals(""));
-		assertTrue(wpm.getFormat("empty").buildInterrupted(sRunningBuild, previousBuild, extraParameters).equals(""));
+		assertTrue(wpm.getFormat("empty").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
+		assertTrue(wpm.getFormat("empty").beforeBuildFinish(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
+		assertTrue(wpm.getFormat("empty").buildChangedStatus(sRunningBuild, previousBuild, Status.NORMAL, Status.ERROR, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
+		assertTrue(wpm.getFormat("empty").buildFinished(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
+		assertTrue(wpm.getFormat("empty").buildInterrupted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
 		
 	}
 	

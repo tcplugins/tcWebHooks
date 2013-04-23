@@ -3,6 +3,13 @@
  */
 package webhook.teamcity.payload.format;
 
+import java.util.Collection;
+import java.util.SortedMap;
+
+import jetbrains.buildServer.responsibility.ResponsibilityEntry;
+import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
@@ -63,5 +70,6 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 
 	public String getCharset() {
 		return this.charset;
-	}	
+	}
+
 }

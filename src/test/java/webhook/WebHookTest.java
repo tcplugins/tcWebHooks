@@ -107,7 +107,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_NotEnabled() throws FileNotFoundException, IOException {
+	public void test_NotEnabled() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
 		w.post();
@@ -116,7 +116,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_200WithProxy() throws FileNotFoundException, IOException {
+	public void test_200WithProxy() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -128,7 +128,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_200WithProxyFailAuth() throws FileNotFoundException, IOException {
+	public void test_200WithProxyFailAuth() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServerAuth(proxyUsername, proxyPassword);
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -140,7 +140,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_200WithProxyAuth() throws FileNotFoundException, IOException {
+	public void test_200WithProxyAuth() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServerAuth(proxyUsername, proxyPassword);
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -191,7 +191,7 @@ public class WebHookTest{
 	
 	
 	@Test
-	public void test_302WithProxy() throws FileNotFoundException, IOException {
+	public void test_302WithProxy() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/302", proxy, proxyPort);
@@ -204,7 +204,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_404WithProxyStringPort() throws FileNotFoundException, IOException {
+	public void test_404WithProxyStringPort() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/404", proxy, proxyPortString);
@@ -217,7 +217,7 @@ public class WebHookTest{
 	}	
 	
 	@Test
-	public void test_404WithProxyConfig() throws FileNotFoundException, IOException {
+	public void test_404WithProxyConfig() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHookProxyConfig pc = new WebHookProxyConfig(proxy, Integer.parseInt(proxyPortString));
@@ -317,7 +317,7 @@ public class WebHookTest{
 	}
 	
 	@Ignore
-	public void test_WebHookCollectionWithPost() throws WebHookParameterReferenceException {
+	public void test_WebHookCollectionWithPost() throws WebHookParameterReferenceException, InterruptedException {
 		Map <String, String> params = new HashMap<String, String>();
 		//params.put("system.webhook.1.url", url + "/200");
 		params.put("system.webhook.1.url", "http://localhost/webhook/" );
@@ -358,13 +358,14 @@ public class WebHookTest{
 		return null;
 	}
 	
-	public void stopWebServer(WebHookTestServer s) {
+	public void stopWebServer(WebHookTestServer s) throws InterruptedException {
 		try {
 			s.server.stop();
 			// Sleep to let the server shutdown cleanly.
-			Thread.sleep(1000);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			Thread.sleep(1000);
 		}
 	}
 

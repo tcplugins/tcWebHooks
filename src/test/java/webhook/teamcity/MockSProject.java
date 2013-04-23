@@ -149,7 +149,6 @@ public class MockSProject implements SProject {
 	}
 
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return this.description;
 	}
 
@@ -277,7 +276,9 @@ public class MockSProject implements SProject {
 	public void setArchived(boolean arg0, User arg1) {
 		// TODO Auto-generated method stub
 		
-	}
+	} 
+	
+	// From 7.1
 
 	@Override
 	public ParametersProvider getParametersProvider() {
@@ -290,5 +291,7 @@ public class MockSProject implements SProject {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
 
 }

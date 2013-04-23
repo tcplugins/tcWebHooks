@@ -1,13 +1,18 @@
 package webhook.teamcity.payload.format;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
+import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 
@@ -27,7 +32,7 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	@Override
 	public String beforeBuildFinish(SRunningBuild runningBuild,
 			SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
@@ -35,28 +40,28 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	public String buildChangedStatus(SRunningBuild runningBuild,
 			SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
 	@Override
 	public String buildFinished(SRunningBuild runningBuild,
 			SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
 	@Override
 	public String buildInterrupted(SRunningBuild runningBuild,
 			SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
 	@Override
 	public String buildStarted(SRunningBuild runningBuild,
 			SFinishedBuild previousBuild,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
@@ -94,7 +99,7 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	public String responsibleChanged(SBuildType buildType,
 			ResponsibilityInfo responsibilityInfoOld,
 			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
-			SortedMap<String, String> extraParameters) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 
@@ -102,7 +107,7 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	public String responsibleChanged(SBuildType sBuildType,
 			ResponsibilityEntry responsibilityEntryOld,
 			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String, String> params) {
+			SortedMap<String,String> extraParameters, Map<String,String> templates) {
 		return "";
 	}
 	
@@ -115,8 +120,26 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	public void register(){
 		myManager.registerPayloadFormat(this);
 	}
+	
 	@Override
 	public void setPayloadManager(WebHookPayloadManager webhookPayloadManager) {
 		myManager = webhookPayloadManager;
 	}
+
+	@Override
+	public String responsibleChanged(SProject project,
+			TestNameResponsibilityEntry oldTestNameResponsibilityEntry,
+			TestNameResponsibilityEntry newTestNameResponsibilityEntry,
+			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		return "";
+	}
+
+	@Override
+	public String responsibleChanged(SProject project,
+			Collection<TestName> testNames, ResponsibilityEntry entry,
+			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String,String> templates) {
+		return "";
+	}
+	
+	
 }

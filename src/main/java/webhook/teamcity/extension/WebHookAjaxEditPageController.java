@@ -26,7 +26,15 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 
 public class WebHookAjaxEditPageController extends BaseController {
 
-	    private final WebControllerManager myWebManager;
+	    protected static final String BEFORE_FINISHED = "BeforeFinished";
+		protected static final String BUILD_INTERRUPTED = "BuildInterrupted";
+		protected static final String BUILD_STARTED = "BuildStarted";
+		protected static final String BUILD_BROKEN = "BuildBroken";
+		protected static final String BUILD_FIXED = "BuildFixed";
+		protected static final String BUILD_FAILED = "BuildFailed";
+		protected static final String BUILD_SUCCESSFUL = "BuildSuccessful";
+		
+		private final WebControllerManager myWebManager;
 	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
@@ -47,10 +55,22 @@ public class WebHookAjaxEditPageController extends BaseController {
 	      myWebManager.registerController("/webhooks/ajaxEdit.html", this);
 	    }
 	    
-	    private void checkAndAddBuildState(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
+	    protected static void checkAndAddBuildState(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
 	    	if ((r.getParameter(varName) != null)
 	    		&& (r.getParameter(varName).equalsIgnoreCase("on"))){
 	    		state.enable(myBuildState);
+	    	} else {
+	    		state.disable(myBuildState);;
+	    	}
+	    }
+	    
+	    protected static void checkAndAddBuildStateIfEitherSet(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName, String otherVarName){
+	    	if ((r.getParameter(varName) != null)
+	    			&& (r.getParameter(varName).equalsIgnoreCase("on"))){
+	    		state.enable(myBuildState);
+	    	} else if ((r.getParameter(otherVarName) != null)
+	    			&& (r.getParameter(otherVarName).equalsIgnoreCase("on"))){
+		    	state.enable(myBuildState);
 	    	} else {
 	    		state.disable(myBuildState);;
 	    	}
@@ -99,15 +119,14 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						BuildState states = new BuildState();
 			    						
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, "BuildSuccessful");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, "BuildFailed");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, "BuildFixed");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, "BuildBroken");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, "BuildStarted");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, "BuildInterrupted");	
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, "BeforeFinished");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildSuccessful");
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FINISHED, "BuildFailed");
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
+			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
+			    						checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
 			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){

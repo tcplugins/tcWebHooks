@@ -2,15 +2,22 @@ package webhook.teamcity.payload.content;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 
+import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
+import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
+import webhook.teamcity.settings.CustomMessageTemplate;
 
 public class WebHookPayloadContent {
 		String buildStatus,
@@ -22,6 +29,7 @@ public class WebHookPayloadContent {
 		buildTypeId,
 		buildStatusUrl,
 		buildStatusHtml,
+		rootUrl,
 		projectName,
 		projectId,
 		buildNumber,
@@ -31,8 +39,13 @@ public class WebHookPayloadContent {
 		triggeredBy,
 		comment,
 		message,
-		text;
+		text,
+		branchName,
+		branchDisplayName,
+		buildStateDescription;
+		boolean branchIsDefault;
 		
+		Branch branch;
 		List<String> buildRunners;
 		ExtraParametersMap extraParameters;
 		
@@ -43,8 +56,8 @@ public class WebHookPayloadContent {
 		 * @param buildState
 		 * @param extraParameters
 		 */
-		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, BuildStateEnum buildState, SortedMap<String, String> extraParameters) {
-			populateCommonContent(server, buildType, buildState);
+		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
+			populateCommonContent(server, buildType, buildState, templates);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
@@ -58,10 +71,11 @@ public class WebHookPayloadContent {
 		 */
 		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
-				SortedMap<String, String> extraParameters) {
+				Map<String, String> extraParameters, 
+				Map<String, String> templates) {
 			
-    		populateCommonContent(server, sRunningBuild, previousBuild, buildState);
-    		populateMessageAndText(sRunningBuild, buildState);
+    		populateCommonContent(server, sRunningBuild, previousBuild, buildState, templates);
+    		populateMessageAndText(sRunningBuild, buildState, templates);
     		populateArtifacts(sRunningBuild);
     		this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
@@ -79,7 +93,7 @@ public class WebHookPayloadContent {
 		 * @param buildType
 		 * @param state
 		 */
-		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state) {
+		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
 			setNotifyType(state.getShortName());
 			setBuildRunners(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
@@ -88,10 +102,11 @@ public class WebHookPayloadContent {
 			setProjectName(buildType.getProjectName());
 			setProjectId(buildType.getProjectId());
 			setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
+			setBuildStateDescription(state.getDescriptionSuffix());
 		}
 		
 		private void populateMessageAndText(SRunningBuild sRunningBuild,
-				BuildStateEnum state) {
+				BuildStateEnum state, Map<String,String> templates) {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
     				+ " has " + state.getDescriptionSuffix() + ". This is build number " + sRunningBuild.getBuildNumber() 
@@ -110,7 +125,7 @@ public class WebHookPayloadContent {
 		 * @param buildState
 		 */
 		private void populateCommonContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
-				BuildStateEnum buildState) {
+				BuildStateEnum buildState, Map<String, String> templates) {
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(buildState.getShortName());
@@ -126,10 +141,22 @@ public class WebHookPayloadContent {
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
+    		try {
+    			if (sRunningBuild.getBranch() != null)
+    			setBranch(sRunningBuild.getBranch());
+    		} catch (NoSuchMethodError e){
+    			
+    		}
     		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
-			setBuildStatusHtml(server.getRootUrl(), buildState);
+    		setBuildStateDescription(buildState.getDescriptionSuffix());
+    		setRootUrl(server.getRootUrl());
+			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 		}
 		
+		private void setBranch(Branch branch) {
+			this.branch = branch;
+		}
+
 		/**
 		 * Determines a useful build result. The one from TeamCity can't be trusted because it
 		 * is not set until all the Notifiers have run, of which we are one. 
@@ -328,6 +355,22 @@ public class WebHookPayloadContent {
 			this.buildStatusUrl = buildStatusUrl;
 		}
 
+		public String getRootUrl() {
+			return rootUrl;
+		}
+
+		public void setRootUrl(String rootUrl) {
+			this.rootUrl = rootUrl;
+		}
+
+		public String getBuildStateDescription() {
+			return buildStateDescription;
+		}
+
+		public void setBuildStateDescription(String buildStateDescription) {
+			this.buildStateDescription = buildStateDescription;
+		}
+
 		public String getBuildStatusHtml() {
 			return buildStatusHtml;
 		}
@@ -336,7 +379,14 @@ public class WebHookPayloadContent {
 			this.buildStatusHtml = buildStatusHtml;
 		}
 
-		private void setBuildStatusHtml(String rootUrl, BuildStateEnum buildState) {
+		
+		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
+			
+			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this));
+			this.buildStatusHtml = builder.build();
+		}		
+		
+		private void xxsetBuildStatusHtml(String rootUrl, BuildStateEnum buildState) {
 			StringBuilder sb = new StringBuilder();
 			
 			sb.append("<span class=\"tcWebHooksMessage\"><a href=\"").append(rootUrl).append("/project.html?projectId=").append(getProjectId()).append("\">")
@@ -345,7 +395,7 @@ public class WebHookPayloadContent {
 			
 			sb.append(" # <a href=\"").append(rootUrl).append("/viewLog.html?buildTypeId=").append(getBuildTypeId())
 						.append("&buildId=").append(getBuildId()).append("\"><strong>").append(getBuildNumber())
-						.append("</strong></a>	has <strong>").append(buildState.getDescriptionSuffix()).append("</strong>");
+						.append("</strong></a> has <strong>").append(buildState.getDescriptionSuffix()).append("</strong>");
 			
 			sb.append(" with a status of ")
 						.append("<a href=\"").append(rootUrl).append("/viewLog.html?buildTypeId=").append(getBuildTypeId())

@@ -59,7 +59,6 @@ public class TestListener extends BuildServerAdapter {
 		logit("buildStarted(SRunningBuild build)");
 	}
 
-	@Override
 	public void responsibleChanged(SBuildType bt, ResponsibilityInfo oldValue,
 			ResponsibilityInfo newValue, boolean isUserAction) {
 		logit("responsibleChanged(SBuildType bt, ResponsibilityInfo oldValue,	ResponsibilityInfo newValue, boolean isUserAction)");

@@ -10,9 +10,8 @@ import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -21,6 +20,7 @@ import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 
@@ -31,6 +31,7 @@ public class WebHookConfig {
 	private String url;
 	private String payloadFormat = null;
 	private BuildState states = new BuildState();
+	private SortedMap<String, CustomMessageTemplate> templates; 
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e){
@@ -39,6 +40,7 @@ public class WebHookConfig {
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
 		this.extraParameters = new TreeMap<String,String>();
+		this.templates = new TreeMap<String,CustomMessageTemplate>();
 		
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -81,9 +83,8 @@ public class WebHookConfig {
 			Element eParams = e.getChild("parameters");
 			List<Element> paramsList = eParams.getChildren("param");
 			if (paramsList.size() > 0){
-				for(Iterator<Element> param = paramsList.iterator(); param.hasNext();)
+				for(Element eParam : paramsList)
 				{
-					Element eParam = param.next();
 					this.extraParameters.put(
 							eParam.getAttributeValue("name"), 
 							eParam.getAttributeValue("value")
@@ -91,6 +92,25 @@ public class WebHookConfig {
 				}
 			}
 		}
+		
+		if(e.getChild("custom-templates") != null){
+			Element eParams = e.getChild("custom-templates");
+			List<Element> templateList = eParams.getChildren("custom-template");
+			if (templateList.size() > 0){
+				for(Element eParam : templateList)
+				{
+					this.templates.put(
+							eParam.getAttributeValue(CustomMessageTemplate.TYPE),
+							CustomMessageTemplate.create(
+									eParam.getAttributeValue(CustomMessageTemplate.TYPE),
+									eParam.getAttributeValue(CustomMessageTemplate.TEMPLATE),
+									Boolean.parseBoolean(eParam.getAttributeValue(CustomMessageTemplate.ENABLED))
+									)
+							);
+				}
+			}
+		}
+		
 	}
 	
 	/**
@@ -109,21 +129,13 @@ public class WebHookConfig {
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
 		this.extraParameters = new TreeMap<String,String>();
+		this.templates = new TreeMap<String,CustomMessageTemplate>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
 		this.setPayloadFormat(payloadFormat);
 	}
 
-	
-/*	public WebHookConfig (String key, String url, Boolean enabled, Integer stateMask){
-		this.params = new ArrayList<NameValuePair>();
-		this.setUrl(url);
-		this.setEnabled(enabled);
-		this.setStatemask(stateMask);
-		this.setUniqueKey(key);
-	}
-*/	
 	private Element getKeyAndValueAsElement(String key, String elementName){
 		Element e = new Element(elementName);
 		if (this.extraParameters.containsKey(key)){
@@ -150,11 +162,20 @@ public class WebHookConfig {
 		
 		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
-			for (Iterator<String> i = this.extraParameters.values().iterator(); i.hasNext();){
-				paramsEl.addContent(this.getKeyAndValueAsElement(i.next(), "param"));
+			for (String i : this.extraParameters.keySet()){
+				paramsEl.addContent(this.getKeyAndValueAsElement(i, "param"));
 			}
 			el.addContent(paramsEl);
 		}
+		
+		if (this.templates.size() > 0){
+			Element templatesEl = new Element("custom-templates");
+			for (CustomMessageTemplate t : this.templates.values()){
+				templatesEl.addContent(t.getAsElement());
+			}
+			el.addContent(templatesEl);
+		}
+		
 		return el;
 	}
 	
@@ -262,15 +283,6 @@ public class WebHookConfig {
 		}		
 		return ""; 
 	}
-
-	/*
-	    public static final Integer BUILD_STARTED  			= Integer.parseInt("00000001",2);
-		public static final Integer BUILD_FINISHED 			= Integer.parseInt("00000010",2);
-	    public static final Integer BUILD_CHANGED_STATUS 	= Integer.parseInt("00000100",2);
-	    public static final Integer BEFORE_BUILD_FINISHED 	= Integer.parseInt("00001000",2);
-	    public static final Integer RESPONSIBILITY_CHANGED 	= Integer.parseInt("00010000",2);
-	    public static final Integer BUILD_INTERRUPTED 		= Integer.parseInt("00100000",2);
-	 */
 	
 	public String getStateBuildStartedAsChecked() {
 		if (states.enabled(BUILD_STARTED)){
@@ -347,19 +359,16 @@ public class WebHookConfig {
 	 */
 	public void setPayloadFormat(String payloadFormat) {
 		this.payloadFormat = payloadFormat;
-	}	
-	/**
-	 * Sets the payload format, but only if it is in the set.
-	 *  
-	 * @param payloadFormat
-	 * @param availableFormats
-	 */
-	public Boolean setPayloadFormat(String payloadFormat, Set<String> availableFormats) {
-		if (availableFormats.contains(payloadFormat)){
-			this.payloadFormat = payloadFormat;
-			return true;
-		}
-		return false;
 	}
+
+	public Map<String,String> getEnabledTemplates() {
+		Map<String,String> mT = WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates();
+		for (CustomMessageTemplate t : templates.values()){
+			if (t.enabled){
+				mT.put(t.templateType, t.templateText);
+			}
+		}
+		return mT;
+	}	
 	
 }

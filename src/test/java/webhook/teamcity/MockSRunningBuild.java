@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import jetbrains.buildServer.AgentRestrictor;
+import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.StatusDescriptor;
 import jetbrains.buildServer.issueTracker.Issue;
 import jetbrains.buildServer.messages.BuildMessage1;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
+import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.BuildRevision;
 import jetbrains.buildServer.serverSide.BuildStatistics;
@@ -22,6 +24,7 @@ import jetbrains.buildServer.serverSide.DownloadedArtifacts;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.ShortStatistics;
 import jetbrains.buildServer.serverSide.TriggeredBy;
@@ -31,8 +34,6 @@ import jetbrains.buildServer.serverSide.artifacts.SArtifactDependency;
 import jetbrains.buildServer.serverSide.buildLog.BuildLog;
 import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.serverSide.impl.RunningBuildState;
-import jetbrains.buildServer.serverSide.problems.BuildProblem;
-import jetbrains.buildServer.serverSide.problems.BuildProblemsVisitor;
 import jetbrains.buildServer.serverSide.userChanges.CanceledInfo;
 import jetbrains.buildServer.serverSide.vcs.VcsLabel;
 import jetbrains.buildServer.tests.TestInfo;
@@ -52,8 +53,9 @@ public class MockSRunningBuild implements SRunningBuild {
 	private MockTriggeredBy triggeredBy;
 	private Status status;
 	private String statusText;
+	private long buildId = 123456;
 
-	public MockSRunningBuild(MockSBuildType buildType, String triggeredBy, Status status, String statusText) {
+	public MockSRunningBuild(SBuildType buildType, String triggeredBy, Status status, String statusText, String buildNumber) {
 		this.sBuildType = buildType;
 		this.sBuildAgent = new MockSBuildAgent("Test Agent", 
 									"agent.hostname.domain.name", 
@@ -64,6 +66,7 @@ public class MockSRunningBuild implements SRunningBuild {
 		this.triggeredBy = new MockTriggeredBy(triggeredBy);
 		this.status = status;
 		this.statusText = statusText;
+		this.buildNumber = buildNumber;
 	}
 
 	public void addBuildMessage(BuildMessage1 arg0) {
@@ -318,8 +321,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public long getBuildId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.buildId ;
 	}
 
 	public String getBuildNumber() {
@@ -437,11 +439,6 @@ public class MockSRunningBuild implements SRunningBuild {
 		return null;
 	}
 
-	public List<BuildProblem> getBuildProblems() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public String getFirstInternalError() {
 		// TODO Auto-generated method stub
 		return null;
@@ -473,11 +470,6 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public void setTags(User arg0, List<String> arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void visitBuildProblems(BuildProblemsVisitor arg0) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -529,6 +521,48 @@ public class MockSRunningBuild implements SRunningBuild {
 	public AgentRestrictor getQueuedAgentRestrictor() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addBuildProblem(BuildProblemData arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public BuildProblemData addUserBuildProblem(User arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Branch getBranch() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BuildProblemData> getFailureReasons() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SFinishedBuild getPreviousFinished() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasBuildProblemOfType(String arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void muteBuildProblems(User arg0, boolean arg1, String arg2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

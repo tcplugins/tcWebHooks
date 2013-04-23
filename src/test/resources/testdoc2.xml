@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <webhooks enabled="true">
+    <webhook enabled="true" url="http://something" statemask="255">
+      <parameters>
+	    <param name="foo" value="bar" />
+      </parameters>
+    </webhook>
+    <webhook enabled="true" url="http://localhost.local.network/webhook/test/test">
+      <parameters>
+	    <param name="fromTeamCity" value="%system.test.1%" />
+      </parameters>
+    </webhook>
+    <webhook enabled="false" url="http://localhost.local.network/webhook/test/teamcity" />
+  </webhooks>
+</settings>

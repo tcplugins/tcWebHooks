@@ -521,18 +521,15 @@ public class MockSBuildType implements SBuildType {
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	public String getProjectId() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.project.getProjectId();
 	}
 
 	public String getProjectName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.project.getName();
 	}
 
 	public String getRunType() {
@@ -927,7 +924,9 @@ public class MockSBuildType implements SBuildType {
 	public Collection<SBuildAgent> getCompatibleAgents() {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	} 
+	
+	// From 7.1
 
 	@Override
 	public BuildTriggerDescriptor addBuildTrigger(String arg0,
@@ -945,7 +944,7 @@ public class MockSBuildType implements SBuildType {
 	@Override
 	public boolean isEnabled(String arg0) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -960,5 +959,7 @@ public class MockSBuildType implements SBuildType {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	
 
 }

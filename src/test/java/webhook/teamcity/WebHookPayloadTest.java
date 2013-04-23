@@ -19,6 +19,7 @@ import webhook.WebHookImpl;
 import webhook.WebHookTest;
 import webhook.WebHookTestServer;
 import webhook.teamcity.payload.WebHookPayload;
+import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.settings.WebHookConfig;
@@ -32,7 +33,7 @@ public class WebHookPayloadTest {
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class); 	
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -48,16 +49,16 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("nvpairs").getContentType().equals("application/x-www-form-urlencoded"));
 		assertTrue(wpm.getFormat("nvpairs").getFormatDescription().equals("Name Value Pairs"));
-		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters));
+		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
 		
 	}
 	
 	@Test
-	public void TestNVPairsPayloadWithPostToJetty(){
+	public void TestNVPairsPayloadWithPostToJetty() throws InterruptedException{
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
-		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running");
+		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
 		sBuildType.setProject(sProject);
@@ -93,7 +94,7 @@ public class WebHookPayloadTest {
 				WebHookPayload payloadFormat = wpm.getFormat(whc.getPayloadFormat());
 				wh.setContentType(payloadFormat.getContentType());
 				wh.setCharset(payloadFormat.getCharset());
-				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams()));
+				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams(), whc.getEnabledTemplates()));
 				if (wh.isEnabled()){
 					try {
 						wh.post();

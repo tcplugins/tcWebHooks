@@ -110,7 +110,7 @@ public class WebHookSettingsTest {
 	}
 	
 	@Test
-	public void test_200UsingProxyFromConfig() throws FileNotFoundException, IOException {
+	public void test_200UsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -128,7 +128,7 @@ public class WebHookSettingsTest {
 	}
 
 	@Test
-	public void test_AuthFailWrongCredsUsingProxyFromConfig() throws FileNotFoundException, IOException {
+	public void test_AuthFailWrongCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -147,7 +147,7 @@ public class WebHookSettingsTest {
 	}
 
 	@Test
-	public void test_AuthFailNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException {
+	public void test_AuthFailNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -166,7 +166,7 @@ public class WebHookSettingsTest {
 	}
 
 	@Test
-	public void test_AuthPassNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException {
+	public void test_AuthPassNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -185,13 +185,11 @@ public class WebHookSettingsTest {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void test_WebookConfig(){
+	public void test_WebookConfig() throws JDOMException, IOException{
 		SAXBuilder builder = new SAXBuilder();
 		List<WebHookConfig> configs = new ArrayList<WebHookConfig>();
-		//builder.setValidation(true);
 		builder.setIgnoringElementContentWhitespace(true);
-		try {
-			Document doc = builder.build("src/test/resources/testdoc1.xml");
+			Document doc = builder.build("src/test/resources/testdoc2.xml");
 			Element root = doc.getRootElement();
 			if(root.getChild("webhooks") != null){
 				Element child = root.getChild("webhooks");
@@ -205,16 +203,9 @@ public class WebHookSettingsTest {
 		            }
 				}
 			}
-		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		
-		for (Iterator<WebHookConfig> i = configs.iterator(); i.hasNext();){
-			WebHookConfig c = i.next();
+		for (WebHookConfig c : configs){
 			WebHook wh = new WebHookImpl(c.getUrl());
 			wh.setEnabled(c.getEnabled());
 			//wh.addParams(c.getParams());
@@ -226,12 +217,11 @@ public class WebHookSettingsTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void test_ReadXml() {
+	public void test_ReadXml() throws JDOMException, IOException {
 		SAXBuilder builder = new SAXBuilder();
 		//builder.setValidation(true);
 		builder.setIgnoringElementContentWhitespace(true);
 		
-		try {
 			Document doc = builder.build("src/test/resources/testdoc1.xml");
 			Element root = doc.getRootElement();
 			System.out.println(root.toString());
@@ -257,12 +247,6 @@ public class WebHookSettingsTest {
 		            }
 				}
 			}
-		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 }
