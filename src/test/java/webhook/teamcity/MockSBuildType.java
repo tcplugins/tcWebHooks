@@ -9,6 +9,7 @@ import java.util.regex.PatternSyntaxException;
 import jetbrains.buildServer.Build;
 import jetbrains.buildServer.BuildAgent;
 import jetbrains.buildServer.BuildTypeDescriptor;
+import jetbrains.buildServer.BuildTypeStatusDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
@@ -17,11 +18,14 @@ import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.serverSide.AgentCompatibility;
 import jetbrains.buildServer.serverSide.AgentDescription;
 import jetbrains.buildServer.serverSide.BuildNumbers;
+import jetbrains.buildServer.serverSide.BuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.BuildTypeRenamingFailedException;
 import jetbrains.buildServer.serverSide.BuildTypeTemplate;
+import jetbrains.buildServer.serverSide.CannotAttachToTemplateException;
 import jetbrains.buildServer.serverSide.CompatibilityResult;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
+import jetbrains.buildServer.serverSide.InvalidIdentifierException;
 import jetbrains.buildServer.serverSide.InvalidVcsRootScopeException;
 import jetbrains.buildServer.serverSide.Parameter;
 import jetbrains.buildServer.serverSide.PersistFailedException;
@@ -34,6 +38,7 @@ import jetbrains.buildServer.serverSide.SBuildFeatureDescriptor;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SPersistentEntity;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
@@ -42,6 +47,7 @@ import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.serverSide.dependency.CyclicDependencyFoundException;
 import jetbrains.buildServer.serverSide.dependency.Dependency;
 import jetbrains.buildServer.serverSide.dependency.Dependent;
+import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.util.Option;
@@ -960,6 +966,105 @@ public class MockSBuildType implements SBuildType {
 		return false;
 	}
 	
+	// From 8.0
 	
+	@Override
+	public File getConfigurationFile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getExternalId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getInternalId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setExternalId(String arg0) throws InvalidIdentifierException,
+			DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SPersistentEntity getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTypeStatusDescriptor getStatusDescriptor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getProjectExternalId() {
+		return this.project.getExternalId();
+	}
+
+	@Override
+	public SBuildRunnerDescriptor addBuildRunner(BuildRunnerDescriptor arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, String> getOwnParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Parameter> getOwnParametersCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void attachToTemplate(BuildTypeTemplate arg0)
+			throws CannotAttachToTemplateException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean belongsTo(SProject arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getExtendedFullName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<VcsRootEntry> getOwnVcsRootEntries() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void moveToProject(SProject arg0)
+			throws InvalidVcsRootScopeException {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

@@ -68,15 +68,14 @@ public class WebHookIndexPageController extends BaseController {
 	    		params.put("ShowFurtherReading", "NONE");
 	    	}
 	        
-	        if(request.getParameter("projectId") != null 
-	        		&& request.getParameter("projectId").startsWith("project")){
+	        if(request.getParameter("projectId") != null){
 	        	
-		    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-		    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
-		    	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
+	        	SProject project = this.myServer.getProjectManager().findProjectByExternalId(request.getParameter("projectId"));
+	        	if (project != null){
+	        		
+			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
+			    			mySettings.getSettings(project.getProjectId(), "webhooks");
 		    	
-		    	if (project != null){
-			    	
 			        SUser myUser = SessionUser.getUser(request);
 			        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
 			    	
@@ -85,6 +84,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("haveProject", "true");
 			    	params.put("messages", message);
 			    	params.put("projectId", project.getProjectId());
+			    	params.put("projectExternalId", project.getExternalId());
 			    	params.put("projectName", project.getName());
 			    	
 			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());

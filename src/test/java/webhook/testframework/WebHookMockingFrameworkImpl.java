@@ -64,7 +64,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
 	SBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	SRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
-	SProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
+	SProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 	WebHookListener whl;
 	SortedMap<String, String> extraParameters;
 	BuildStateEnum buildstateEnum;

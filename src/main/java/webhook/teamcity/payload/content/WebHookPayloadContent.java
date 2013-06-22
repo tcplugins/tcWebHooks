@@ -11,13 +11,11 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
-import webhook.teamcity.settings.CustomMessageTemplate;
 
 public class WebHookPayloadContent {
 		String buildStatus,
@@ -32,6 +30,7 @@ public class WebHookPayloadContent {
 		rootUrl,
 		projectName,
 		projectId,
+		projectExternalId,
 		buildNumber,
 		agentName,
 		agentOs,
@@ -101,6 +100,7 @@ public class WebHookPayloadContent {
 			setBuildTypeId(buildType.getBuildTypeId());
 			setProjectName(buildType.getProjectName());
 			setProjectId(buildType.getProjectId());
+			setProjectExternalId(buildType.getProjectExternalId());
 			setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
@@ -136,6 +136,7 @@ public class WebHookPayloadContent {
     		setBuildTypeId(sRunningBuild.getBuildType().getBuildTypeId());
     		setProjectName(sRunningBuild.getBuildType().getProjectName());
     		setProjectId(sRunningBuild.getBuildType().getProjectId());
+    		setProjectExternalId(sRunningBuild.getBuildType().getProjectExternalId());
     		setBuildNumber(sRunningBuild.getBuildNumber());
     		setAgentName(sRunningBuild.getAgentName());
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
@@ -306,6 +307,14 @@ public class WebHookPayloadContent {
 		public void setProjectId(String projectId) {
 			this.projectId = projectId;
 		}
+		
+		public String getProjectExternalId() {
+			return projectExternalId;
+		}
+		
+		public void setProjectExternalId(String projectExternalId) {
+			this.projectExternalId = projectExternalId;
+		}
 
 		public String getBuildNumber() {
 			return buildNumber;
@@ -385,25 +394,6 @@ public class WebHookPayloadContent {
 			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this));
 			this.buildStatusHtml = builder.build();
 		}		
-		
-		private void xxsetBuildStatusHtml(String rootUrl, BuildStateEnum buildState) {
-			StringBuilder sb = new StringBuilder();
-			
-			sb.append("<span class=\"tcWebHooksMessage\"><a href=\"").append(rootUrl).append("/project.html?projectId=").append(getProjectId()).append("\">")
-						.append(getProjectName()).append("</a> :: <a href=\"").append(rootUrl).append("/viewType.html?buildTypeId=")
-						.append(getBuildTypeId()).append("\">").append(getBuildName()).append("</a>");
-			
-			sb.append(" # <a href=\"").append(rootUrl).append("/viewLog.html?buildTypeId=").append(getBuildTypeId())
-						.append("&buildId=").append(getBuildId()).append("\"><strong>").append(getBuildNumber())
-						.append("</strong></a> has <strong>").append(buildState.getDescriptionSuffix()).append("</strong>");
-			
-			sb.append(" with a status of ")
-						.append("<a href=\"").append(rootUrl).append("/viewLog.html?buildTypeId=").append(getBuildTypeId())
-						.append("&buildId=").append(getBuildId()).append("\"> <strong>").append(this.buildResult)
-						.append("</strong></a> and was triggered by <strong>").append(this.triggeredBy).append("</strong></span>");
-			
-			this.buildStatusHtml = sb.toString();
-		}
 		
 		public String getComment() {
 			return comment;

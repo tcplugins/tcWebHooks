@@ -49,7 +49,7 @@ public class WebHookListenerTest {
 	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
 	MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
-	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
+	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 	WebHookListener whl;
 	
 	@BeforeClass
@@ -183,7 +183,7 @@ public class WebHookListenerTest {
 		
 		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		
-		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
+		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory);
 		Status oldStatus = Status.NORMAL;

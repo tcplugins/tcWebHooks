@@ -54,6 +54,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
     	model.put("messages", message);
     	model.put("messages2", "blasdflkdfl");
     	model.put("projectId", project.getProjectId());
+    	model.put("projectExternalId", project.getExternalId());
     	model.put("projectName", project.getName());
 	}
 

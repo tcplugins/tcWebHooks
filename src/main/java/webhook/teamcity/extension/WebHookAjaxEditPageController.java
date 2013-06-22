@@ -182,6 +182,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 		    	params.put("haveProject", "true");
 		    	params.put("messages", message);
 		    	params.put("projectId", project.getProjectId());
+		    	params.put("projectExternalId", project.getExternalId());
 		    	params.put("projectName", project.getName());
 		    	
 		    	params.put("webHookCount", projSettings1.getWebHooksCount());

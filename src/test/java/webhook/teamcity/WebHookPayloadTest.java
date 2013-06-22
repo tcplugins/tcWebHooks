@@ -35,7 +35,7 @@ public class WebHookPayloadTest {
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class); 	
-		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
+		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
@@ -60,7 +60,7 @@ public class WebHookPayloadTest {
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
-		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
+		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");

@@ -1,6 +1,7 @@
 package webhook.teamcity;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -563,6 +564,32 @@ public class MockSRunningBuild implements SRunningBuild {
 	public void muteBuildProblems(User arg0, boolean arg1, String arg2) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	// From 8.0
+	
+	@Override
+	public BigDecimal getStatisticValue(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, BigDecimal> getStatisticValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getBuildTypeExternalId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getProjectExternalId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

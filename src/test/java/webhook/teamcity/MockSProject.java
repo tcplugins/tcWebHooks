@@ -13,19 +13,28 @@ import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
+import jetbrains.buildServer.serverSide.BuildTypeIdentity;
 import jetbrains.buildServer.serverSide.BuildTypeTemplate;
 import jetbrains.buildServer.serverSide.CopyOptions;
+import jetbrains.buildServer.serverSide.CyclicDependencyException;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
+import jetbrains.buildServer.serverSide.DuplicateProjectNameException;
 import jetbrains.buildServer.serverSide.DuplicateTemplateNameException;
+import jetbrains.buildServer.serverSide.InvalidIdentifierException;
+import jetbrains.buildServer.serverSide.InvalidNameException;
 import jetbrains.buildServer.serverSide.InvalidVcsRootScopeException;
 import jetbrains.buildServer.serverSide.MaxNumberOfBuildTypesReachedException;
 import jetbrains.buildServer.serverSide.Parameter;
 import jetbrains.buildServer.serverSide.PersistFailedException;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SPersistentEntity;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.TemplateCannotBeRemovedException;
+import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
 import jetbrains.buildServer.users.User;
+import jetbrains.buildServer.vcs.DuplicateVcsRootNameException;
 import jetbrains.buildServer.vcs.SVcsRoot;
+import jetbrains.buildServer.vcs.UnknownVcsException;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 
 public class MockSProject implements SProject {
@@ -33,16 +42,18 @@ public class MockSProject implements SProject {
 	private String name;
 	private String description;
 	private String projectId;
+	private String projectExternalId;
 	private File configDirectory;
 	private Status status;
 	private SBuildType buildType;
 
-	public MockSProject(String name, String description, String projectId, 
+	public MockSProject(String name, String description, String projectId, String projectExternalId, 
 						SBuildType buildType)
 	{
 		this.name = name;
 		this.description = description;
 		this.projectId = projectId;
+		this.projectExternalId = projectExternalId;
 		this.buildType = buildType;
 	}
 	
@@ -291,6 +302,262 @@ public class MockSProject implements SProject {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	// From 8.0
+	
+	@Override
+	public String getExternalId() {
+		return projectExternalId;
+	}
+
+	@Override
+	public String getFullName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getParentProjectExternalId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getParentProjectId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isRootProject() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public SPersistentEntity getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, String> getOwnParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Parameter> getOwnParametersCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String describe(boolean arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean belongsTo(SProject arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public SBuildType copyBuildType(SBuildType arg0, String arg1, String arg2,
+			CopyOptions arg3) throws MaxNumberOfBuildTypesReachedException,
+			InvalidVcsRootScopeException, DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTypeTemplate copyBuildTypeTemplate(BuildTypeTemplate arg0,
+			String arg1, String arg2) throws InvalidVcsRootScopeException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SVcsRoot copyVcsRoot(SVcsRoot arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SBuildType createBuildType(String arg0, String arg1)
+			throws DuplicateExternalIdException,
+			DuplicateBuildTypeNameException,
+			MaxNumberOfBuildTypesReachedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SBuildType createBuildTypeFromTemplate(BuildTypeTemplate arg0,
+			String arg1, String arg2)
+			throws MaxNumberOfBuildTypesReachedException,
+			InvalidVcsRootScopeException, DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTypeTemplate createBuildTypeTemplate(String arg0, String arg1)
+			throws DuplicateTemplateNameException, DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SProject createProject(String arg0, String arg1)
+			throws InvalidIdentifierException, InvalidNameException,
+			DuplicateProjectNameException, DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SVcsRoot createVcsRoot(String arg0, String arg1,
+			Map<String, String> arg2) throws UnknownVcsException,
+			DuplicateVcsRootNameException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SVcsRoot createVcsRoot(String arg0, String arg1, String arg2)
+			throws DuplicateExternalIdException, DuplicateVcsRootNameException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTypeTemplate extractBuildTypeTemplate(SBuildType arg0,
+			String arg1, String arg2) throws InvalidVcsRootScopeException,
+			InvalidIdentifierException, DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTypeIdentity findBuildTypeIdentityByName(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BuildTypeTemplate findBuildTypeTemplateByExternalId(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SProject findProjectByName(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SVcsRoot findVcsRootByName(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BuildTypeTemplate> getAvailableTemplates() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getExtendedFullName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BuildTypeTemplate> getOwnBuildTypeTemplates() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SBuildType> getOwnBuildTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SProject> getOwnProjects() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SVcsRoot> getOwnVcsRoots() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SProject getParentProject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public File getPluginDataDirectory(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public File getPluginSettingsFile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SProject> getProjectPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SProject> getProjects() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SVcsRoot> getUsedVcsRoots() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void moveToProject(SProject arg0) throws CyclicDependencyException,
+			InvalidVcsRootScopeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setExternalId(String arg0) throws InvalidIdentifierException,
+			DuplicateExternalIdException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 	
 	
 

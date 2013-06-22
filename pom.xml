@@ -141,10 +141,14 @@
 	</reporting>
 	
 	<repositories>
-	 <repository>
-      <id>tcwebhooks.sourceforge</id>
-      <url>http://tcplugins.svn.sourceforge.net/svnroot/tcplugins/maven2-repo</url>
-     </repository>
+	  <repository>
+        <id>tcwebhooks.sourceforge</id>
+        <url>http://tcplugins.svn.sourceforge.net/svnroot/tcplugins/maven2-repo</url>
+      </repository>
+<!-- 	  <repository>
+	    <id>jetbrains-all</id>
+	    <url>http://repository.jetbrains.com/all</url>
+	  </repository> -->
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -176,7 +180,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
-			<version>7.1.0</version>
+			<version>8.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -199,7 +203,7 @@
 		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>7.1.0</version>
+			<version>8.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		

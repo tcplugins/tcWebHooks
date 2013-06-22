@@ -32,7 +32,7 @@
         BS.Navigation.items = [
 		  {title: "Projects", url: '<c:url value="/overview.html"/>'},
 		  <c:if test="${haveProject}"> 
-		  	{title: "${projectName}", url: '<c:url value="/project.html?projectId=${projectId}"/>'},
+		  	{title: "${projectName}", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
 		  </c:if>
           {title: "${title}", selected:true}
         ];

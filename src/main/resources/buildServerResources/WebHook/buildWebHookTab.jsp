@@ -3,7 +3,7 @@
 	
 <c:if test="${noWebHooks}" >
 		<p>There are no WebHooks configured for this project.</p> 
-		<a href="./webhooks/index.html?projectId=${projectId}">Add project WebHooks</a>.
+		<a href="./webhooks/index.html?projectId=${projectExternalId}">Add project WebHooks</a>.
 	</div>
 </c:if>
 <c:if test="${webHooks}" >
@@ -12,7 +12,7 @@
 		<div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
 	</c:if>
 	<p>There are <strong>${webHookCount}</strong> WebHooks configured for this project. <br/>
-		<a href="./webhooks/index.html?projectId=${projectId}">Edit project WebHooks</a>.</p>
+		<a href="./webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.</p>
 	</div>
 	<table class="testList dark borderBottom">
 		<thead><tr><th class=name>URL</th><th class=name>Enabled</th></tr></thead>

@@ -50,15 +50,16 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        if(request.getParameter("projectId") != null 
 	        		&& request.getParameter("projectId").startsWith("project")){
 	        	
+	        	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 		    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 		    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
-		    	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 		    	
 		    	String message = projSettings.getWebHooksAsString();
 		    	
 		    	params.put("haveProject", "true");
 		    	params.put("messages", message);
 		    	params.put("projectId", project.getProjectId());
+		    	params.put("projectExternalId", project.getExternalId());
 		    	params.put("projectName", project.getName());
 		    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 		    	

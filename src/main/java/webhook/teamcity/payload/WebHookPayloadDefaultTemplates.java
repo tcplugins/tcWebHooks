@@ -10,7 +10,7 @@ public class WebHookPayloadDefaultTemplates {
 	public static final String MESSAGE_TEMPLATE = "message";			
 			
 	public static final String DEFAULT_HTML_BUILDSTATUS_TEMPLATE = 
-			"<span class=\"tcWebHooksMessage\"><a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a>" +
+			"<span class=\"tcWebHooksMessage\"><a href=\"${rootUrl}/project.html?projectId=${projectExternalId}\">${projectName}</a>" +
 			 " :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # " +
 			 "<a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a>" +
 			 " has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"> " +

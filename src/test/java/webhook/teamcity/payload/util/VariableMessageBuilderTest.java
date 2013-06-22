@@ -26,7 +26,7 @@ public class VariableMessageBuilderTest {
 	MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
 	SFinishedBuild previousSuccessfulBuild = mock(SFinishedBuild.class);
-	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", sBuildType);
+	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 	SBuildServer sBuildServer;
 	SortedMap<String, String> extraParameters;
 

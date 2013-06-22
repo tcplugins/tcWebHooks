@@ -58,6 +58,7 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
     	model.put("messages", message);
     	model.put("messages2", "blasdflkdfl");
     	model.put("projectId", buildType.getProject().getProjectId());
+    	model.put("projectExternalId", buildType.getProject().getExternalId());
     	model.put("projectName", buildType.getProject().getName());
 	}
 
