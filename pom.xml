@@ -143,7 +143,7 @@
 	<repositories>
 	  <repository>
         <id>tcwebhooks.sourceforge</id>
-        <url>http://tcplugins.svn.sourceforge.net/svnroot/tcplugins/maven2-repo</url>
+        <url>http://svn.code.sf.net/p/tcplugins/code/maven2-repo</url>
       </repository>
 <!-- 	  <repository>
 	    <id>jetbrains-all</id>
