@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>netwolfuk.TeamCity.Plugins</groupId>
-	<artifactId>tcWebHooks</artifactId>
-	<version>0.8.${build.number}.${build.vcs.number}</version>
+	<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+	<artifactId>tcwebhooks</artifactId>
+	<version>0.9.0.0</version>
 	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
-	<build>
+<!-- 	<build>
 		<defaultGoal>package</defaultGoal>
 		
 		<resources>
@@ -117,7 +117,7 @@
 		        </executions>
       		</plugin>
 		</plugins>
-	</build>
+	</build> -->
 	<reporting>
 		<plugins>
 			<plugin>
@@ -151,153 +151,7 @@
 	  </repository> -->
 	</repositories>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.4</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.1</version>
-			<scope>provided</scope>
-		</dependency>
 
-		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
-		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>server-api</artifactId>
-			<version>8.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- TeamCity/webapps/WEB-INF/lib/runtime-util.jar -->
-		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>runtime-util</artifactId>
-			<version>7.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- TeamCity/webapps/WEB-INF/lib/server-model.jar -->
-		<!--
-			<dependency> <groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>model</artifactId> <version>4.0.2</version>
-			<scope>provided</scope> </dependency>
-		-->
-
-		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
-		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>common-api</artifactId>
-			<version>8.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!--
-		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>openapi</artifactId>
-			<version>7.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-		
-		<dependency>
-   			<groupId>com.intellij</groupId>
-   			<artifactId>openapi</artifactId>
-   			<version>7.0.3</version>
-   			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>annotations</artifactId>
-			<version>7.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.3.1</version>
-			<scope>provided</scope>
-		</dependency>
-				
-		<dependency>
-    		<groupId>org.codehaus.jettison</groupId>
-    		<artifactId>jettison</artifactId>
-    		<version>1.1</version>
-    		<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.1.16</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-client</artifactId>
-			<version>6.1.16</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty-sslengine</artifactId>
-			<version>6.1.16</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.12</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.mockito</groupId>
-		  	<artifactId>mockito-all</artifactId>
-			<version>1.8.0</version>
-			<scope>test</scope>
-  		</dependency>
-  		 
-  		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.8.3</version>
-		</dependency>
   		 
 	</dependencies>
 	
@@ -314,4 +168,10 @@
 		</developer>
 	</developers>	
 	
+	<packaging>pom</packaging>
+	<modules>
+		<module>tcwebhooks-rest-api</module>
+		<module>tcwebhooks-web-ui</module>
+		<module>tcwebhooks-core</module>
+	</modules>
 </project>
