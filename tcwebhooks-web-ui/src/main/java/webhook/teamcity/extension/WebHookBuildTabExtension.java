@@ -1,5 +1,6 @@
 package webhook.teamcity.extension;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
 
 import org.jetbrains.annotations.NotNull;
 
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -44,22 +46,39 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 			 @NotNull SBuildType buildType, SUser user) {
 		this.settings = 
 			(WebHookProjectSettings)this.projSettings.getSettings(buildType.getProject().getProjectId(), "webhooks");
-    	String message = this.settings.getWebHooksAsString();
-    	model.put("webHookCount", this.settings.getWebHooksCount());
-    	if (this.settings.getWebHooksCount() == 0){
-    		model.put("noWebHooks", "true");
-    		model.put("webHooks", "false");
+    	
+    	List<WebHookConfig> projectWebhooks = this.settings.getProjectWebHooksAsList();
+    	List<WebHookConfig> buildWebhooks = this.settings.getBuildWebHooksAsList(buildType);
+    	
+    	model.put("projectWebHookCount", projectWebhooks.size());
+    	if (projectWebhooks.size() == 0){
+    		model.put("noProjectWebHooks", "true");
+    		model.put("projectWebHooks", "false");
     	} else {
-    		model.put("noWebHooks", "false");
-    		model.put("webHooks", "true");
-    		model.put("webHookList", this.settings.getWebHooksAsList());
-    		model.put("webHooksDisabled", !this.settings.isEnabled());
+    		model.put("noProjectWebHooks", "false");
+    		model.put("projectWebHooks", "true");
+    		model.put("projectWebHookList", projectWebhooks);
+    		model.put("projectWebHooksDisabled", !this.settings.isEnabled());
     	}
-    	model.put("messages", message);
-    	model.put("messages2", "blasdflkdfl");
+    	
+    	model.put("buildWebHookCount", buildWebhooks.size());
+    	if (buildWebhooks.size() == 0){
+    		model.put("noBuildWebHooks", "true");
+    		model.put("buildWebHooks", "false");
+    	} else {
+    		model.put("noBuildWebHooks", "false");
+    		model.put("buildWebHooks", "true");
+    		model.put("buildWebHookList", buildWebhooks);
+    	}
+    	
+
     	model.put("projectId", buildType.getProject().getProjectId());
     	model.put("projectExternalId", buildType.getProject().getExternalId());
     	model.put("projectName", buildType.getProject().getName());
+    	
+    	model.put("buildId", buildType.getBuildTypeId());
+    	model.put("buildExternalId", buildType.getExternalId());
+    	model.put("buildName", buildType.getName());
 	}
 
 	@Override

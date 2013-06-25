@@ -1,10 +1,13 @@
 package webhook.teamcity.extension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
@@ -14,6 +17,8 @@ import jetbrains.buildServer.web.openapi.project.ProjectTab;
 
 import org.jetbrains.annotations.NotNull;
 
+import webhook.teamcity.extension.bean.BuildWebhooksBean;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -40,19 +45,26 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	protected void fillModel(Map model, HttpServletRequest request,
 			 @NotNull SProject project, SUser user) {
 		this.settings = (WebHookProjectSettings)this.projSettings.getSettings(project.getProjectId(), "webhooks");
-    	String message = this.settings.getWebHooksAsString();
-    	model.put("webHookCount", this.settings.getWebHooksCount());
-    	if (this.settings.getWebHooksCount() == 0){
-    		model.put("noWebHooks", "true");
-    		model.put("webHooks", "false");
-    	} else {
-    		model.put("noWebHooks", "false");
-    		model.put("webHooks", "true");
-    		model.put("webHookList", this.settings.getWebHooksAsList());
-    		model.put("webHooksDisabled", !this.settings.isEnabled());
+    	
+    	List<WebHookConfig> projectWebhooks = this.settings.getProjectWebHooksAsList();
+    	List<BuildWebhooksBean> buildWebhooks = new ArrayList<BuildWebhooksBean>();
+    	for (SBuildType build : project.getBuildTypes()){
+    		buildWebhooks.add(new BuildWebhooksBean(build, settings.getBuildWebHooksAsList(build)));
     	}
-    	model.put("messages", message);
-    	model.put("messages2", "blasdflkdfl");
+
+    	model.put("projectWebHookCount", projectWebhooks.size());
+    	if (projectWebhooks.size() == 0){
+    		model.put("noProjectWebHooks", "true");
+    		model.put("projectWebHooks", "false");
+    	} else {
+    		model.put("noProjectWebHooks", "false");
+    		model.put("projectWebHooks", "true");
+    		model.put("projectWebHookList", projectWebhooks);
+    		model.put("projectWebHooksDisabled", !this.settings.isEnabled());
+    	}
+    	
+		model.put("buildWebHookList", buildWebhooks);
+    	
     	model.put("projectId", project.getProjectId());
     	model.put("projectExternalId", project.getExternalId());
     	model.put("projectName", project.getName());
@@ -63,5 +75,4 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		return myPluginPath+ "WebHook/projectWebHookTab.jsp";
 	}
 
-	
 }

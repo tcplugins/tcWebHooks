@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-autowire="constructor">
+
+	<bean id="webHookListener" 
+		class="webhook.teamcity.WebHookListener" 
+  		init-method="register" 
+  		/>
+  		
+	<!-- bean id="testListener" 
+		class="webhook.teamcity.TestListener" 
+  		init-method="register" 
+  		/-->
+  
+	<bean id="webHookProjectTabExtension"
+        class="webhook.teamcity.extension.WebHookProjectTabExtension"
+        init-method="register" 
+        />
+
+	<bean id="webHookBuildTabExtension"
+        class="webhook.teamcity.extension.WebHookBuildTabExtension"
+        init-method="register" 
+        />
+ 
+    <bean id="webHookIndexPageController" 
+     	class="webhook.teamcity.extension.WebHookIndexPageController" 
+     	init-method="register" 
+     	/>
+
+     <bean id="webHookAjaxSettingsListPageController" 
+     	class="webhook.teamcity.extension.WebHookAjaxSettingsListPageController" 
+     	init-method="register" 
+     	/>
+
+     <bean id="webHookAjaxEditPageController" 
+     	class="webhook.teamcity.extension.WebHookAjaxEditPageController" 
+     	init-method="register" 
+     	/>
+     			
+     <bean id="webHookFactory" 
+     	class="webhook.teamcity.WebHookFactoryImpl" 
+     	/>
+     			
+     <bean id="webHookProjectSettings" 
+     	class="webhook.teamcity.settings.WebHookProjectSettings" 
+     	/>
+
+     <bean id="webHookProjectSettingsFactory" 
+     	class="webhook.teamcity.settings.WebHookProjectSettingsFactory" 
+     	/>
+
+	<bean id="webHookMainSettings"
+		class="webhook.teamcity.settings.WebHookMainSettings"
+		init-method="register"
+		/>
+
+	<bean id="webHookPayloadManager"
+		class="webhook.teamcity.payload.WebHookPayloadManager"
+		/>
+
+	<bean id="webHookPayloadNameValuePairs"
+		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairs"
+		init-method="register">
+		<property name="rank">
+			<value>15</value>
+		</property>
+	</bean>
+
+	<bean id="webHookPayloadJson"
+		class="webhook.teamcity.payload.format.WebHookPayloadJson"
+		init-method="register">
+		<property name="rank">
+			<value>10</value>
+		</property>
+	</bean>
+
+	<bean id="webHookPayloadXml"
+		class="webhook.teamcity.payload.format.WebHookPayloadXml"
+		init-method="register">
+		<property name="rank">
+			<value>8</value>
+		</property>
+	</bean>
+
+	<bean id="webHookEmptyPayload"
+		class="webhook.teamcity.payload.format.WebHookPayloadEmpty"
+		init-method="register">
+		<property name="rank">
+			<value>5</value>
+		</property>
+	</bean>
+
+</beans>
