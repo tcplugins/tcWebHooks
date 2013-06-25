@@ -84,15 +84,15 @@ public class WebHookListener extends BuildServerAdapter {
 				
 				if (state.equals(BuildStateEnum.BUILD_STARTED)){
 					whcw.wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
-					whcw.wh.setEnabled(whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
+					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
 				} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
 					whcw.wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
-					whcw.wh.setEnabled(whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
+					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
 				} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
 					whcw.wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
-					whcw.wh.setEnabled(whcw.wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
+					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
 				} else if (state.equals(BuildStateEnum.BUILD_FINISHED)){
-					whcw.wh.setEnabled(whcw.wh.getBuildStates().enabled(
+					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(
 							BuildStateEnum.BUILD_FINISHED, 
 							sRunningBuild.getStatusDescriptor().isSuccessful(),
 							this.hasBuildChangedHistoricalState(sRunningBuild)));
@@ -181,7 +181,7 @@ public class WebHookListener extends BuildServerAdapter {
 									responsibilityInfoNew, 
 									isUserAction, 
 									whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
-						whcw.wh.setEnabled(whcw.wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
+						whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sBuildType) && whcw.wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(whcw.wh, whcw.whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whcw.whc.getPayloadFormat()).getFormatDescription());
 		}
@@ -246,7 +246,7 @@ public class WebHookListener extends BuildServerAdapter {
 									responsibilityEntryOld, 
 									responsibilityEntryNew, 
 									whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
-						whcw.wh.setEnabled(whcw.wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
+						whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sBuildType) && whcw.wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(whcw.wh, whcw.whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whcw.whc.getPayloadFormat()).getFormatDescription());
      	}

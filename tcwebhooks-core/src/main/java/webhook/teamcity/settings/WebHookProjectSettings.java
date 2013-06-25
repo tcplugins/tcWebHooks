@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.settings.ProjectSettings;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
@@ -81,6 +82,27 @@ public class WebHookProjectSettings implements ProjectSettings {
     public List<WebHookConfig> getWebHooksAsList(){
     	return this.webHooksConfigs;
     }    
+    
+    public List<WebHookConfig> getProjectWebHooksAsList(){
+    	List<WebHookConfig> projHooks = new ArrayList<WebHookConfig>();
+    	for (WebHookConfig config : getWebHooksAsList()){
+    		if (config.isEnabledForAllBuildsInProject()){
+    			projHooks.add(config);
+    		}
+    	}
+    	return projHooks;
+    }    
+    
+    public List<WebHookConfig> getBuildWebHooksAsList(SBuildType buildType){
+    	List<WebHookConfig> buildHooks = new ArrayList<WebHookConfig>();
+    	for (WebHookConfig config : getWebHooksAsList()){
+    		if (config.isSpecificBuildTypeEnabled(buildType)){
+    			buildHooks.add(config);
+    		}
+    	}
+    	return buildHooks;
+    }    
+        
 	
     public String getWebHooksAsString(){
     	String tmpString = "";

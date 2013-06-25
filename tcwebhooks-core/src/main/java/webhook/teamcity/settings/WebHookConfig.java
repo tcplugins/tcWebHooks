@@ -10,10 +10,14 @@ import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import jetbrains.buildServer.serverSide.SBuildType;
 
 import org.jdom.DataConversionException;
 import org.jdom.Element;
@@ -32,9 +36,11 @@ public class WebHookConfig {
 	private String payloadFormat = null;
 	private BuildState states = new BuildState();
 	private SortedMap<String, CustomMessageTemplate> templates; 
+	private Boolean allBuildTypesEnabled = true;
+	private Set<String> enabledBuildTypesSet = new HashSet<String>();
 	
 	@SuppressWarnings("unchecked")
-	public WebHookConfig (Element e){
+	public WebHookConfig (Element e) {
 		
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
@@ -75,6 +81,26 @@ public class WebHookConfig {
 						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue("type")), 
 										  eState.getAttribute("enabled").getBooleanValue());
 					} catch (DataConversionException e1) {e1.printStackTrace();}
+				}
+			}
+		}
+		
+		if(e.getChild("build-types") != null){
+			Element eTypes = e.getChild("build-types");
+			if (eTypes.getAttribute("enabled-for-all") != null){
+				try {
+					this.enableForAllBuildsInProject(eTypes.getAttribute("enabled-for-all").getBooleanValue());
+				} catch (DataConversionException e1) {e1.printStackTrace();}
+			}
+			if (!isEnabledForAllBuildsInProject()){
+				List<Element> typesList = eTypes.getChildren("build-type");
+				if (typesList.size() > 0){
+					for(Element eType : typesList)
+					{
+						if (eType.getAttributeValue("id")!= null){
+							enabledBuildTypesSet.add(eType.getAttributeValue("id"));
+						}
+					}
 				}
 			}
 		}
@@ -160,6 +186,18 @@ public class WebHookConfig {
 		}
 		el.addContent(statesEl);
 		
+		Element buildsEl = new Element("build-types");
+		buildsEl.setAttribute("enabled-for-all", Boolean.toString(isEnabledForAllBuildsInProject()));
+		
+		if (this.enabledBuildTypesSet.size() > 0){
+			for (String i : enabledBuildTypesSet){
+				Element e = new Element("build-type");
+				e.setAttribute("id", i);
+				buildsEl.addContent(e);
+			}
+		}
+		el.addContent(buildsEl);
+		
 		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
 			for (String i : this.extraParameters.keySet()){
@@ -188,6 +226,18 @@ public class WebHookConfig {
 //	public void setParams(List<NameValuePair> params) {
 //		this.params = params;
 //	}
+	
+	public boolean isEnabledForBuildType(SBuildType sBuildType){
+		// If allBuildTypes enabled, return true, otherwise  return whether the build is in the list of enabled buildTypes. 
+		return isEnabledForAllBuildsInProject() ? true : enabledBuildTypesSet.contains(sBuildType.getInternalId());
+	}
+	
+	public boolean isSpecificBuildTypeEnabled(SBuildType sBuildType){
+		// Just check if this build type is only enabled for a specific build. 
+		return enabledBuildTypesSet.contains(sBuildType.getInternalId());
+	}
+	
+		
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -353,12 +403,20 @@ public class WebHookConfig {
 
 	/**
 	 * Sets the payload format to whatever string is passed.
-	 * It does NOT check that the payload format has a valid implimentation loaded.
+	 * It does NOT check that the payload format has a valid implementation loaded.
 	 * 
 	 * @param payloadFormat
 	 */
 	public void setPayloadFormat(String payloadFormat) {
 		this.payloadFormat = payloadFormat;
+	}
+
+	public Boolean isEnabledForAllBuildsInProject() {
+		return allBuildTypesEnabled;
+	}
+
+	public void enableForAllBuildsInProject(Boolean allBuildTypesEnabled) {
+		this.allBuildTypesEnabled = allBuildTypesEnabled;
 	}
 
 	public Map<String,String> getEnabledTemplates() {

@@ -976,14 +976,12 @@ public class MockSBuildType implements SBuildType {
 
 	@Override
 	public String getExternalId() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name.replace(" ", "");
 	}
 
 	@Override
 	public String getInternalId() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.buildTypeId;
 	}
 
 	@Override
