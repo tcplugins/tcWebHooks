@@ -1011,7 +1011,7 @@ public class MockSBuildType implements SBuildType {
 
 	@Override
 	public String getProjectExternalId() {
-		return this.project.getExternalId();
+		return TeamCityIdResolver.getExternalProjectIdOrNull(this.project);
 	}
 
 	@Override

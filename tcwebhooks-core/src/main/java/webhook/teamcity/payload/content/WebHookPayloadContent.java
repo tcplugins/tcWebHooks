@@ -12,6 +12,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
@@ -25,11 +26,14 @@ public class WebHookPayloadContent {
 		buildName,
 		buildId,
 		buildTypeId,
+		buildInternalTypeId,
+		buildExternalTypeId,
 		buildStatusUrl,
 		buildStatusHtml,
 		rootUrl,
 		projectName,
 		projectId,
+		projectInternalId,
 		projectExternalId,
 		buildNumber,
 		agentName,
@@ -97,10 +101,13 @@ public class WebHookPayloadContent {
 			setBuildRunners(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
 			setBuildName(buildType.getName());
-			setBuildTypeId(buildType.getBuildTypeId());
+			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(buildType));
+    		setBuildInternaTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
+    		setBuildExternaTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
 			setProjectName(buildType.getProjectName());
-			setProjectId(buildType.getProjectId());
-			setProjectExternalId(buildType.getProjectExternalId());
+			setProjectId(TeamCityIdResolver.getProjectId(buildType.getProject()));
+			setProjectInternalId(TeamCityIdResolver.getInternalProjectId(buildType.getProject()));
+			setProjectExternalId(TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
 			setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
@@ -133,10 +140,13 @@ public class WebHookPayloadContent {
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
     		setBuildName(sRunningBuild.getBuildType().getName());
 			setBuildId(Long.toString(sRunningBuild.getBuildId()));
-    		setBuildTypeId(sRunningBuild.getBuildType().getBuildTypeId());
+			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sRunningBuild.getBuildType()));
+    		setBuildInternaTypeId(TeamCityIdResolver.getInternalBuildId(sRunningBuild.getBuildType()));
+    		setBuildExternaTypeId(TeamCityIdResolver.getExternalBuildId(sRunningBuild.getBuildType()));
     		setProjectName(sRunningBuild.getBuildType().getProjectName());
-    		setProjectId(sRunningBuild.getBuildType().getProjectId());
-    		setProjectExternalId(sRunningBuild.getBuildType().getProjectExternalId());
+    		setProjectId(TeamCityIdResolver.getProjectId(sRunningBuild.getBuildType().getProject()));
+    		setProjectInternalId(TeamCityIdResolver.getInternalProjectId(sRunningBuild.getBuildType().getProject()));
+    		setProjectExternalId(TeamCityIdResolver.getExternalProjectId(sRunningBuild.getBuildType().getProject()));
     		setBuildNumber(sRunningBuild.getBuildNumber());
     		setAgentName(sRunningBuild.getAgentName());
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
@@ -154,7 +164,32 @@ public class WebHookPayloadContent {
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 		}
 		
-		private void setBranch(Branch branch) {
+		
+		public String getBuildInternaTypeId() {
+			return this.buildInternalTypeId;
+		}
+
+		public void setBuildInternaTypeId(String internalBuildId) {
+			this.buildInternalTypeId = internalBuildId;
+		}
+		
+		public String getBuildExternaTypeId() {
+			return this.buildExternalTypeId;
+		}
+		
+		public void setBuildExternaTypeId(String externalBuildId) {
+			this.buildExternalTypeId = externalBuildId;
+		}
+
+		public String getProjectInternalId() {
+			return this.projectInternalId;
+		}
+		
+		public void setProjectInternalId(String projectId) {
+			this.projectInternalId = projectId;
+		}
+
+		public void setBranch(Branch branch) {
 			this.branch = branch;
 		}
 

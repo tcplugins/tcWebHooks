@@ -16,6 +16,7 @@ import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
 
 import org.jetbrains.annotations.NotNull;
 
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -73,11 +74,11 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
     	
 
     	model.put("projectId", buildType.getProject().getProjectId());
-    	model.put("projectExternalId", buildType.getProject().getExternalId());
+    	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
     	model.put("projectName", buildType.getProject().getName());
     	
     	model.put("buildId", buildType.getBuildTypeId());
-    	model.put("buildExternalId", buildType.getExternalId());
+    	model.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(buildType));
     	model.put("buildName", buildType.getName());
 	}
 

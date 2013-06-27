@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -182,7 +183,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 		    	params.put("haveProject", "true");
 		    	params.put("messages", message);
 		    	params.put("projectId", project.getProjectId());
-		    	params.put("projectExternalId", project.getExternalId());
+		    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 		    	params.put("projectName", project.getName());
 		    	
 		    	params.put("webHookCount", projSettings1.getWebHooksCount());

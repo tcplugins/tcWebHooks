@@ -18,6 +18,7 @@ import jetbrains.buildServer.web.util.SessionUser;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -84,7 +85,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("haveProject", "true");
 			    	params.put("messages", message);
 			    	params.put("projectId", project.getProjectId());
-			    	params.put("projectExternalId", project.getExternalId());
+			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 			    	params.put("projectName", project.getName());
 			    	
 			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());

@@ -24,6 +24,7 @@ import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
@@ -229,12 +230,12 @@ public class WebHookConfig {
 	
 	public boolean isEnabledForBuildType(SBuildType sBuildType){
 		// If allBuildTypes enabled, return true, otherwise  return whether the build is in the list of enabled buildTypes. 
-		return isEnabledForAllBuildsInProject() ? true : enabledBuildTypesSet.contains(sBuildType.getInternalId());
+		return isEnabledForAllBuildsInProject() ? true : enabledBuildTypesSet.contains(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	}
 	
 	public boolean isSpecificBuildTypeEnabled(SBuildType sBuildType){
 		// Just check if this build type is only enabled for a specific build. 
-		return enabledBuildTypesSet.contains(sBuildType.getInternalId());
+		return enabledBuildTypesSet.contains(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	}
 	
 		

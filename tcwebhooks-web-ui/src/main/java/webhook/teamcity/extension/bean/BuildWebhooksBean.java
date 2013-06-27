@@ -3,6 +3,7 @@ package webhook.teamcity.extension.bean;
 import java.util.List;
 
 import jetbrains.buildServer.serverSide.SBuildType;
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class BuildWebhooksBean{
@@ -48,7 +49,7 @@ public class BuildWebhooksBean{
 	}
 	
 	public String getBuildExternalId(){
-		return sBuildType.getExternalId();
+		return TeamCityIdResolver.getExternalBuildId(sBuildType);
 	}
 	public String getBuildName(){
 		return sBuildType.getName();
