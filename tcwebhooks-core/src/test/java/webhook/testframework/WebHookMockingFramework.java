@@ -7,6 +7,7 @@ import org.jdom.JDOMException;
 
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookProjectSettings;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 
@@ -16,6 +17,8 @@ public interface WebHookMockingFramework {
 	public SRunningBuild getRunningBuild();
 	public WebHookConfig getWebHookConfig();
 	public WebHookPayloadContent getWebHookContent();
+	public WebHookProjectSettings getWebHookProjectSettings();
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException;
+	public void loadWebHookProjectSettingsFromConfigXml(File xmlConfigFile) throws IOException, JDOMException;
 
 }

@@ -17,6 +17,7 @@ import org.jdom.input.SAXBuilder;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -50,6 +51,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SBuildServer sBuildServer = mock(SBuildServer.class);
 	BuildHistory buildHistory = mock(BuildHistory.class);
 	ProjectSettingsManager settings = mock(ProjectSettingsManager.class);
+	ProjectManager projectManager = mock(ProjectManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
 	WebHookPayload payload = new WebHookPayloadJson(manager);
@@ -65,6 +67,10 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	SRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
 	SProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
+	
+	SBuildType build2 = mock(SBuildType.class);
+	SBuildType build3 = mock(SBuildType.class);
+	
 	WebHookListener whl;
 	SortedMap<String, String> extraParameters;
 	BuildStateEnum buildstateEnum;
@@ -78,8 +84,10 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payload);
 		when(manager.getServer()).thenReturn(sBuildServer);
+		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
 		when(sBuildServer.getRootUrl()).thenReturn("http://test.server");
+		when(sBuildServer.getProjectManager()).thenReturn(projectManager);
 		when(previousSuccessfulBuild.getBuildStatus()).thenReturn(Status.NORMAL);
 		when(previousSuccessfulBuild.isPersonal()).thenReturn(false);
 		when(previousFailedBuild.getBuildStatus()).thenReturn(Status.FAILURE);
@@ -88,6 +96,15 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		finishedFailedBuilds.add(previousFailedBuild);
 		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		((MockSBuildType) sBuildType).setProject(sProject);
+		
+		when(build2.getBuildTypeId()).thenReturn("bt2");
+		when(build2.getInternalId()).thenReturn("bt2");
+		when(build2.getName()).thenReturn("This is Build 2");
+		when(build3.getBuildTypeId()).thenReturn("bt3");
+		when(build3.getInternalId()).thenReturn("bt3");
+		when(build3.getName()).thenReturn("This is Build 3");
+		((MockSProject) sProject).addANewBuildTypeToTheMock(build2);
+		((MockSProject) sProject).addANewBuildTypeToTheMock(build3);
 		whl.register();
 		
 	}
@@ -124,8 +141,18 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	}
 	
 	@Override
+	public void loadWebHookProjectSettingsFromConfigXml(File xmlConfigFile) throws IOException, JDOMException{
+		projSettings.readFrom(ConfigLoaderUtil.getFullConfigElement(xmlConfigFile).getChild("webhooks"));
+	}
+	
+	@Override
 	public WebHookConfig getWebHookConfig() {
 		return webHookConfig;
+	}
+
+	@Override
+	public WebHookProjectSettings getWebHookProjectSettings() {
+		return projSettings;
 	}
 
 }

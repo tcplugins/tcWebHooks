@@ -1,3 +1,10 @@
+		<script>
+        var ProjectBuilds = [
+        <c:forEach items="${buildTypeList}" var="build">
+		  {buildTypeId: "${build.id}", buildTypeName: '${build.name}'},
+        </c:forEach>
+        ];
+        </script>
 
 	    <!-- <p><label for="webHookEnabled" style="width:30em;"><input id="webHookEnabled" type="checkbox" ${webHooksEnabledAsChecked}/> Process WebHooks for this project</label></p>-->
 	    <br/>
@@ -6,11 +13,13 @@
 		   		<tr style="background-color: rgb(245, 245, 245);">
 					<th class="name">URL</th>
 					<th class="name">Format</th>
+					<th class="name">Builds</th>
 					<th class="value" style="width:20%;" colspan="3">Enabled</th>
 			</tr>
 			</thead>
 			<tbody>
-			<c:forEach items="${webHookList}" var="hook">
+			<c:forEach items="${webHookList}" var="holder">
+				<c:set var="hook" value="${holder.config}"/>
 				<tr id="viewRow_${hook.uniqueKey}">
 					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.url}" /></td>
 						<c:forEach items="${formatList}" var="format">
@@ -19,6 +28,7 @@
 							</c:if>
 						</c:forEach>
 					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.enabledListAsString}" /></td>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
 					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');" href="javascript://">edit</a></td>
 					<td class="edit highlight"><a onclick='BS.WebHookForm.removeWebHook("${hook.uniqueKey}");' href="javascript://">delete</a></td>
 				</tr> 
@@ -38,6 +48,7 @@
 						<input id="BuildFixed_${hook.uniqueKey}" value="BuildFixed" name="BuildFixed" type=checkbox ${hook.stateBuildFixedAsChecked}/>
 						<input id="BuildBroken_${hook.uniqueKey}" value="BuildBroken" name="BuildBroken" type=checkbox ${hook.stateBuildBrokenAsChecked}/>
 						<input id="payloadFormat_${hook.uniqueKey}" name="payloadFormat2" type="hidden" value="${hook.payloadFormat}" />
+						<input id="buildTypes_${hook.uniqueKey}" name="buildTypes" type="hidden" value="${holder.getEnabledBuildTypes()}" />
 			<!-- ${ hook.payloadFormat} -->
 						<c:forEach items="${formatList}" var="format">
 							<c:if test="${format.formatShortName == hook.payloadFormat}">
@@ -52,7 +63,7 @@
 				</tr>
 			</c:forEach>
 				<tr>
-					<td colspan="5" class="highlight"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
+					<td colspan="6" class="highlight"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
 				</tr>
 				<tr style="display:none;" id="editRow_new">
 					<td colspan="4" id="wrapper_new">
@@ -90,95 +101,111 @@
                 method="post" onsubmit="return BS.WebHookForm.saveWebHook();">
             <div id='webHookFormContents'>
             
-
-						<table style="border:none;">
-							
-							<tr style="border:none;">
-								<td>URL:</td>
-								<td colspan=2><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 0.5em;"></span></td>
-							</tr>
-							<tr style="border:none;">
-								<td><label for="webHooksEnabled">Enabled:</label></td>
-								<td style="padding-left:3px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
-							</tr>
-							<tr style="border:none;">
-								<td>Trigger on Events:</td>
-								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
-									<input onclick='selectBuildState();' class="buildState" id="BuildStarted" name="BuildStarted"  type=checkbox />
-									 Build Started</label>
-								</td>
-								<td><label style='white-space:nowrap;'>
-									<input onclick='selectBuildState();' class="buildState" id="BuildInterrupted" name="BuildInterrupted" type=checkbox />
-									 Build Interrupted</label>
-								</td>
-							</tr>
-							<tr style="border:none;"><td>&nbsp;</td>
-								<td style="padding-left:3px;"><label style='white-space:nowrap;'>
-									<input onclick='selectBuildState();' class="buildState" id="BeforeFinished" name="BeforeFinished" type=checkbox />
-									 Build Almost Completed</label>
-								</td>
-								<td><label style='white-space:nowrap;'>
-									<input onclick='selectBuildState();' class="buildState" id="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox />
-									 Build Responsibility Changed</label>
-								</td>
-							</tr>
-
-							<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top; padding-top:0.33em;">On Completion:</td>
-								<td colspan=2 >
-									<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
-											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-												<input onclick='doExtraCompleted();' class="buildState" id="BuildSuccessful" name="BuildSuccessful" type=checkbox />
-												 Trigger when build is Successful</label>
-												</td></tr>
-											<tr class="onBuildFixed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
-												<input class="buildStateFixed" id="BuildFixed" name="BuildFixed" type=checkbox />
-												 Only trigger when build changes from Failure to Success</label>
-												</td></tr>
-											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-												<input onclick='doExtraCompleted();' class="buildState" id="BuildFailed" name="BuildFailed" type=checkbox />
-												 Trigger when build Fails</label>
-												</td></tr>
-											<tr class="onBuildFailed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
-												<input class="buildStateBroken" id="BuildBroken" name="BuildBroken" type=checkbox />
-												 Only trigger when build changes from Success to Failure</label>
-												</td></tr>
-									</tbody></table>
-								</td>
-							</tr>
-
-							<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
-								<td colspan=2>
-									<table style="padding:0; margin:0; left: 0px;" id="payloadFormatTable"><tbody style="padding:0; margin:0; left: 0px;">
-										<c:forEach items="${formatList}" var="format">
-											<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-												<input style="vertical-align:text-bottom;" class="payloadFormat" id="payloadFormat_${format.formatShortName}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
-												${format.formatDescription}</label>
-												</td></tr>
-										</c:forEach>
-									</tbody></table>
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td colspan=2><span class="error" id="error_payloadFormat" style="margin-left: 0.5em;"></span></td>
-							</tr>
-    					</table>            
-            
-            <!--
-            <label class="editParameterLabel" for="parameterName">Name: <span class="mandatoryAsterix" title="Mandatory field">*</span></label>
-			<input type="text" name="parameterName" id="parameterName" size="" maxlength="512" value="" class="textfield" style="margin:0; padding:0; width:22em;"   >
-
-            <span class="error" id="error_parameterName" style="margin-left: 5.5em;"></span>
-
-            <div class="clr" style="height:3px;"></div>
-            <label class="editParameterLabel" for="parameterValue">Value:</label>
-			<input type="text" name="parameterValue" id="parameterValue" size="" maxlength="512" value="" class="textfield" style="margin:0; padding:0; width:22em;"   >
-			-->
-			</div>
+            		<div id="tab-container" class="tab-container">
+								  <ul class='etabs'>
+												   <li class='tab'><a href="#hookPane" class="active">WebHook Config</a></li>
+												   <li class='tab'><a href="#buildPane">Builds (<span id="selectedBuildCount">all</span>)</a></li>
+								  </ul>
+						 <div class='panel-container'>
+									<div id='hookPane'>
+											<table style="border:none;">
+												
+												<tr style="border:none;">
+													<td>URL:</td>
+													<td colspan=2><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
+												</tr>
+												<tr>
+													<td></td>
+													<td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 0.5em;"></span></td>
+												</tr>
+												<tr style="border:none;">
+													<td><label for="webHooksEnabled">Enabled:</label></td>
+													<td style="padding-left:3px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
+												</tr>
+												<tr style="border:none;">
+													<td>Trigger on Events:</td>
+													<td style="padding-left:3px;"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="BuildStarted" name="BuildStarted"  type=checkbox />
+														 Build Started</label>
+													</td>
+													<td><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="BuildInterrupted" name="BuildInterrupted" type=checkbox />
+														 Build Interrupted</label>
+													</td>
+												</tr>
+												<tr style="border:none;"><td>&nbsp;</td>
+													<td style="padding-left:3px;"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="BeforeFinished" name="BeforeFinished" type=checkbox />
+														 Build Almost Completed</label>
+													</td>
+													<td><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox />
+														 Build Responsibility Changed</label>
+													</td>
+												</tr>
+					
+												<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top; padding-top:0.33em;">On Completion:</td>
+													<td colspan=2 >
+														<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
+																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+																	<input onclick='doExtraCompleted();' class="buildState" id="BuildSuccessful" name="BuildSuccessful" type=checkbox />
+																	 Trigger when build is Successful</label>
+																	</td></tr>
+																<tr class="onBuildFixed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
+																	<input class="buildStateFixed" id="BuildFixed" name="BuildFixed" type=checkbox />
+																	 Only trigger when build changes from Failure to Success</label>
+																	</td></tr>
+																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+																	<input onclick='doExtraCompleted();' class="buildState" id="BuildFailed" name="BuildFailed" type=checkbox />
+																	 Trigger when build Fails</label>
+																	</td></tr>
+																<tr class="onBuildFailed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
+																	<input class="buildStateBroken" id="BuildBroken" name="BuildBroken" type=checkbox />
+																	 Only trigger when build changes from Success to Failure</label>
+																	</td></tr>
+														</tbody></table>
+													</td>
+												</tr>
+					
+												<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
+													<td colspan=2>
+														<table style="padding:0; margin:0; left: 0px;" id="payloadFormatTable"><tbody style="padding:0; margin:0; left: 0px;">
+															<c:forEach items="${formatList}" var="format">
+																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+																	<input style="vertical-align:text-bottom;" class="payloadFormat" id="payloadFormat_${format.formatShortName}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
+																	${format.formatDescription}</label>
+																	</td></tr>
+															</c:forEach>
+														</tbody></table>
+													</td>
+												</tr>
+												<tr>
+													<td></td>
+													<td colspan=2><span class="error" id="error_payloadFormat" style="margin-left: 0.5em;"></span></td>
+												</tr>
+					    					</table>     
+					    					
+					    			</div><!--hookPane -->
+					    			
+					    			<div id='buildPane'>
+					    				<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input name="buildTypeAll" onclick="toggleAllBuildTypesSelected();" type=checkbox style="padding-right: 1em;" class="buildType_all"><strong>All Builds</strong></label></p>
+					            		<div id='buildList' style="overflow:auto; padding:0;">
+						            	</div>
+						            </div>
+					    	</div><!-- panel-container  -->
+					</div>    <!-- tab-container -->   
+		            
+		            <!--
+		            <label class="editParameterLabel" for="parameterName">Name: <span class="mandatoryAsterix" title="Mandatory field">*</span></label>
+					<input type="text" name="parameterName" id="parameterName" size="" maxlength="512" value="" class="textfield" style="margin:0; padding:0; width:22em;"   >
+		
+		            <span class="error" id="error_parameterName" style="margin-left: 5.5em;"></span>
+		
+		            <div class="clr" style="height:3px;"></div>
+		            <label class="editParameterLabel" for="parameterValue">Value:</label>
+					<input type="text" name="parameterValue" id="parameterValue" size="" maxlength="512" value="" class="textfield" style="margin:0; padding:0; width:22em;"   >
+					-->
+			</div> <!-- webHookFormContents -->
 
             <div class="popupSaveButtonsBlock">
               <a href="javascript://" showdiscardchangesmessage="false" onclick="BS.EditWebHookDialog.cancelDialog()"

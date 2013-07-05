@@ -1,12 +1,17 @@
 package webhook.teamcity.extension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -21,7 +26,10 @@ import org.springframework.web.servlet.ModelAndView;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
+import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -114,6 +122,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					
 			    					if (request.getParameter("webHookId") != null){
 			    						Boolean enabled = false;
+			    						Boolean buildTypeAll = false;
+			    						Set<String> buildTypes = new HashSet<String>();
 			    						if ((request.getParameter("webHooksEnabled") != null )
 			    								&& (request.getParameter("webHooksEnabled").equalsIgnoreCase("on"))){
 			    							enabled = true;
@@ -129,10 +139,21 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
 			    						checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
 			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
+			    						
+			    						if ((request.getParameter("buildTypeAll") != null ) && (request.getParameter("buildTypeAll").equalsIgnoreCase("on"))){
+			    							buildTypeAll = true;
+			    						} else {
+			    							if (request.getParameterValues("buildTypeId") != null){
+			    								String[] types = request.getParameterValues("buildTypeId");
+			    								for (String string : types) {
+			    									buildTypes.add(string);
+												}
+			    							}
+			    						}
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
-			    														states,request.getParameter("payloadFormat"));
+			    														states,request.getParameter("payloadFormat"), buildTypeAll, buildTypes);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -142,7 +163,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"));
+			    														states, request.getParameter("payloadFormat"), buildTypeAll, buildTypes);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -193,8 +214,23 @@ public class WebHookAjaxEditPageController extends BaseController {
 		    	} else {
 		    		params.put("noWebHooks", "false");
 		    		params.put("webHooks", "true");
-		    		params.put("webHookList", projSettings1.getWebHooksAsList());
+		    		//params.put("webHookList", projSettings1.getWebHooksAsList());
 		    		params.put("webHooksDisabled", !projSettings1.isEnabled());
+		    		
+		    		List<WebhookConfigAndBuildTypeListHolder> webHookList = new ArrayList<WebhookConfigAndBuildTypeListHolder>();
+		    		for (WebHookConfig config : projSettings.getWebHooksAsList()){
+		    			WebhookConfigAndBuildTypeListHolder holder = new WebhookConfigAndBuildTypeListHolder(config);
+			    		for (SBuildType sBuildType : project.getBuildTypes()){
+			    			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
+			    													sBuildType.getBuildTypeId(), 
+			    													sBuildType.getName(), 
+			    													config.isEnabledForBuildType(sBuildType)
+			    													)
+			    										);
+			    		}
+			    		webHookList.add(holder);
+		    		}
+		    		params.put("webHookList", webHookList);
 		    	}
 	        } else {
 	        	params.put("haveProject", "false");

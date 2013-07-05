@@ -1,12 +1,15 @@
 package webhook.teamcity.extension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -19,7 +22,10 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
+import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -71,12 +77,12 @@ public class WebHookIndexPageController extends BaseController {
 	        
 	        if(request.getParameter("projectId") != null){
 	        	
-	        	SProject project = this.myServer.getProjectManager().findProjectByExternalId(request.getParameter("projectId"));
+	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
 	        	if (project != null){
 	        		
 			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 			    			mySettings.getSettings(project.getProjectId(), "webhooks");
-		    	
+			    	
 			        SUser myUser = SessionUser.getUser(request);
 			        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
 			    	
@@ -85,6 +91,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("haveProject", "true");
 			    	params.put("messages", message);
 			    	params.put("projectId", project.getProjectId());
+			    	params.put("buildTypeList", project.getBuildTypes());
 			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 			    	params.put("projectName", project.getName());
 			    	
@@ -99,10 +106,25 @@ public class WebHookIndexPageController extends BaseController {
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
-			    		params.put("webHookList", projSettings.getWebHooksAsList());
-			    		params.put("webHookList", projSettings.getWebHooksAsList());
+			    		//params.put("webHookList", projSettings.getWebHooksAsList());
+			    		//params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
+			    		
+			    		List<WebhookConfigAndBuildTypeListHolder> webHookList = new ArrayList<WebhookConfigAndBuildTypeListHolder>();
+			    		for (WebHookConfig config : projSettings.getWebHooksAsList()){
+			    			WebhookConfigAndBuildTypeListHolder holder = new WebhookConfigAndBuildTypeListHolder(config);
+				    		for (SBuildType sBuildType : project.getBuildTypes()){
+				    			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
+				    													sBuildType.getBuildTypeId(), 
+				    													sBuildType.getName(), 
+				    													config.isEnabledForBuildType(sBuildType)
+				    													)
+				    										);
+				    		}
+				    		webHookList.add(holder);
+			    		}
+			    		params.put("webHookList", webHookList);
 			    	}
 		    	} else {
 		    		params.put("haveProject", "false");

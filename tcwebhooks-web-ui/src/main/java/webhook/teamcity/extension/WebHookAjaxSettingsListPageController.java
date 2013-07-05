@@ -1,12 +1,15 @@
 package webhook.teamcity.extension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -16,7 +19,10 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
+import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -71,9 +77,24 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    	} else {
 		    		params.put("noWebHooks", "false");
 		    		params.put("webHooks", "true");
-		    		params.put("webHookList", projSettings.getWebHooksAsList());
+		    		//params.put("webHookList", projSettings.getWebHooksAsList());
 		    		params.put("webHooksDisabled", !projSettings.isEnabled());
 		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
+		    		
+		    		List<WebhookConfigAndBuildTypeListHolder> webHookList = new ArrayList<WebhookConfigAndBuildTypeListHolder>();
+		    		for (WebHookConfig config : projSettings.getWebHooksAsList()){
+		    			WebhookConfigAndBuildTypeListHolder holder = new WebhookConfigAndBuildTypeListHolder(config);
+			    		for (SBuildType sBuildType : project.getBuildTypes()){
+			    			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
+			    													sBuildType.getBuildTypeId(), 
+			    													sBuildType.getName(), 
+			    													config.isEnabledForBuildType(sBuildType)
+			    													)
+			    										);
+			    		}
+			    		webHookList.add(holder);
+		    		}
+		    		params.put("webHookList", webHookList);
 		    	}
 	        } else {
 	        	params.put("haveProject", "false");

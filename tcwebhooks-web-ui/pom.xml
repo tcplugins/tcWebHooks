@@ -3,7 +3,7 @@
   <parent>
     <artifactId>tcwebhooks</artifactId>
     <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-    <version>0.9.0.0</version>
+    <version>${currentVersion}</version>
     <relativePath>..</relativePath>
   </parent>
   <artifactId>tcwebhooks-web-ui</artifactId>
@@ -144,14 +144,22 @@
   </build>
   
   <dependencies>
-  	<dependency>
-  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-  		<artifactId>tcwebhooks-core</artifactId>
-  		<version>0.9.0.0</version>
-  		<scope>compile</scope>
-  	</dependency>
+	  	<dependency>
+	  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+	  		<artifactId>tcwebhooks-core</artifactId>
+	  		<version>${currentVersion}</version>
+	  		<scope>compile</scope>
+	  	</dependency>
   	
-  			<dependency>
+	    <dependency>
+	      <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+	      <artifactId>tcwebhooks-core</artifactId>
+	      <version>${currentVersion}</version>
+	      <type>test-jar</type>
+	      <scope>test</scope>
+	    </dependency>
+  	
+  		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.4</version>
@@ -225,6 +233,13 @@
 			<version>2.0.1</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.3.1</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -232,6 +247,26 @@
 			<version>1.8.0</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
   	
+  		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+			<scope>test</scope>
+		</dependency>
+  	
+  		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.3</version>
+			<scope>test</scope>
+		</dependency>  	
   </dependencies>
 </project>

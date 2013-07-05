@@ -1,5 +1,6 @@
 package webhook.teamcity;
 
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 
@@ -70,6 +71,21 @@ public final class TeamCityIdResolver {
 			return project.getExternalId();
 		} catch (NoSuchMethodError ex) {
 			return null;
+		}
+	}
+
+	/**
+	 * Finds a TeamCity project in the ProjectManager by ProjectId.
+	 * Uses findProjectByExternalId() if available, otherwise uses findProjectById()
+	 * @param TeamCity projectManager instance
+	 * @param projectId string
+	 * @return TeamCity Project Config object
+	 */
+	public static SProject findProjectById(ProjectManager projectManager, String projectId) {
+		try {
+			return projectManager.findProjectByExternalId(projectId);
+		} catch (NoSuchMethodError ex){
+			return projectManager.findProjectById(projectId);
 		}
 	}
 

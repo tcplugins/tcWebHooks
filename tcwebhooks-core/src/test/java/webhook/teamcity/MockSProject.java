@@ -1,12 +1,15 @@
 package webhook.teamcity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.jdom.Element;
+
+import com.intellij.util.containers.HashMap;
 
 import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
@@ -46,6 +49,7 @@ public class MockSProject implements SProject {
 	private File configDirectory;
 	private Status status;
 	private SBuildType buildType;
+	private Map<String,SBuildType> buildTypes = new HashMap<String, SBuildType>();
 
 	public MockSProject(String name, String description, String projectId, String projectExternalId, 
 						SBuildType buildType)
@@ -55,6 +59,7 @@ public class MockSProject implements SProject {
 		this.projectId = projectId;
 		this.projectExternalId = projectExternalId;
 		this.buildType = buildType;
+		addANewBuildTypeToTheMock(buildType);
 	}
 	
 	public boolean containsBuildType(String arg0) {
@@ -82,10 +87,14 @@ public class MockSProject implements SProject {
 		return null;
 	}
 
-	public SBuildType findBuildTypeById(String arg0) {
-		return this.buildType;
+	public SBuildType findBuildTypeById(String btName) {
+		return buildTypes.get(btName);
 	}
 
+	public void addANewBuildTypeToTheMock(SBuildType build){
+		this.buildTypes.put(build.getBuildTypeId(), build);
+	}
+	
 	public SBuildType findBuildTypeByName(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
@@ -97,8 +106,7 @@ public class MockSProject implements SProject {
 	}
 
 	public List<SBuildType> getBuildTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<SBuildType>(this.buildTypes.values());
 	}
 
 	public File getConfigDirectory() {

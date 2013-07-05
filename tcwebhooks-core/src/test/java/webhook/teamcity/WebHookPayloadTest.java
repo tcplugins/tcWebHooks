@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -75,7 +76,7 @@ public class WebHookPayloadTest {
 		WebHookProjectSettings whps = new WebHookProjectSettings();
 		
 		BuildState state = new BuildState().setAllEnabled();
-		whps.addNewWebHook("project1", url, true, state, "nvpairs");
+		whps.addNewWebHook("project1", url, true, state, "nvpairs", true, new HashSet<String>());
 		
     	for (WebHookConfig whc : whps.getWebHooksConfigs()){
 			WebHook wh = new WebHookImpl();

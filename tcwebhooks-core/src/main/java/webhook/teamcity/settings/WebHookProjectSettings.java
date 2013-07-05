@@ -2,6 +2,7 @@ package webhook.teamcity.settings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -133,7 +134,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    	
     }
 
-	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format) {
+	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, Set<String> buildTypesEnabled) {
         if(this.webHooksConfigs != null)
         {
         	updateSuccess = false;
@@ -145,6 +146,13 @@ public class WebHookProjectSettings implements ProjectSettings {
                 	whc.setUrl(URL);
                 	whc.setBuildStates(buildState);
                 	whc.setPayloadFormat(format);
+                	whc.enableForAllBuildsInProject(buildTypeAll);
+                	if (!buildTypeAll){
+                		whc.clearAllEnabledBuildsInProject();
+                		for (String bt : buildTypesEnabled){
+                			whc.enableBuildInProject(bt);
+                		}
+                	}
                 	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + ProjectId + " with URL " + whc.getUrl());
                    	this.updateSuccess = true;
                 }
@@ -152,8 +160,8 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    			
 	}
 
-	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format) {
-		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format));
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, Set<String> buildTypesEnabled) {
+		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, buildTypeAll, buildTypesEnabled));
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSuccess = true;
 	}

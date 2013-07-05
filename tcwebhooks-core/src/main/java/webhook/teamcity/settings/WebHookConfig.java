@@ -151,7 +151,7 @@ public class WebHookConfig {
 	 * @param stateMask
 	 * @param payloadFormat (unvalidated)
 	 */
-	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat){
+	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, boolean buildTypeAllEnabled, Set<String> enabledBuildTypes){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
@@ -161,6 +161,10 @@ public class WebHookConfig {
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
 		this.setPayloadFormat(payloadFormat);
+		this.allBuildTypesEnabled = buildTypeAllEnabled;
+		if (!this.allBuildTypesEnabled){
+			this.enabledBuildTypesSet = enabledBuildTypes;
+		}
 	}
 
 	private Element getKeyAndValueAsElement(String key, String elementName){
@@ -238,7 +242,17 @@ public class WebHookConfig {
 		return enabledBuildTypesSet.contains(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	}
 	
-		
+	public String getBuildTypeCountAsFriendlyString(){
+		if (this.allBuildTypesEnabled){
+			return "All builds";
+		} else {
+			int enabledBuildTypeCount = this.enabledBuildTypesSet.size();
+			if (enabledBuildTypeCount == 1){
+				return enabledBuildTypeCount + " build";
+			}
+			return enabledBuildTypeCount + " builds"; 
+		}
+	}
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -418,6 +432,14 @@ public class WebHookConfig {
 
 	public void enableForAllBuildsInProject(Boolean allBuildTypesEnabled) {
 		this.allBuildTypesEnabled = allBuildTypesEnabled;
+	}
+	
+	public void clearAllEnabledBuildsInProject(){
+		this.enabledBuildTypesSet.clear();
+	}
+	
+	public void enableBuildInProject(String buildTypeId) {
+		this.enabledBuildTypesSet.add(buildTypeId);
 	}
 
 	public Map<String,String> getEnabledTemplates() {

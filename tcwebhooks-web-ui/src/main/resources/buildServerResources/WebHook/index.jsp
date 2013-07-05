@@ -46,6 +46,7 @@
     <c:if test="${includeJquery}">
     	<script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.4.3.min.js"></script>
     </c:if>
+	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
     <script type=text/javascript>
 		var jQueryWebhook = jQuery.noConflict();
 		jQueryWebhook(document).ready( function() {
@@ -91,6 +92,52 @@
 			}
 			//selectBuildState(); 
 		}
+		
+		function toggleAllBuildTypesSelected(){
+			jQueryWebhook.each(jQueryWebhook('.buildType_single'), function(){
+				jQueryWebhook(this).attr('checked', jQueryWebhook('input.buildType_all').is(':checked'))
+			});
+			updateSelectedBuildTypes();
+		}
+		
+		function updateSelectedBuildTypes(){
+		
+			if(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length == jQueryWebhook('#webHookFormContents input.buildType_single').length){
+				jQueryWebhook('input.buildType_all').attr('checked', true);
+				jQueryWebhook('span#selectedBuildCount').html("all");
+			} else {
+				jQueryWebhook('input.buildType_all').attr('checked', false);
+				jQueryWebhook('span#selectedBuildCount').html(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length);
+			}
+			
+			/*
+		    jQueryWebhook('.checkall').on('click', function () {
+		        jQueryWebhook(this).closest('fieldset').find(':checkbox').prop('checked', this.checked);
+		    });
+		
+			jQueryWebhook.each('.buildType_single', function(){
+				if (!jQueryWebhook(this).is(':checked'){
+					break;
+				} else {
+					
+				}
+				
+			}); */
+		}
+		
+		function doAddBuildTypes(id){
+			jQueryWebhook('#buildList').empty();
+			jQueryWebhook.each(ProjectBuilds, function() {
+				 if (jQueryWebhook.inArray(this.buildTypeId, jQueryWebhook('#buildTypes_'+id).val().split(','))){
+				 alert("In array " + this.buildTypeId + " : " + jQueryWebhook('#buildTypes_'+id).val().split(',')); 
+				 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
+				 } else {
+				 alert("Not In array " + this.buildTypeId); 
+				 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
+				 }
+			});
+			updateSelectedBuildTypes();
+		}
 
 		function selectCorrectRadio(id){
 			jQueryWebhook('#webHookFormContents input.payloadFormat').each(function(i){
@@ -130,13 +177,19 @@
 			    $('webHookId').value = id;
 			    
 			    doExtraCompleted();
+			    doAddBuildTypes(id);
 			    
 			    var title = id == "new" ? "Add New" : "Edit";
 			    title += " WebHook";
 
 			    $('webHookDialogTitle').innerHTML = title;
+			    
+				jQueryWebhook('#tab-container').easytabs();
 
 			    this.showCentered();
+			    
+			    jQueryWebhook('#buildList').innerHeight(jQueryWebhook('#hookPane').innerHeight()); 
+			    
 			    $('webHookUrl').focus();
 			  },
 
