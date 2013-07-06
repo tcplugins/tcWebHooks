@@ -5,7 +5,7 @@
 	<artifactId>tcwebhooks</artifactId>
 	<properties>
     	<majorVersion>0.9</majorVersion>
-    	<minorVersion>dev.dev</minorVersion>
+    	<minorVersion>snapshot</minorVersion>
     	<currentVersion>${majorVersion}.${minorVersion}</currentVersion>
     </properties>
 	<version>${currentVersion}</version>

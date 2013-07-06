@@ -34,6 +34,9 @@
 		  <c:if test="${haveProject}"> 
 		  	{title: "${projectName}", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
 		  </c:if>
+		  <c:if test="${haveBuild}"> 
+		  	{title: "${buildName}", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
+		  </c:if>
           {title: "${title}", selected:true}
         ];
     
@@ -49,48 +52,33 @@
 	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
     <script type=text/javascript>
 		var jQueryWebhook = jQuery.noConflict();
+		var webhookDialogWidth = -1;
 		jQueryWebhook(document).ready( function() {
-			//jQueryWebhook("input.buildState
+				jQueryWebhook('#tab-container').easytabs({
+					  animate: false,
+					  updateHash: false
+				});
 		});
 
-		function showEditForm(formID){
-			jQueryWebhook('tr#viewRow_' + formID).hide();
-			jQueryWebhook('tr#editRow_' + formID).show();
-		}
-
-		function selectAllBuildStates(){
-			//var state = jQueryWebhook('#selectAll').is(':checked');
-			//jQueryWebhook('#webHookFormContents input.buildState').each(function(i){
-			//	this.checked = state;
-			//});
-			doExtraCompleted();
-		}
-
 		function selectBuildState(){
-			//if(jQueryWebhook('#webHookFormContents input.buildState:checked').length == 6){
-			//	jQueryWebhook('#selectAll').attr('checked', true);
-			//} else {
-			//	jQueryWebhook('#selectAll').attr('checked', false);
-			//}
 			doExtraCompleted();
 		}
 
 		function doExtraCompleted(){
-			if(jQueryWebhook('#BuildSuccessful').is(':checked')){
+			if(jQueryWebhook('#buildSuccessful').is(':checked')){
 				jQueryWebhook('.onBuildFixed').removeClass('onCompletionDisabled');
 				jQueryWebhook('tr.onBuildFixed td input').removeAttr('disabled');
 			} else {
 				jQueryWebhook('.onBuildFixed').addClass('onCompletionDisabled');
 				jQueryWebhook('tr.onBuildFixed td input').attr('disabled', 'disabled');
 			} 
-			if(jQueryWebhook('#BuildFailed').is(':checked')){
+			if(jQueryWebhook('#buildFailed').is(':checked')){
 				jQueryWebhook('.onBuildFailed').removeClass('onCompletionDisabled');
 				jQueryWebhook('tr.onBuildFailed td input').removeAttr('disabled');
 			} else {
 				jQueryWebhook('.onBuildFailed').addClass('onCompletionDisabled');
 				jQueryWebhook('tr.onBuildFailed td input').attr('disabled', 'disabled');
 			}
-			//selectBuildState(); 
 		}
 		
 		function toggleAllBuildTypesSelected(){
@@ -109,32 +97,38 @@
 				jQueryWebhook('input.buildType_all').attr('checked', false);
 				jQueryWebhook('span#selectedBuildCount').html(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length);
 			}
-			
-			/*
-		    jQueryWebhook('.checkall').on('click', function () {
-		        jQueryWebhook(this).closest('fieldset').find(':checkbox').prop('checked', this.checked);
-		    });
-		
-			jQueryWebhook.each('.buildType_single', function(){
-				if (!jQueryWebhook(this).is(':checked'){
-					break;
-				} else {
-					
-				}
-				
-			}); */
+
 		}
 		
-		function doAddBuildTypes(id){
+		function populateWebHookDialog(id){
 			jQueryWebhook('#buildList').empty();
-			jQueryWebhook.each(ProjectBuilds, function() {
-				 if (jQueryWebhook.inArray(this.buildTypeId, jQueryWebhook('#buildTypes_'+id).val().split(','))){
-				 alert("In array " + this.buildTypeId + " : " + jQueryWebhook('#buildTypes_'+id).val().split(',')); 
-				 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
-				 } else {
-				 alert("Not In array " + this.buildTypeId); 
-				 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
-				 }
+			jQueryWebhook.each(ProjectBuilds.projectWebhookConfig.webHookList, function(thing, config){
+				if (id === config[0]){
+					var webhook = config[1];
+				
+					jQueryWebhook('#webHookId').val(webhook.uniqueKey);	
+					jQueryWebhook('#webHookUrl').val(webhook.url);
+				    jQueryWebhook('#webHooksEnabled').attr('checked', webhook.enabled);
+				    jQueryWebhook.each(webhook.states, function(name, value){
+				    	console.log(value.buildStateName, value.enabled);
+				    	jQueryWebhook('#' + value.buildStateName).attr('checked', value.enabled);
+				    });
+				    
+				    jQueryWebhook('#webHookFormContents input.payloadFormat').each(function(i){
+						if(this.value === webhook.payloadFormat){
+							this.checked = true;
+						} else {
+							this.checked = false;
+						}
+					});
+					jQueryWebhook.each(webhook.builds, function(){
+						 if (this.enabled){
+					 	 	jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
+						 } else {
+						 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
+						 }
+					});
+				}
 			});
 			updateSelectedBuildTypes();
 		}
@@ -148,47 +142,56 @@
 				}
 			});
 		}
+		
+		function addWebHooksFromJsonCallback(){
+			jQueryWebhook.each(ProjectBuilds.projectWebhookConfig.webHookList, function(thing, config){
+				if ('new' !== config[0]){
+					var webhook = config[1];
+					console.log(webhook.enabledEventsListForWeb);
+					jQueryWebhook('.webHookRowTemplate')
+									.clone()
+									.removeAttr("id")
+									.attr("id", "viewRow_" + webhook.uniqueKey)
+									.removeClass('webHookRowTemplate')
+									.addClass('webHookRow')
+									.appendTo('#webHookTable > tbody');
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemUrl").html(webhook.url).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#hookPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html(webhook.payloadFormatForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").html(webhook.enabledEventsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").html(webhook.enabledBuildsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#buildPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEdit > a").click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){BS.WebHookForm.removeWebHook(webhook.uniqueKey,'#hookPane');});
+					
+				}
+			});
+		}
 
 		BS.EditWebHookDialog = OO.extend(BS.AbstractModalDialog, {
 			  getContainer : function() {
 			    return $('editWebHookDialog');
 			  },
 
-			  showDialog : function(id) {
+			  showDialog : function(id, tab) {
 				BS.WebHookForm.clearErrors();
 			    
-			    $('webHookUrl').value = $('url_'+id).value;
-			    jQueryWebhook('#webHooksEnabled').attr('checked', jQueryWebhook('#webHooksEnabled_'+id).is(':checked'));
-			    //jQueryWebhook('#selectAll').attr('checked', jQueryWebhook('#selectAll_'+id).is(':checked'));
-			    jQueryWebhook('#BuildStarted').attr('checked', jQueryWebhook('#BuildStarted_'+id).is(':checked'));
-			    jQueryWebhook('#BuildFinished').attr('checked', jQueryWebhook('#BuildFinished_'+id).is(':checked'));
-			    jQueryWebhook('#StatusChanged').attr('checked', jQueryWebhook('#StatusChanged_'+id).is(':checked'));
-			    jQueryWebhook('#BuildInterrupted').attr('checked', jQueryWebhook('#BuildInterrupted_'+id).is(':checked'));
-			    jQueryWebhook('#BeforeFinished').attr('checked', jQueryWebhook('#BeforeFinished_'+id).is(':checked'));
-			    jQueryWebhook('#ResponsibilityChanged').attr('checked', jQueryWebhook('#ResponsibilityChanged_'+id).is(':checked'));
-			    jQueryWebhook('#BuildSuccessful').attr('checked', jQueryWebhook('#BuildSuccessful_'+id).is(':checked'));
-			    jQueryWebhook('#BuildFixed').attr('checked', jQueryWebhook('#BuildFixed_'+id).is(':checked'));
-			    jQueryWebhook('#BuildFailed').attr('checked', jQueryWebhook('#BuildFailed_'+id).is(':checked'));
-			    jQueryWebhook('#BuildBroken').attr('checked', jQueryWebhook('#BuildBroken_'+id).is(':checked'));
-			    //jQueryWebhook('#payloadFormat').attr('checked', jQueryWebhook('#payloadFormat_'+id).is(':checked'));
-			    selectCorrectRadio(id);
-			    //jQueryWebhook('#payloadFormatNVPAIRS').attr('checked', jQueryWebhook('#payloadFormatNVPAIRS_'+id).is(':checked'));
-			    
-			    $('webHookId').value = id;
-			    
+			    populateWebHookDialog(id);
 			    doExtraCompleted();
-			    doAddBuildTypes(id);
 			    
 			    var title = id == "new" ? "Add New" : "Edit";
 			    title += " WebHook";
 
 			    $('webHookDialogTitle').innerHTML = title;
-			    
-				jQueryWebhook('#tab-container').easytabs();
 
-			    this.showCentered();
+
+			    if (webhookDialogWidth < 0){
+			    	webhookDialogWidth = jQueryWebhook('#editWebHookDialog').innerWidth();
+			    } else {
+			    	jQueryWebhook('#editWebHookDialog').innerWidth(webhookDialogWidth);
+			    }
 			    
-			    jQueryWebhook('#buildList').innerHeight(jQueryWebhook('#hookPane').innerHeight()); 
+			    this.showCentered();
+			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#hookPane').innerHeight());
+				jQueryWebhook('#tab-container').easytabs('select', tab);
 			    
 			    $('webHookUrl').focus();
 			  },
@@ -259,9 +262,6 @@
 
 			    BS.ajaxRequest(url, {
 			      onComplete: function() {
-			        //that.updateParamLists();
-			        //jQueryWebhook('#viewRow_' + paramId).hide();
-			        //BS.util.hide('viewRow_' + paramId);
 			        $('systemParams').updateContainer();
 			        BS.EditWebHookDialog.close();
 			      }
@@ -328,9 +328,11 @@
     </div>
     <script type=text/javascript>
 	        $('systemParams').updateContainer = function() {
-	          new BS.ajaxUpdater(this, '<c:url value="/webhooks/settingsList.html?projectId=${projectId}&refresh=true"/>', {
-	            evalScripts: true
-	          });
+	          	jQueryWebhook.get("settingsList.html?projectId=${projectId}", function(data) {
+	          		ProjectBuilds = data;
+	          		jQueryWebhook('.webHookRow').remove();
+	          		addWebHooksFromJsonCallback();
+				});
 	        }
 
 	</script>

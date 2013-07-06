@@ -1,9 +1,11 @@
 package webhook.teamcity.extension.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class WebhookConfigAndBuildTypeListHolder {
@@ -11,18 +13,28 @@ public class WebhookConfigAndBuildTypeListHolder {
 	public String uniqueKey; 
 	public boolean enabled;
 	public String payloadFormat;
+	public String payloadFormatForWeb = "Unknown";
 	public List<StateBean> states = new ArrayList<StateBean>();
 	public boolean allBuildTypesEnabled;
 	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<WebhookBuildTypeEnabledStatusBean>();
+	private String enabledEventsListForWeb;
+	private String enabledBuildsListForWeb;
 	
-	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config) {
+	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads) {
 		url = config.getUrl();
 		uniqueKey = config.getUniqueKey();
 		enabled = config.getEnabled();
 		payloadFormat = config.getPayloadFormat();
+		setEnabledEventsListForWeb(config.getEnabledListAsString());
+		setEnabledBuildsListForWeb(config.getBuildTypeCountAsFriendlyString());
 		allBuildTypesEnabled = config.isEnabledForAllBuildsInProject();
 		for (BuildStateEnum state : config.getBuildStates().getStateSet()){
-			states.add(new StateBean(state.name(), config.getBuildStates().enabled(state)));
+			states.add(new StateBean(state.getShortName(), config.getBuildStates().enabled(state)));
+		}
+		for (WebHookPayload payload : registeredPayloads){
+			if (payload.getFormatShortName().equals(payloadFormat)){
+				this.payloadFormatForWeb = payload.getFormatDescription();
+			}
 		}
 	}
 
@@ -48,6 +60,22 @@ public class WebhookConfigAndBuildTypeListHolder {
 	
 	public void addWebHookBuildType(WebhookBuildTypeEnabledStatusBean status){
 		this.builds.add(status);
+	}
+
+	public String getEnabledEventsListForWeb() {
+		return enabledEventsListForWeb;
+	}
+
+	public void setEnabledEventsListForWeb(String enabledEventsListForWeb) {
+		this.enabledEventsListForWeb = enabledEventsListForWeb;
+	}
+
+	public String getEnabledBuildsListForWeb() {
+		return enabledBuildsListForWeb;
+	}
+
+	public void setEnabledBuildsListForWeb(String enabledBuildsListForWeb) {
+		this.enabledBuildsListForWeb = enabledBuildsListForWeb;
 	}
 	
 }

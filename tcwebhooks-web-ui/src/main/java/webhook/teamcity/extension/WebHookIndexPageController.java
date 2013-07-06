@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.extension.bean.ProjectWebHooksBean;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
 import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
 import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -61,6 +63,7 @@ public class WebHookIndexPageController extends BaseController {
 	        HashMap<String,Object> params = new HashMap<String,Object>();
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
         	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
+        	params.put("rootContext", myServer.getServerRootPath());
 	        
 	    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
 	    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");
@@ -106,25 +109,11 @@ public class WebHookIndexPageController extends BaseController {
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
-			    		//params.put("webHookList", projSettings.getWebHooksAsList());
-			    		//params.put("webHookList", projSettings.getWebHooksAsList());
+			    		params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		
-			    		List<WebhookConfigAndBuildTypeListHolder> webHookList = new ArrayList<WebhookConfigAndBuildTypeListHolder>();
-			    		for (WebHookConfig config : projSettings.getWebHooksAsList()){
-			    			WebhookConfigAndBuildTypeListHolder holder = new WebhookConfigAndBuildTypeListHolder(config);
-				    		for (SBuildType sBuildType : project.getBuildTypes()){
-				    			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
-				    													sBuildType.getBuildTypeId(), 
-				    													sBuildType.getName(), 
-				    													config.isEnabledForBuildType(sBuildType)
-				    													)
-				    										);
-				    		}
-				    		webHookList.add(holder);
-			    		}
-			    		params.put("webHookList", webHookList);
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+
 			    	}
 		    	} else {
 		    		params.put("haveProject", "false");

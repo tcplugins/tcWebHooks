@@ -26,6 +26,8 @@ import org.springframework.web.servlet.ModelAndView;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.extension.bean.ProjectWebHooksBean;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
 import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
 import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -214,23 +216,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 		    	} else {
 		    		params.put("noWebHooks", "false");
 		    		params.put("webHooks", "true");
-		    		//params.put("webHookList", projSettings1.getWebHooksAsList());
-		    		params.put("webHooksDisabled", !projSettings1.isEnabled());
-		    		
-		    		List<WebhookConfigAndBuildTypeListHolder> webHookList = new ArrayList<WebhookConfigAndBuildTypeListHolder>();
-		    		for (WebHookConfig config : projSettings.getWebHooksAsList()){
-		    			WebhookConfigAndBuildTypeListHolder holder = new WebhookConfigAndBuildTypeListHolder(config);
-			    		for (SBuildType sBuildType : project.getBuildTypes()){
-			    			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
-			    													sBuildType.getBuildTypeId(), 
-			    													sBuildType.getName(), 
-			    													config.isEnabledForBuildType(sBuildType)
-			    													)
-			    										);
-			    		}
-			    		webHookList.add(holder);
-		    		}
-		    		params.put("webHookList", webHookList);
+		    		params.put("webHookList", projSettings.getWebHooksAsList());
+		    		params.put("webHooksDisabled", !projSettings.isEnabled());
+		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
+		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 		    	}
 	        } else {
 	        	params.put("haveProject", "false");

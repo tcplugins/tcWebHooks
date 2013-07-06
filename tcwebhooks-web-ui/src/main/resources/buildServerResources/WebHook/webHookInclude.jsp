@@ -1,9 +1,7 @@
 		<script>
-        var ProjectBuilds = [
-        <c:forEach items="${buildTypeList}" var="build">
-		  {buildTypeId: "${build.id}", buildTypeName: '${build.name}'},
-        </c:forEach>
-        ];
+        var ProjectBuilds = ${projectWebHooksAsJson};
+        
+        console.log("here we are");
         </script>
 
 	    <!-- <p><label for="webHookEnabled" style="width:30em;"><input id="webHookEnabled" type="checkbox" ${webHooksEnabledAsChecked}/> Process WebHooks for this project</label></p>-->
@@ -13,78 +11,41 @@
 		   		<tr style="background-color: rgb(245, 245, 245);">
 					<th class="name">URL</th>
 					<th class="name">Format</th>
-					<th class="name">Builds</th>
-					<th class="value" style="width:20%;" colspan="3">Enabled</th>
+					<th class="name">Build Events</th>
+					<th class="value" style="width:20%;" colspan="3">Enabled Builds</th>
 			</tr>
 			</thead>
 			<tbody>
-			<c:forEach items="${webHookList}" var="holder">
-				<c:set var="hook" value="${holder.config}"/>
-				<tr id="viewRow_${hook.uniqueKey}">
-					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.url}" /></td>
+				<tr id="viewRow_template" class="webHookRowTemplate">
+					<td class="name highlight webHookRowItemUrl">URL</td>
+					<td class="value highlight webHookRowItemFormat" style="width:15%;">Format</td>
+					<td class="value highlight webHookRowItemEvents" style="width:15%;">Events</td>
+					<td class="value highlight webHookRowItemBuilds" style="width:15%;">Builds</td>
+					<td class="edit highlight webHookRowItemEdit"><a href="javascript://">edit</a></td>
+					<td class="edit highlight webHookRowItemDelete"><a ref="javascript://">delete</a></td>
+				</tr> 	
+	
+			<c:forEach items="${webHookList}" var="hook">
+				
+				<tr id="viewRow_${hook.uniqueKey}" class="webHookRow">
+					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
 						<c:forEach items="${formatList}" var="format">
 							<c:if test="${format.formatShortName == hook.payloadFormat}">
-								<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${format.formatDescription}" /></td>
+								<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${format.formatDescription}" /></td>
 							</c:if>
 						</c:forEach>
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.enabledListAsString}" /></td>
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
-					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}');" href="javascript://">edit</a></td>
-					<td class="edit highlight"><a onclick='BS.WebHookForm.removeWebHook("${hook.uniqueKey}");' href="javascript://">delete</a></td>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledListAsString}" /></td>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
+					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
+					<td class="edit highlight"><a onclick='BS.WebHookForm.removeWebHook("${hook.uniqueKey}",'#hookPane');' href="javascript://">delete</a></td>
 				</tr> 
-				<tr style="display:none;" id="editRow_${hook.uniqueKey}">
-					<td colspan="4" id="wrapper_${hook.uniqueKey}">
-					<form id="form_${hook.uniqueKey}">
-						<input id="url_${hook.uniqueKey}" name="URL" type=text size=64 maxlength=512 value="<c:out value="${hook.url}"/>" />
-						<input id="webHooksEnabled_${hook.uniqueKey}" type=checkbox ${hook.webHookEnabledAsChecked}/>
-						<!--input id="selectAll_${hook.uniqueKey}" type=checkbox ${hook.stateAllAsChecked}/-->
-						<input id="BuildStarted_${hook.uniqueKey}" value="BuildStarted" name="BuildStarted"  type=checkbox ${hook.stateBuildStartedAsChecked}/>
-						<input id="BuildFinished_${hook.uniqueKey}" value="BuildFinished" name="BuildFinished" type=checkbox ${hook.stateBuildFinishedAsChecked}/>
-						<input id="BuildInterrupted_${hook.uniqueKey}" value="BuildInterrupted" name="BuildInterrupted" type=checkbox ${hook.stateBuildInterruptedAsChecked}/>
-						<input id="BeforeFinished_${hook.uniqueKey}" value="BeforeFinished" name="BeforeFinished" type=checkbox ${hook.stateBeforeFinishedAsChecked}/>
-						<input id="ResponsibilityChanged_${hook.uniqueKey}" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox ${hook.stateResponsibilityChangedAsChecked}/>
-						<input id="BuildSuccessful_${hook.uniqueKey}" value="BuildSuccessful" name="BuildSuccessful" type=checkbox ${hook.stateBuildSuccessfulAsChecked}/>
-						<input id="BuildFailed_${hook.uniqueKey}" value="BuildFailed" name="BuildFailed" type=checkbox ${hook.stateBuildFailedAsChecked}/>
-						<input id="BuildFixed_${hook.uniqueKey}" value="BuildFixed" name="BuildFixed" type=checkbox ${hook.stateBuildFixedAsChecked}/>
-						<input id="BuildBroken_${hook.uniqueKey}" value="BuildBroken" name="BuildBroken" type=checkbox ${hook.stateBuildBrokenAsChecked}/>
-						<input id="payloadFormat_${hook.uniqueKey}" name="payloadFormat2" type="hidden" value="${hook.payloadFormat}" />
-						<input id="buildTypes_${hook.uniqueKey}" name="buildTypes" type="hidden" value="${holder.getEnabledBuildTypes()}" />
-			<!-- ${ hook.payloadFormat} -->
-						<c:forEach items="${formatList}" var="format">
-							<c:if test="${format.formatShortName == hook.payloadFormat}">
-								<input id="payloadFormat_${format.formatShortName}_${hook.uniqueKey}" name="payloadFormat" type="radio" value="${format.formatShortName}" checked />
-							</c:if>
-							<c:if test="${format.formatShortName != hook.payloadFormat}">
-								<input id="payloadFormat_${format.formatShortName}_${hook.uniqueKey}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
-							</c:if>
-						</c:forEach>
-    				</form>
-					</td>
-				</tr>
 			</c:forEach>
-				<tr>
-					<td colspan="6" class="highlight"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
-				</tr>
-				<tr style="display:none;" id="editRow_new">
-					<td colspan="4" id="wrapper_new">
-					<form id="form_new">
-						<input id="url_new" name="URL" type=text size=64 maxlength=512 />
-						<input id="webHooksEnabled_new" type=checkbox checked />
-						<!--input id="selectAll_new" type=checkbox checked /-->
-						<input id="BuildStarted_new" value="BuildStarted" name="BuildStarted"  type=checkbox checked />
-						<input id="BuildFinished_new" value="BuildFinished" name="BuildFinished" type=checkbox checked />
-						<input id="BuildInterrupted_new" value="BuildInterrupted" name="BuildInterrupted" type=checkbox checked />
-						<input id="BeforeFinished_new" value="BeforeFinished" name="BeforeFinished" type=checkbox checked />
-						<input id="ResponsibilityChanged_new" value="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox checked />
-						<input id="BuildSuccessful_new" value="BuildSuccessful" name="BuildSuccessful" type=checkbox checked />
-						<input id="BuildFixed_new" value="BuildFixed" name="BuildFixed" type=checkbox />
-						<input id="BuildFailed_new" value="BuildFailed" name="BuildFailed" type=checkbox checked />
-						<input id="BuildBroken_new" value="BuildBroken" name="BuildBroken" type=checkbox />
-						<input id="payloadFormat_new" name="payloadFormat" type="hidden" value="${format.formatShortName}" />
-    				</form>
-					</td>
-				</tr>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="6" class="highlight newWebHookRow"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
+				</tr>
+			</tfoot>
 		</table>
       <div id="editWebHookDialog" class="editParameterDialog modalDialog"  style="width:50em;">
         <div class="dialogHeader">
@@ -125,21 +86,21 @@
 												<tr style="border:none;">
 													<td>Trigger on Events:</td>
 													<td style="padding-left:3px;"><label style='white-space:nowrap;'>
-														<input onclick='selectBuildState();' class="buildState" id="BuildStarted" name="BuildStarted"  type=checkbox />
+														<input onclick='selectBuildState();' class="buildState" id="buildStarted" name="BuildStarted"  type=checkbox />
 														 Build Started</label>
 													</td>
 													<td><label style='white-space:nowrap;'>
-														<input onclick='selectBuildState();' class="buildState" id="BuildInterrupted" name="BuildInterrupted" type=checkbox />
+														<input onclick='selectBuildState();' class="buildState" id="buildInterrupted" name="BuildInterrupted" type=checkbox />
 														 Build Interrupted</label>
 													</td>
 												</tr>
 												<tr style="border:none;"><td>&nbsp;</td>
 													<td style="padding-left:3px;"><label style='white-space:nowrap;'>
-														<input onclick='selectBuildState();' class="buildState" id="BeforeFinished" name="BeforeFinished" type=checkbox />
+														<input onclick='selectBuildState();' class="buildState" id="beforeBuildFinish" name="BeforeFinished" type=checkbox />
 														 Build Almost Completed</label>
 													</td>
 													<td><label style='white-space:nowrap;'>
-														<input onclick='selectBuildState();' class="buildState" id="ResponsibilityChanged" name="ResponsibilityChanged" type=checkbox />
+														<input onclick='selectBuildState();' class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox />
 														 Build Responsibility Changed</label>
 													</td>
 												</tr>
@@ -148,19 +109,19 @@
 													<td colspan=2 >
 														<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
 																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-																	<input onclick='doExtraCompleted();' class="buildState" id="BuildSuccessful" name="BuildSuccessful" type=checkbox />
+																	<input onclick='doExtraCompleted();' class="buildState" id="buildSuccessful" name="BuildSuccessful" type=checkbox />
 																	 Trigger when build is Successful</label>
 																	</td></tr>
 																<tr class="onBuildFixed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
-																	<input class="buildStateFixed" id="BuildFixed" name="BuildFixed" type=checkbox />
+																	<input class="buildStateFixed" id="buildFixed" name="BuildFixed" type=checkbox />
 																	 Only trigger when build changes from Failure to Success</label>
 																	</td></tr>
 																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-																	<input onclick='doExtraCompleted();' class="buildState" id="BuildFailed" name="BuildFailed" type=checkbox />
+																	<input onclick='doExtraCompleted();' class="buildState" id="buildFailed" name="BuildFailed" type=checkbox />
 																	 Trigger when build Fails</label>
 																	</td></tr>
 																<tr class="onBuildFailed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
-																	<input class="buildStateBroken" id="BuildBroken" name="BuildBroken" type=checkbox />
+																	<input class="buildStateBroken" id="BuildBroken" name="buildBroken" type=checkbox />
 																	 Only trigger when build changes from Success to Failure</label>
 																	</td></tr>
 														</tbody></table>

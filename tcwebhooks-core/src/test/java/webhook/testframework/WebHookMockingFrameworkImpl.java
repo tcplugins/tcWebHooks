@@ -155,4 +155,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return projSettings;
 	}
 
+	@Override
+	public WebHookPayloadManager getWebHookPayloadManager() {
+		return manager;
+	}
+
 }
