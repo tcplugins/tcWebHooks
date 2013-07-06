@@ -8,10 +8,11 @@
   </parent>
   <artifactId>tcwebhooks-rest-api</artifactId>
   <dependencies>
-  	<dependency>
-  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-  		<artifactId>tcwebhooks-core</artifactId>
-  		<version>0.9.0.0</version>
-  	</dependency>
+	  	<dependency>
+	  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+	  		<artifactId>tcwebhooks-core</artifactId>
+	  		<version>${currentVersion}</version>
+	  		<scope>compile</scope>
+	  	</dependency>
   </dependencies>
 </project>
