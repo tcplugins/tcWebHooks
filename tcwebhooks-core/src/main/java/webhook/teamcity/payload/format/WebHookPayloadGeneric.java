@@ -132,7 +132,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			  oldUser = responsibilityEntryOld.getResponsibleUser().getDescriptiveName();
 		}
 		if (responsibilityEntryNew.getState() != ResponsibilityEntry.State.NONE) {
-			newUser = responsibilityEntryOld.getResponsibleUser().getDescriptiveName();
+			newUser = responsibilityEntryNew.getResponsibleUser().getDescriptiveName();
 		}
 		content.setMessage("Build " + buildType.getFullName().toString()
 				+ " has changed responsibility from " 
