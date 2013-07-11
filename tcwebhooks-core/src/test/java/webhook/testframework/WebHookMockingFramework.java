@@ -10,12 +10,14 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 
 public interface WebHookMockingFramework {
 	
 	public SBuildServer getServer();
 	public SRunningBuild getRunningBuild();
+	public SBuildType getSBuildType();
 	public WebHookConfig getWebHookConfig();
 	public WebHookPayloadContent getWebHookContent();
 	public WebHookPayloadManager getWebHookPayloadManager();

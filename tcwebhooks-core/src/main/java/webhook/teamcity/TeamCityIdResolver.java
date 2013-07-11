@@ -88,5 +88,13 @@ public final class TeamCityIdResolver {
 			return projectManager.findProjectById(projectId);
 		}
 	}
+	
+	public static SBuildType findBuildTypeById(ProjectManager projectManager, String buildTypeId) {
+		try {
+			return projectManager.findBuildTypeByExternalId(buildTypeId);
+		} catch (NoSuchMethodError ex){
+			return projectManager.findBuildTypeById(buildTypeId);
+		}
+	}
 
 }

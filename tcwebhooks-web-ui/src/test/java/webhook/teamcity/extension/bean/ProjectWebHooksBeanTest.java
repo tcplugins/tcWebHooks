@@ -28,5 +28,13 @@ public class ProjectWebHooksBeanTest {
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
 		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(webhooksConfig));
 	}
+	
+	@Test
+	public void JsonBuildSerialisationTest() throws JDOMException, IOException {
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
+		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
+		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getSBuildType() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(webhooksConfig));
+	}
 
 }

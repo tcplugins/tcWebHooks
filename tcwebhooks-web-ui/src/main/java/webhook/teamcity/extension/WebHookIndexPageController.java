@@ -106,6 +106,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
 			    		params.put("webHooks", "false");
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
@@ -119,6 +120,39 @@ public class WebHookIndexPageController extends BaseController {
 		    		params.put("haveProject", "false");
 		    		params.put("errorReason", "The project requested does not appear to be valid.");
 		    	}
+        	} else if (request.getParameter("buildTypeId") != null){
+        		SBuildType sBuildType = TeamCityIdResolver.findBuildTypeById(this.myServer.getProjectManager(), request.getParameter("buildTypeId"));
+        		if (sBuildType != null){
+		        	SProject project = sBuildType.getProject();
+		        	if (project != null){
+		        		
+				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
+				    			mySettings.getSettings(project.getProjectId(), "webhooks");
+				    	
+				    	SUser myUser = SessionUser.getUser(request);
+				        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
+				    	
+				    	List<WebHookConfig> configs = projSettings.getBuildWebHooksAsList(sBuildType);
+				    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+				    	params.put("webHookList", configs);
+				    	params.put("webHooksDisabled", !projSettings.isEnabled());
+				    	params.put("projectId", project.getProjectId());
+				    	params.put("haveProject", "true");
+				    	params.put("projectName", project.getName());
+				    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
+				    	params.put("haveBuild", "true");
+				    	params.put("buildName", sBuildType.getName());
+				    	params.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(sBuildType));
+				    	params.put("buildTypeList", project.getBuildTypes());
+			    		params.put("noWebHooks", configs.size() == 0);
+			    		params.put("webHooks", configs.size() != 0);
+				    	
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection())));
+		        	}
+        		} else {
+		    		params.put("haveProject", "false");
+		    		params.put("errorReason", "The build requested does not appear to be valid.");
+        		}
 	        } else {
 	        	params.put("haveProject", "false");
 	        	params.put("errorReason", "No project specified.");

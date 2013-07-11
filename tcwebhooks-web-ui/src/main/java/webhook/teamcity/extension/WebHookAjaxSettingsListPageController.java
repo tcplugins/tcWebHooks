@@ -63,27 +63,18 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 		    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 		    	
-		    	String message = projSettings.getWebHooksAsString();
-		    	
-		    	params.put("haveProject", "true");
-		    	params.put("messages", message);
-		    	params.put("projectId", project.getProjectId());
-		    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
-		    	params.put("projectName", project.getName());
-		    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
-		    	
-		    	params.put("webHookCount", projSettings.getWebHooksCount());
-		    	if (projSettings.getWebHooksCount() == 0){
-		    		params.put("noWebHooks", "true");
-		    		params.put("webHooks", "false");
-		    	} else {
-		    		params.put("noWebHooks", "false");
-		    		params.put("webHooks", "true");
-		    		params.put("webHookList", projSettings.getWebHooksAsList());
-		    		params.put("webHooksDisabled", !projSettings.isEnabled());
-		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
 		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
-		    	}
+	        } else if (request.getParameter("buildTypeId") != null){
+        		SBuildType sBuildType = TeamCityIdResolver.findBuildTypeById(this.myServer.getProjectManager(), request.getParameter("buildTypeId"));
+        		if (sBuildType != null){
+		        	SProject project = sBuildType.getProject();
+		        	if (project != null){
+				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
+				    			mySettings.getSettings(project.getProjectId(), "webhooks");
+		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection())));
+		        	}
+        		}
+	        
 	        } else {
 	        	params.put("haveProject", "false");
 	        }

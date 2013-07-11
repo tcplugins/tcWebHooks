@@ -77,7 +77,7 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
     	model.put("projectName", buildType.getProject().getName());
     	
-    	model.put("buildId", buildType.getBuildTypeId());
+    	model.put("buildTypeId", buildType.getBuildTypeId());
     	model.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(buildType));
     	model.put("buildName", buildType.getName());
 	}

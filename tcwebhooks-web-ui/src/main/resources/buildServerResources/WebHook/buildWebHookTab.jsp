@@ -32,14 +32,14 @@
 <c:if test="${noBuildWebHooks}" >
 		<div style='margin-left: 1em; margin-right:1em;'>
 		<p>There are no WebHooks configured for this specific build.</p> 
-		<a href="./webhooks/index.html?buildId=${buildExternalId}">Add build WebHooks</a>.
+		<a href="./webhooks/index.html?buildTypeId=${buildExternalId}">Add build WebHooks</a>.
 		</div>
 	</div>
 </c:if>
 <c:if test="${buildWebHooks}" >
 		<div style='margin-left: 1em; margin-right:1em;'>
 		<p>There are <strong>${buildWebHookCount}</strong> WebHooks for this specific build. 
-			<a href="./webhooks/index.html?buildId=${buildExternalId}">Edit build WebHooks</a>.</p>
+			<a href="./webhooks/index.html?buildTypeId=${buildExternalId}">Edit build WebHooks</a>.</p>
 		<table class="testList dark borderBottom">
 			<thead><tr><th class=name>URL</th><th class=name>Enabled</th></tr></thead>
 			<tbody>

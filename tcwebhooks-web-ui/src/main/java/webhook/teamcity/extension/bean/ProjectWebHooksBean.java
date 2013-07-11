@@ -1,9 +1,12 @@
 package webhook.teamcity.extension.bean;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
@@ -33,6 +36,30 @@ public class ProjectWebHooksBean {
 		
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
 		for (WebHookConfig config : projSettings.getWebHooksAsList()){
+			addWebHookConfigHolder(bean, projectBuildTypes, config, registeredPayloads);
+		}
+		
+		return bean;
+		
+	}
+	
+	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads){
+		ProjectWebHooksBean bean = new ProjectWebHooksBean();
+		List<SBuildType> projectBuildTypes = project.getBuildTypes();
+		Set<String> enabledBuildTypes = new HashSet<String>();
+		enabledBuildTypes.add(sBuildType.getBuildTypeId());
+		
+		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
+		bean.webHookList = new LinkedHashMap<String, WebhookConfigAndBuildTypeListHolder>();
+		
+		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
+		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, false, enabledBuildTypes);
+		newBlankConfig.setUniqueKey("new");
+		/* And add it to the list */
+		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads);
+		
+		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
+		for (WebHookConfig config : projSettings.getBuildWebHooksAsList(sBuildType)){
 			addWebHookConfigHolder(bean, projectBuildTypes, config, registeredPayloads);
 		}
 		

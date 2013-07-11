@@ -160,4 +160,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return manager;
 	}
 
+	@Override
+	public SBuildType getSBuildType() {
+		return sBuildType;
+	}
+
 }

@@ -1,7 +1,5 @@
 		<script>
         var ProjectBuilds = ${projectWebHooksAsJson};
-        
-        console.log("here we are");
         </script>
 
 	    <!-- <p><label for="webHookEnabled" style="width:30em;"><input id="webHookEnabled" type="checkbox" ${webHooksEnabledAsChecked}/> Process WebHooks for this project</label></p>-->
@@ -37,13 +35,20 @@
 					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledListAsString}" /></td>
 					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
 					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
-					<td class="edit highlight"><a onclick='BS.WebHookForm.removeWebHook("${hook.uniqueKey}",'#hookPane');' href="javascript://">delete</a></td>
+					<td class="edit highlight"><a onclick="BS.WebHookForm.removeWebHook('${hook.uniqueKey}','#hookPane');" href="javascript://">delete</a></td>
 				</tr> 
 			</c:forEach>
 			</tbody>
 			<tfoot>
 				<tr>
+		<c:choose>  
+    		<c:when test="${haveBuild}"> 
+					<td colspan="6" class="highlight newWebHookRow"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this build</p></td>
+         	</c:when>  
+         	<c:otherwise>  
 					<td colspan="6" class="highlight newWebHookRow"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
+         	</c:otherwise>  
+		</c:choose> 
 				</tr>
 			</tfoot>
 		</table>

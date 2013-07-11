@@ -110,7 +110,6 @@
 					jQueryWebhook('#webHookUrl').val(webhook.url);
 				    jQueryWebhook('#webHooksEnabled').attr('checked', webhook.enabled);
 				    jQueryWebhook.each(webhook.states, function(name, value){
-				    	console.log(value.buildStateName, value.enabled);
 				    	jQueryWebhook('#' + value.buildStateName).attr('checked', value.enabled);
 				    });
 				    
@@ -147,7 +146,6 @@
 			jQueryWebhook.each(ProjectBuilds.projectWebhookConfig.webHookList, function(thing, config){
 				if ('new' !== config[0]){
 					var webhook = config[1];
-					console.log(webhook.enabledEventsListForWeb);
 					jQueryWebhook('.webHookRowTemplate')
 									.clone()
 									.removeAttr("id")
@@ -271,10 +269,19 @@
 	</script>
     <div class="editBuildPageGeneral" style="background-color:white; float:left; margin:0; padding:0; width:70%;">
     
-	    <h2 class="noBorder">WebHooks</h2>
+        <c:choose>  
+    		<c:when test="${haveBuild}"> 
+			    <h2 class="noBorder">WebHooks applicable to build ${buildName}</h2>
+			    To edit all webhooks for builds in the project <a href="index.html?projectId=${projectExternalId}">edit Project webhooks</a>.
+         	</c:when>  
+         	<c:otherwise>  
+			    <h2 class="noBorder">WebHooks configured for project ${projectName}</h2>
+         	</c:otherwise>  
+		</c:choose>  
+
 
   		<div id="messageArea"></div>
-	    <div id="systemParams"><!--  begine systemParams div -->
+	    <div id="systemParams"><!--  begin systemParams div -->
 
 		<c:choose>
 			<c:when test="${not haveProject}">
@@ -328,7 +335,14 @@
     </div>
     <script type=text/javascript>
 	        $('systemParams').updateContainer = function() {
+        <c:choose>  
+    		<c:when test="${haveBuild}"> 
+	          	jQueryWebhook.get("settingsList.html?buildTypeId=${buildExternalId}", function(data) {
+         	</c:when>  
+         	<c:otherwise>  
 	          	jQueryWebhook.get("settingsList.html?projectId=${projectId}", function(data) {
+         	</c:otherwise>  
+		</c:choose>  	        
 	          		ProjectBuilds = data;
 	          		jQueryWebhook('.webHookRow').remove();
 	          		addWebHooksFromJsonCallback();
