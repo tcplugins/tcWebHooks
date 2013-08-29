@@ -539,7 +539,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	@Override
 	public Branch getBranch() {
 		// TODO Auto-generated method stub
-		return null;
+		return new MockBranch();
 	}
 
 	@Override

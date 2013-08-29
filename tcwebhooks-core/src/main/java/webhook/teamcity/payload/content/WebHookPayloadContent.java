@@ -155,6 +155,9 @@ public class WebHookPayloadContent {
     		try {
     			if (sRunningBuild.getBranch() != null)
     			setBranch(sRunningBuild.getBranch());
+    			setBranchName(sRunningBuild.getBranch().getName());
+    			setBranchDisplayName(sRunningBuild.getBranch().getDisplayName());
+    			setBranchIsDefault(sRunningBuild.getBranch().isDefaultBranch());
     		} catch (NoSuchMethodError e){
     			
     		}
@@ -191,6 +194,31 @@ public class WebHookPayloadContent {
 
 		public void setBranch(Branch branch) {
 			this.branch = branch;
+			
+		}
+		
+		public String getBranchName() {
+			return this.branchName;
+		}
+			 
+		public void setBranchName(String branchName) {
+			this.branchName = branchName;
+		}
+		
+		public String getBranchDisplayName() {
+			return this.branchDisplayName;
+		}
+		
+		public void setBranchDisplayName(String displayName) {
+			this.branchDisplayName = displayName;
+		}
+
+		public boolean isBranchIsDefault() {
+			return branchIsDefault;
+		}
+
+		public void setBranchIsDefault(boolean branchIsDefault) {
+			this.branchIsDefault = branchIsDefault;
 		}
 
 		/**

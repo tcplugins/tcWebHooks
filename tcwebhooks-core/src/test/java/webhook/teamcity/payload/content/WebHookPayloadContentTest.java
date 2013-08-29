@@ -34,15 +34,16 @@ public class WebHookPayloadContentTest {
 		//						   <span class="tcWebHooksMessage"><a href="http://test.server/project.html?projectId=project1">Test Project</a> :: <a href="http://test.server/viewType.html?buildTypeId=bt1">Test Build</a> # <a href="http://test.server/viewLog.html?buildTypeId=bt1&buildId=123456"><strong>TestBuild01</strong></a> has <strong>finished</strong> with a status of <a href="http://test.server/viewLog.html?buildTypeId=bt1&buildId=123456"> <strong>success</strong></a> and was triggered by <strong>SubVersion</strong></span>
 
 		WebHookPayloadContent content = framework.getWebHookContent();
-		System.out.println(framework.getWebHookContent().getBuildStatusHtml());
+		System.out.println(content.getBuildStatusHtml());
 		assertTrue(content.getBuildStatusHtml().equals(htmlStatus));
 	}
 
 	@Test
 	public void testCustomBuildStatusHtml() throws JDOMException, IOException {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-		framework.loadWebHookConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-custom-templates.xml"));
+		framework.loadWebHookConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-custom-templates.xml"));
 		WebHookPayloadContent content = framework.getWebHookContent();
 		System.out.println(content.getBuildStatusHtml());
+		assertTrue(content.getBuildStatusHtml().equals("master ATestProject"));
 	}
 }
