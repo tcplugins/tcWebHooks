@@ -12,6 +12,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
@@ -46,7 +47,7 @@ public class WebHookPayloadContent {
 		branchName,
 		branchDisplayName,
 		buildStateDescription;
-		boolean branchIsDefault;
+		Boolean branchIsDefault;
 		
 		Branch branch;
 		List<String> buildRunners;
@@ -153,13 +154,18 @@ public class WebHookPayloadContent {
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
     		try {
-    			if (sRunningBuild.getBranch() != null)
-    			setBranch(sRunningBuild.getBranch());
-    			setBranchName(sRunningBuild.getBranch().getName());
-    			setBranchDisplayName(sRunningBuild.getBranch().getDisplayName());
-    			setBranchIsDefault(sRunningBuild.getBranch().isDefaultBranch());
-    		} catch (NoSuchMethodError e){
+    			branch = sRunningBuild.getBranch();
+    			if (sRunningBuild.getBranch() != null){
+	    			setBranch(sRunningBuild.getBranch());
+	    			setBranchName(getBranch().getName());
+	    			setBranchDisplayName(getBranch().getDisplayName());
+	    			setBranchIsDefault(getBranch().isDefaultBranch());
+    			} else {
+    				Loggers.SERVER.debug("WebHookPayloadContent :: Branch is null. Either feature branch support is not configured or Teamcity does not support feature branches on this VCS");
+    			}
     			
+    		} catch (NoSuchMethodError e){
+    			Loggers.SERVER.debug("WebHookPayloadContent :: Could not get Branch Info by calling sRunningBuild.getBranch(). Probably an old version of TeamCity");
     		}
     		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
@@ -192,9 +198,12 @@ public class WebHookPayloadContent {
 			this.projectInternalId = projectId;
 		}
 
+		private Branch getBranch() {
+			return this.branch;
+		}
+		
 		public void setBranch(Branch branch) {
 			this.branch = branch;
-			
 		}
 		
 		public String getBranchName() {
