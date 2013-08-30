@@ -103,8 +103,8 @@ public class WebHookPayloadContent {
 			setBuildFullName(buildType.getFullName().toString());
 			setBuildName(buildType.getName());
 			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(buildType));
-    		setBuildInternaTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
-    		setBuildExternaTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
+    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
+    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
 			setProjectName(buildType.getProjectName());
 			setProjectId(TeamCityIdResolver.getProjectId(buildType.getProject()));
 			setProjectInternalId(TeamCityIdResolver.getInternalProjectId(buildType.getProject()));
@@ -142,8 +142,8 @@ public class WebHookPayloadContent {
     		setBuildName(sRunningBuild.getBuildType().getName());
 			setBuildId(Long.toString(sRunningBuild.getBuildId()));
 			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sRunningBuild.getBuildType()));
-    		setBuildInternaTypeId(TeamCityIdResolver.getInternalBuildId(sRunningBuild.getBuildType()));
-    		setBuildExternaTypeId(TeamCityIdResolver.getExternalBuildId(sRunningBuild.getBuildType()));
+    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(sRunningBuild.getBuildType()));
+    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(sRunningBuild.getBuildType()));
     		setProjectName(sRunningBuild.getBuildType().getProjectName());
     		setProjectId(TeamCityIdResolver.getProjectId(sRunningBuild.getBuildType().getProject()));
     		setProjectInternalId(TeamCityIdResolver.getInternalProjectId(sRunningBuild.getBuildType().getProject()));
@@ -154,7 +154,6 @@ public class WebHookPayloadContent {
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
     		try {
-    			branch = sRunningBuild.getBranch();
     			if (sRunningBuild.getBranch() != null){
 	    			setBranch(sRunningBuild.getBranch());
 	    			setBranchName(getBranch().getName());
@@ -174,19 +173,19 @@ public class WebHookPayloadContent {
 		}
 		
 		
-		public String getBuildInternaTypeId() {
+		public String getBuildInternalTypeId() {
 			return this.buildInternalTypeId;
 		}
 
-		public void setBuildInternaTypeId(String internalBuildId) {
+		public void setBuildInternalTypeId(String internalBuildId) {
 			this.buildInternalTypeId = internalBuildId;
 		}
 		
-		public String getBuildExternaTypeId() {
+		public String getBuildExternalTypeId() {
 			return this.buildExternalTypeId;
 		}
 		
-		public void setBuildExternaTypeId(String externalBuildId) {
+		public void setBuildExternalTypeId(String externalBuildId) {
 			this.buildExternalTypeId = externalBuildId;
 		}
 
@@ -222,7 +221,11 @@ public class WebHookPayloadContent {
 			this.branchDisplayName = displayName;
 		}
 
-		public boolean isBranchIsDefault() {
+		public Boolean getBranchIsDefault() {
+			return branchIsDefault;
+		}
+		
+		public Boolean isBranchIsDefault() {
 			return branchIsDefault;
 		}
 
