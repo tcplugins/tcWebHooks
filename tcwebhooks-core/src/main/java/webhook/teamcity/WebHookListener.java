@@ -111,27 +111,32 @@ public class WebHookListener extends BuildServerAdapter {
 	 */
 	private List<WebHookConfigWrapper> getListOfEnabledWebHooks(String projectId) {
 		List<WebHookConfigWrapper> configs = new ArrayList<WebHookListener.WebHookConfigWrapper>();
-
-		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(projectId, WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
-    	if (projSettings.isEnabled()){
-	    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
-	    		if (whc.getEnabled()){
-					WebHook wh = webHookFactory.getWebHook();
-					this.getFromConfig(wh, whc);
-					if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
-						configs.add(new WebHookConfigWrapper(wh, whc));
-					} else {
-						Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
-					}
-					wh = null;
-	    		} else {
-	    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
-	    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
-	    		}
-			}
-    	} else {
-    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + projectId);
-    	}
+		List<SProject> projects = new ArrayList<SProject>();
+		SProject myProject = myBuildServer.getProjectManager().findProjectById(projectId);
+		projects.add(myProject);
+		projects.addAll(myProject.getProjectPath());
+		for (SProject project : projects){
+			WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(project.getProjectId(), WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+	    	if (projSettings.isEnabled()){
+		    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
+		    		if (whc.getEnabled()){
+						WebHook wh = webHookFactory.getWebHook();
+						this.getFromConfig(wh, whc);
+						if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+							configs.add(new WebHookConfigWrapper(wh, whc));
+						} else {
+							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
+						}
+						wh = null;
+		    		} else {
+		    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
+		    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
+		    		}
+				}
+	    	} else {
+	    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + projectId);
+	    	}
+		}
     	return configs;
 	}
 

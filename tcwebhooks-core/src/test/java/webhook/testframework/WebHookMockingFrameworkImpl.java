@@ -94,8 +94,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(previousFailedBuild.isPersonal()).thenReturn(false);
 		finishedSuccessfulBuilds.add(previousSuccessfulBuild);
 		finishedFailedBuilds.add(previousFailedBuild);
-		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		((MockSBuildType) sBuildType).setProject(sProject);
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		
 		when(build2.getBuildTypeId()).thenReturn("bt2");
 		when(build2.getInternalId()).thenReturn("bt2");

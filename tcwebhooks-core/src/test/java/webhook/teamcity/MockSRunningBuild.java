@@ -368,7 +368,7 @@ public class MockSRunningBuild implements SRunningBuild {
 
 	public String getProjectId() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getBuildType().getProjectId();
 	}
 
 	public Date getStartDate() {

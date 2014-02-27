@@ -14,8 +14,10 @@ import java.util.List;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.junit.After;
@@ -35,6 +37,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class WebHookListenerTest {
 	SBuildServer sBuildServer = mock(SBuildServer.class);
 	BuildHistory buildHistory = mock(BuildHistory.class);
+	ProjectManager projectManager = mock(ProjectManager.class);
 	ProjectSettingsManager settings = mock(ProjectSettingsManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
@@ -72,6 +75,8 @@ public class WebHookListenerTest {
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payload);
 		when(manager.getServer()).thenReturn(sBuildServer);
+		when(sBuildServer.getProjectManager()).thenReturn(projectManager);
+		when(projectManager.findProjectById("project1")).thenReturn(sProject);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
 		when(sBuildServer.getRootUrl()).thenReturn("http://test.server");
 		when(previousSuccessfulBuild.getBuildStatus()).thenReturn(Status.NORMAL);
@@ -80,8 +85,8 @@ public class WebHookListenerTest {
 		when(previousFailedBuild.isPersonal()).thenReturn(false);
 		finishedSuccessfulBuilds.add(previousSuccessfulBuild);
 		finishedFailedBuilds.add(previousFailedBuild);
-		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		sBuildType.setProject(sProject);
+		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
 		whl.register();
 	}
 
@@ -110,7 +115,7 @@ public class WebHookListenerTest {
 	@Test
 	public void testBuildStartedSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState().setAllEnabled();
-		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON", true, new HashSet<String>());
+		projSettings.addNewWebHook("project1", "http://text/test", true, state, "JSON", true, new HashSet<String>());
 		when(webhook.isEnabled()).thenReturn(state.allEnabled());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
@@ -179,6 +184,7 @@ public class WebHookListenerTest {
 	@Test
 	public void testBuildChangedStatusSRunningBuildStatusStatus() throws FileNotFoundException, IOException {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
+		sBuildType.setProject(sProject);
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		

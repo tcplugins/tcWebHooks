@@ -530,7 +530,7 @@ public class MockSProject implements SProject {
 	@Override
 	public List<SProject> getProjectPath() {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<SProject>();
 	}
 
 	@Override
