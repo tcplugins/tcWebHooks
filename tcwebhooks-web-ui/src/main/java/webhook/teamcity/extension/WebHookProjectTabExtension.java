@@ -49,7 +49,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
     	
     	List<WebHookConfig> projectWebhooks = this.settings.getProjectWebHooksAsList();
     	List<BuildWebhooksBean> buildWebhooks = new ArrayList<BuildWebhooksBean>();
-    	for (SBuildType build : project.getBuildTypes()){
+    	for (SBuildType build : project.getOwnBuildTypes()){
     		buildWebhooks.add(new BuildWebhooksBean(build, settings.getBuildWebHooksAsList(build)));
     	}
 
