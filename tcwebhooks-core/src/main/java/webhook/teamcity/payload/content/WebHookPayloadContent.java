@@ -3,6 +3,7 @@ package webhook.teamcity.payload.content;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.serverSide.Branch;
@@ -499,7 +500,14 @@ public class WebHookPayloadContent {
 
 		public ExtraParametersMap getExtraParameters() {
 			if (this.extraParameters.size() > 0){
-				return extraParameters;
+				VariableMessageBuilder builder;
+				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this);
+				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
+				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
+					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
+					resolvedParametersMap.put(entry.getKey(), builder.build());
+				}
+				return resolvedParametersMap;
 			} else {
 				return null;
 			}
