@@ -113,7 +113,6 @@ public class WebHookListener extends BuildServerAdapter {
 		List<WebHookConfigWrapper> configs = new ArrayList<WebHookListener.WebHookConfigWrapper>();
 		List<SProject> projects = new ArrayList<SProject>();
 		SProject myProject = myBuildServer.getProjectManager().findProjectById(projectId);
-		projects.add(myProject);
 		projects.addAll(myProject.getProjectPath());
 		for (SProject project : projects){
 			WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(project.getProjectId(), WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
