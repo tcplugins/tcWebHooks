@@ -125,6 +125,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					if (request.getParameter("webHookId") != null){
 			    						Boolean enabled = false;
 			    						Boolean buildTypeAll = false;
+			    						Boolean buildTypeSubProjects = false;
 			    						Set<String> buildTypes = new HashSet<String>();
 			    						if ((request.getParameter("webHooksEnabled") != null )
 			    								&& (request.getParameter("webHooksEnabled").equalsIgnoreCase("on"))){
@@ -142,6 +143,9 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
 			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 			    						
+			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){
+			    							buildTypeSubProjects = true;
+			    						}
 			    						if ((request.getParameter("buildTypeAll") != null ) && (request.getParameter("buildTypeAll").equalsIgnoreCase("on"))){
 			    							buildTypeAll = true;
 			    						} else {
@@ -155,7 +159,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 		    						
 			    						if (request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
-			    														states,request.getParameter("payloadFormat"), buildTypeAll, buildTypes);
+			    														states,request.getParameter("payloadFormat"), buildTypeAll, buildTypeSubProjects, buildTypes);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -165,7 +169,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"), buildTypeAll, buildTypes);
+			    														states, request.getParameter("payloadFormat"), buildTypeAll, buildTypeSubProjects, buildTypes);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");

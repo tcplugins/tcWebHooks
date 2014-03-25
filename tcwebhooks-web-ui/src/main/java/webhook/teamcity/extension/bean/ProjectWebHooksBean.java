@@ -23,13 +23,13 @@ public class ProjectWebHooksBean {
 	
 	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads){
 		ProjectWebHooksBean bean = new ProjectWebHooksBean();
-		List<SBuildType> projectBuildTypes = project.getBuildTypes();
+		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		
 		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
 		bean.webHookList = new LinkedHashMap<String, WebhookConfigAndBuildTypeListHolder>();
 
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, true, null);
+		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, true, true, null);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads);
@@ -45,7 +45,7 @@ public class ProjectWebHooksBean {
 	
 	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads){
 		ProjectWebHooksBean bean = new ProjectWebHooksBean();
-		List<SBuildType> projectBuildTypes = project.getBuildTypes();
+		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		Set<String> enabledBuildTypes = new HashSet<String>();
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
 		
@@ -53,7 +53,7 @@ public class ProjectWebHooksBean {
 		bean.webHookList = new LinkedHashMap<String, WebhookConfigAndBuildTypeListHolder>();
 		
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, false, enabledBuildTypes);
+		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, false, false, enabledBuildTypes);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads);

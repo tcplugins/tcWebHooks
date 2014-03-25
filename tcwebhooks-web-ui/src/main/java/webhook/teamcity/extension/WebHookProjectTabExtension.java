@@ -19,13 +19,14 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.BuildWebhooksBean;
+import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
 
 public class WebHookProjectTabExtension extends ProjectTab {
-	WebHookProjectSettings settings;
+	
 	ProjectSettingsManager projSettings;
 	String myPluginPath;
 
@@ -45,26 +46,42 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	@Override
 	protected void fillModel(Map model, HttpServletRequest request,
 			 @NotNull SProject project, SUser user) {
-		this.settings = (WebHookProjectSettings)this.projSettings.getSettings(project.getProjectId(), "webhooks");
-    	
-    	List<WebHookConfig> projectWebhooks = this.settings.getProjectWebHooksAsList();
-    	List<BuildWebhooksBean> buildWebhooks = new ArrayList<BuildWebhooksBean>();
-    	for (SBuildType build : project.getOwnBuildTypes()){
-    		buildWebhooks.add(new BuildWebhooksBean(build, settings.getBuildWebHooksAsList(build)));
-    	}
+		
+		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<ProjectAndBuildWebhooksBean>();  
+		List<SProject> parentProjects = project.getProjectPath();
+		parentProjects.remove(0);
+		for (SProject projectParent : parentProjects){
+			projectAndParents.add(
+					ProjectAndBuildWebhooksBean.newInstance(
+							projectParent,
+							(WebHookProjectSettings) this.projSettings.getSettings(projectParent.getProjectId(), "webhooks"),
+							null
+							)
+					);
+		}
+		
+//		projectAndParents.add(
+//				ProjectAndBuildWebhooksBean.newInstance(
+//						project,
+//						(WebHookProjectSettings) this.projSettings.getSettings(project.getProjectId(), "webhooks"),
+//						true
+//						)
+//				);
 
-    	model.put("projectWebHookCount", projectWebhooks.size());
-    	if (projectWebhooks.size() == 0){
-    		model.put("noProjectWebHooks", "true");
-    		model.put("projectWebHooks", "false");
-    	} else {
-    		model.put("noProjectWebHooks", "false");
-    		model.put("projectWebHooks", "true");
-    		model.put("projectWebHookList", projectWebhooks);
-    		model.put("projectWebHooksDisabled", !this.settings.isEnabled());
-    	}
-    	
-		model.put("buildWebHookList", buildWebhooks);
+		model.put("projectAndParents", projectAndParents);
+		
+//    	model.put("projectWebHookCount", projectWebhooks.size());
+//    	if (projectWebhooks.size() == 0){
+//    		model.put("noProjectWebHooks", "true");
+//    		model.put("projectWebHooks", "false");
+//    	} else {
+//    		model.put("noProjectWebHooks", "false");
+//    		model.put("projectWebHooks", "true");
+//    		model.put("projectWebHookList", projectWebhooks);
+//    		model.put("projectWebHooksDisabled", !this.settings.isEnabled());
+//    	}
+//    	
+//		model.put("buildWebHookList", buildWebhooks);
     	
     	model.put("projectId", project.getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));

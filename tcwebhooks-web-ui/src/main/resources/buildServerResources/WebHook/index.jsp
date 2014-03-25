@@ -89,13 +89,17 @@
 		}
 		
 		function updateSelectedBuildTypes(){
+			var subText = "";
+		    if(jQueryWebhook('#buildTypeSubProjects').is(':checked')){
+		    	subText = " &amp; sub-projects";
+		    }
 		
 			if(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length == jQueryWebhook('#webHookFormContents input.buildType_single').length){
 				jQueryWebhook('input.buildType_all').attr('checked', true);
-				jQueryWebhook('span#selectedBuildCount').html("all");
+				jQueryWebhook('span#selectedBuildCount').html("all" + subText);
 			} else {
 				jQueryWebhook('input.buildType_all').attr('checked', false);
-				jQueryWebhook('span#selectedBuildCount').html(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length);
+				jQueryWebhook('span#selectedBuildCount').html(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length + subText);
 			}
 
 		}
@@ -120,6 +124,7 @@
 							this.checked = false;
 						}
 					});
+					jQueryWebhook('#buildTypeSubProjects').attr('checked', webhook.subProjectsEnabled);
 					jQueryWebhook.each(webhook.builds, function(){
 						 if (this.enabled){
 					 	 	jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');

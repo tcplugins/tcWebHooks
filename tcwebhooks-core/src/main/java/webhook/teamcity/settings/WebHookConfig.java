@@ -38,6 +38,7 @@ public class WebHookConfig {
 	private BuildState states = new BuildState();
 	private SortedMap<String, CustomMessageTemplate> templates; 
 	private Boolean allBuildTypesEnabled = true;
+	private Boolean subProjectsEnabled = true;
 	private Set<String> enabledBuildTypesSet = new HashSet<String>();
 	
 	@SuppressWarnings("unchecked")
@@ -91,6 +92,11 @@ public class WebHookConfig {
 			if (eTypes.getAttribute("enabled-for-all") != null){
 				try {
 					this.enableForAllBuildsInProject(eTypes.getAttribute("enabled-for-all").getBooleanValue());
+				} catch (DataConversionException e1) {e1.printStackTrace();}
+			}
+			if (eTypes.getAttribute("enabled-for-subprojects") != null){
+				try {
+					this.enableForSubProjects(eTypes.getAttribute("enabled-for-subprojects").getBooleanValue());
 				} catch (DataConversionException e1) {e1.printStackTrace();}
 			}
 			if (!isEnabledForAllBuildsInProject()){
@@ -151,7 +157,7 @@ public class WebHookConfig {
 	 * @param stateMask
 	 * @param payloadFormat (unvalidated)
 	 */
-	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, boolean buildTypeAllEnabled, Set<String> enabledBuildTypes){
+	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
@@ -161,6 +167,7 @@ public class WebHookConfig {
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
 		this.setPayloadFormat(payloadFormat);
+		this.subProjectsEnabled = buildTypeSubProjects;
 		this.allBuildTypesEnabled = buildTypeAllEnabled;
 		if (!this.allBuildTypesEnabled){
 			this.enabledBuildTypesSet = enabledBuildTypes;
@@ -193,6 +200,7 @@ public class WebHookConfig {
 		
 		Element buildsEl = new Element("build-types");
 		buildsEl.setAttribute("enabled-for-all", Boolean.toString(isEnabledForAllBuildsInProject()));
+		buildsEl.setAttribute("enabled-for-subprojects", Boolean.toString(isEnabledForSubProjects()));
 		
 		if (this.enabledBuildTypesSet.size() > 0){
 			for (String i : enabledBuildTypesSet){
@@ -243,14 +251,20 @@ public class WebHookConfig {
 	}
 	
 	public String getBuildTypeCountAsFriendlyString(){
-		if (this.allBuildTypesEnabled){
+		if (this.allBuildTypesEnabled  && !this.subProjectsEnabled){
 			return "All builds";
+		} else if (this.allBuildTypesEnabled  && this.subProjectsEnabled){
+				return "All builds & Sub-Projects";
 		} else {
+			String subProjectsString = "";
+			if (this.subProjectsEnabled){
+				subProjectsString = " & All Sub-Project builds";
+			}
 			int enabledBuildTypeCount = this.enabledBuildTypesSet.size();
 			if (enabledBuildTypeCount == 1){
-				return enabledBuildTypeCount + " build";
+				return enabledBuildTypeCount + " build" + subProjectsString;
 			}
-			return enabledBuildTypeCount + " builds"; 
+			return enabledBuildTypeCount + " builds" + subProjectsString; 
 		}
 	}
 
@@ -432,6 +446,14 @@ public class WebHookConfig {
 
 	public void enableForAllBuildsInProject(Boolean allBuildTypesEnabled) {
 		this.allBuildTypesEnabled = allBuildTypesEnabled;
+	}
+	
+	public Boolean isEnabledForSubProjects() {
+		return subProjectsEnabled;
+	}
+	
+	public void enableForSubProjects(Boolean subProjectsEnabled) {
+		this.subProjectsEnabled = subProjectsEnabled;
 	}
 	
 	public void clearAllEnabledBuildsInProject(){

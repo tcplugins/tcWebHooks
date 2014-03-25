@@ -65,8 +65,12 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<SFinishedBuild>();
 	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
 	SBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
+	SBuildType sBuildType02 = new MockSBuildType("Test Build-2", "A Test Build 02", "bt2");
+	SBuildType sBuildType03 = new MockSBuildType("Test Build-2", "A Test Build 03", "bt3");
 	SRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
 	SProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
+	SProject sProject02 = new MockSProject("Test Project 02", "A test project 02", "project2", "TestProjectNumber02", sBuildType);
+	SProject sProject03 = new MockSProject("Test Project 03", "A test sub project 03", "project3", "TestProjectNumber02_TestProjectNumber03", sBuildType);
 	
 	SBuildType build2 = mock(SBuildType.class);
 	SBuildType build3 = mock(SBuildType.class);
@@ -105,6 +109,10 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(build3.getName()).thenReturn("This is Build 3");
 		((MockSProject) sProject).addANewBuildTypeToTheMock(build2);
 		((MockSProject) sProject).addANewBuildTypeToTheMock(build3);
+		((MockSProject) sProject02).addANewBuildTypeToTheMock(sBuildType02);
+		((MockSProject) sProject03).addANewBuildTypeToTheMock(sBuildType03);
+		((MockSProject) sProject03).setParentProject(sProject02);
+		((MockSProject) sProject02).addChildProjectToMock(sProject03);
 		whl.register();
 		
 	}
@@ -163,6 +171,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public SBuildType getSBuildType() {
 		return sBuildType;
+	}
+
+	@Override
+	public SBuildType getSBuildTypeFromSubProject() {
+		return sBuildType03;
 	}
 
 }

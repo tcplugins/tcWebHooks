@@ -134,7 +134,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    	
     }
 
-	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, Set<String> buildTypesEnabled) {
+	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled) {
         if(this.webHooksConfigs != null)
         {
         	updateSuccess = false;
@@ -146,6 +146,7 @@ public class WebHookProjectSettings implements ProjectSettings {
                 	whc.setUrl(URL);
                 	whc.setBuildStates(buildState);
                 	whc.setPayloadFormat(format);
+                	whc.enableForSubProjects(buildSubProjects);
                 	whc.enableForAllBuildsInProject(buildTypeAll);
                 	if (!buildTypeAll){
                 		whc.clearAllEnabledBuildsInProject();
@@ -160,8 +161,8 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    			
 	}
 
-	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, Set<String> buildTypesEnabled) {
-		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, buildTypeAll, buildTypesEnabled));
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
+		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, buildTypeAll, buildTypeSubProjects, buildTypesEnabled));
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSuccess = true;
 	}

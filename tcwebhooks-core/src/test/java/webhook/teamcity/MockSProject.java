@@ -49,7 +49,10 @@ public class MockSProject implements SProject {
 	private File configDirectory;
 	private Status status;
 	private SBuildType buildType;
+	private SProject parentProject;
 	private Map<String,SBuildType> buildTypes = new HashMap<String, SBuildType>();
+	private List<SProject> parentPath = new ArrayList<SProject>();
+	private List<SProject> childProjects = new ArrayList<SProject>();
 
 	public MockSProject(String name, String description, String projectId, String projectExternalId, 
 						SBuildType buildType)
@@ -59,6 +62,7 @@ public class MockSProject implements SProject {
 		this.projectId = projectId;
 		this.projectExternalId = projectExternalId;
 		this.buildType = buildType;
+		this.parentPath.add(this);
 		addANewBuildTypeToTheMock(buildType);
 	}
 	
@@ -493,14 +497,12 @@ public class MockSProject implements SProject {
 
 	@Override
 	public List<SBuildType> getOwnBuildTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		return getBuildTypes();
 	}
 
 	@Override
 	public List<SProject> getOwnProjects() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.childProjects;
 	}
 
 	@Override
@@ -511,8 +513,14 @@ public class MockSProject implements SProject {
 
 	@Override
 	public SProject getParentProject() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.parentProject;
+	}
+	
+	public void setParentProject(SProject project){
+		this.parentPath = new ArrayList<SProject>();
+		this.parentPath.add(project);
+		this.parentPath.add(this);
+		this.parentProject = project;
 	}
 
 	@Override
@@ -529,8 +537,7 @@ public class MockSProject implements SProject {
 
 	@Override
 	public List<SProject> getProjectPath() {
-		// TODO Auto-generated method stub
-		return new ArrayList<SProject>();
+		return this.parentPath;
 	}
 
 	@Override
@@ -563,6 +570,10 @@ public class MockSProject implements SProject {
 			DuplicateExternalIdException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void addChildProjectToMock(SProject sProject) {
+		this.childProjects.add(sProject);
 	}
 
 	

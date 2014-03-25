@@ -1,5 +1,8 @@
 package webhook.teamcity;
 
+
+import java.util.List;
+
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
@@ -89,11 +92,32 @@ public final class TeamCityIdResolver {
 		}
 	}
 	
+	/**
+	 * Finds a TeamCity BuiltType in the ProjectManager by buildTypeId.
+	 * Uses findBuildTypeByExternalId() if available, otherwise uses findBuildTypeById()
+	 * @param ProjectManager instance
+	 * @param buildTypeId string
+	 * @return TeamCity BuildType config object
+	 */
 	public static SBuildType findBuildTypeById(ProjectManager projectManager, String buildTypeId) {
 		try {
 			return projectManager.findBuildTypeByExternalId(buildTypeId);
 		} catch (NoSuchMethodError ex){
 			return projectManager.findBuildTypeById(buildTypeId);
+		}
+	}
+	
+	/**
+	 * Finds builds that belong the referenced project. Uses new method getOwnBuildTypes() if available.
+	 * Does not find builds in sub-projects.
+	 * @param project
+	 * @return List of BuildTypes corresponding to what is configured in the project.
+	 */
+	public static List<SBuildType> getOwnBuildTypes(SProject project) {
+		try {
+			return project.getOwnBuildTypes();
+		} catch (NoSuchMethodError ex){
+			return project.getBuildTypes();
 		}
 	}
 

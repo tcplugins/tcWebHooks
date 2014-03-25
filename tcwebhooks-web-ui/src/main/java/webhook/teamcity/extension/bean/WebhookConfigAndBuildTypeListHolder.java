@@ -16,6 +16,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 	public String payloadFormatForWeb = "Unknown";
 	public List<StateBean> states = new ArrayList<StateBean>();
 	public boolean allBuildTypesEnabled;
+	public boolean subProjectsEnabled;
 	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<WebhookBuildTypeEnabledStatusBean>();
 	private String enabledEventsListForWeb;
 	private String enabledBuildsListForWeb;
@@ -28,6 +29,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 		setEnabledEventsListForWeb(config.getEnabledListAsString());
 		setEnabledBuildsListForWeb(config.getBuildTypeCountAsFriendlyString());
 		allBuildTypesEnabled = config.isEnabledForAllBuildsInProject();
+		subProjectsEnabled = config.isEnabledForSubProjects();
 		for (BuildStateEnum state : config.getBuildStates().getStateSet()){
 			states.add(new StateBean(state.getShortName(), config.getBuildStates().enabled(state)));
 		}
