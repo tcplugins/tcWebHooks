@@ -85,7 +85,7 @@ public class WebHookListener extends BuildServerAdapter {
 		Map<String,String> teamCityProperties = build.getParametersProvider().getAll(); 
 		for (String key : teamCityProperties.keySet()){
 			if (key.startsWith("webhook.")){
-				newMap.put(key, teamCityProperties.get(key));
+				newMap.put(key.substring("webhook.".length()), teamCityProperties.get(key));
 			}
 		}
 		newMap.putAll(parametersFromConfig);
