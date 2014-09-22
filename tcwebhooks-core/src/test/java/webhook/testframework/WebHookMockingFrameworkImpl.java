@@ -23,6 +23,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.WebHook;
 import webhook.WebHookImpl;
@@ -77,6 +78,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	
 	WebHookListener whl;
 	SortedMap<String, String> extraParameters;
+	SortedMap<String, String> teamcityProperties;
 	BuildStateEnum buildstateEnum;
 	
 	private WebHookMockingFrameworkImpl() {
@@ -117,11 +119,12 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		
 	}
 
-	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParametersMap extraParameters) {
+	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
 		WebHookMockingFrameworkImpl framework = new WebHookMockingFrameworkImpl();
 		framework.buildstateEnum = buildState;
 		framework.extraParameters = extraParameters;
-		framework.content = new WebHookPayloadContent(framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		framework.teamcityProperties = teamcityProperties;
+		framework.content = new WebHookPayloadContent(framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		return framework;
 	}
 
@@ -144,7 +147,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException {
 		//webHookConfig = new WebHookConfig(ConfigLoaderUtil.getFullConfigElement(xmlConfigFile));
 		webHookConfig = ConfigLoaderUtil.getFirstWebHookInConfig(xmlConfigFile);
-		this.content = new WebHookPayloadContent(this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, webHookConfig.getEnabledTemplates());
+		this.content = new WebHookPayloadContent(this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, teamcityProperties, webHookConfig.getEnabledTemplates());
 		
 	}
 	

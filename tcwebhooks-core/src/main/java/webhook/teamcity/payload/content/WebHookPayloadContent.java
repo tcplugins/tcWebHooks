@@ -53,6 +53,7 @@ public class WebHookPayloadContent {
 		Branch branch;
 		List<String> buildRunners;
 		ExtraParametersMap extraParameters;
+		private ExtraParametersMap teamcityProperties;
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -64,6 +65,7 @@ public class WebHookPayloadContent {
 		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
 			populateCommonContent(server, buildType, buildState, templates);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
+			this.teamcityProperties =  new ExtraParametersMap(buildType.getParametersProvider().getAll());
 		}
 
 		/**
@@ -77,12 +79,14 @@ public class WebHookPayloadContent {
 		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
 				Map<String, String> extraParameters, 
+				Map<String, String> teamcityProperties,
 				Map<String, String> templates) {
 			
+			this.extraParameters =  new ExtraParametersMap(extraParameters);
+			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
     		populateCommonContent(server, sRunningBuild, previousBuild, buildState, templates);
     		populateMessageAndText(sRunningBuild, buildState, templates);
     		populateArtifacts(sRunningBuild);
-    		this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
 		private void populateArtifacts(SRunningBuild runningBuild) {
@@ -467,7 +471,7 @@ public class WebHookPayloadContent {
 		
 		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
 			
-			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this));
+			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties));
 			this.buildStatusHtml = builder.build();
 		}		
 		
@@ -501,7 +505,7 @@ public class WebHookPayloadContent {
 		public ExtraParametersMap getExtraParameters() {
 			if (this.extraParameters.size() > 0){
 				VariableMessageBuilder builder;
-				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this);
+				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties);
 				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);

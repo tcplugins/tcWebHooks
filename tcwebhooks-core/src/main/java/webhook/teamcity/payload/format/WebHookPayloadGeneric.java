@@ -40,7 +40,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	@Override
 	public String beforeBuildFinish(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content);
 	}
 
@@ -59,21 +59,21 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	@Override
 	public String buildFinished(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content);
 	}
 
 	@Override
 	public String buildInterrupted(SRunningBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content);
 	}
 
 	@Override
 	public String buildStarted(SRunningBuild runningBuild, SFinishedBuild previousBuild, 
 			SortedMap<String,String> extraParameters, Map<String,String> templates) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content);
 	}
 

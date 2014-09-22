@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import jetbrains.buildServer.AgentRestrictor;
 import jetbrains.buildServer.BuildProblemData;
@@ -55,6 +56,8 @@ public class MockSRunningBuild implements SRunningBuild {
 	private Status status;
 	private String statusText;
 	private long buildId = 123456;
+	private Map<String,String> buildParameters = new TreeMap<String, String>();
+	private ParametersProvider parameterProvider;
 
 	public MockSRunningBuild(SBuildType buildType, String triggeredBy, Status status, String statusText, String buildNumber) {
 		this.sBuildType = buildType;
@@ -68,6 +71,27 @@ public class MockSRunningBuild implements SRunningBuild {
 		this.status = status;
 		this.statusText = statusText;
 		this.buildNumber = buildNumber;
+		this.buildParameters.put("test.thing1","thing1");
+		this.buildParameters.put("test.thing2","thing2");
+		this.buildParameters.put("test.thing3","thing3");
+		this.buildParameters.put("webhook.test.thing","This is a webhook build property, so should get to the webhook");
+		this.parameterProvider = new ParametersProvider() {
+			
+			@Override
+			public int size() {
+				return buildParameters.size();
+			}
+			
+			@Override
+			public Map<String, String> getAll() {
+				return buildParameters;
+			}
+			
+			@Override
+			public String get(String key) {
+				return buildParameters.get(key);
+			}
+		};
 	}
 
 	public void addBuildMessage(BuildMessage1 arg0) {
@@ -486,8 +510,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public ParametersProvider getParametersProvider() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.parameterProvider;
 	}
 
 	public boolean isOutdated() {
