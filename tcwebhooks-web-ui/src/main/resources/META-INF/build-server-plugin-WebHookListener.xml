@@ -74,6 +74,14 @@
 			<value>10</value>
 		</property>
 	</bean>
+	
+	<bean id="webHookPayloadTailoredJson"
+		class="webhook.teamcity.payload.format.WebHookPayloadTailoredJson"
+		init-method="register">
+		<property name="rank">
+			<value>9</value>
+		</property>
+	</bean>
 
 	<bean id="webHookPayloadXml"
 		class="webhook.teamcity.payload.format.WebHookPayloadXml"
