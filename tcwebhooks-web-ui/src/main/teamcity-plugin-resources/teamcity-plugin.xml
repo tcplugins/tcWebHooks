@@ -11,5 +11,11 @@
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
-  <deployment use-separate-classloader="false"/>
+  <deployment use-separate-classloader="true"/>
+  <dependencies>
+    <plugin name="rest-api"/>
+  </dependencies>
+  <parameters>
+    <parameter name="api.path">/app/rest/webhooks</parameter>
+  </parameters>
 </teamcity-plugin>
