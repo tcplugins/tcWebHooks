@@ -15,7 +15,4 @@
   <dependencies>
     <plugin name="rest-api"/>
   </dependencies>
-  <parameters>
-    <parameter name="api.path">/app/rest/webhooks</parameter>
-  </parameters>
 </teamcity-plugin>

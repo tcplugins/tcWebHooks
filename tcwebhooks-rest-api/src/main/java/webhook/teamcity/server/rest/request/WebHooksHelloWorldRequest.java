@@ -35,20 +35,13 @@ import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Yegor.Yarko
- *         Date: 20.06.2010
+ * @author Net Wolf UK
+ *         Date: 27.01.2015
  */
 @Path(Constants.API_URL + "/webhooks")
 @Singleton
 public class WebHooksHelloWorldRequest {
-  @Context @NotNull private ServiceLocator myServiceLocator;
-  @Context @NotNull private BuildTypeFinder myBuildTypeFinder;
-  
-  @GET
-  @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-  public String serveProjectsConvenienceCopy(@QueryParam("locator") String buildTypeLocator) {
-    return "Wooot";
-  }
+
 
   @GET
   @Path("/hello")

@@ -191,19 +191,26 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>1.18.3</version>
+			<version>1.16</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-servlet</artifactId>
-			<version>1.18.3</version>
+			<version>1.16</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-spring</artifactId>
+			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jetbrains.teamcity.9</groupId>
 			<artifactId>rest-api</artifactId>
 			<version>9.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
