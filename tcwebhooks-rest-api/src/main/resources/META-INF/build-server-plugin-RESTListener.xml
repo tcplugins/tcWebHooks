@@ -11,4 +11,6 @@
 
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
 
+	<bean id="mainConfigManager" class="webhook.teamcity.server.rest.util.mainconfig.MainConfigManager"/>
+	<bean id="mainConfigManagerProvider" class="webhook.teamcity.server.rest.jersey.MainConfigManagerProvider"/>
 </beans>

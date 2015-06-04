@@ -144,5 +144,10 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	}
 
 	public WebHookProxyConfig getProxyConfigForUrl(String url) {
-		return this.webHookMainConfig.getProxyConfigForUrl(url);	}
+		return this.webHookMainConfig.getProxyConfigForUrl(url);
+	}
+
+	public WebHookMainConfig getWebHookMainConfig() {
+		return webHookMainConfig;
+	}
 }
