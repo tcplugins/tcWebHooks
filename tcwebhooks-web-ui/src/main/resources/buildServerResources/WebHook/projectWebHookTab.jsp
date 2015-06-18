@@ -1,8 +1,18 @@
 <%@ include file="/include.jsp" %>
 	<div>
 	
-	<c:forEach items="${projectAndParents}" var="project"> 
-		<h3 class="title">WebHooks configured for ${project.project.fullName}</h3>
+	<c:forEach items="${projectAndParents}" var="project">
+	
+		<c:choose>
+			<c:when test="${project.externalProjectId == '_Root'}">
+				<h3 class="title">WebHooks configured for every TeamCity build</h3>
+			</c:when>
+			<c:otherwise>	
+				<h3 class="title">WebHooks configured for ${project.project.fullName}</h3>
+			</c:otherwise>
+		</c:choose>
+	
+		
 		<c:if test="${project.projectWebhookCount == 0}" >
 				<div style='margin-left: 1em; margin-right:1em;'>
 				<p>There are no WebHooks configured for this project.</p> 

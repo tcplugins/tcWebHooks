@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PagePlaces;
@@ -49,7 +50,9 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		
 		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<ProjectAndBuildWebhooksBean>();  
 		List<SProject> parentProjects = project.getProjectPath();
-		parentProjects.remove(0);
+		if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
+			parentProjects.remove(0);
+		}
 		for (SProject projectParent : parentProjects){
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(

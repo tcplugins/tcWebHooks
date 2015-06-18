@@ -147,6 +147,15 @@
 			});
 		}
 		
+		function htmlEscape(str) {
+    		return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+		}
+		
 		function addWebHooksFromJsonCallback(){
 			jQueryWebhook.each(ProjectBuilds.projectWebhookConfig.webHookList, function(thing, config){
 				if ('new' !== config[0]){
@@ -158,7 +167,7 @@
 									.removeClass('webHookRowTemplate')
 									.addClass('webHookRow')
 									.appendTo('#webHookTable > tbody');
-					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemUrl").html(webhook.url).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#hookPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemUrl").html(htmlEscape(webhook.url)).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#hookPane');});
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html(webhook.payloadFormatForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").html(webhook.enabledEventsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").html(webhook.enabledBuildsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#buildPane');});
@@ -298,7 +307,14 @@
 					<%@ include file="webHookInclude.jsp" %>
 					</c:when>
 					<c:otherwise>
-						<strong>You must have Project Administrator permission to edit WebHooks</strong>
+						<c:choose>
+							<c:when test="${projectName == '_Root'}">
+								<strong>You must have System Administrator permission to edit _Root WebHooks</strong>
+							</c:when>
+							<c:otherwise>	
+								<strong>You must have Project Administrator permission to edit WebHooks</strong>
+							</c:otherwise>
+						</c:choose>
 					</c:otherwise>
 				</c:choose>
 			</c:otherwise>
