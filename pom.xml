@@ -175,6 +175,7 @@
 	
 	<packaging>pom</packaging>
 	<modules>
+		<module>tcwebhooks-rest-docs</module>
 		<module>tcwebhooks-rest-api</module>
 		<module>tcwebhooks-web-ui</module>
 		<module>tcwebhooks-core</module>
