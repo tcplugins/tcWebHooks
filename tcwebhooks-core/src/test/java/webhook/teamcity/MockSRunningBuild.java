@@ -25,6 +25,7 @@ import jetbrains.buildServer.serverSide.BuildStatisticsOptions;
 import jetbrains.buildServer.serverSide.DownloadedArtifacts;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.SBuildFeatureDescriptor;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
@@ -553,11 +554,11 @@ public class MockSRunningBuild implements SRunningBuild {
 		
 	}
 
-	@Override
-	public BuildProblemData addUserBuildProblem(User arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public BuildProblemData addUserBuildProblem(User arg0, String arg1) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public Branch getBranch() {
@@ -583,11 +584,11 @@ public class MockSRunningBuild implements SRunningBuild {
 		return false;
 	}
 
-	@Override
-	public void muteBuildProblems(User arg0, boolean arg1, String arg2) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void muteBuildProblems(User arg0, boolean arg1, String arg2) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	// From 8.0
 	
@@ -614,5 +615,31 @@ public class MockSRunningBuild implements SRunningBuild {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	// From TC 9.1
 
+	@Override
+	public BuildProblemData addUserBuildProblem(SUser arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<SBuildFeatureDescriptor> getBuildFeaturesOfType(
+			String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void muteBuildProblems(SUser arg0, boolean arg1, String arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SFinishedBuild getRecentlyFinishedBuild() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }
