@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import jetbrains.buildServer.Build;
@@ -23,6 +24,7 @@ import jetbrains.buildServer.serverSide.BuildTypeRenamingFailedException;
 import jetbrains.buildServer.serverSide.BuildTypeTemplate;
 import jetbrains.buildServer.serverSide.CannotAttachToTemplateException;
 import jetbrains.buildServer.serverSide.CompatibilityResult;
+import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
 import jetbrains.buildServer.serverSide.InvalidIdentifierException;
@@ -1061,8 +1063,99 @@ public class MockSBuildType implements SBuildType {
 	public void moveToProject(SProject arg0)
 			throws InvalidVcsRootScopeException {
 		// TODO Auto-generated method stub
+	}
+	
+	// From TC 9.1
+
+	@Override
+	public void setExternalId(ConfigAction arg0, String arg1)
+			throws InvalidIdentifierException, DuplicateExternalIdException {
+		// TODO Auto-generated method stub
 		
 	}
 
+	@Override
+	public String getConfigId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public File getConfigurationFile(File arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void persist(ConfigAction arg0) throws PersistFailedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SBuildFeatureDescriptor findBuildFeatureById(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<SBuildFeatureDescriptor> getBuildFeaturesOfType(
+			String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isTemplateAccessible() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean replaceInValues(Pattern arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean textValueMatches(Pattern arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public <T> T getOptionDefaultValue(Option<T> arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Option> getOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Option> getOwnOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getVcsRootsHash() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void moveToProject(ConfigAction arg0, SProject arg1)
+			throws InvalidVcsRootScopeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	
+	
+	
 }
