@@ -207,7 +207,7 @@ public class WebHookPayloadContent {
 		}
 		
 		public void setBranch(Branch branch) {
-			this.branch = branch;
+			this.branch = new WebHooksBranchImpl(branch);
 		}
 		
 		public String getBranchName() {
