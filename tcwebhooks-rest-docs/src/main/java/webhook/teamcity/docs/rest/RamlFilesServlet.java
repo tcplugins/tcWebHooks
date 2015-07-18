@@ -3,7 +3,9 @@ package webhook.teamcity.docs.rest;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,14 +25,14 @@ public class RamlFilesServlet extends HttpServlet {
 	{
 		System.out.println("GET - Files");
 		File[] listOfFiles = this.baseRamlPath.listFiles();
-		List<RamlFile> ramlFiles = new ArrayList<RamlFile>();
+		Map<String, RamlFile> ramlFiles = new HashMap<String,RamlFile>();
 		    for (int i = 0; i < listOfFiles.length; i++) {
-		      if (listOfFiles[i].isFile()) {
-		    	ramlFiles.add(new RamlFile(listOfFiles[i]));  
+		      //if (listOfFiles[i].isFile()) {
+		    	ramlFiles.put(listOfFiles[i].getName(), new RamlFile(listOfFiles[i]));  
 		        //System.out.println("File " + listOfFiles[i].getName());
-		      } else if (listOfFiles[i].isDirectory()) {
-		        System.out.println("Directory " + listOfFiles[i].getName());
-		      }
+		      //} else if (listOfFiles[i].isDirectory()) {
+		      //  System.out.println("Directory " + listOfFiles[i].getName());
+		      //}
 		    }
 		Gson gson = new Gson();
 		response.setContentType("application/json");
