@@ -20,10 +20,10 @@
 		    <id>Internal company repository</id>
 		    <url>file://${basedir}/lib-compile</url>
 		  </repository>
-		<repository>
+		<!--<repository>
 			<id>tcwebhooks.sourceforge</id>
 			<url>http://svn.code.sf.net/p/tcplugins/code/maven2-repo</url>
-		</repository>
+		</repository>-->
 		<!-- <repository> <id>jetbrains-all</id> <url>http://repository.jetbrains.com/all</url> 
 			</repository> -->
 	</repositories>
@@ -110,21 +110,21 @@
 			<scope>compile</scope>
 		</dependency>
 		
-				<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
+		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
 		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
+			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
-			<version>8.0.0</version>
+			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/runtime-util.jar -->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>runtime-util</artifactId>
 			<version>7.1.0</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>-->
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server-model.jar -->
 		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>model</artifactId> 
@@ -132,9 +132,9 @@
 
 		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
 		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
+			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>8.0.0</version>
+			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -148,12 +148,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>annotations</artifactId>
-			<version>7.1.0</version>
-			<scope>provided</scope>
-		</dependency>
 		
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -169,12 +163,7 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.3.1</version>
-			<scope>provided</scope>
-		</dependency>		
+	
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
