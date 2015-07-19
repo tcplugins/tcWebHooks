@@ -99,4 +99,17 @@
 		</property>
 	</bean>
 
+
+	<bean id="webHookTemplateManager"
+		class="webhook.teamcity.payload.WebHookTemplateManager"
+		/>
+
+	<bean id="slackComWebHookTemplate"
+		class="webhook.teamcity.payload.template.SlackComWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>15</value>
+		</property>
+	</bean>
+
 </beans>
