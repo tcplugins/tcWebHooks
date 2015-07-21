@@ -43,13 +43,13 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			value = (String) PropertyUtils.getProperty(bean, variableName);
 			
 		} catch (IllegalAccessException e) {
-			Loggers.SERVER.warn(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
+			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
 			Loggers.SERVER.debug(e);
 		} catch (InvocationTargetException e) {
-			Loggers.SERVER.warn(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
+			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
 			Loggers.SERVER.debug(e);
 		} catch (NoSuchMethodException e) {
-			Loggers.SERVER.warn(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
+			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
 			Loggers.SERVER.debug(e);
 		}
 		return value;

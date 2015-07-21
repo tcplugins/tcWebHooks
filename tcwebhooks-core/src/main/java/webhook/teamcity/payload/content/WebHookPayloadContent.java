@@ -511,6 +511,11 @@ public class WebHookPayloadContent {
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
 				}
+				resolver = new WebHooksBeanUtilsVariableResolver(this, resolvedParametersMap);
+				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
+					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
+					resolvedParametersMap.put(entry.getKey(), builder.build());
+				}
 				return resolvedParametersMap;
 			} else {
 				return null;
