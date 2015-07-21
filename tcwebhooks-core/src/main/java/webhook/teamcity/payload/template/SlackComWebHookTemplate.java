@@ -19,6 +19,7 @@ public class SlackComWebHookTemplate extends AbstractWebHookTemplate implements 
 	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
 	String CONF_PROPERTIES = "webhook/teamcity/payload/template/SlackComWebHookTemplate.properties";
 	
+	
 	public SlackComWebHookTemplate(WebHookTemplateManager manager) {
 		this.manager = manager;
 	}
@@ -35,33 +36,46 @@ public class SlackComWebHookTemplate extends AbstractWebHookTemplate implements 
 		
 	}
 	
+	private URL findPropertiesFileUrlInVariousClassloaders(String propertiesFile){
+		final ClassLoader[] classLoaders = {ClassLoader.getSystemClassLoader(), SlackComWebHookTemplate.class.getClassLoader()}; 
+		URL url = null;
+		for (ClassLoader cl : classLoaders){
+			if (cl != null){
+				url = cl.getResource(propertiesFile);
+		        if (url == null) {
+		            url = cl.getResource("/" + propertiesFile);
+		        }
+		        if (url != null){
+		        	break;
+		        }
+			}
+		}
+		return url;
+	}
+	
+	
+	
 	/**
 	 * Load the template from a properties file, rather than doing silly string escaping in java.
 	 */
 	private void loadTemplatesFromPropertiesFile(){
 		Properties props = null;
-		ClassLoader cl = ClassLoader.getSystemClassLoader();
-	    if (cl != null) {
-	        URL url = cl.getResource(CONF_PROPERTIES);
-	        if (url == null) {
-	            url = cl.getResource("/" + CONF_PROPERTIES);
-	        }
-	        if (url != null) {
-	            try {
-	                InputStream in = url.openStream();
-	                props = new Properties();
-	                props.load(in);
-	            } catch (IOException e) {
-	            	Loggers.SERVER.error("SlackComWebHookTemplate :: An Error occurred trying to load the template properties file: " + CONF_PROPERTIES + ".");
-	            	Loggers.SERVER.debug(e);
-	            	
-	            } finally {
-	               // close opened resources
-	            }
-	        } else {
-            	Loggers.SERVER.error("SlackComWebHookTemplate :: An Error occurred trying to load the template properties file: " + CONF_PROPERTIES + ". The file was not found in the classpath.");
-	        }
-	    }
+		URL url = findPropertiesFileUrlInVariousClassloaders(CONF_PROPERTIES);
+        if (url != null) {
+            try {
+                InputStream in = url.openStream();
+                props = new Properties();
+                props.load(in);
+            } catch (IOException e) {
+            	Loggers.SERVER.error("SlackComWebHookTemplate :: An Error occurred trying to load the template properties file: " + CONF_PROPERTIES + ".");
+            	Loggers.SERVER.debug(e);
+            	
+            } finally {
+               // close opened resources
+            }
+        } else {
+        	Loggers.SERVER.error("SlackComWebHookTemplate :: An Error occurred trying to load the template properties file: " + CONF_PROPERTIES + ". The file was not found in the classpath.");
+        }
 	    if (props != null){
 	    	String templatePropKey = "";
 	    	for (BuildStateEnum state : BuildStateEnum.values()){

@@ -7,9 +7,9 @@ public class WebHookTemplateContent {
 	String templateText;
 	boolean enabled;
 	
-	public static final String XML_ELEMENT_NAME = "template-content";
+	public static final String XML_ELEMENT_NAME = "template";
 	public static final String STATE = "build-state";
-	public static final String TEMPLATE = "template";
+	public static final String TEMPLATE = "template-text";
 	public static final String ENABLED = "enabled";
 	
 	public static WebHookTemplateContent create(String templateState, String templateText, boolean enabled){
