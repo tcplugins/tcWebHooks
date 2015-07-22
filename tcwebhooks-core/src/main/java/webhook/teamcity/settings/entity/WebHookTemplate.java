@@ -65,12 +65,18 @@ public class WebHookTemplate {
 	@XmlAttribute
 	boolean enabled = true;
 	
+	@XmlAttribute
+	int rank = 10;
+	
 	@XmlElement(name="default-template")
 	String defaultTemplate;
 	
 	@NotNull 
 	@XmlElement (name="template-description")
 	String templateDescription;
+	
+	@XmlElement (name="template-tool-tip")
+	String templateToolTip;
 	
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
@@ -87,7 +93,7 @@ public class WebHookTemplate {
 		this.enabled = enabled;
 	}
 	
-	@XmlType(name = "format")
+	@XmlType(name = "format") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateFormat {
 		@XmlAttribute
 		String name;
@@ -100,9 +106,9 @@ public class WebHookTemplate {
 		}
 	}
 	
-	@XmlType(name = "template")
+	@XmlType(name = "template") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateItem {
-		@XmlElement(name="template-text")
+		@NotNull @XmlElement(name="template-text")
 		String templateText;
 		
 		@XmlAttribute
@@ -116,7 +122,7 @@ public class WebHookTemplate {
 		}
 	}
 	
-	@XmlType(name = "state")
+	@XmlType(name = "state") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateState {
 		@XmlAttribute(name="type")
 		String type;

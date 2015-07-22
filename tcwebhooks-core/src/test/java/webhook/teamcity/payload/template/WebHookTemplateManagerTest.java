@@ -35,7 +35,7 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestSlackComTemplate(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(mockServer);
+		wtm = new WebHookTemplateManager(mockServer, null, null);
 		SlackComWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
 		wht.register();
 		assertTrue(wtm.getRegisteredTemplates().contains(wht.getTemplateShortName()));
@@ -44,7 +44,7 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestFindMatchingTemplates(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(mockServer);
+		wtm = new WebHookTemplateManager(mockServer, null, null);
 		SlackComWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
 		wht.register();
 		TestWebHookTemplate wht2 = new TestWebHookTemplate(wtm);

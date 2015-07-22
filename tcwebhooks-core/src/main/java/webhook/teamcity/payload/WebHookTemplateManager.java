@@ -1,5 +1,6 @@
 package webhook.teamcity.payload;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,9 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import webhook.teamcity.Loggers;
-
+import jetbrains.buildServer.configuration.ChangeListener;
+import jetbrains.buildServer.configuration.FileWatcher;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.ServerPaths;
+import webhook.teamcity.Loggers;
 
 public class WebHookTemplateManager {
 	
@@ -19,15 +22,31 @@ public class WebHookTemplateManager {
 	Comparator<WebHookTemplate> rankComparator = new WebHookTemplateRankingComparator();
 	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<WebHookTemplate>();
 	SBuildServer server;
+	ServerPaths serverPaths;
+	WebHookPayloadManager webHookPayloadManager;
 	
-	public WebHookTemplateManager(SBuildServer server){
+	public WebHookTemplateManager(SBuildServer server, ServerPaths serverPaths, WebHookPayloadManager webHookPayloadManager){
 		this.server = server;
+		this.serverPaths = serverPaths;
+		this.webHookPayloadManager = webHookPayloadManager;
 		Loggers.SERVER.info("WebHookTemplateManager :: Starting");
+	}
+	
+	public void register(){
+		File configFile = new File(this.serverPaths.getConfigDir() + File.separator + "webhook-templates.xml");
+		
+		FileWatcher fw = new FileWatcher(configFile);
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(this, configFile, webHookPayloadManager);
+		
+		changeListener.handleConfigFileChange();
+		
+		fw.registerListener(changeListener);
+		fw.start();
 	}
 	
 	public void registerTemplateFormatFromSpring(WebHookTemplate payloadTemplate){
 		synchronized (orderedTemplateCollection) {
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering template " 
+			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering Spring template " 
 					+ payloadTemplate.getTemplateShortName() 
 					+ " with rank of " + payloadTemplate.getRank());
 			springTemplates.put(payloadTemplate.getTemplateShortName(),payloadTemplate);
@@ -43,7 +62,7 @@ public class WebHookTemplateManager {
 	
 	public void registerTemplateFormatFromXmlConfig(WebHookTemplate payloadTemplate){
 		synchronized (orderedTemplateCollection) {
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering template " 
+			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
 					+ payloadTemplate.getTemplateShortName() 
 					+ " with rank of " + payloadTemplate.getRank());
 			xmlConfigTemplates.put(payloadTemplate.getTemplateShortName(),payloadTemplate);

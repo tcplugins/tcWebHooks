@@ -27,7 +27,7 @@ public interface WebHookPayload {
 	public final static String BUILD_STATUS_UNKNOWN   = "unknown";
 	
 	/** 
-	 * Sets the PayloadManger so that register() can register this payload with that manager.
+	 * Sets the PayloadManger so that register() can register this payload with that webHookTemplateManager.
 	 * 
 	 * @param webhookPayloadManager
 	 */

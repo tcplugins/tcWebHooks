@@ -6,7 +6,7 @@ import webhook.teamcity.settings.CustomMessageTemplate;
 public interface WebHookTemplate {
 
 	/** 
-	 * Sets the TemplateManager so that register() can register this template with that manager.
+	 * Sets the TemplateManager so that register() can register this template with that webHookTemplateManager.
 	 * 
 	 * @param webhookTemplateManager
 	 */
@@ -80,7 +80,7 @@ public interface WebHookTemplate {
     void setRank(Integer rank);	
     
     /**
-     * Get the message teamplate
+     * Get the message template
      * @param buildState
      * @return The {@link CustomMessageTemplate} relevant to this build state.
      * It is up to the implementation to return a sensible template.

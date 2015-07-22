@@ -102,6 +102,7 @@
 
 	<bean id="webHookTemplateManager"
 		class="webhook.teamcity.payload.WebHookTemplateManager"
+		init-method="register"
 		/>
 
 	<bean id="slackComWebHookTemplate"
