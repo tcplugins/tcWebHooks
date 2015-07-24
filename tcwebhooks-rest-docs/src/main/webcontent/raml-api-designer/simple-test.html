@@ -19,12 +19,12 @@
     <script src="dist/scripts/api-designer-vendor.js"></script>
     <script src="dist/scripts/api-designer.js"></script>
     <script>
+        var files = {};
       // This part is needed only if you want to provide your own Persistance Implementation
       // Angular Module must match "ramlEditorApp"
       angular.module('ramlEditorApp')
       .factory('MyFileSystem', function ($http, $q, config, $rootScope) {
         var service = {};
-        var files = {};
         service.directory = function (path) {
           var deferred = $q.defer();
         
@@ -38,20 +38,16 @@
                        delete files[key];
                  });
                  
-                 // Don't use the data above. Hack some data together to try and test the data structure.
-                 
-                 myData = { "files": [
-                             { "name" : "fileName.raml",  "path" : "/something/", "type": "file" },
-                             { "name" : "fileName2.raml", "path" : "/something/", "type": "file" }
-                          ]};
-                 
-                 Object.keys(myData.files).forEach(function (id) {
-                	 files[id] = myData.files[id];
-                	 console.log("File id is: " + id);
-                	 console.log("File name is: " + files[id].name);
-                	 console.log("File path is: " + files[id].path);
+                 Object.keys(data.children).forEach(function (id){
+                 	files[id] = data.children[id];
+                 	console.log(data.children[id].path);
+                 	console.log(data.children[id].name);
+                 	if (data.children[id].children !== null){
+                 		eachRecursive(data.children[id].children);
+                 	}
                  });
-                 deferred.resolve(Object.keys(files));
+                 
+                 deferred.resolve(data);
                })
            .error(deferred.reject.bind(deferred));
   
@@ -63,7 +59,7 @@
           $http({
             method: 'GET',
             data: '',
-            url : '/raml/files/'+files[name],
+            url : '/raml/file/'+files[path],
             withCredentials: false
            }).success(function (data, status, headers, config) {
                  deferred.resolve(decodeURI(data.contents));
@@ -74,17 +70,17 @@
         service.remove = function (path, name) {
           var deferred = $q.defer();
           
-          if (!files[name]) {
-                deferred.reject('file with name="' + name + '" does not exist');
+          if (!files[path]) {
+                deferred.reject('file with path="' + path + '" does not exist');
                 return deferred.promise;
            }
           $http({
             method: 'DELETE',
             data: '',
-            url : '/raml/files/'+files[name],
+            url : '/raml/file/'+files[path],
             withCredentials: false
            }).success(function (data, status, headers, config) {
-                 delete files[name];
+                 delete files[path];
                  deferred.resolve();
                })
            .error(deferred.reject.bind(deferred));
@@ -141,6 +137,22 @@
         $rootScope.$broadcast('event:notification',
           {message: 'File saved.', expires: true});
       });
+      
+      
+		function eachRecursive(obj)	{
+		    for (var k in obj)
+		    {
+		        if (typeof obj[k] == "object" && obj[k] !== null)
+		            eachRecursive(obj[k]);
+		        else {
+		        	if (k == "path"){
+		        		var filename = obj[k];
+		        		files[filename] = filename;
+				        console.log(k + "::" + obj[k]); 
+		        	} 
+		        }
+		    }
+		}
     </script>
     
     

@@ -25,19 +25,42 @@ public class RamlFilesServlet extends HttpServlet {
 	{
 		System.out.println("GET - Files");
 		File[] listOfFiles = this.baseRamlPath.listFiles();
-		Map<String, RamlFile> ramlFiles = new HashMap<String,RamlFile>();
-		    for (int i = 0; i < listOfFiles.length; i++) {
-		      //if (listOfFiles[i].isFile()) {
-		    	ramlFiles.put(listOfFiles[i].getName(), new RamlFile(listOfFiles[i]));  
-		        //System.out.println("File " + listOfFiles[i].getName());
-		      //} else if (listOfFiles[i].isDirectory()) {
-		      //  System.out.println("Directory " + listOfFiles[i].getName());
-		      //}
-		    }
+		RamlFile rootDir = new RamlFile(baseRamlPath);
+		if (baseRamlPath.isDirectory()){
+			rootDir.setChildren(iterateOverChildren(baseRamlPath));
+		}
+		
+//		Map<String, RamlFile> ramlFiles = new HashMap<String,RamlFile>();
+//		    for (int i = 0; i < listOfFiles.length; i++) {
+//		      if (listOfFiles[i].isFile()) {
+//		    	ramlFiles.put(listOfFiles[i].getName(), new RamlFile(listOfFiles[i]));  
+//		        //System.out.println("File " + listOfFiles[i].getName());
+//		      } else if (listOfFiles[i].isDirectory()) {
+//		    	  RamlFile subDir = new RamlFile(listOfFiles[i]);
+//		    	  subDir.setChildren(iterateOverChildren(listOfFiles[i]));
+//		    	  ramlFiles.put(listOfFiles[i].getName(), subDir);
+//		      }
+//		    }
 		Gson gson = new Gson();
 		response.setContentType("application/json");
-		response.getWriter().print(gson.toJson(ramlFiles));  
+		response.getWriter().print(gson.toJson(rootDir));  
 	}
+	
+	private List<RamlFile> iterateOverChildren(File directory){
+		List<RamlFile> dir = new ArrayList<RamlFile>();
+		File[] listOfFiles = directory.listFiles();
+		for (int i = 0; i < listOfFiles.length; i++) {
+		      if (listOfFiles[i].isFile()) {
+		    	dir.add(new RamlFile(listOfFiles[i]));
+		      } else if (listOfFiles[i].isDirectory()) {
+		    	  RamlFile subDir = new RamlFile(listOfFiles[i]);
+		    	  subDir.setChildren(iterateOverChildren(listOfFiles[i]));
+		    	  dir.add(subDir);
+		      }
+		}
+		return dir;
+	}
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		System.out.println("POST - Files");
