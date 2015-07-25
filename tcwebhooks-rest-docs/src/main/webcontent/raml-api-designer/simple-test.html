@@ -39,12 +39,12 @@
                  });
                  
                  Object.keys(data.children).forEach(function (id){
-                 	files[id] = data.children[id];
+                 	files[data.children[id].path] = data.children[id];
                  	console.log(data.children[id].path);
                  	console.log(data.children[id].name);
-                 	if (data.children[id].children !== null){
-                 		eachRecursive(data.children[id].children);
-                 	}
+                 	//if (data.children[id].children !== null){
+                 	//	eachRecursive(data.children[id].children);
+                 	//}
                  });
                  
                  deferred.resolve(data);
@@ -59,7 +59,7 @@
           $http({
             method: 'GET',
             data: '',
-            url : '/raml/file/'+files[path],
+            url : '/raml/file'+path,
             withCredentials: false
            }).success(function (data, status, headers, config) {
                  deferred.resolve(decodeURI(data.contents));
@@ -87,11 +87,11 @@
  
            return deferred.promise;
         };
-        service.save = function (path, name, contents) {
+        service.save = function (path, contents) {
           var deferred = $q.defer();
           var payload = new Object();
-          var fileId = files[name];
-          payload["name"] = name;
+          var fileId = files[path];
+          //payload["name"] = name;
           payload["path"] = path;
           payload["contents"] = encodeURI(contents);
  
@@ -101,7 +101,7 @@
           $http({
             method: 'PUT',
             data: JSON.stringify(payload),
-            url : '/raml/files/'+fileId,
+            url : '/raml/file/'+fileId,
             withCredentials: false
            }).success(deferred.resolve.bind(deferred))
            .error(deferred.reject.bind(deferred));
@@ -112,7 +112,7 @@
           $http({
             method: 'POST',
             data: JSON.stringify(payload),
-            url : '/raml/files/',
+            url : '/raml/file/',
             withCredentials: false
            }).success(function (data, status, headers, config) {
                  files[name] = data._id;
@@ -146,9 +146,8 @@
 		            eachRecursive(obj[k]);
 		        else {
 		        	if (k == "path"){
-		        		var filename = obj[k];
-		        		files[filename] = filename;
-				        console.log(k + "::" + obj[k]); 
+		        		var filenameAndPath = obj[k];
+		        		files[filenameAndPath] = obj;
 		        	} 
 		        }
 		    }

@@ -12,6 +12,7 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 public class WebHookApiServer {
+	public static final String RAML_FILE_LOCATION = "./src/main/raml";
 	Server server;
 
 	public WebHookApiServer (String host, Integer port) {
@@ -26,9 +27,8 @@ public class WebHookApiServer {
 		
 		ContextHandler servletCtx = new ServletContextHandler();
 		ServletHandler servletHandler = new ServletHandler();
-		servletHandler.addServletWithMapping(new ServletHolder(new RamlFileServlet(new File("./src/main/raml"))),"/raml/file/*");
-		//servletHandler.addServletWithMapping(new ServletHolder(new RamlFilesServlet(new File("./src/main/raml"))),"/raml/files");
-		servletHandler.addServletWithMapping(new ServletHolder(new RamlFilesServlet(new File("./src/main/raml"))),"/raml/files");
+		servletHandler.addServletWithMapping(new ServletHolder(new RamlFileServlet(new File(RAML_FILE_LOCATION))),"/raml/file/*");
+		servletHandler.addServletWithMapping(new ServletHolder(new RamlFilesServlet(new File(RAML_FILE_LOCATION))),"/raml/files");
 		servletCtx.setContextPath("/");
 		servletCtx.setHandler(servletHandler);
 		

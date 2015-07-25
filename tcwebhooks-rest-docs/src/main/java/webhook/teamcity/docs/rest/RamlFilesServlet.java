@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class RamlFilesServlet extends HttpServlet {
 
@@ -30,18 +31,12 @@ public class RamlFilesServlet extends HttpServlet {
 			rootDir.setChildren(iterateOverChildren(baseRamlPath));
 		}
 		
-//		Map<String, RamlFile> ramlFiles = new HashMap<String,RamlFile>();
-//		    for (int i = 0; i < listOfFiles.length; i++) {
-//		      if (listOfFiles[i].isFile()) {
-//		    	ramlFiles.put(listOfFiles[i].getName(), new RamlFile(listOfFiles[i]));  
-//		        //System.out.println("File " + listOfFiles[i].getName());
-//		      } else if (listOfFiles[i].isDirectory()) {
-//		    	  RamlFile subDir = new RamlFile(listOfFiles[i]);
-//		    	  subDir.setChildren(iterateOverChildren(listOfFiles[i]));
-//		    	  ramlFiles.put(listOfFiles[i].getName(), subDir);
-//		      }
-//		    }
-		Gson gson = new Gson();
+		rootDir.path = "/";
+		rootDir.name = "/";
+		
+		Gson gson = new GsonBuilder()
+	    .excludeFieldsWithoutExposeAnnotation()
+	    .create();
 		response.setContentType("application/json");
 		response.getWriter().print(gson.toJson(rootDir));  
 	}
