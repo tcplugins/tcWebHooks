@@ -109,11 +109,7 @@ public class WebHookTemplateManager {
 		return xmlConfigTemplates.containsKey(template) || springTemplates.containsKey(template);
 	}
 	
-	public Set<String> getRegisteredTemplates(){
-		return springTemplates.keySet();
-	}
-	
-	public Collection<WebHookTemplate> getRegisteredTemplatesAsCollection(){
+	public List<WebHookTemplate> getRegisteredTemplates(){
 		return orderedTemplateCollection;
 	}
 

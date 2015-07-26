@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
@@ -18,6 +19,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	
 	List<String> supportedFormats = new ArrayList<String>();
 	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
+	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
 	
 	protected WebHookTemplateManager manager;
 	private int rank = 10; // Default to 10.
@@ -42,13 +44,27 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	
 	@Override
 	public void register() {
-		templateContent.clear();
-		if (!templateContent.isEmpty()){
-			this.manager.registerTemplateFormatFromXmlConfig(this);
-		} else {
-			Loggers.SERVER.error("WebHookTemplateFromXml :: Failed to register template " + getTemplateShortName() + ". No template configurations were found.");
-		}
+		/*
+		 *  We are a special case. We don't need to do anything here.
+		 *  Templates are regitered by the file watcher, which is started 
+		 *  in TemplateManager's register method.
+		 *  
+		 *  Most other templates should register themselves via Spring,
+		 *  in which case, this method is used.
+		 */
 		
+//		templateContent.clear();
+//		branchTemplateContent.clear();
+//		if (!templateContent.isEmpty() && !branchTemplateContent.isEmpty()){
+//			this.manager.registerTemplateFormatFromXmlConfig(this);
+//		} else {
+//			if (templateContent.isEmpty()){
+//				Loggers.SERVER.error("WebHookTemplateFromXml :: Failed to register template " + getTemplateShortName() + ". No regular template configurations were found.");
+//			}
+//			if (templateContent.isEmpty()){
+//				Loggers.SERVER.error("WebHookTemplateFromXml :: Failed to register template " + getTemplateShortName() + ". No branch template configurations were found.");
+//			}
+//		}
 	}
 
 	@Override
@@ -91,8 +107,20 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		return null;
 	}
 	
+	@Override
+	public WebHookTemplateContent getBranchTemplateForState(BuildStateEnum buildState) {
+		if (branchTemplateContent.containsKey(buildState)){
+			return (branchTemplateContent.get(buildState)).copy(); 
+		}
+		return null;
+	}
+	
 	private void addTemplateContentForState(BuildStateEnum state, WebHookTemplateContent content){
 		this.templateContent.put(state, content);
+	}
+	
+	private void addBranchTemplateContentForState(BuildStateEnum state, WebHookTemplateContent content){
+		this.branchTemplateContent.put(state, content);
 	}
 
 	public static WebHookTemplate build(
@@ -118,11 +146,24 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		// If a default template is set, populate all BuildStates with it.
 		// We will override later if we find a buildState specific one. 
 		if (entityTemplate.getDefaultTemplate() != null){
-			for (BuildStateEnum state : BuildStateEnum.values()){
+			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 				
 				template.addTemplateContentForState(state, WebHookTemplateContent.create(
 						state.getShortName(), 
 						entityTemplate.getDefaultTemplate(),
+						true));
+				
+			}
+		}
+		
+		// If a default branch template is set, populate all BuildStates with it.
+		// We will override later if we find a buildState specific one. 
+		if (entityTemplate.getDefaultBranchTemplate() != null){
+			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
+				
+				template.addBranchTemplateContentForState(state, WebHookTemplateContent.create(
+						state.getShortName(), 
+						entityTemplate.getDefaultBranchTemplate(),
 						true));
 				
 			}
@@ -144,6 +185,22 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
+		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem item : entityTemplate.getBranchTemplates()){
+			if (item.isEnabled() && item.getTemplateText()!= null){
+				for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateState state :item.getStates()){
+					if (state.isEnabled()){
+						BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
+						if (bse != null){
+							template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
+									bse.getShortName(), 
+									entityTemplate.getDefaultTemplate(),
+									true));
+						}
+					}
+				}
+			}
+		}
+		
 		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateFormat format : entityTemplate.getFormats()){
 			if (format.isEnabled() && payloadManager.isRegisteredFormat(format.getName())){
 				template.supportedFormats.add(format.getName());
@@ -152,5 +209,15 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		return template;
 	}
 	
+
+	@Override
+	public Set<BuildStateEnum> getSupportedBuildStates() {
+		return templateContent.keySet();
+	}
+
+	@Override
+	public Set<BuildStateEnum> getSupportedBranchBuildStates() {
+		return branchTemplateContent.keySet();
+	}
 
 }

@@ -161,8 +161,8 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    			
 	}
 
-	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
-		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, buildTypeAll, buildTypeSubProjects, buildTypesEnabled));
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
+		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled));
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSuccess = true;
 	}

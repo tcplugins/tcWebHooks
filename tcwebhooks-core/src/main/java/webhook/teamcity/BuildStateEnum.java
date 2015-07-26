@@ -51,4 +51,9 @@ public enum BuildStateEnum {
 		}
 		return null;
 	}
+	
+	public static BuildStateEnum[] getNotifyStates(){
+		final BuildStateEnum[] notifyStates = {BUILD_STARTED, BEFORE_BUILD_FINISHED, BUILD_INTERRUPTED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED };
+		return notifyStates;
+	}
 }

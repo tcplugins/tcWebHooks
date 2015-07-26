@@ -22,6 +22,7 @@ import lombok.Data;
 	<webhook-templates>
 		<webhook-template enabled="true" name="testXMLtemplate" rank="10">
 			<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
+			<default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template>
 			<template-description>"Test XML Template"</template-description>
 			<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
 			<formats>
@@ -32,6 +33,7 @@ import lombok.Data;
 			<templates>
 				<template>
 					<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
+					<branch-template-text>{ "buildStatus" : "${buildStatus}" }</branch-template-text>
 					<states>
 						<state type="buildStarted" enabled="true" />
 						<state type="beforeBuildFinish" enabled="true" />
@@ -71,6 +73,9 @@ public class WebHookTemplate {
 	@XmlElement(name="default-template")
 	String defaultTemplate;
 	
+	@XmlElement(name="default-branch-template")
+	String defaultBranchTemplate;
+	
 	@NotNull 
 	@XmlElement (name="template-description")
 	String templateDescription;
@@ -83,6 +88,9 @@ public class WebHookTemplate {
 	
 	@XmlElement(name="template") @XmlElementWrapper(name="templates")
 	private List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
+	
+	@XmlElement(name="template") @XmlElementWrapper(name="branch-templates")
+	private List<WebHookTemplateItem> branchTemplates = new ArrayList<WebHookTemplateItem>();
 	
 	WebHookTemplate() {
 		// empty constructor for JAXB
@@ -110,6 +118,9 @@ public class WebHookTemplate {
 	public static class WebHookTemplateItem {
 		@NotNull @XmlElement(name="template-text")
 		String templateText;
+		
+		@NotNull @XmlElement(name="branch-template-text")
+		String branchTemplateText;
 		
 		@XmlAttribute
 		boolean enabled = true;

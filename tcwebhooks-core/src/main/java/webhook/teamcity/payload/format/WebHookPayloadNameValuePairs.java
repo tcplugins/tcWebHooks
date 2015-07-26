@@ -19,6 +19,8 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {
 	
+	public static final String FORMAT_SHORT_NAME = "nvpairs";
+
 	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager) {
 		super(manager);
 	}
@@ -39,7 +41,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 	}
 
 	public String getFormatShortName() {
-		return "nvpairs";
+		return FORMAT_SHORT_NAME;
 	}
 
 	public String getFormatToolTipText() {

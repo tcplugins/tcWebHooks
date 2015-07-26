@@ -20,8 +20,6 @@ import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 
 public class WebHookTemplateJaxHelper {
 
-	private final static String CONFIG_NAME = "webhook-templates.xml";
-
 	/**
 	 * Read saved configuration from file
 	 * 
@@ -30,11 +28,11 @@ public class WebHookTemplateJaxHelper {
 	 * @throws FileNotFoundException
 	 */
 	@Nullable
-	public static WebHookTemplates read(@NotNull String serverConfigDir)
+	public static WebHookTemplates read(@NotNull String configFilePath)
 			throws JAXBException, FileNotFoundException {
 		JAXBContext context = JAXBContext.newInstance(WebHookTemplates.class);
 		Unmarshaller um = context.createUnmarshaller();
-		File file = new File(serverConfigDir, CONFIG_NAME);
+		File file = new File(configFilePath);
 		if (!file.isFile()) {
 			return new WebHookTemplates();
 		}
@@ -108,10 +106,10 @@ public class WebHookTemplateJaxHelper {
 	 * @throws JAXBException
 	 */
 	public static void write(@NotNull WebHookTemplates templates,
-			@NotNull String serverConfigDir) throws JAXBException {
+			@NotNull String configFilePath) throws JAXBException {
 		JAXBContext context = JAXBContext.newInstance(templates.getClass());
 		Marshaller m = context.createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		m.marshal(templates, new File(serverConfigDir + "/" + CONFIG_NAME));
+		m.marshal(templates, new File(configFilePath));
 	}
 }

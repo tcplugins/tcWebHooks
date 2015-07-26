@@ -29,7 +29,7 @@ public class ProjectWebHooksBean {
 		bean.webHookList = new LinkedHashMap<String, WebhookConfigAndBuildTypeListHolder>();
 
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, true, true, null);
+		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, null, true, true, null);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads);
@@ -53,7 +53,7 @@ public class ProjectWebHooksBean {
 		bean.webHookList = new LinkedHashMap<String, WebhookConfigAndBuildTypeListHolder>();
 		
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, false, false, enabledBuildTypes);
+		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, null, false, false, enabledBuildTypes);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads);

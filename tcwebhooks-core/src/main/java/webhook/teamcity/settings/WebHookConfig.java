@@ -35,6 +35,7 @@ public class WebHookConfig {
 	private String uniqueKey = "";
 	private String url;
 	private String payloadFormat = null;
+	private String payloadTemplate = null;
 	private BuildState states = new BuildState();
 	private SortedMap<String, CustomMessageTemplate> templates; 
 	private Boolean allBuildTypesEnabled = true;
@@ -71,6 +72,10 @@ public class WebHookConfig {
 		} else {
 			// Set to nvpairs by default for backward compatibility.
 			this.setPayloadFormat("nvpairs");
+		}
+		
+		if (e.getAttribute("template") != null){
+			this.setPayloadTemplate(e.getAttributeValue("template"));
 		}
 		
 		if(e.getChild("states") != null){
@@ -145,7 +150,7 @@ public class WebHookConfig {
 		}
 		
 	}
-	
+
 	/**
 	 * WebHooksConfig constructor. Unchecked version. Use with caution!!
 	 * This constructor does not check if the payloadFormat is valid.
@@ -157,7 +162,7 @@ public class WebHookConfig {
 	 * @param stateMask
 	 * @param payloadFormat (unvalidated)
 	 */
-	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes){
+	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
@@ -167,6 +172,7 @@ public class WebHookConfig {
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
 		this.setPayloadFormat(payloadFormat);
+		this.setPayloadTemplate(payloadTemplate);
 		this.subProjectsEnabled = buildTypeSubProjects;
 		this.allBuildTypesEnabled = buildTypeAllEnabled;
 		if (!this.allBuildTypesEnabled){
@@ -438,6 +444,11 @@ public class WebHookConfig {
 	 */
 	public void setPayloadFormat(String payloadFormat) {
 		this.payloadFormat = payloadFormat;
+	}
+	
+	
+	public void setPayloadTemplate(String payloadTemplate) {
+		this.payloadTemplate = payloadTemplate;
 	}
 
 	public Boolean isEnabledForAllBuildsInProject() {

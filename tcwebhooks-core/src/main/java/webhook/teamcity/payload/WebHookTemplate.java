@@ -1,5 +1,9 @@
 package webhook.teamcity.payload;
 
+import java.util.List;
+import java.util.Set;
+
+import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.settings.CustomMessageTemplate;
 
@@ -80,17 +84,48 @@ public interface WebHookTemplate {
     void setRank(Integer rank);	
     
     /**
-     * Get the message template
+     * Get the message template for the specified BuildState. This method is called 
+     * for builds that are on VCS that are <b>NOT</b> branch aware.
      * @param buildState
-     * @return The {@link CustomMessageTemplate} relevant to this build state.
+     * @return The {@link WebHookTemplateContent} relevant to this build state.
      * It is up to the implementation to return a sensible template.
      * If the template is the same for all messages, this could simply return the
-     * same CustomMessageTemplate everytime.   
+     * same WebHookTemplateContent every time.   
      */
 	WebHookTemplateContent getTemplateForState(BuildStateEnum buildState);
 	
 	/**
+     * Get the message template for the specified BuildState. This method is called 
+     * for builds that are on VCS that <b>ARE</b> branch aware (eg, Git, Mecurial).
+     * @param buildState
+     * @return The {@link WebHookTemplateContent} relevant to this build state.
+     * It is up to the implementation to return a sensible template.
+     * If the template is the same for all messages, this could simply return the
+     * same WebHookTemplateContent every time. 
+	 */
+	WebHookTemplateContent getBranchTemplateForState(BuildStateEnum buildState);
+	
+	/**
+	 * Get the list of BuildStates for which we have {@link WebHookTemplateContent} content.<br>
+	 * This method expected to be called to resolve templates for builds that are running
+	 * from a VCS is that not branch aware.<br> 
+	 * A "branch aware VCS" is one which TeamCity has knowledge about regarding branches. Eg. Git and Mecurial. 
+	 * 
+	 * @return A set of templates that don't contain branch information.
 	 * 
 	 */
+	Set<BuildStateEnum> getSupportedBuildStates();
+	
+	/**
+	 * Get the list of BuildStates for which we have {@link WebHookTemplateContent} content.<br>
+	 * This method expected to be called to resolve templates for builds that are running
+	 * from a VCS is that is branch aware.<br> 
+	 * A "branch aware VCS" is one which TeamCity has knowledge about regarding branches. Eg. Git and Mecurial.
+	 * 
+	 * @return A set of templates that contain branch information.
+	 * 
+	 */
+	Set<BuildStateEnum> getSupportedBranchBuildStates();
+		
 
 }
