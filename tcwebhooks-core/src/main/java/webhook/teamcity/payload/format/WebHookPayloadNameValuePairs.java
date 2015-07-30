@@ -14,7 +14,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {
@@ -50,7 +53,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected String getStatusAsString(WebHookPayloadContent content){
+	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 		String returnString = ""; 
 		
 		Map<String, String> contentMap = null;
@@ -152,6 +155,19 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 
 	public String getCharset() {
 		return this.charset;
+	}
+
+	@Override
+	public WebHookStringRenderer getWebHookStringRenderer() {
+		// TODO FixME!!!
+		return new WebHookStringRenderer() {
+			
+			@Override
+			public String render(String input) throws WebHookHtmlRendererException {
+				// TODO Auto-generated method stub
+				return "This needs to be fixed!!!!!!! Need to write nicer NVPair renderer!!!!!";
+			}
+		};
 	}
 
 

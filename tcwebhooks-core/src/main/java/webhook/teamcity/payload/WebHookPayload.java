@@ -16,6 +16,8 @@ import jetbrains.buildServer.tests.TestName;
 
 import org.jetbrains.annotations.NotNull;
 
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+
 public interface WebHookPayload {
 	
 	public final static String BUILD_STATUS_FAILURE   = "failure";
@@ -77,7 +79,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildStarted event.
 	 */
-    String buildStarted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String buildStarted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -87,7 +89,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildFinished event.
 	 */
-    String buildFinished(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String buildFinished(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -97,7 +99,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildInterrupted event.
 	 */
-    String buildInterrupted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String buildInterrupted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -107,7 +109,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the beforeBuildFinish event.
 	 */
-    String beforeBuildFinish(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String beforeBuildFinish(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
     
 	/**
 	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
@@ -117,7 +119,7 @@ public interface WebHookPayload {
     String buildChangedStatus(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
     		Status oldStatus, 
     		Status newStatus, 
-    		SortedMap<String,String> extraParameters, Map<String, String> templates);
+    		SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 	
 
     /**
@@ -132,7 +134,7 @@ public interface WebHookPayload {
     String responsibleChanged(@NotNull SBuildType sBuildType, 
     		@NotNull ResponsibilityInfo responsibilityInfoOld, 
     		@NotNull ResponsibilityInfo responsibilityInfoNew, 
-    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
      * Used by TC 7.x and above
@@ -145,7 +147,7 @@ public interface WebHookPayload {
 	String responsibleChanged(SBuildType sBuildType,
 			ResponsibilityEntry responsibilityEntryOld,
 			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String,String> extraParameters, Map<String, String> templates); 
+			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate); 
     
 	/**
 	 * Gets the content type of the format.
@@ -192,10 +194,12 @@ public interface WebHookPayload {
 	String responsibleChanged(SProject project,
 			TestNameResponsibilityEntry oldTestNameResponsibilityEntry,
 			TestNameResponsibilityEntry newTestNameResponsibilityEntry,
-			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates);
+			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
 	String responsibleChanged(SProject project, Collection<TestName> testNames,
 			ResponsibilityEntry entry, boolean isUserAction,
-			SortedMap<String,String> extraParameters, Map<String, String> templates);
+			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+	
+	public abstract WebHookStringRenderer getWebHookStringRenderer();
 
 }

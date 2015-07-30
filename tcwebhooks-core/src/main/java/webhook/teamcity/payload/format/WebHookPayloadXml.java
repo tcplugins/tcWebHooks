@@ -1,8 +1,12 @@
 package webhook.teamcity.payload.format;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToXmlConvertor;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+import webhook.teamcity.payload.template.render.XmlToHtmlPrettyPrintingRenderer;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -48,12 +52,17 @@ public class WebHookPayloadXml extends WebHookPayloadGeneric {
 	}
 
 	@Override
-	protected String getStatusAsString(WebHookPayloadContent content) {
+	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent) {
 		XStream xstream = new XStream();
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToXmlConvertor());
         xstream.alias("build", WebHookPayloadContent.class);
 		return xstream.toXML(content);
+	}
+
+	@Override
+	public WebHookStringRenderer getWebHookStringRenderer() {
+		return new XmlToHtmlPrettyPrintingRenderer();
 	}
 
 }

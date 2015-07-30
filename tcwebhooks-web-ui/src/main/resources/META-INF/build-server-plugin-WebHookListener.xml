@@ -98,11 +98,23 @@
 			<value>5</value>
 		</property>
 	</bean>
+	
+	<bean id="webHookPayloadJsonTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadJsonTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>50</value>
+		</property>
+	</bean>
 
 
 	<bean id="webHookTemplateManager"
 		class="webhook.teamcity.payload.WebHookTemplateManager"
 		init-method="register"
+		/>
+		
+	<bean id="webHookTemplateResolver"
+		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
 
 	<bean id="slackComWebHookTemplate"

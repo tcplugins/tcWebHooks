@@ -435,6 +435,10 @@ public class WebHookConfig {
 	public String getPayloadFormat() {
 		return payloadFormat;
 	}
+	
+	public String getPayloadTemplate() {
+		return payloadTemplate;
+	}
 
 	/**
 	 * Sets the payload format to whatever string is passed.

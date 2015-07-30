@@ -7,13 +7,10 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
@@ -23,11 +20,12 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+
+import org.jdom.JDOMException;
+
 import webhook.WebHook;
 import webhook.WebHookImpl;
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
@@ -37,6 +35,10 @@ import webhook.teamcity.WebHookListener;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookTemplateContent;
+import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
@@ -55,6 +57,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	ProjectManager projectManager = mock(ProjectManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
+	WebHookTemplateResolver resolver = mock(WebHookTemplateResolver.class);
+	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
+	WebHookTemplate template;
 	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
@@ -80,16 +85,21 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SortedMap<String, String> extraParameters;
 	SortedMap<String, String> teamcityProperties;
 	BuildStateEnum buildstateEnum;
+	List<WebHookTemplate> templateList = new ArrayList<WebHookTemplate>();
+	Set<String> formatList = new HashSet<String>();
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook()).thenReturn(spyWebHook);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payload);
 		when(manager.getServer()).thenReturn(sBuildServer);
+		formatList.add("json");
+		formatList.add("testMockedTemplate");
+		when(manager.getRegisteredFormats()).thenReturn(formatList);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
 		when(sBuildServer.getRootUrl()).thenReturn("http://test.server");
@@ -116,7 +126,86 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		((MockSProject) sProject03).setParentProject(sProject02);
 		((MockSProject) sProject02).addChildProjectToMock(sProject03);
 		whl.register();
+		template = getTestingTemplate(); 
+		templateList.add(template);
+		when(templateManager.getRegisteredTemplates()).thenReturn(templateList);
+		when(templateManager.getRegisteredTemplatesForProject(sProject)).thenReturn(templateList);
 		
+	}
+
+	private WebHookTemplate getTestingTemplate() {
+		return new WebHookTemplate() {
+			WebHookTemplateManager manager;
+			BuildStateEnum[] supportedStates = {BuildStateEnum.BUILD_SUCCESSFUL, BuildStateEnum.BUILD_FAILED, BuildStateEnum.BUILD_BROKEN, BuildStateEnum.BUILD_FIXED};
+			
+			@Override
+			public boolean supportsPayloadFormat(String payloadFormat) {
+				return true;
+			}
+			
+			@Override
+			public void setTemplateManager(WebHookTemplateManager webhookTemplateManager) {
+				this.manager = webhookTemplateManager;				
+			}
+			
+			@Override
+			public void setRank(Integer rank) {
+			}
+			
+			@Override
+			public void register() {
+				this.manager.register();
+			}
+			
+			@Override
+			public String getTemplateToolTipText() {
+				return "Test Tool Tip";
+			}
+			
+			@Override
+			public String getTemplateShortName() {
+				return "mockedJsonTemplate";
+			}
+			
+			@Override
+			public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) {
+				return WebHookTemplateContent.create(buildState.getShortName(), "Template for " + buildState.getShortName(), true);
+			}
+			
+			@Override
+			public WebHookTemplateContent getBranchTemplateForState(
+					BuildStateEnum buildState) {
+				return WebHookTemplateContent.create(buildState.getShortName(), "Branch template for " + buildState.getShortName(), true);			}
+			
+			@Override
+			public String getTemplateDescription() {
+				return "A long template description";
+			}
+			
+			@Override
+			public Set<BuildStateEnum> getSupportedBuildStates() {
+				Set<BuildStateEnum> states = new HashSet<BuildStateEnum>();
+				for (BuildStateEnum state: supportedStates){
+					states.add(state);
+				}
+				return states;
+			}
+			
+			@Override
+			public Set<BuildStateEnum> getSupportedBranchBuildStates() {
+				Set<BuildStateEnum> states = new HashSet<BuildStateEnum>();
+				for (BuildStateEnum state: supportedStates){
+					states.add(state);
+				}
+				return states;
+			}
+			
+			@Override
+			public Integer getRank() {
+				return 1;
+			}
+			
+		};
 	}
 
 	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
@@ -179,6 +268,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public SBuildType getSBuildTypeFromSubProject() {
 		return sBuildType03;
+	}
+
+	@Override
+	public WebHookTemplateManager getWebHookTemplateManager() {
+		return templateManager;
 	}
 
 }

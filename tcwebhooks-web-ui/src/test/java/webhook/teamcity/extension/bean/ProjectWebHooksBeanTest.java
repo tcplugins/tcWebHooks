@@ -11,6 +11,8 @@ import org.jdom.JDOMException;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBeanJsonSerialiser;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
@@ -27,7 +29,8 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
-		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(webhooksConfig));
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateManager().getRegisteredTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig)));
 	}
 	
 	@Test
@@ -35,7 +38,18 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getSBuildType() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
-		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(webhooksConfig));
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateManager().getRegisteredTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig)));
+	}
+	
+	@Test
+	public void JsonBuildSerialisationWithTemplatesTest() throws JDOMException, IOException {
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
+		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getSBuildType() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateManager().getRegisteredTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
+		System.out.println(RegisteredWebHookTemplateBeanJsonSerialiser.serialise(template));
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig)));
 	}
 
 }

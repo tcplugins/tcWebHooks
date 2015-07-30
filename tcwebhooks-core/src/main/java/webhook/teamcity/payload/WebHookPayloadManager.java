@@ -28,7 +28,7 @@ public class WebHookPayloadManager {
 		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering payload " 
 				+ payloadFormat.getFormatShortName() 
 				+ " with rank of " + payloadFormat.getRank());
-		formats.put(payloadFormat.getFormatShortName(),payloadFormat);
+		formats.put(payloadFormat.getFormatShortName().toLowerCase(),payloadFormat);
 		this.orderedFormatCollection.add(payloadFormat);
 		
 		Collections.sort(this.orderedFormatCollection, rankComparator);
@@ -39,14 +39,14 @@ public class WebHookPayloadManager {
 	}
 
 	public WebHookPayload getFormat(String formatShortname){
-		if (formats.containsKey(formatShortname)){
-			return formats.get(formatShortname);
+		if (formats.containsKey(formatShortname.toLowerCase())){
+			return formats.get(formatShortname.toLowerCase());
 		}
 		return null;
 	}
 	
 	public Boolean isRegisteredFormat(String format){
-		return formats.containsKey(format);
+		return formats.containsKey(format.toLowerCase());
 	}
 	
 	public Set<String> getRegisteredFormats(){

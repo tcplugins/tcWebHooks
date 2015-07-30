@@ -5,7 +5,10 @@ package webhook.teamcity.payload.format;
 
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
+import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 public class WebHookPayloadTailoredJson extends WebHookPayloadGeneric implements WebHookPayload {
 	
@@ -33,7 +36,7 @@ public class WebHookPayloadTailoredJson extends WebHookPayloadGeneric implements
 		return "Send a JSON payload with content specified by parameter named 'body'";
 	}
 	
-	protected String getStatusAsString(WebHookPayloadContent content){
+	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 
 		return content.getExtraParameters().get("body");
 
@@ -53,6 +56,11 @@ public class WebHookPayloadTailoredJson extends WebHookPayloadGeneric implements
 
 	public String getCharset() {
 		return this.charset;
+	}
+
+	@Override
+	public WebHookStringRenderer getWebHookStringRenderer() {
+		return new JsonToHtmlPrettyPrintingRenderer();
 	}
 
 }

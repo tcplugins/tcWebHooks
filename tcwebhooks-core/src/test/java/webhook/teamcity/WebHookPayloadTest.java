@@ -50,7 +50,7 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("nvpairs").getContentType().equals("application/x-www-form-urlencoded"));
 		assertTrue(wpm.getFormat("nvpairs").getFormatDescription().equals("Name Value Pairs"));
-		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
+		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
 		
 	}
 	
@@ -95,7 +95,7 @@ public class WebHookPayloadTest {
 				WebHookPayload payloadFormat = wpm.getFormat(whc.getPayloadFormat());
 				wh.setContentType(payloadFormat.getContentType());
 				wh.setCharset(payloadFormat.getCharset());
-				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams(), whc.getEnabledTemplates()));
+				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams(), whc.getEnabledTemplates(), null));
 				if (wh.isEnabled()){
 					try {
 						wh.post();

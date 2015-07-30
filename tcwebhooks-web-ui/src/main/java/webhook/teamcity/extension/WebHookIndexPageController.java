@@ -24,9 +24,12 @@ import org.springframework.web.servlet.ModelAndView;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
+import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
 import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -40,9 +43,11 @@ public class WebHookIndexPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
+		private final WebHookTemplateManager myTemplateManager;
 
 	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
+	    		WebHookTemplateManager templateManager,
 	    		WebHookMainSettings configSettings) {
 	        super(server);
 	        myWebManager = webManager;
@@ -51,6 +56,7 @@ public class WebHookIndexPageController extends BaseController {
 	        myPluginDescriptor = pluginDescriptor;
 	        myMainSettings = configSettings;
 	        myManager = manager;
+	        myTemplateManager = templateManager;
 	    }
 
 	    public void register(){
@@ -106,14 +112,34 @@ public class WebHookIndexPageController extends BaseController {
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
 			    		params.put("webHooks", "false");
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, 
+																	project, 
+																	myManager.getRegisteredFormatsAsCollection())
+																)
+									)
+								);
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
 			    		params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, 
+																	project, 
+																	myManager.getRegisteredFormatsAsCollection())
+																)
+									)
+								);
 
 			    	}
 		    	} else {
@@ -147,7 +173,13 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("noWebHooks", configs.size() == 0);
 			    		params.put("webHooks", configs.size() != 0);
 				    	
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection())));
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection()))
+									)
+								);			    				
 		        	}
         		} else {
 		    		params.put("haveProject", "false");

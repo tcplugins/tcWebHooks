@@ -134,7 +134,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    	
     }
 
-	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled) {
+	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled) {
         if(this.webHooksConfigs != null)
         {
         	updateSuccess = false;
@@ -146,6 +146,7 @@ public class WebHookProjectSettings implements ProjectSettings {
                 	whc.setUrl(URL);
                 	whc.setBuildStates(buildState);
                 	whc.setPayloadFormat(format);
+                	whc.setPayloadTemplate(template);
                 	whc.enableForSubProjects(buildSubProjects);
                 	whc.enableForAllBuildsInProject(buildTypeAll);
                 	if (!buildTypeAll){

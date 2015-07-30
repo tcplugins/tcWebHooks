@@ -28,9 +28,12 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
+import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
 import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -50,16 +53,18 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
+		private final WebHookTemplateManager myTemplateManager;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
-	    		PluginDescriptor pluginDescriptor) {
+	    		WebHookTemplateManager templateManager, PluginDescriptor pluginDescriptor) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	        myManager = manager;
+	        myTemplateManager = templateManager;
 	    }
 
 	    public void register(){
@@ -171,7 +176,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), buildTypeAll, buildTypeSubProjects, buildTypes);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -227,7 +232,19 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, 
+																	project, 
+																	myManager.getRegisteredFormatsAsCollection())
+																)
+									)
+								);
+
+			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(RegisteredWebHookTemplateBean.ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 			    	}
 			    	
 	        	} else {

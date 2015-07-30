@@ -1,8 +1,6 @@
 package webhook.teamcity.extension;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,10 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
-import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
-import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
+import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -35,15 +33,18 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
+	    private final WebHookTemplateManager myTemplateManager;
 
 	    public WebHookAjaxSettingsListPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor) {
+	    		ProjectSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor, 
+	    		WebHookTemplateManager webHookTemplateManager) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
 	        myManager = manager;
+	        myTemplateManager = webHookTemplateManager;
 	    }
 
 	    public void register(){
@@ -64,7 +65,16 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        	} else {
 			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 			    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
-		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+		    													TemplatesAndProjectWebHooksBean.build(
+		    															RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+		    																								myManager.getRegisteredFormats()), 
+		    															ProjectWebHooksBean.build(projSettings, 
+		    																						project, 
+		    																						myManager.getRegisteredFormatsAsCollection())
+		    																					)
+	        														)
+		    													);
 	        	}
 	        } else if (request.getParameter("buildTypeId") != null){
         		SBuildType sBuildType = TeamCityIdResolver.findBuildTypeById(this.myServer.getProjectManager(), request.getParameter("buildTypeId"));
@@ -73,7 +83,11 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		        	if (project != null){
 				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 				    			mySettings.getSettings(project.getProjectId(), "webhooks");
-		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection())));
+		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+		        				TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+																			myManager.getRegisteredFormats()),
+		        				ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection()))));
 		        	}
         		}
 	        

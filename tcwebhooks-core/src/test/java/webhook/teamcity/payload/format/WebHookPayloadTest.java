@@ -31,6 +31,7 @@ public class WebHookPayloadTest {
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 		SBuildServer mockServer = mock(SBuildServer.class);
+		
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 
 		
@@ -48,7 +49,7 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("xml").getContentType().equals("text/xml"));
 		assertTrue(wpm.getFormat("xml").getFormatDescription().equals("XML"));
-		System.out.println(wpm.getFormat("xml").buildFinished(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
+		System.out.println(wpm.getFormat("xml").buildFinished(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
 	}
 	
 	
@@ -78,7 +79,7 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("json").getContentType().equals("application/json"));
 		assertTrue(wpm.getFormat("json").getFormatDescription().equals("JSON"));
-		System.out.println(wpm.getFormat("json").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
+		System.out.println(wpm.getFormat("json").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
 	}
 	
 	@Test
@@ -107,7 +108,7 @@ public class WebHookPayloadTest {
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("nvpairs").getContentType().equals("application/x-www-form-urlencoded"));
 		assertTrue(wpm.getFormat("nvpairs").getFormatDescription().equals("Name Value Pairs"));
-		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
+		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -139,11 +140,11 @@ public class WebHookPayloadTest {
 		assertTrue(wpm.getFormat("empty").getContentType().equals("text/plain"));
 		assertTrue(wpm.getFormat("empty").getFormatDescription().equals("None"));
 		assertTrue(wpm.getFormat("empty").getCharset().equals("UTF-8"));
-		assertTrue(wpm.getFormat("empty").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
-		assertTrue(wpm.getFormat("empty").beforeBuildFinish(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
-		assertTrue(wpm.getFormat("empty").buildChangedStatus(sRunningBuild, previousBuild, Status.NORMAL, Status.ERROR, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
-		assertTrue(wpm.getFormat("empty").buildFinished(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
-		assertTrue(wpm.getFormat("empty").buildInterrupted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()).equals(""));
+		assertTrue(wpm.getFormat("empty").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null).equals(""));
+		assertTrue(wpm.getFormat("empty").beforeBuildFinish(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null).equals(""));
+		assertTrue(wpm.getFormat("empty").buildChangedStatus(sRunningBuild, previousBuild, Status.NORMAL, Status.ERROR, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null).equals(""));
+		assertTrue(wpm.getFormat("empty").buildFinished(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null).equals(""));
+		assertTrue(wpm.getFormat("empty").buildInterrupted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null).equals(""));
 		
 	}
 	

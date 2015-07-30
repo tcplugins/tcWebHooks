@@ -24,6 +24,7 @@ import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
 
 public class WebHookTemplateManagerTest {
@@ -48,7 +49,7 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestSlackComTemplate(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(mockServer, null, null);
+		wtm = new WebHookTemplateManager(null, null);
 		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
 		wht.register();
 		assertTrue(wtm.getRegisteredTemplates().contains(wht));
@@ -57,7 +58,7 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestXmlTemplatesViaChangeListener(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(mockServer, null, null);
+		wtm = new WebHookTemplateManager(null, null);
 		wpm = new WebHookPayloadManager(mockServer);
 		
 		File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
@@ -72,7 +73,7 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestFindMatchingTemplates(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(mockServer, null, null);
+		wtm = new WebHookTemplateManager(null, null);
 		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
 		wht.register();
 		TestWebHookTemplate wht2 = new TestWebHookTemplate(wtm);
@@ -81,8 +82,8 @@ public class WebHookTemplateManagerTest {
 		wht3.register();
 		BbbTestWebHookTemplate wht4 = new BbbTestWebHookTemplate(wtm);
 		wht4.register();
-		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadTailoredJson.FORMAT_SHORT_NAME).contains(wht));
-		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadTailoredJson.FORMAT_SHORT_NAME).contains(wht2));
+		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME).contains(wht));
+		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME).contains(wht2));
 		System.out.println(wht.getTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText());
 	}
 	
@@ -115,7 +116,7 @@ public class WebHookTemplateManagerTest {
 
 		@Override
 		public boolean supportsPayloadFormat(String payloadFormat) {
-			if (payloadFormat.equals("tailoredjson"))
+			if (payloadFormat.equals("jsonTemplate"))
 				return true;
 			return false;
 		}

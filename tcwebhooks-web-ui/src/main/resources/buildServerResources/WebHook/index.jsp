@@ -106,7 +106,7 @@
 		
 		function populateWebHookDialog(id){
 			jQueryWebhook('#buildList').empty();
-			jQueryWebhook.each(ProjectBuilds.projectWebhookConfig.webHookList, function(thing, config){
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(thing, config){
 				if (id === config[0]){
 					var webhook = config[1];
 				
@@ -157,7 +157,7 @@
 		}
 		
 		function addWebHooksFromJsonCallback(){
-			jQueryWebhook.each(ProjectBuilds.projectWebhookConfig.webHookList, function(thing, config){
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(thing, config){
 				if ('new' !== config[0]){
 					var webhook = config[1];
 					jQueryWebhook('.webHookRowTemplate')

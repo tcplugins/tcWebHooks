@@ -22,7 +22,7 @@ public class NameValuePairsWebHookTemplateTest {
 	@Before
 	public void setup(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(mockServer, null, null);
+		wtm = new WebHookTemplateManager(null, null);
 		wht = new NameValuePairsWebHookTemplate(wtm);
 		wht.register();
 	}

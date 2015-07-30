@@ -2,6 +2,7 @@ package webhook.teamcity.payload.template;
 
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
 
 public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTemplate implements WebHookTemplate {
@@ -30,7 +31,7 @@ public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTempl
 	
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
-		return payloadFormat.equals(WebHookPayloadTailoredJson.FORMAT_SHORT_NAME);
+		return payloadFormat.equals(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME);
 	}
 
 	@Override

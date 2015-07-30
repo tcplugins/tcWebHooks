@@ -30,6 +30,8 @@ import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -41,6 +43,8 @@ public class WebHookListenerTest {
 	ProjectSettingsManager settings = mock(ProjectSettingsManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
+	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
+	WebHookTemplateResolver templateResolver = mock(WebHookTemplateResolver.class);
 	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
@@ -69,7 +73,7 @@ public class WebHookListenerTest {
 		
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook()).thenReturn(spyWebHook);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
@@ -97,12 +101,12 @@ public class WebHookListenerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testWebHookListener() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver);
 	}
 
 	@Test
 	public void testRegister() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver);
 		whl.register();
 		verify(sBuildServer).addListener(whl);
 	}
@@ -192,7 +196,7 @@ public class WebHookListenerTest {
 		
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver);
 		Status oldStatus = Status.NORMAL;
 		Status newStatus = Status.FAILURE;
 		whl.register();

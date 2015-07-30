@@ -12,6 +12,7 @@ import java.util.Set;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FileWatcher;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.Loggers;
 
@@ -21,12 +22,10 @@ public class WebHookTemplateManager {
 	HashMap<String, WebHookTemplate> xmlConfigTemplates = new HashMap<String,WebHookTemplate>();
 	Comparator<WebHookTemplate> rankComparator = new WebHookTemplateRankingComparator();
 	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<WebHookTemplate>();
-	SBuildServer server;
 	ServerPaths serverPaths;
 	WebHookPayloadManager webHookPayloadManager;
 	
-	public WebHookTemplateManager(SBuildServer server, ServerPaths serverPaths, WebHookPayloadManager webHookPayloadManager){
-		this.server = server;
+	public WebHookTemplateManager(ServerPaths serverPaths, WebHookPayloadManager webHookPayloadManager){
 		this.serverPaths = serverPaths;
 		this.webHookPayloadManager = webHookPayloadManager;
 		Loggers.SERVER.info("WebHookTemplateManager :: Starting");
@@ -112,10 +111,11 @@ public class WebHookTemplateManager {
 	public List<WebHookTemplate> getRegisteredTemplates(){
 		return orderedTemplateCollection;
 	}
-
-	public SBuildServer getServer() {
-		return server;
-	}	
+	
+	public List<WebHookTemplate> getRegisteredTemplatesForProject(SProject project){
+		// TODO: FIX this. Need to return project aware templates.
+		return orderedTemplateCollection;
+	}
 	
 	public List<WebHookTemplate> findAllTemplatesForFormat(String formatShortName){
 		List<WebHookTemplate> matchingTemplates = new ArrayList<WebHookTemplate>();
