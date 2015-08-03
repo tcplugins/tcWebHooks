@@ -96,7 +96,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
-		return supportedFormats.contains(payloadFormat);
+		return supportedFormats.contains(payloadFormat.toLowerCase());
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 						if (bse != null){
 							template.addTemplateContentForState(bse, WebHookTemplateContent.create(
 									bse.getShortName(), 
-									entityTemplate.getDefaultTemplate(),
+									item.getTemplateText(),
 									true));
 						}
 					}
@@ -185,15 +185,15 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem item : entityTemplate.getBranchTemplates()){
-			if (item.isEnabled() && item.getTemplateText()!= null){
+		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem item : entityTemplate.getTemplates()){
+			if (item.isEnabled() && item.getBranchTemplateText()!= null){
 				for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateState state :item.getStates()){
 					if (state.isEnabled()){
 						BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
 						if (bse != null){
 							template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
 									bse.getShortName(), 
-									entityTemplate.getDefaultTemplate(),
+									item.getBranchTemplateText(),
 									true));
 						}
 					}
@@ -203,7 +203,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		
 		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateFormat format : entityTemplate.getFormats()){
 			if (format.isEnabled() && payloadManager.isRegisteredFormat(format.getName())){
-				template.supportedFormats.add(format.getName());
+				template.supportedFormats.add(format.getName().toLowerCase());
 			}
 		}
 		return template;

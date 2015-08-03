@@ -27,7 +27,7 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	}
 	
 	public String getFormatDescription() {
-		return "JSON from Template";
+		return "JSON";
 	}
 
 	public String getFormatShortName() {

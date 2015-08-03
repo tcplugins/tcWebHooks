@@ -49,8 +49,8 @@ public class WebHookPayloadManager {
 		return formats.containsKey(format.toLowerCase());
 	}
 	
-	public Set<String> getRegisteredFormats(){
-		return formats.keySet();
+	public List<WebHookPayload> getRegisteredFormats(){
+		return orderedFormatCollection;
 	}
 	
 	public Collection<WebHookPayload> getRegisteredFormatsAsCollection(){

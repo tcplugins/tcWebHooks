@@ -6,6 +6,7 @@ import java.util.List;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
+import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class WebhookConfigAndBuildTypeListHolder {
@@ -13,6 +14,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 	public String uniqueKey; 
 	public boolean enabled;
 	public String payloadFormat;
+	public String payloadTemplate;
 	public String payloadFormatForWeb = "Unknown";
 	public List<StateBean> states = new ArrayList<StateBean>();
 	public boolean allBuildTypesEnabled;
@@ -21,11 +23,12 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private String enabledEventsListForWeb;
 	private String enabledBuildsListForWeb;
 	
-	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads) {
+	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList) {
 		url = config.getUrl();
 		uniqueKey = config.getUniqueKey();
 		enabled = config.getEnabled();
 		payloadFormat = config.getPayloadFormat();
+		payloadTemplate = config.getPayloadTemplate();
 		setEnabledEventsListForWeb(config.getEnabledListAsString());
 		setEnabledBuildsListForWeb(config.getBuildTypeCountAsFriendlyString());
 		allBuildTypesEnabled = config.isEnabledForAllBuildsInProject();
@@ -33,9 +36,24 @@ public class WebhookConfigAndBuildTypeListHolder {
 		for (BuildStateEnum state : config.getBuildStates().getStateSet()){
 			states.add(new StateBean(state.getShortName(), config.getBuildStates().enabled(state)));
 		}
-		for (WebHookPayload payload : registeredPayloads){
-			if (payload.getFormatShortName().equals(payloadFormat)){
-				this.payloadFormatForWeb = payload.getFormatDescription();
+		
+		WebHookTemplate t = null;
+		
+		if (payloadFormat != null){
+			for (WebHookTemplate template : templateList){
+				if (template.supportsPayloadFormat(payloadFormat) && template.getTemplateShortName().equals(payloadTemplate)){
+					t = template;
+				}
+			}
+			
+			for (WebHookPayload payload : registeredPayloads){
+				if (payload.getFormatShortName().equals(payloadFormat)){
+					if (t != null){
+						this.payloadFormatForWeb = t.getTemplateDescription() + " (" + payload.getFormatDescription() + ")";
+					} else {
+						this.payloadFormatForWeb = payload.getFormatDescription();
+					}
+				}
 			}
 		}
 	}
@@ -78,6 +96,30 @@ public class WebhookConfigAndBuildTypeListHolder {
 
 	public void setEnabledBuildsListForWeb(String enabledBuildsListForWeb) {
 		this.enabledBuildsListForWeb = enabledBuildsListForWeb;
+	}
+	
+	public String getUniqueKey() {
+		return uniqueKey;
+	}
+	
+	public String getPayloadFormat() {
+		return payloadFormat;
+	}
+	
+	public String getPayloadFormatForWeb() {
+		return payloadFormatForWeb;
+	}
+	
+	public String getPayloadTemplate() {
+		return payloadTemplate;
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+	
+	public List<StateBean> getStates() {
+		return states;
 	}
 	
 }

@@ -116,7 +116,7 @@ public class WebHookTemplateManagerTest {
 
 		@Override
 		public boolean supportsPayloadFormat(String payloadFormat) {
-			if (payloadFormat.equals("jsonTemplate"))
+			if (payloadFormat.equalsIgnoreCase("jsonTemplate"))
 				return true;
 			return false;
 		}

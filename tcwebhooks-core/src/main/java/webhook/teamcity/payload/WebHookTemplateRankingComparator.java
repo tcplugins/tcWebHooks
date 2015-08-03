@@ -7,9 +7,9 @@ public class WebHookTemplateRankingComparator implements Comparator<WebHookTempl
 	public int compare(WebHookTemplate template1, WebHookTemplate template2) {
 		// First compare the rank of the template
 		if (template1.getRank() > template2.getRank()){
-			return -1;
-		} else if (template1.getRank() < template2.getRank()){
 			return 1;
+		} else if (template1.getRank() < template2.getRank()){
+			return -1;
 			
 		// If both templates have the same rank, compare the name and sort alphabetically
 		} else {

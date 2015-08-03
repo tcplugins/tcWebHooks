@@ -58,6 +58,35 @@
 					  animate: false,
 					  updateHash: false
 				});
+				jQueryWebhook('#payloadFormatHolder').change(function() {
+					var formatName = jQueryWebhook(this).val();
+  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
+						if (formatName === config[0]){
+							var template = config[1];
+							jQueryWebhook("#hookPane .buildState").each(function(thing, state){
+								if ((jQueryWebhook.inArray(state.id, template.supportedStates) >= 0) &&
+									(jQueryWebhook.inArray(state.id, template.supportedBranchStates) >= 0))
+								{
+										jQueryWebhook("td." + state.id).removeClass('buildStateDisabled');
+										jQueryWebhook("input#" + state.id).removeAttr('disabled');
+								} else {
+										jQueryWebhook("td." + state.id).addClass('buildStateDisabled');
+										jQueryWebhook("input#" + state.id).attr('disabled', 'disabled');
+								}
+							//console.log(state);
+							//console.log(state.id);
+							});
+							
+							//if (jQueryWebhook.inArray
+							//jQueryWebhook.each(template.supportedStates, function(thingy, state){
+							//console.log("My state is: " + state);
+							//		jQueryWebhook("td." + state).removeClass('buildStateDisabled');
+							//		jQueryWebhook("input#" + state).removeAttr('disabled');
+							//}); 
+							return false;
+						}
+					});
+				});
 		});
 
 		function selectBuildState(){
@@ -117,13 +146,8 @@
 				    	jQueryWebhook('#' + value.buildStateName).attr('checked', value.enabled);
 				    });
 				    
-				    jQueryWebhook('#webHookFormContents input.payloadFormat').each(function(i){
-						if(this.value === webhook.payloadFormat){
-							this.checked = true;
-						} else {
-							this.checked = false;
-						}
-					});
+					jQueryWebhook('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate + "_" + webhook.payloadFormat).change();
+					
 					jQueryWebhook('#buildTypeSubProjects').attr('checked', webhook.subProjectsEnabled);
 					jQueryWebhook.each(webhook.builds, function(){
 						 if (this.enabled){
@@ -137,14 +161,28 @@
 			updateSelectedBuildTypes();
 		}
 
-		function selectCorrectRadio(id){
-			jQueryWebhook('#webHookFormContents input.payloadFormat').each(function(i){
-				if(this.value == jQueryWebhook('#payloadFormat_'+id).val()){
-					this.checked = true;
-				} else {
-					this.checked = false;
+		function lookupTemplate(templateFormatCombinationKey){
+			var name;
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
+				if (templateFormatCombinationKey === config[0]){
+					var template = config[1];
+					name = template.shortName;
+					return false;
 				}
 			});
+			return name;
+		}
+		
+		function lookupFormat(templateFormatCombinationKey){
+			var name;
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
+				if (templateFormatCombinationKey === config[0]){
+					var template = config[1];
+					name = template.formatName;
+					return false;
+				}
+			});
+			return name;
 		}
 		
 		function htmlEscape(str) {
@@ -238,6 +276,8 @@
 
 			  saveWebHook : function() {
 			    this.formElement().submitAction.value = 'updateWebHook';
+			    this.formElement().payloadTemplate.value = lookupTemplate(this.formElement().payloadFormatHolder.value);
+			    this.formElement().payloadFormat.value = lookupFormat(this.formElement().payloadFormatHolder.value);
 			    var that = this;
 
 			    BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener,

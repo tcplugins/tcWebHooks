@@ -89,9 +89,6 @@ public class WebHookTemplate {
 	@XmlElement(name="template") @XmlElementWrapper(name="templates")
 	private List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
 	
-	@XmlElement(name="template") @XmlElementWrapper(name="branch-templates")
-	private List<WebHookTemplateItem> branchTemplates = new ArrayList<WebHookTemplateItem>();
-	
 	WebHookTemplate() {
 		// empty constructor for JAXB
 	}

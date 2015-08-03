@@ -31,7 +31,7 @@ public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTempl
 	
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
-		return payloadFormat.equals(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME);
+		return payloadFormat.equalsIgnoreCase(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME);
 	}
 
 	@Override

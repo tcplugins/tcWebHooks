@@ -107,7 +107,6 @@
 		</property>
 	</bean>
 
-
 	<bean id="webHookTemplateManager"
 		class="webhook.teamcity.payload.WebHookTemplateManager"
 		init-method="register"
@@ -117,6 +116,14 @@
 		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
 
+	<bean id="legacyDepricatedFormatWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyDeprecatedFormatWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>500</value>
+		</property>
+	</bean>
+	
 	<bean id="slackComWebHookTemplate"
 		class="webhook.teamcity.payload.template.SlackComWebHookTemplate"
 		init-method="register">

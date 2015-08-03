@@ -23,6 +23,7 @@ import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -33,18 +34,18 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
-	    private final WebHookTemplateManager myTemplateManager;
+	    private final WebHookTemplateResolver myTemplateResolver;
 
 	    public WebHookAjaxSettingsListPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor, 
-	    		WebHookTemplateManager webHookTemplateManager) {
+	    		WebHookTemplateResolver webHookTemplateResolver) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
 	        myManager = manager;
-	        myTemplateManager = webHookTemplateManager;
+	        myTemplateResolver = webHookTemplateResolver;
 	    }
 
 	    public void register(){
@@ -67,11 +68,12 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 			    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 		    													TemplatesAndProjectWebHooksBean.build(
-		    															RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+		    															RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 		    																								myManager.getRegisteredFormats()), 
 		    															ProjectWebHooksBean.build(projSettings, 
 		    																						project, 
-		    																						myManager.getRegisteredFormatsAsCollection())
+		    																						myManager.getRegisteredFormatsAsCollection(),
+		    																						myTemplateResolver.findWebHookTemplatesForProject(project))
 		    																					)
 	        														)
 		    													);
@@ -85,9 +87,9 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 				    			mySettings.getSettings(project.getProjectId(), "webhooks");
 		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 		        				TemplatesAndProjectWebHooksBean.build(
-										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()),
-		        				ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection()))));
+		        				ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(), myTemplateResolver.findWebHookTemplatesForProject(project)))));
 		        	}
         		}
 	        

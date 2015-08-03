@@ -2,6 +2,7 @@ package webhook.teamcity.payload.template;
 
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 
 public class NameValuePairsWebHookTemplate extends AbstractPropertiesBasedWebHookTemplate implements WebHookTemplate {
@@ -29,7 +30,7 @@ public class NameValuePairsWebHookTemplate extends AbstractPropertiesBasedWebHoo
 	
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
-		return payloadFormat.equals(WebHookPayloadNameValuePairs.FORMAT_SHORT_NAME);
+		return payloadFormat.equalsIgnoreCase(WebHookPayloadNameValuePairs.FORMAT_SHORT_NAME);
 	}
 	
 	@Override

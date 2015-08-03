@@ -23,17 +23,13 @@
 					<td class="edit highlight webHookRowItemDelete"><a ref="javascript://">delete</a></td>
 				</tr> 	
 	
-			<c:forEach items="${webHookList}" var="hook">
+			<c:forEach items="${webHookList.webHookList}" var="hook">
 				
 				<tr id="viewRow_${hook.uniqueKey}" class="webHookRow">
 					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
-						<c:forEach items="${formatList}" var="format">
-							<c:if test="${format.formatShortName == hook.payloadFormat}">
-								<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${format.formatDescription}" /></td>
-							</c:if>
-						</c:forEach>
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledListAsString}" /></td>
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.payloadFormatForWeb}" /></td>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
+					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.enabledBuildsListForWeb}" /></td>
 					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
 					<td class="edit highlight"><a onclick="BS.WebHookForm.removeWebHook('${hook.uniqueKey}','#hookPane');" href="javascript://">delete</a></td>
 				</tr> 
@@ -88,23 +84,43 @@
 													<td><label for="webHooksEnabled">Enabled:</label></td>
 													<td style="padding-left:3px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
 												</tr>
+												
+												<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
+													<td colspan=2>
+														<table style="padding:0; margin:0; left: 0px;" id="payloadFormatTable"><tbody style="padding:0; margin:0; left: 0px;">
+																<tr style="padding:0; margin:0; left: 0px;">
+																	<td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+																		<select id="payloadFormatHolder" name="payloadFormatHolder">
+																		    <c:forEach items="${formatList}" var="template">
+																				<option value="${template.templateFormatCombinationKey}">${template.description}</option>
+																			</c:forEach>
+																		</select>
+																	</td></tr>
+														</tbody></table>
+													</td>
+												</tr>
+												<tr>
+													<td></td>
+													<td colspan=2><span class="error" id="error_payloadFormat" style="margin-left: 0.5em;"></span></td>
+												</tr>												
+												
 												<tr style="border:none;">
 													<td>Trigger on Events:</td>
-													<td style="padding-left:3px;"><label style='white-space:nowrap;'>
+													<td  class="buildStarted" style="padding-left:3px;"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="buildStarted" name="BuildStarted"  type=checkbox />
 														 Build Started</label>
 													</td>
-													<td><label style='white-space:nowrap;'>
+													<td class="buildInterrupted"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="buildInterrupted" name="BuildInterrupted" type=checkbox />
 														 Build Interrupted</label>
 													</td>
 												</tr>
 												<tr style="border:none;"><td>&nbsp;</td>
-													<td style="padding-left:3px;"><label style='white-space:nowrap;'>
+													<td class="beforeBuildFinish" style="padding-left:3px;"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="beforeBuildFinish" name="BeforeFinished" type=checkbox />
 														 Build Almost Completed</label>
 													</td>
-													<td><label style='white-space:nowrap;'>
+													<td class="responsibilityChanged"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox />
 														 Build Responsibility Changed</label>
 													</td>
@@ -113,42 +129,27 @@
 												<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top; padding-top:0.33em;">On Completion:</td>
 													<td colspan=2 >
 														<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
-																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+																<tr style="padding:0; margin:0; left: 0px;"><td class="buildSuccessful" style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
 																	<input onclick='doExtraCompleted();' class="buildState" id="buildSuccessful" name="BuildSuccessful" type=checkbox />
 																	 Trigger when build is Successful</label>
 																	</td></tr>
-																<tr class="onBuildFixed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
-																	<input class="buildStateFixed" id="buildFixed" name="BuildFixed" type=checkbox />
+																<tr class="onBuildFixed" style="padding:0; margin:0; left: 0px;"><td class="buildFixed" style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
+																	<input class="buildStateFixed buildState" id="buildFixed" name="BuildFixed" type=checkbox />
 																	 Only trigger when build changes from Failure to Success</label>
 																	</td></tr>
-																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
+																<tr style="padding:0; margin:0; left: 0px;"><td class="buildFailed" style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
 																	<input onclick='doExtraCompleted();' class="buildState" id="buildFailed" name="BuildFailed" type=checkbox />
 																	 Trigger when build Fails</label>
 																	</td></tr>
-																<tr class="onBuildFailed" style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
-																	<input class="buildStateBroken" id="buildBroken" name="BuildBroken" type=checkbox />
+																<tr class="onBuildFailed" style="padding:0; margin:0; left: 0px;"><td class="buildBroken" style="padding:0; margin:0; padding-left: 2em; left: 0px;"><label style='white-space:nowrap;'>
+																	<input class="buildStateBroken buildState" id="buildBroken" name="BuildBroken" type=checkbox />
 																	 Only trigger when build changes from Success to Failure</label>
 																	</td></tr>
 														</tbody></table>
 													</td>
 												</tr>
 					
-												<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
-													<td colspan=2>
-														<table style="padding:0; margin:0; left: 0px;" id="payloadFormatTable"><tbody style="padding:0; margin:0; left: 0px;">
-															<c:forEach items="${formatList}" var="format">
-																<tr style="padding:0; margin:0; left: 0px;"><td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-																	<input style="vertical-align:text-bottom;" class="payloadFormat" id="payloadFormat_${format.formatShortName}" name="payloadFormat" type="radio" value="${format.formatShortName}" />
-																	${format.formatDescription}</label>
-																	</td></tr>
-															</c:forEach>
-														</tbody></table>
-													</td>
-												</tr>
-												<tr>
-													<td></td>
-													<td colspan=2><span class="error" id="error_payloadFormat" style="margin-left: 0.5em;"></span></td>
-												</tr>
+
 					    					</table>     
 					    					
 					    			</div><!--hookPane -->
@@ -184,6 +185,8 @@
             </div>
 
             <input type="hidden" id="webHookId" name="webHookId" value=""/>
+            <input type="hidden" id="payloadFormat" name="payloadFormat" value=""/>
+            <input type="hidden" id="payloadTemplate" name="payloadTemplate" value=""/>
             <input type="hidden" id="submitAction" name="submitAction" value=""/>
 
 

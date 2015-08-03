@@ -30,6 +30,7 @@ import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -43,11 +44,11 @@ public class WebHookIndexPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
-		private final WebHookTemplateManager myTemplateManager;
+		private final WebHookTemplateResolver myTemplateResolver;
 
 	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
-	    		WebHookTemplateManager templateManager,
+	    		WebHookTemplateResolver templateResolver,
 	    		WebHookMainSettings configSettings) {
 	        super(server);
 	        myWebManager = webManager;
@@ -56,7 +57,7 @@ public class WebHookIndexPageController extends BaseController {
 	        myPluginDescriptor = pluginDescriptor;
 	        myMainSettings = configSettings;
 	        myManager = manager;
-	        myTemplateManager = templateManager;
+	        myTemplateResolver = templateResolver;
 	    }
 
 	    public void register(){
@@ -107,36 +108,46 @@ public class WebHookIndexPageController extends BaseController {
 			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
-			    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+							myManager.getRegisteredFormats()).getTemplateList());
 			    	
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
 			    		params.put("webHooks", "false");
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
-										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
-																	myManager.getRegisteredFormatsAsCollection())
+																	myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project))
 																)
 									)
 								);
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
-			    		params.put("webHookList", projSettings.getWebHooksAsList());
+			    		
+			    		params.put("webHookList", ProjectWebHooksBean.buildWithoutNew(projSettings, 
+																			project, 
+																			myManager.getRegisteredFormatsAsCollection(),
+																			myTemplateResolver.findWebHookTemplatesForProject(project))
+							);
+			    		
+			    		//params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
 			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 			    		
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
-										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
-																	myManager.getRegisteredFormatsAsCollection())
+																	myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project))
 																)
 									)
 								);
@@ -159,7 +170,8 @@ public class WebHookIndexPageController extends BaseController {
 				        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
 				    	
 				    	List<WebHookConfig> configs = projSettings.getBuildWebHooksAsList(sBuildType);
-				    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+				    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+								myManager.getRegisteredFormats()).getTemplateList());
 				    	params.put("webHookList", configs);
 				    	params.put("webHooksDisabled", !projSettings.isEnabled());
 				    	params.put("projectId", project.getProjectId());
@@ -175,9 +187,10 @@ public class WebHookIndexPageController extends BaseController {
 				    	
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
-										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()), 
-										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection()))
+										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project)))
 									)
 								);			    				
 		        	}

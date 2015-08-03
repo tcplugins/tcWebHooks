@@ -34,6 +34,7 @@ import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -53,18 +54,18 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
-		private final WebHookTemplateManager myTemplateManager;
+		private final WebHookTemplateResolver myTemplateResolver;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
-	    		WebHookTemplateManager templateManager, PluginDescriptor pluginDescriptor) {
+	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	        myManager = manager;
-	        myTemplateManager = templateManager;
+	        myTemplateResolver = templateResolver;
 	    }
 
 	    public void register(){
@@ -127,9 +128,14 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    				if((request.getParameter("URL") != null ) 
 				    				&& (request.getParameter("URL").length() > 0 )
 				    				&& (request.getParameter("payloadFormat") != null)
-				    				&& (request.getParameter("payloadFormat").length() > 0)){
+				    				&& (request.getParameter("payloadFormat").length() > 0)
+				    				&& (request.getParameter("payloadTemplate") != null)
+				    				&& (request.getParameter("payloadTemplate").length() > 0))
+				    				{
 			    					
-			    					if (request.getParameter("webHookId") != null){
+			    					if (!myTemplateResolver.templateIsValid(myProject, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"))){
+			    						params.put("messages", "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
+			    					}else if (request.getParameter("webHookId") != null){
 			    						Boolean enabled = false;
 			    						Boolean buildTypeAll = false;
 			    						Boolean buildTypeSubProjects = false;
@@ -204,7 +210,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    		}
 	    	}
 
-	    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+	    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(myProject),
+					myManager.getRegisteredFormats()).getTemplateList());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
 	        		&& request.getParameter("projectId") != null ){
@@ -235,11 +242,12 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
-										RegisteredWebHookTemplateBean.build(myTemplateManager.getRegisteredTemplatesForProject(project),
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
-																	myManager.getRegisteredFormatsAsCollection())
+																	myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project))
 																)
 									)
 								);

@@ -11,6 +11,7 @@ import org.jdom.JDOMException;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -26,6 +27,7 @@ public interface WebHookMockingFramework {
 	public WebHookPayloadManager getWebHookPayloadManager();
 	public WebHookProjectSettings getWebHookProjectSettings();
 	public WebHookTemplateManager getWebHookTemplateManager();
+	public WebHookTemplateResolver getWebHookTemplateResolver();
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException;
 	public void loadWebHookProjectSettingsFromConfigXml(File xmlConfigFile) throws IOException, JDOMException;
 

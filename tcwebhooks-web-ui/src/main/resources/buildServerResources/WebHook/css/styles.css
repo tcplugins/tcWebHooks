@@ -2,6 +2,10 @@ tr.onCompletionDisabled td {
 	color: #ccc;
 }
 
+td.buildStateDisabled {
+	color: #ccc;
+}
+
 input[type=checkbox], input[type=radio] {
 	vertical-align:middle;
 }

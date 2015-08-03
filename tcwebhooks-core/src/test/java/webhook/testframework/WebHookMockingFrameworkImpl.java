@@ -42,6 +42,9 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
+import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
+import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
+import webhook.teamcity.payload.format.WebHookPayloadXml;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -60,7 +63,10 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookTemplateResolver resolver = mock(WebHookTemplateResolver.class);
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
 	WebHookTemplate template;
-	WebHookPayload payload = new WebHookPayloadJson(manager);
+	WebHookPayload payloadJson = new WebHookPayloadJson(manager);
+	WebHookPayload payloadXml = new WebHookPayloadXml(manager);
+	WebHookPayload payloadNvpairs = new WebHookPayloadNameValuePairs(manager);
+	WebHookPayload payloadJsonTemplate = new WebHookPayloadJsonTemplate(manager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
 	WebHook webhook = mock (WebHook.class);
@@ -86,7 +92,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SortedMap<String, String> teamcityProperties;
 	BuildStateEnum buildstateEnum;
 	List<WebHookTemplate> templateList = new ArrayList<WebHookTemplate>();
-	Set<String> formatList = new HashSet<String>();
+	List<WebHookPayload> formatList = new ArrayList<WebHookPayload>();
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
@@ -94,11 +100,17 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook()).thenReturn(spyWebHook);
+		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);
+		when(manager.getFormat("nvpairs")).thenReturn(payloadNvpairs);
+		when(manager.isRegisteredFormat("json")).thenReturn(true);
+		when(manager.getFormat("json")).thenReturn(payloadJson);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
-		when(manager.getFormat("JSON")).thenReturn(payload);
+		when(manager.getFormat("JSON")).thenReturn(payloadJson);
 		when(manager.getServer()).thenReturn(sBuildServer);
-		formatList.add("json");
-		formatList.add("testMockedTemplate");
+		formatList.add(payloadJson);
+		formatList.add(payloadXml);
+		formatList.add(payloadNvpairs);
+		formatList.add(payloadJsonTemplate);
 		when(manager.getRegisteredFormats()).thenReturn(formatList);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
@@ -129,7 +141,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		template = getTestingTemplate(); 
 		templateList.add(template);
 		when(templateManager.getRegisteredTemplates()).thenReturn(templateList);
-		when(templateManager.getRegisteredTemplatesForProject(sProject)).thenReturn(templateList);
+		when(resolver.findWebHookTemplatesForProject(sProject)).thenReturn(templateList);
 		
 	}
 
@@ -273,6 +285,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public WebHookTemplateManager getWebHookTemplateManager() {
 		return templateManager;
+	}
+
+	@Override
+	public WebHookTemplateResolver getWebHookTemplateResolver() {
+		return resolver;
 	}
 
 }

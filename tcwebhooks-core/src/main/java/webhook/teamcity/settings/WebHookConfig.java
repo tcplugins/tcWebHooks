@@ -35,7 +35,7 @@ public class WebHookConfig {
 	private String uniqueKey = "";
 	private String url;
 	private String payloadFormat = null;
-	private String payloadTemplate = null;
+	private String payloadTemplate = "none";
 	private BuildState states = new BuildState();
 	private SortedMap<String, CustomMessageTemplate> templates; 
 	private Boolean allBuildTypesEnabled = true;
@@ -194,6 +194,7 @@ public class WebHookConfig {
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute("enabled", String.valueOf(this.enabled));
 		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
+		el.setAttribute("template", String.valueOf(this.payloadTemplate).toLowerCase());
 		
 		Element statesEl = new Element("states");
 		for (BuildStateEnum state : states.getStateSet()){
