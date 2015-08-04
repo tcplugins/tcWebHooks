@@ -76,4 +76,11 @@ public class WebHookTemplateResolver {
 		return false;
 	}
 
+	public boolean templateSupportsFormatAndState(BuildStateEnum myBuildState,
+			SProject project, String webhookFormat, String templateName) {
+		return (
+					findWebHookTemplate(myBuildState, project, webhookFormat, templateName) != null
+				&&  findWebHookBranchTemplate(myBuildState, project, webhookFormat, templateName) != null);
+	}
+
 }

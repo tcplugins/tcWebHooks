@@ -72,9 +72,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 	      myWebManager.registerController("/webhooks/ajaxEdit.html", this);
 	    }
 	    
-	    protected static void checkAndAddBuildState(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
+	    protected static void checkAndAddBuildState(WebHookTemplateResolver templateResolver, SProject project, HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
 	    	if ((r.getParameter(varName) != null)
-	    		&& (r.getParameter(varName).equalsIgnoreCase("on"))){
+	    		&& (r.getParameter(varName).equalsIgnoreCase("on"))
+	    		&& (templateResolver.templateSupportsFormatAndState(myBuildState, project, r.getParameter("payloadFormat"), r.getParameter("payloadTemplate")))){
 	    		state.enable(myBuildState);
 	    	} else {
 	    		state.disable(myBuildState);;
@@ -146,15 +147,15 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						BuildState states = new BuildState();
 			    						
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
 			    						checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
+			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 			    						
 			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){
 			    							buildTypeSubProjects = true;
