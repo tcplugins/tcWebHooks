@@ -103,7 +103,14 @@ public class WebHookListener extends BuildServerAdapter {
 			Loggers.SERVER.debug("About to process WebHooks for " + sRunningBuild.getProjectId() + " at buildState " + state.getShortName());
 			for (WebHookConfigWrapper whcw : getListOfEnabledWebHooks(sRunningBuild.getProjectId())){
 				WebHookPayload payloadFormat = myManager.getFormat(whcw.whc.getPayloadFormat());
-				WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), whcw.whc.getPayloadTemplate());
+				WebHookTemplateContent templateForThisBuild;
+				if (sRunningBuild.getBranch() != null){ 
+					// We have a branch aware sBuild. Get the branch template.
+					templateForThisBuild = webHookTemplateResolver.findWebHookBranchTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), whcw.whc.getPayloadTemplate());
+				} else {
+					// Branch is null. TeamCity is not aware of branch support for this sBuild, so get the non-branch template.
+					templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), whcw.whc.getPayloadTemplate());
+				}
 				whcw.wh.setContentType(payloadFormat.getContentType());
 				
 				if (state.equals(BuildStateEnum.BUILD_STARTED)){
