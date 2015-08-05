@@ -2,6 +2,7 @@ package webhook.teamcity.docs.rest;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
@@ -14,10 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
 public class RamlFileServlet extends HttpServlet {
 
@@ -56,7 +59,7 @@ public class RamlFileServlet extends HttpServlet {
 	private void getFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		RamlFile ramlFile = null;
 		System.out.println("GET - File :: " + request.getPathInfo());
-		File file = new File(WebHookApiServer.RAML_FILE_LOCATION + request.getPathInfo());
+		File file = new File(RamlDocServer.RAML_FILE_LOCATION + request.getPathInfo());
 		if (file.isFile()){
 			ramlFile = new RamlFile(file);
 			try {
@@ -119,7 +122,7 @@ public class RamlFileServlet extends HttpServlet {
 		
 		final RamlFile ramlFileFromRequest = gson.fromJson(br, RamlFile.class);
 		
-		File file = new File(WebHookApiServer.RAML_FILE_LOCATION + ramlFileFromRequest.path);
+		File file = new File(RamlDocServer.RAML_FILE_LOCATION + ramlFileFromRequest.path);
 		if (!file.isFile()){
 			try {
 				FileUtils.writeStringToFile(file, URLDecoder.decode(ramlFileFromRequest.contents, "UTF-8"));
@@ -157,7 +160,7 @@ public class RamlFileServlet extends HttpServlet {
 		
 		final RamlFile ramlFileFromRequest = gson.fromJson(br, RamlFile.class);
 		
-		File file = new File(WebHookApiServer.RAML_FILE_LOCATION + ramlFileFromRequest.path);
+		File file = new File(RamlDocServer.RAML_FILE_LOCATION + ramlFileFromRequest.path);
 		if (file.isFile()){
 			try {
 				FileUtils.writeStringToFile(file, URLDecoder.decode(ramlFileFromRequest.contents, "UTF-8"));
@@ -173,7 +176,7 @@ public class RamlFileServlet extends HttpServlet {
 			HttpServletResponse response) throws IOException {
 		if (request.getPathInfo() != null){
 			System.out.println("DELETE - File :: " + request.getPathInfo());
-			File file = new File(WebHookApiServer.RAML_FILE_LOCATION + request.getPathInfo());
+			File file = new File(RamlDocServer.RAML_FILE_LOCATION + request.getPathInfo());
 			if (file.isFile() || file.isDirectory()){
 				try { 
 					file.delete();
@@ -190,4 +193,67 @@ public class RamlFileServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 *	RamlFile entity class. Used for serialising to and from JSON.   
+	 *
+	 */
+	public class RamlFile {
+		private File file;
+		
+		@Expose String name;
+		@Expose String path;
+		@Expose	String type = "file";
+		@Expose List<RamlFile> children;
+		@Expose String contents;
+		
+		public RamlFile(File file){
+			this.file = file;
+			this.name = file.getName();
+			if (file.isDirectory()){
+				this.type = "folder";
+			}
+			
+			/* 
+			 * Swap the \ for / so that the designer works better. 
+			 * New files in the designer have a / in them, and designer 
+			 * assumes all files are like that.
+			 * 
+			 * Therefore, new files saved on windows are not then 
+			 * editable until the page is reloaded and the designer
+			 * see them as \filename.
+			 *  
+			 * To work around that, just make everything / so that 
+			 * they all get along nicely.
+			 */
+			this.path = file.getPath().substring(RamlDocServer.RAML_FILE_LOCATION.length()).replace('\\', '/');
+
+		}
+		
+		public void setChildren(List<RamlFile> children) {
+			this.children = children;
+		}
+		
+		/**
+		 * Load the contents of the file from the disk.
+		 * Swap out any "%" for "%25" otherwise they display wrongly
+		 * in the designer.
+		 * 
+		 * I'm not sure if it's a bug in API Designer, or just a difference
+		 * between Java and Javascript's URI encoding/decoding.
+		 *  
+		 * @throws IOException
+		 */
+		public void loadContents() throws IOException {
+			FileInputStream inputStream = new FileInputStream(this.file);
+			try {
+			    this.contents = IOUtils.toString(inputStream).replaceAll("%", "%25");
+			} finally {
+			    inputStream.close();
+			}
+		}
+		
+		public String getContents() {
+			return this.contents;
+		}
+	}
 }

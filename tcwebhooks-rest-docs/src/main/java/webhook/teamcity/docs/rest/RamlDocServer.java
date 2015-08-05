@@ -11,11 +11,11 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-public class WebHookApiServer {
+public class RamlDocServer {
 	public static final String RAML_FILE_LOCATION = "./src/main/raml";
 	Server server;
 
-	public WebHookApiServer (String host, Integer port) {
+	public RamlDocServer (String host, Integer port) {
 		server = new Server(port);
 		
 		ContextHandler staticCtx = new ContextHandler();
@@ -40,7 +40,7 @@ public class WebHookApiServer {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		WebHookApiServer apiServer = new WebHookApiServer("localhost", 1234);
+		RamlDocServer apiServer = new RamlDocServer("localhost", 1234);
 		apiServer.server.start();
 		apiServer.server.join();
 	}
