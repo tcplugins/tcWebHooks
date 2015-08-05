@@ -31,7 +31,7 @@
           $http({
             method: 'GET',
             data: '',
-            url : '/raml/files',
+            url : '/raml/file',
             withCredentials: false
            }).success(function (data, status, headers, config) {
                  Object.keys(files).forEach(function (key) {
@@ -42,9 +42,9 @@
                  	files[data.children[id].path] = data.children[id];
                  	console.log(data.children[id].path);
                  	console.log(data.children[id].name);
-                 	//if (data.children[id].children !== null){
-                 	//	eachRecursive(data.children[id].children);
-                 	//}
+                 	if (data.children[id].children !== null){
+                 		eachRecursive(data.children[id].children);
+                 	}
                  });
                  
                  deferred.resolve(data);
@@ -77,7 +77,7 @@
           $http({
             method: 'DELETE',
             data: '',
-            url : '/raml/file/'+files[path],
+            url : '/raml/file'+path,
             withCredentials: false
            }).success(function (data, status, headers, config) {
                  delete files[path];
@@ -115,8 +115,8 @@
             url : '/raml/file/',
             withCredentials: false
            }).success(function (data, status, headers, config) {
-                 files[name] = data._id;
-                 deferred.resolve({entry: name, content: payload["contents"], id: data._id});
+                 files[data.path] = data;
+                 deferred.resolve({entry: name, content: payload["contents"], id: data.path});
                })
            .error(deferred.reject.bind(deferred));
           }

@@ -37,11 +37,10 @@ public class RamlFile {
 		if (file.isDirectory()){
 			this.type = "folder";
 		}
-		this.path = file.getPath().substring(WebHookApiServer.RAML_FILE_LOCATION.length());
 		
+		// Swap the \ for / so that the designer works better. 
+		this.path = file.getPath().substring(WebHookApiServer.RAML_FILE_LOCATION.length()).replace('\\', '/');
 
-		//this.path = "%2F";
-		//this.contents = "#%25RAML%200.8%0Atitle:%20%20%20DONE!!!";
 	}
 	
 	public void setChildren(List<RamlFile> children) {

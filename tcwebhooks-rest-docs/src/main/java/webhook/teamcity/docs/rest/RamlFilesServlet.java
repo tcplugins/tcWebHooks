@@ -25,7 +25,6 @@ public class RamlFilesServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		System.out.println("GET - Files");
-		File[] listOfFiles = this.baseRamlPath.listFiles();
 		RamlFile rootDir = new RamlFile(baseRamlPath);
 		if (baseRamlPath.isDirectory()){
 			rootDir.setChildren(iterateOverChildren(baseRamlPath));
