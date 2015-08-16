@@ -69,9 +69,13 @@
 								{
 										jQueryWebhook("td." + state.id).removeClass('buildStateDisabled');
 										jQueryWebhook("input#" + state.id).removeAttr('disabled');
+										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").removeAttr('disabled');
+										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "Branch]").removeAttr('disabled');
 								} else {
 										jQueryWebhook("td." + state.id).addClass('buildStateDisabled');
 										jQueryWebhook("input#" + state.id).attr('disabled', 'disabled');
+										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").attr('disabled', 'disabled');
+										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "Branch]").attr('disabled', 'disabled');
 								}
 							//console.log(state);
 							//console.log(state.id);
@@ -86,6 +90,23 @@
 							return false;
 						}
 					});
+				});
+				
+				
+				jQueryWebhook('#currentTemplateBuildEvent').change(function() {
+					var selectedBuildState = jQueryWebhook(this).val();
+					jQueryWebhook.getJSON( "renderTemplate.html", {
+										projectId: "${projectExternalId}",
+										buildState: selectedBuildState,
+										payloadTemplate: lookupTemplate(jQueryWebhook('#payloadFormatHolder').val()),
+										payloadFormat: lookupFormat(jQueryWebhook('#payloadFormatHolder').val())
+									})
+									.done(function(data){
+											console.log(data);
+											console.log(data.templatesOutput);
+											jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
+											jQueryWebhook('#currentTemplateRendered').html(data.templatesOutput.webhookTemplateRendered);
+									});
 				});
 		});
 
@@ -166,7 +187,7 @@
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
 				if (templateFormatCombinationKey === config[0]){
 					var template = config[1];
-					name = template.shortName;
+					name = template.templateShortName;
 					return false;
 				}
 			});
@@ -178,7 +199,7 @@
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
 				if (templateFormatCombinationKey === config[0]){
 					var template = config[1];
-					name = template.formatName;
+					name = template.formatShortName;
 					return false;
 				}
 			});
@@ -240,7 +261,8 @@
 			    }
 			    
 			    this.showCentered();
-			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#hookPane').innerHeight());
+			    jQueryWebhook('#hookPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
+			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 				jQueryWebhook('#tab-container').easytabs('select', tab);
 			    
 			    $('webHookUrl').focus();

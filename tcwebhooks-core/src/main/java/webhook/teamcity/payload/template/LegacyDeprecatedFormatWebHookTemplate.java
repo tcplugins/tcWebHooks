@@ -11,7 +11,6 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookTemplate {
 	
 	Set<BuildStateEnum> states = new HashSet<BuildStateEnum>(); 
-	Set<BuildStateEnum> branchStates = new HashSet<BuildStateEnum>(); 
 	
 	public LegacyDeprecatedFormatWebHookTemplate(WebHookTemplateManager manager) {
 		super();
@@ -23,7 +22,7 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 
 	@Override
 	public String getTemplateDescription() {
-		return "Legacy (deprecated) Webhook";
+		return "Legacy Webhook";
 	}
 
 	@Override
@@ -41,6 +40,7 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 		return  payloadFormat.equalsIgnoreCase("JSON") || 
 				payloadFormat.equalsIgnoreCase("nvpairs") || 
 				payloadFormat.equalsIgnoreCase("xml") || 
+				payloadFormat.equalsIgnoreCase("tailoredjson") || 
 				payloadFormat.equalsIgnoreCase("none");
 	}
 	
@@ -61,7 +61,7 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 
 	@Override
 	public Set<BuildStateEnum> getSupportedBranchBuildStates() {
-		return branchStates;
+		return states;
 	}
 
 	@Override

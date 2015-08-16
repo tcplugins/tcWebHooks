@@ -96,7 +96,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
-		return supportedFormats.contains(payloadFormat.toLowerCase());
+		return supportedFormats.contains(payloadFormat);
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		
 		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateFormat format : entityTemplate.getFormats()){
 			if (format.isEnabled() && payloadManager.isRegisteredFormat(format.getName())){
-				template.supportedFormats.add(format.getName().toLowerCase());
+				template.supportedFormats.add(format.getName());
 			}
 		}
 		return template;

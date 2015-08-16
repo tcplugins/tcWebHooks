@@ -32,6 +32,7 @@ import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
 import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
+import webhook.teamcity.extension.util.EnabledBuildStateResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -72,27 +73,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 	      myWebManager.registerController("/webhooks/ajaxEdit.html", this);
 	    }
 	    
-	    protected static void checkAndAddBuildState(WebHookTemplateResolver templateResolver, SProject project, HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
-	    	if ((r.getParameter(varName) != null)
-	    		&& (r.getParameter(varName).equalsIgnoreCase("on"))
-	    		&& (templateResolver.templateSupportsFormatAndState(myBuildState, project, r.getParameter("payloadFormat"), r.getParameter("payloadTemplate")))){
-	    		state.enable(myBuildState);
-	    	} else {
-	    		state.disable(myBuildState);;
-	    	}
-	    }
-	    
-	    protected static void checkAndAddBuildStateIfEitherSet(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName, String otherVarName){
-	    	if ((r.getParameter(varName) != null)
-	    			&& (r.getParameter(varName).equalsIgnoreCase("on"))){
-	    		state.enable(myBuildState);
-	    	} else if ((r.getParameter(otherVarName) != null)
-	    			&& (r.getParameter(otherVarName).equalsIgnoreCase("on"))){
-		    	state.enable(myBuildState);
-	    	} else {
-	    		state.disable(myBuildState);;
-	    	}
-	    }
 
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -146,16 +126,17 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							enabled = true;
 			    						}
 			    						BuildState states = new BuildState();
+			    						EnabledBuildStateResolver buildStateResolver = new EnabledBuildStateResolver(myTemplateResolver, myProject);
 			    						
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
-			    						checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
-			    						checkAndAddBuildState(myTemplateResolver, myProject, request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
+			    						buildStateResolver.checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 			    						
 			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){
 			    							buildTypeSubProjects = true;
@@ -259,8 +240,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	} else {
 	        		params.put("haveProject", "false");
 	        	}
-	        } else {
-	        	params.put("haveProject", "false");
+//	        } else {
+//	        	params.put("haveProject", "false");
 	        }
 	        
 	        return new ModelAndView(myPluginPath + "WebHook/ajaxEdit.jsp", params);

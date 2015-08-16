@@ -67,6 +67,34 @@ public class BuildState {
     	return false;
     }
     
+    /**
+     * Determine the WebHook build state from a TeamCity build event state. For anything except finished
+     * this will simply return the TeamCity state.<br/>
+     * However, for finished builds, determine if it was success or failure, and then with builds that changed state, if it was a fix or break.  
+     * 
+     * @param currentBuildState
+     * @param success
+     * @param changed
+     * @return The WebHook state for use detemining template etc.
+     */
+    public static BuildStateEnum getEffectiveState(BuildStateEnum currentBuildState, boolean success, boolean changed){
+    	
+    	if (currentBuildState.equals(BUILD_FINISHED)){
+    		if (success){
+    			if (changed){
+    				return BUILD_FIXED;
+    			}
+    			return BUILD_SUCCESSFUL;
+    		} else {
+    			if (changed){
+    				return BUILD_BROKEN;
+    			}
+    			return BUILD_FAILED;
+    		}
+    	}
+    	return currentBuildState;
+    }
+    
     public void setEnabled(BuildStateEnum currentBuildState, boolean enabled){
     	if (enabled)
     		enable(currentBuildState);

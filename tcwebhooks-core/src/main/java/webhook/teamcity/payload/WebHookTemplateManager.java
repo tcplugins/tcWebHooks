@@ -46,13 +46,13 @@ public class WebHookTemplateManager {
 	public void registerTemplateFormatFromSpring(WebHookTemplate payloadTemplate){
 		synchronized (orderedTemplateCollection) {
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering Spring template " 
-					+ payloadTemplate.getTemplateShortName() 
+					+ payloadTemplate.getTemplateDescription() + " (" + payloadTemplate.getTemplateShortName() + ")"
 					+ " with rank of " + payloadTemplate.getRank());
 			springTemplates.put(payloadTemplate.getTemplateShortName(),payloadTemplate);
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
 			for (WebHookTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
+				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateDescription() + " (" + pl.getTemplateShortName() + ")" + " Rank: " + pl.getRank());
 			}
 		}
 	}

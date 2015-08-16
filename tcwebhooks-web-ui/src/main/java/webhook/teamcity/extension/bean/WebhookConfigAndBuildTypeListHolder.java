@@ -47,7 +47,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 			}
 			
 			for (WebHookPayload payload : registeredPayloads){
-				if (payload.getFormatShortName().equals(payloadFormat)){
+				if (payload.getFormatShortName().equalsIgnoreCase(payloadFormat)){
 					if (t != null){
 						this.payloadFormatForWeb = t.getTemplateDescription() + " (" + payload.getFormatDescription() + ")";
 					} else {

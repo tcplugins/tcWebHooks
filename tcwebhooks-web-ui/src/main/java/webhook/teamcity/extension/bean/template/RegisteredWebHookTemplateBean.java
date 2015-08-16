@@ -37,8 +37,8 @@ public class RegisteredWebHookTemplateBean {
 	
 	public static class SimpleTemplate{
 		private String description;
-		private String shortName;
-		private String formatName;
+		private String templateShortName;
+		private String formatShortName;
 		private String templateFormatCombinationKey;
 		private List<String> supportedStates = new ArrayList<String>();
 		private List<String> supportedBranchStates = new ArrayList<String>();
@@ -47,9 +47,9 @@ public class RegisteredWebHookTemplateBean {
 			SimpleTemplate temp = new SimpleTemplate();
 			
 			temp.description = webHookTemplate.getTemplateDescription() + " (" + format.getFormatDescription() + ")";
-			temp.shortName = webHookTemplate.getTemplateShortName();
-			temp.formatName = format.getFormatShortName();
-			temp.templateFormatCombinationKey = webHookTemplate.getTemplateShortName() + "_" + format.getFormatShortName();
+			temp.templateShortName = webHookTemplate.getTemplateShortName();
+			temp.formatShortName = format.getFormatShortName().toLowerCase();
+			temp.templateFormatCombinationKey = webHookTemplate.getTemplateShortName() + "_" + format.getFormatShortName().toLowerCase();
 			for (BuildStateEnum s : webHookTemplate.getSupportedBuildStates()){
 				temp.supportedStates.add(s.getShortName());
 			}
@@ -59,16 +59,16 @@ public class RegisteredWebHookTemplateBean {
 			return temp;
 		}
 		
-		public String getShortName() {
-			return shortName;
+		public String getTemplateShortName() {
+			return templateShortName;
 		}
 		
 		public String getDescription() {
 			return description;
 		}
 		
-		public String getFormatName() {
-			return formatName;
+		public String getFormatShortName() {
+			return formatShortName;
 		}
 		
 		public List<String> getSupportedStates() {

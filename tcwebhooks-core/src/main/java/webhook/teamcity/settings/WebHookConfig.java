@@ -194,7 +194,7 @@ public class WebHookConfig {
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute("enabled", String.valueOf(this.enabled));
 		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
-		el.setAttribute("template", String.valueOf(this.payloadTemplate).toLowerCase());
+		el.setAttribute("template", String.valueOf(this.payloadTemplate));
 		
 		Element statesEl = new Element("states");
 		for (BuildStateEnum state : states.getStateSet()){

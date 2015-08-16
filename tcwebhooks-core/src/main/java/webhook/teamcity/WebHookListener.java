@@ -104,35 +104,55 @@ public class WebHookListener extends BuildServerAdapter {
 			for (WebHookConfigWrapper whcw : getListOfEnabledWebHooks(sRunningBuild.getProjectId())){
 				WebHookPayload payloadFormat = myManager.getFormat(whcw.whc.getPayloadFormat());
 				WebHookTemplateContent templateForThisBuild;
-				if (sRunningBuild.getBranch() != null){ 
-					// We have a branch aware sBuild. Get the branch template.
-					templateForThisBuild = webHookTemplateResolver.findWebHookBranchTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), whcw.whc.getPayloadTemplate());
-				} else {
-					// Branch is null. TeamCity is not aware of branch support for this sBuild, so get the non-branch template.
-					templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), whcw.whc.getPayloadTemplate());
-				}
 				whcw.wh.setContentType(payloadFormat.getContentType());
 				
 				if (state.equals(BuildStateEnum.BUILD_STARTED)){
-					whcw.wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
+					if (whcw.wh.isEnabled()){
+						templateForThisBuild = findTemplateForState(sRunningBuild, state, whcw.whc.getPayloadTemplate(), payloadFormat);
+						whcw.wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));
+					}
 				} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
-					whcw.wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
+					if (whcw.wh.isEnabled()){
+						templateForThisBuild = findTemplateForState(sRunningBuild, state, whcw.whc.getPayloadTemplate(), payloadFormat);
+						whcw.wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));
+					}
 				} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
-					whcw.wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
+					if (whcw.wh.isEnabled()){
+						templateForThisBuild = findTemplateForState(sRunningBuild, state, whcw.whc.getPayloadTemplate(), payloadFormat);
+						whcw.wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));
+					}
 				} else if (state.equals(BuildStateEnum.BUILD_FINISHED)){
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(
 							BuildStateEnum.BUILD_FINISHED, 
 							sRunningBuild.getStatusDescriptor().isSuccessful(),
 							this.hasBuildChangedHistoricalState(sRunningBuild)));
-					whcw.wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));;
+					
+					if (whcw.wh.isEnabled()){
+						templateForThisBuild = findTemplateForState(sRunningBuild, BuildState.getEffectiveState(state, sRunningBuild.getStatusDescriptor().isSuccessful(), this.hasBuildChangedHistoricalState(sRunningBuild)), whcw.whc.getPayloadTemplate(), payloadFormat);
+						whcw.wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates(), templateForThisBuild));;
+					}
 				}
 				
 				doPost(whcw.wh, whcw.whc.getPayloadFormat());
 				Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whcw.whc.getPayloadFormat()).getFormatDescription());
 	    	}
+	}
+
+	private WebHookTemplateContent findTemplateForState(
+			SRunningBuild sRunningBuild, BuildStateEnum state,
+			String payloadtemplateName, WebHookPayload payloadFormat) {
+		WebHookTemplateContent templateForThisBuild;
+		if (sRunningBuild.getBranch() != null){ 
+			// We have a branch aware sBuild. Get the branch template.
+			templateForThisBuild = webHookTemplateResolver.findWebHookBranchTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), payloadtemplateName);
+		} else {
+			// Branch is null. TeamCity is not aware of branch support for this sBuild, so get the non-branch template.
+			templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(state, sRunningBuild.getBuildType(), payloadFormat.getFormatShortName(), payloadtemplateName);
+		}
+		return templateForThisBuild;
 	}
 
 	/** 

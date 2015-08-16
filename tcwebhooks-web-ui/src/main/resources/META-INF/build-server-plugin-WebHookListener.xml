@@ -37,6 +37,11 @@
      	class="webhook.teamcity.extension.WebHookAjaxEditPageController" 
      	init-method="register" 
      	/>
+
+     <bean id="webHookTemplateRenderingController" 
+     	class="webhook.teamcity.extension.WebHookTemplateRenderingController" 
+     	init-method="register" 
+     	/>
      			
      <bean id="webHookFactory" 
      	class="webhook.teamcity.WebHookFactoryImpl" 

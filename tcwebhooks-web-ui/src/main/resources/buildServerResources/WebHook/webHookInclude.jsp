@@ -67,6 +67,7 @@
 								  <ul class='etabs'>
 												   <li class='tab'><a href="#hookPane" class="active">WebHook Config</a></li>
 												   <li class='tab'><a href="#buildPane">Builds (<span id="selectedBuildCount">all</span>)</a></li>
+												   <li class='tab'><a href="#templatePane">Payload Content</a></li>
 								  </ul>
 						 <div class='panel-container'>
 									<div id='hookPane'>
@@ -159,7 +160,39 @@
 					    				<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input id="buildTypeSubProjects" name="buildTypeSubProjects" onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" class="buildType_subprojects"><strong>All Sub-Project Builds</strong></label></p>
 					            		<div id='buildList' style="overflow:auto; padding:0;">
 						            	</div>
-						            </div>
+						            </div><!--buildPane -->
+						            <div id='templatePane'>
+						            	<div id='templateLeftPanel'>
+						            		<div id="currentTemplateName"></div>
+						            		<div>
+							            		Build Event: <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent">
+							            			<option value="buildStarted">Build Started</option>
+							            			<option value="buildStartedBranch">Build Started - Branch</option>
+							            			<option value="buildInterrupted">Build Interrupted</option>
+							            			<option value="buildInterruptedBranch">Build Interrupted - Branch</option>
+							            			<option value="beforeBuildFinish">Build Almost Completed</option>
+							            			<option value="beforeBuildFinishBranch">Build Almost Completed - Branch</option>
+							            			<option value="responsibilityChanged">Build Responsibility Changed</option>
+							            			<option value="responsibilityChangedBranch">Build Responsibility Changed - Branch</option>
+							            			<option value="buildSuccessful">Build Successful</option>
+							            			<option value="buildSuccessfulBranch">Build Successful - Branch</option>
+							            			<option value="buildFixed"> - Build changes from Failure to Success</option>
+							            			<option value="buildFixedBranch"> - Build changes from Failure to Success - Branch</option>
+							            			<option value="buildFailed">Build Failed</option>
+							            			<option value="buildFailedBranch">Build Failed - Branch</option>
+							            			<option value="buildBroken"> - Build changes from Success to Failure</option>
+							            			<option value="buildBrokenBranch"> - Build changes from Success to Failure - Branch</option>
+							            		</select> 
+							            		<!--label><checkbox id="currentTemplateCustomise" disabled>&nbsp;Customise Template</label-->
+											</div>
+						            		<div id="currentTemplateRaw"></div>
+						            		<div id="currentTemplateRendered"></div>
+																	            		
+						            		
+						            	</div>
+						            
+						            
+						            </div><!--templatePane -->
 					    	</div><!-- panel-container  -->
 					</div>    <!-- tab-container -->   
 		            

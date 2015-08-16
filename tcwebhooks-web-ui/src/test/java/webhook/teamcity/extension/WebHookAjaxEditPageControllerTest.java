@@ -6,8 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static webhook.teamcity.extension.WebHookAjaxEditPageController.BUILD_FAILED;
 import static webhook.teamcity.extension.WebHookAjaxEditPageController.BUILD_SUCCESSFUL;
-import static webhook.teamcity.extension.WebHookAjaxEditPageController.checkAndAddBuildState;
-import static webhook.teamcity.extension.WebHookAjaxEditPageController.checkAndAddBuildStateIfEitherSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,7 +16,7 @@ import org.junit.Test;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.MockSProject;
+import webhook.teamcity.extension.util.EnabledBuildStateResolver;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 
 public class WebHookAjaxEditPageControllerTest {
@@ -33,6 +31,7 @@ public class WebHookAjaxEditPageControllerTest {
 	BuildState states;
 	WebHookTemplateResolver templateResolver;
 	SProject project;
+	private EnabledBuildStateResolver resolver;
 	
 	@Before
 	public void setup(){
@@ -65,6 +64,7 @@ public class WebHookAjaxEditPageControllerTest {
 			when(templateResolver.templateSupportsFormatAndState(state, project, paramFormat, paramTemplate)).thenReturn(true);
 		}
 		
+		resolver = new EnabledBuildStateResolver(templateResolver, project);
 	}
 	
 	@Test
@@ -77,16 +77,16 @@ public class WebHookAjaxEditPageControllerTest {
 	 */
 	public void testCheckAndAddBuildState() {
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
 		
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FINISHED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FINISHED));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_FAILED);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_FAILED);
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FINISHED));
@@ -98,20 +98,20 @@ public class WebHookAjaxEditPageControllerTest {
 	public void testCheckAndAddBuildStateIfEitherSet01() {
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FINISHED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FINISHED));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_FAILED);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_FAILED);
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
 
 		/* Use checkAndAddBuildStateIfEitherSet so that either one or the other need to be set, not the last one */
 		
-		checkAndAddBuildStateIfEitherSet(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
+		resolver.checkAndAddBuildStateIfEitherSet(requestSuccessOnAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FINISHED));
 	}
 	
@@ -119,16 +119,16 @@ public class WebHookAjaxEditPageControllerTest {
 	public void testCheckAndAddBuildStateIfEitherSet02() {
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOffAndFailureOn, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOffAndFailureOn, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOffAndFailureOn, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+		resolver.checkAndAddBuildState(requestSuccessOffAndFailureOn, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FAILED));
 		
 		/* Use checkAndAddBuildStateIfEitherSet so that either one or the other need to be set, not the last one */
 		
-		checkAndAddBuildStateIfEitherSet(requestSuccessOffAndFailureOn, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
+		resolver.checkAndAddBuildStateIfEitherSet(requestSuccessOffAndFailureOn, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FINISHED));
 	}
 
@@ -136,16 +136,16 @@ public class WebHookAjaxEditPageControllerTest {
 	public void testCheckAndAddBuildStateIfEitherSet03() {
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOffAndFailureOff, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOffAndFailureOff, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOffAndFailureOff, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+		resolver.checkAndAddBuildState(requestSuccessOffAndFailureOff, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
 		
 		/* Use checkAndAddBuildStateIfEitherSet so that either one or the other need to be set, not the last one */
 		
-		checkAndAddBuildStateIfEitherSet(requestSuccessOffAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
+		resolver.checkAndAddBuildStateIfEitherSet(requestSuccessOffAndFailureOff, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FINISHED));
 	}
 	
@@ -153,16 +153,16 @@ public class WebHookAjaxEditPageControllerTest {
 	public void testCheckAndAddBuildStateIfEitherSet04() {
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOn, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOn, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_SUCCESSFUL));
 		
 		assertFalse(states.enabled(BuildStateEnum.BUILD_FAILED));
-		checkAndAddBuildState(templateResolver, project, requestSuccessOnAndFailureOn, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+		resolver.checkAndAddBuildState(requestSuccessOnAndFailureOn, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FAILED));
 		
 		/* Use checkAndAddBuildStateIfEitherSet so that either one or the other need to be set, not the last one */
 		
-		checkAndAddBuildStateIfEitherSet(requestSuccessOnAndFailureOn, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
+		resolver.checkAndAddBuildStateIfEitherSet(requestSuccessOnAndFailureOn, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED);
 		assertTrue(states.enabled(BuildStateEnum.BUILD_FINISHED));
 	}
 	
