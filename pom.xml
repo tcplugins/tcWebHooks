@@ -4,7 +4,7 @@
 	<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
 	<artifactId>tcwebhooks</artifactId>
 	<properties>
-    	<majorVersion>0.9</majorVersion>
+    	<majorVersion>1.1</majorVersion>
     	<minorVersion>snapshot</minorVersion>
     	<currentVersion>${majorVersion}.${minorVersion}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
