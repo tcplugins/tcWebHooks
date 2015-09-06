@@ -164,8 +164,9 @@
 						            <div id='templatePane'>
 						            	<div id='templateLeftPanel'>
 						            		<div id="currentTemplateName"></div>
+						            		<div>Build History: <select name="currentTemplateBuildId" id="currentTemplateBuildId" class="templateAjaxRefresh"></select></div>
 						            		<div>
-							            		Build Event: <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent">
+							            		Build Event: <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent" class="templateAjaxRefresh">
 							            			<option value="buildStarted">Build Started</option>
 							            			<option value="buildStartedBranch">Build Started - Branch</option>
 							            			<option value="buildInterrupted">Build Interrupted</option>

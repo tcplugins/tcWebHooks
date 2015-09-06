@@ -2,9 +2,11 @@ package webhook.testframework;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 
 import org.jdom.JDOMException;
@@ -30,5 +32,6 @@ public interface WebHookMockingFramework {
 	public WebHookTemplateResolver getWebHookTemplateResolver();
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException;
 	public void loadWebHookProjectSettingsFromConfigXml(File xmlConfigFile) throws IOException, JDOMException;
+	public List<SFinishedBuild> getMockedBuildHistory();
 
 }

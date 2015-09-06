@@ -21,6 +21,7 @@ import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
+import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -73,8 +74,10 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    															ProjectWebHooksBean.build(projSettings, 
 		    																						project, 
 		    																						myManager.getRegisteredFormatsAsCollection(),
-		    																						myTemplateResolver.findWebHookTemplatesForProject(project))
-		    																					)
+		    																						myTemplateResolver.findWebHookTemplatesForProject(project)
+		    																						),
+		    															ProjectHistoryResolver.getProjectHistory(project)		    																						
+		    															)
 	        														)
 		    													);
 	        	}
@@ -88,8 +91,15 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
 		        				TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()),
-		        				ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(), myTemplateResolver.findWebHookTemplatesForProject(project)))));
+																			myManager.getRegisteredFormats()
+																			),
+										ProjectWebHooksBean.build(projSettings, sBuildType, project, 
+																			myManager.getRegisteredFormatsAsCollection(), 
+																			myTemplateResolver.findWebHookTemplatesForProject(project)
+																),
+										ProjectHistoryResolver.getBuildHistory(sBuildType)																
+									)
+								));
 		        	}
         		}
 	        

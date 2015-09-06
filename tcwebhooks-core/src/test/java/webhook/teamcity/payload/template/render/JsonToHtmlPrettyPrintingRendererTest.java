@@ -27,4 +27,20 @@ public class JsonToHtmlPrettyPrintingRendererTest {
 			System.out.println(ex.getMessage());
 		}
 	}
+	
+	@Test
+	public void testRender2WithOutput() {
+		try {
+			JsonToHtmlPrettyPrintingRenderer j = new JsonToHtmlPrettyPrintingRenderer();
+			System.out.println(
+				j.render("{ \"text\": \"All your build failures are belong to us\", \"attachments\": [ "
+					+ "{ \"fallback\": \"${buildName} <${buildStatusUrl}|build #${buildNumber}> "
+					+ "triggered by ${triggeredBy} has a status of ${buildResult}\", "
+					+ "\"text\": \"${buildName} <${buildStatusUrl}|build #${buildNumber}> "
+					+ "triggered by ${triggeredBy} has a status of ${buildResult}\", \"color\": \"danger\" }]}")
+			);
+		} catch (WebHookHtmlRendererException ex){
+			System.out.println(ex.getMessage());
+		}
+	}
 }

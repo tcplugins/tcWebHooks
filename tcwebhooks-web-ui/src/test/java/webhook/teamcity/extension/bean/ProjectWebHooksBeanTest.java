@@ -13,6 +13,8 @@ import org.junit.Test;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBeanJsonSerialiser;
+import webhook.teamcity.extension.util.ProjectHistoryResolver;
+import webhook.teamcity.extension.util.ProjectHistoryResolver.ProjectHistoryBean;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
@@ -30,7 +32,8 @@ public class ProjectWebHooksBeanTest {
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
-		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig)));
+		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history)));
 	}
 	
 	@Test
@@ -39,7 +42,8 @@ public class ProjectWebHooksBeanTest {
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
-		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig)));
+		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history)));
 	}
 	
 	@Test
@@ -48,8 +52,9 @@ public class ProjectWebHooksBeanTest {
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
+		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		System.out.println(RegisteredWebHookTemplateBeanJsonSerialiser.serialise(template));
-		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig)));
+		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history)));
 	}
 
 }

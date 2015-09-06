@@ -19,6 +19,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -57,9 +58,12 @@ public class WebHookTemplateRenderingController extends BaseController {
 		if (	request.getParameter("buildState") != null
 			&&	request.getParameter("payloadTemplate") != null
 			&&	request.getParameter("payloadFormat") != null
-			&&	request.getParameter("projectId") != null){
+			&&	request.getParameter("buildId") != null
+			&&	request.getParameter("projectId") != null)
+		{
 			
 			SProject myproject = this.myServer.getProjectManager().findProjectByExternalId(request.getParameter("projectId"));
+			SBuild sBuild = this.myServer.findBuildInstanceById(Long.parseLong(request.getParameter("buildId")));
 			String buildState = request.getParameter("buildState");
 			String payloadFormat = request.getParameter("payloadFormat");
 			String payloadTemplate = request.getParameter("payloadTemplate");

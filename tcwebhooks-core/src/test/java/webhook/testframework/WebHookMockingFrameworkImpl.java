@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,6 +77,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SFinishedBuild previousFailedBuild = mock(SFinishedBuild.class);
 	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<SFinishedBuild>();
 	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
+	List<SFinishedBuild> finishedBuildsHistory = new ArrayList<SFinishedBuild>();
+	
 	SBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	SBuildType sBuildType02 = new MockSBuildType("Test Build-2", "A Test Build 02", "bt2");
 	SBuildType sBuildType03 = new MockSBuildType("Test Build-2", "A Test Build 03", "bt3");
@@ -118,8 +121,10 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(sBuildServer.getProjectManager()).thenReturn(projectManager);
 		when(previousSuccessfulBuild.getBuildStatus()).thenReturn(Status.NORMAL);
 		when(previousSuccessfulBuild.isPersonal()).thenReturn(false);
+		when(previousSuccessfulBuild.getFinishDate()).thenReturn(new Date());
 		when(previousFailedBuild.getBuildStatus()).thenReturn(Status.FAILURE);
 		when(previousFailedBuild.isPersonal()).thenReturn(false);
+		when(previousFailedBuild.getFinishDate()).thenReturn(new Date());
 		finishedSuccessfulBuilds.add(previousSuccessfulBuild);
 		finishedFailedBuilds.add(previousFailedBuild);
 		((MockSBuildType) sBuildType).setProject(sProject);
@@ -143,6 +148,18 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(templateManager.getRegisteredTemplates()).thenReturn(templateList);
 		when(resolver.findWebHookTemplatesForProject(sProject)).thenReturn(templateList);
 		
+		
+		finishedBuildsHistory.addAll(finishedSuccessfulBuilds);
+		finishedBuildsHistory.addAll(finishedFailedBuilds);
+
+		((MockSBuildType) sBuildType).setMockingFrameworkInstance(this);
+		
+	}
+	
+	@Override
+	public List<SFinishedBuild> getMockedBuildHistory(){
+
+		return finishedBuildsHistory;
 	}
 
 	private WebHookTemplate getTestingTemplate() {

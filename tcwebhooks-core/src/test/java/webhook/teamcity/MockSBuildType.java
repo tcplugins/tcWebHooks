@@ -67,6 +67,8 @@ import jetbrains.buildServer.vcs.VcsRootNotFoundException;
 
 import org.jdom.Element;
 
+import webhook.testframework.WebHookMockingFramework;
+
 public class MockSBuildType implements SBuildType {
 	
 	private SProject project;
@@ -77,11 +79,17 @@ public class MockSBuildType implements SBuildType {
 	private RunType runType = new MockRunType();
 	private String description;
 	private String buildTypeId;
+	private WebHookMockingFramework mockingFramework;
+	
 	
 	public MockSBuildType(String name, String description, String buildTypeId) {
 		this.name = name;
 		this.description = description;
 		this.buildTypeId = buildTypeId;
+	}
+	
+	public void setMockingFrameworkInstance(WebHookMockingFramework mockingFramework){
+		this.mockingFramework = mockingFramework;
 	}
 
 	public void addBuildParameter(Parameter arg0) {
@@ -211,8 +219,7 @@ public class MockSBuildType implements SBuildType {
 	}
 
 	public List<SFinishedBuild> getHistory() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.mockingFramework.getMockedBuildHistory();
 	}
 
 	public List<SFinishedBuild> getHistory(boolean arg0) {

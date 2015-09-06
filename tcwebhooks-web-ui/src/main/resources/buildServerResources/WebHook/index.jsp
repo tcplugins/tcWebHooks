@@ -93,11 +93,13 @@
 				});
 				
 				
-				jQueryWebhook('#currentTemplateBuildEvent').change(function() {
-					var selectedBuildState = jQueryWebhook(this).val();
+				jQueryWebhook('select.templateAjaxRefresh').change(function() {
+					var selectedBuildState = jQueryWebhook('#currentTemplateBuildEvent').val();
+					var selectedBuildId = jQueryWebhook('#currentTemplateBuildId').val();
 					jQueryWebhook.getJSON( "renderTemplate.html", {
 										projectId: "${projectExternalId}",
 										buildState: selectedBuildState,
+										buildId: selectedBuildId,
 										payloadTemplate: lookupTemplate(jQueryWebhook('#payloadFormatHolder').val()),
 										payloadFormat: lookupFormat(jQueryWebhook('#payloadFormatHolder').val())
 									})
@@ -234,6 +236,11 @@
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){BS.WebHookForm.removeWebHook(webhook.uniqueKey,'#hookPane');});
 					
 				}
+			});
+			
+			jQueryWebhook('#currentTemplateBuildId').empty();
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 		}
 

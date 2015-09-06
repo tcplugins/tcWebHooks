@@ -28,6 +28,7 @@ import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
 import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
+import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -121,10 +122,12 @@ public class WebHookIndexPageController extends BaseController {
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
-																	myTemplateResolver.findWebHookTemplatesForProject(project))
-																)
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																),
+										ProjectHistoryResolver.getProjectHistory(project)
 									)
-								);
+								)
+							);
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
@@ -147,8 +150,10 @@ public class WebHookIndexPageController extends BaseController {
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
-																	myTemplateResolver.findWebHookTemplatesForProject(project))
-																)
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																),
+										ProjectHistoryResolver.getProjectHistory(project)
+										)
 									)
 								);
 
@@ -190,7 +195,10 @@ public class WebHookIndexPageController extends BaseController {
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()), 
 										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
-																	myTemplateResolver.findWebHookTemplatesForProject(project)))
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																	),
+										ProjectHistoryResolver.getBuildHistory(sBuildType)																	
+										)
 									)
 								);			    				
 		        	}
