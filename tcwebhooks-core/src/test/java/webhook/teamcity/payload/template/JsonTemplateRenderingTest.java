@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -47,6 +48,7 @@ public class JsonTemplateRenderingTest {
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
+		when (previousBuild.getFinishDate()).thenReturn(new Date());
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 		SBuildServer mockServer = mock(SBuildServer.class);

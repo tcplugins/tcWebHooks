@@ -70,12 +70,10 @@
 										jQueryWebhook("td." + state.id).removeClass('buildStateDisabled');
 										jQueryWebhook("input#" + state.id).removeAttr('disabled');
 										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").removeAttr('disabled');
-										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "Branch]").removeAttr('disabled');
 								} else {
 										jQueryWebhook("td." + state.id).addClass('buildStateDisabled');
 										jQueryWebhook("input#" + state.id).attr('disabled', 'disabled');
 										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").attr('disabled', 'disabled');
-										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "Branch]").attr('disabled', 'disabled');
 								}
 							//console.log(state);
 							//console.log(state.id);
@@ -182,6 +180,11 @@
 				}
 			});
 			updateSelectedBuildTypes();
+			jQueryWebhook('#currentTemplateBuildId').empty();
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
+			});
+			
 		}
 
 		function lookupTemplate(templateFormatCombinationKey){

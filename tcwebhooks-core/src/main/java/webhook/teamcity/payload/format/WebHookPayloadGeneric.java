@@ -11,6 +11,7 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
@@ -39,7 +40,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		
 	
 	@Override
-	public String beforeBuildFinish(SRunningBuild runningBuild, SFinishedBuild previousBuild,
+	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
@@ -51,28 +52,28 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	 */
 	@Deprecated
 	@Override
-	public String buildChangedStatus(SRunningBuild runningBuild, SFinishedBuild previousBuild,
+	public String buildChangedStatus(SBuild runningBuild, SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";
 	}
 
 	@Override
-	public String buildFinished(SRunningBuild runningBuild, SFinishedBuild previousBuild,
+	public String buildFinished(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
-	public String buildInterrupted(SRunningBuild runningBuild, SFinishedBuild previousBuild,
+	public String buildInterrupted(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
-	public String buildStarted(SRunningBuild runningBuild, SFinishedBuild previousBuild, 
+	public String buildStarted(SBuild runningBuild, SFinishedBuild previousBuild, 
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);

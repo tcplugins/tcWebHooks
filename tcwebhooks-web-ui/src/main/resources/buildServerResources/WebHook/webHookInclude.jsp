@@ -168,21 +168,13 @@
 						            		<div>
 							            		Build Event: <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent" class="templateAjaxRefresh">
 							            			<option value="buildStarted">Build Started</option>
-							            			<option value="buildStartedBranch">Build Started - Branch</option>
 							            			<option value="buildInterrupted">Build Interrupted</option>
-							            			<option value="buildInterruptedBranch">Build Interrupted - Branch</option>
 							            			<option value="beforeBuildFinish">Build Almost Completed</option>
-							            			<option value="beforeBuildFinishBranch">Build Almost Completed - Branch</option>
 							            			<option value="responsibilityChanged">Build Responsibility Changed</option>
-							            			<option value="responsibilityChangedBranch">Build Responsibility Changed - Branch</option>
 							            			<option value="buildSuccessful">Build Successful</option>
-							            			<option value="buildSuccessfulBranch">Build Successful - Branch</option>
 							            			<option value="buildFixed"> - Build changes from Failure to Success</option>
-							            			<option value="buildFixedBranch"> - Build changes from Failure to Success - Branch</option>
 							            			<option value="buildFailed">Build Failed</option>
-							            			<option value="buildFailedBranch">Build Failed - Branch</option>
 							            			<option value="buildBroken"> - Build changes from Success to Failure</option>
-							            			<option value="buildBrokenBranch"> - Build changes from Success to Failure - Branch</option>
 							            		</select> 
 							            		<!--label><checkbox id="currentTemplateCustomise" disabled>&nbsp;Customise Template</label-->
 											</div>

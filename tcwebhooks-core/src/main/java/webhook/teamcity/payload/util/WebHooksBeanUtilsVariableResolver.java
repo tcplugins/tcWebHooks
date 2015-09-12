@@ -34,7 +34,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 		String value = "UNRESOLVED";
 		try {
 			// Try getting it from teamcity first.
-			if (teamcityProperties.containsKey(variableName)){
+			if (teamcityProperties != null && teamcityProperties.containsKey(variableName)){
 				value = (String) teamcityProperties.get(variableName);
 			}
 			

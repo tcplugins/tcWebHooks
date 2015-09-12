@@ -397,8 +397,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public Date getStartDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Date();
 	}
 
 	public StatusDescriptor getStatusDescriptor() {

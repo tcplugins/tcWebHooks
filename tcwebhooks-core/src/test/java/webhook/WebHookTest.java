@@ -19,6 +19,7 @@ import org.junit.Test;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.settings.WebHookConfig;
 
 
 public class WebHookTest{
@@ -33,7 +34,8 @@ public class WebHookTest{
 	public String proxyUsername = "foo";
 	public String proxyPassword = "bar";
 	
-	WebHookFactory factory = new WebHookFactoryImpl();
+	TestingWebHookFactory factory = new TestingWebHookFactory();
+	WebHookFactory actualfactory = new WebHookFactoryImpl();
 	
 	@Test
 	public void test_BuildStates(){
@@ -401,4 +403,25 @@ public class WebHookTest{
 			e.printStackTrace();
 		}
 	}	
+	
+	public static class TestingWebHookFactory {
+		public WebHook getWebHook(){
+			return new WebHookImpl();
+		}
+
+		public WebHook getWebHook(String url, String proxy, Integer proxyPort) {
+			return new WebHookImpl(url, proxy, proxyPort);
+		}
+
+		public WebHook getWebHook(String url) {
+			return new WebHookImpl(url);
+		}
+
+		public WebHook getWebHook(String url, String proxy, String proxyPort) {
+			return new WebHookImpl(url, proxy, proxyPort);
+		}
+		public WebHook getWebHook(String url, WebHookProxyConfig proxyConfig) {
+			return new WebHookImpl(url, proxyConfig);
+		}
+	}
 }

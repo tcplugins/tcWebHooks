@@ -43,6 +43,10 @@
      	init-method="register" 
      	/>
      			
+     <bean id="webHookContentBuilder" 
+     	class="webhook.teamcity.WebHookContentBuilder" 
+     	/>
+     			
      <bean id="webHookFactory" 
      	class="webhook.teamcity.WebHookFactoryImpl" 
      	/>
@@ -126,6 +130,14 @@
 		init-method="register">
 		<property name="rank">
 			<value>500</value>
+		</property>
+	</bean>
+	
+	<bean id="elasticSearchWebHookTemplate"
+		class="webhook.teamcity.payload.template.ElasticSearchWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>14</value>
 		</property>
 	</bean>
 	

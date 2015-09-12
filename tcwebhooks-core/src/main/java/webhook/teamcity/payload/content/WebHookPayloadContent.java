@@ -1,12 +1,25 @@
 package webhook.teamcity.payload.content;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
+
+
+
+
+
+
+
+
+import com.google.common.collect.Sets.SetView;
+
 import jetbrains.buildServer.serverSide.Branch;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -32,6 +45,9 @@ public class WebHookPayloadContent {
 		buildExternalTypeId,
 		buildStatusUrl,
 		buildStatusHtml,
+		buildStartTime,
+		currentTime,
+		buildFinishTime,
 		rootUrl,
 		projectName,
 		projectId,
@@ -76,7 +92,7 @@ public class WebHookPayloadContent {
 		 * @param buildState
 		 * @param extraParameters
 		 */
-		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
+		public WebHookPayloadContent(SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
 				Map<String, String> extraParameters, 
 				Map<String, String> teamcityProperties,
@@ -89,7 +105,7 @@ public class WebHookPayloadContent {
     		populateArtifacts(sRunningBuild);
 		}
 
-		private void populateArtifacts(SRunningBuild runningBuild) {
+		private void populateArtifacts(SBuild runningBuild) {
 			//ArtifactsInfo artInfo = new ArtifactsInfo(runningBuild);
 			//artInfo.
 			
@@ -103,6 +119,7 @@ public class WebHookPayloadContent {
 		 * @param state
 		 */
 		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
+			
 			setNotifyType(state.getShortName());
 			setBuildRunners(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
@@ -118,7 +135,7 @@ public class WebHookPayloadContent {
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
 		
-		private void populateMessageAndText(SRunningBuild sRunningBuild,
+		private void populateMessageAndText(SBuild sRunningBuild,
 				BuildStateEnum state, Map<String,String> templates) {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
@@ -137,8 +154,20 @@ public class WebHookPayloadContent {
 		 * @param previousBuild
 		 * @param buildState
 		 */
-		private void populateCommonContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
+		private void populateCommonContent(SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState, Map<String, String> templates) {
+			
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+			
+			if (sRunningBuild instanceof SRunningBuild) {
+				setBuildStartTime(format.format(((SRunningBuild) sRunningBuild).getStartDate()));
+				if (((SRunningBuild) sRunningBuild).getFinishDate() != null){
+					setBuildFinishTime(format.format(((SRunningBuild) sRunningBuild).getFinishDate()));
+				}
+			}
+			
+			setCurrentTime(format.format(new Date()));
+
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(buildState.getShortName());
@@ -176,8 +205,7 @@ public class WebHookPayloadContent {
     		setRootUrl(server.getRootUrl());
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 		}
-		
-		
+
 		public String getBuildInternalTypeId() {
 			return this.buildInternalTypeId;
 		}
@@ -245,7 +273,7 @@ public class WebHookPayloadContent {
 		 * @param previousBuild
 		 * @param buildState
 		 */
-		private void setBuildResult(SRunningBuild sRunningBuild,
+		private void setBuildResult(SBuild sRunningBuild,
 				SFinishedBuild previousBuild, BuildStateEnum buildState) {
 
 			if (previousBuild != null){
@@ -473,7 +501,31 @@ public class WebHookPayloadContent {
 			
 			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties));
 			this.buildStatusHtml = builder.build();
-		}		
+		}
+		
+		public String getBuildStartTime() {
+			return buildStartTime;
+		}
+		
+		public void setBuildStartTime(String timeString) {
+			this.buildStartTime = timeString;
+		}
+		
+		public String getBuildFinishTime() {
+			return buildFinishTime;
+		}
+		
+		public void setBuildFinishTime(String finishTime) {
+			this.buildFinishTime = finishTime;
+		}
+		
+		public String getCurrentTime() {
+			return currentTime;
+		}
+		
+		public void setCurrentTime(String now) {
+			this.currentTime = now;
+		}
 		
 		public String getComment() {
 			return comment;

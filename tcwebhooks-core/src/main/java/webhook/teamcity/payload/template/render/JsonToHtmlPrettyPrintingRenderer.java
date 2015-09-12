@@ -16,7 +16,7 @@ public class JsonToHtmlPrettyPrintingRenderer implements WebHookStringRenderer {
 		JsonElement je;
 		try {
 			je = jp.parse(uglyJSONString);
-			return htmlr.render(gson.toJson(je).replaceAll("\\\\u003c", "<").replaceAll("\\\\u003e", ">"));
+			return htmlr.render(gson.toJson(je).replaceAll("\\\\u003c", "<").replaceAll("\\\\u003e", ">").replaceAll("\\\\u0026", "&").replaceAll("\\\\u003d", "="));
 		} catch (Exception e){
 			throw new WebHookHtmlRendererException(e);
 		}

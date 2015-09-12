@@ -31,6 +31,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.payload.WebHookPayload;
@@ -63,6 +64,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
 	WebHookTemplateResolver resolver = mock(WebHookTemplateResolver.class);
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
+	WebHookContentBuilder contentBuilder = mock(WebHookContentBuilder.class);
 	WebHookTemplate template;
 	WebHookPayload payloadJson = new WebHookPayloadJson(manager);
 	WebHookPayload payloadXml = new WebHookPayloadXml(manager);
@@ -100,9 +102,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder);
 		projSettings = new WebHookProjectSettings();
-		when(factory.getWebHook()).thenReturn(spyWebHook);
+		when(factory.getWebHook(webHookConfig,null)).thenReturn(spyWebHook);
 		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);
 		when(manager.getFormat("nvpairs")).thenReturn(payloadNvpairs);
 		when(manager.isRegisteredFormat("json")).thenReturn(true);

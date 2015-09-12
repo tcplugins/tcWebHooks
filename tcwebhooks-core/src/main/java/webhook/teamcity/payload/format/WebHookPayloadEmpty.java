@@ -8,6 +8,7 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
@@ -32,14 +33,14 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	}
 
 	@Override
-	public String beforeBuildFinish(SRunningBuild runningBuild,
+	public String beforeBuildFinish(SBuild runningBuild,
 			SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";
 	}
 
 	@Override
-	public String buildChangedStatus(SRunningBuild runningBuild,
+	public String buildChangedStatus(SBuild runningBuild,
 			SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
@@ -47,21 +48,21 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	}
 
 	@Override
-	public String buildFinished(SRunningBuild runningBuild,
+	public String buildFinished(SBuild runningBuild,
 			SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";
 	}
 
 	@Override
-	public String buildInterrupted(SRunningBuild runningBuild,
+	public String buildInterrupted(SBuild runningBuild,
 			SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";
 	}
 
 	@Override
-	public String buildStarted(SRunningBuild runningBuild,
+	public String buildStarted(SBuild runningBuild,
 			SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";

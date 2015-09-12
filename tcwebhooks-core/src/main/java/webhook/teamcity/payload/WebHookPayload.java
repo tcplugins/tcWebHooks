@@ -8,6 +8,7 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
@@ -79,7 +80,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildStarted event.
 	 */
-    String buildStarted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -89,7 +90,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildFinished event.
 	 */
-    String buildFinished(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildFinished(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -99,7 +100,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildInterrupted event.
 	 */
-    String buildInterrupted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildInterrupted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -109,14 +110,14 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the beforeBuildFinish event.
 	 */
-    String beforeBuildFinish(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String beforeBuildFinish(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
     
 	/**
 	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
 	 * It will no longer be called by the WebHookListener
 	 */
 	@Deprecated
-    String buildChangedStatus(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
+    String buildChangedStatus(SBuild sRunningBuild, SFinishedBuild previousBuild, 
     		Status oldStatus, 
     		Status newStatus, 
     		SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
