@@ -126,6 +126,14 @@ public interface WebHookTemplate {
 	 * 
 	 */
 	Set<BuildStateEnum> getSupportedBranchBuildStates();
+	
+	/**
+	 * Get the preferred date/time format for any date object that needs to be presented in the payload content. 
+	 * 
+	 * @return A string that can be passed into SimpleDateFormat<br>For example: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" would format a date like as "2015-09-20T15:26:35.641+00:00"
+	 * 
+	 */
+	String getPreferredDateTimeFormat();
 		
 
 }

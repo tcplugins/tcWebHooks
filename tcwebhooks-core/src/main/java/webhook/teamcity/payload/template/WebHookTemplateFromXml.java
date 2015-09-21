@@ -7,13 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
-import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.settings.WebHookConfig;
 
 public class WebHookTemplateFromXml implements WebHookTemplate {
 	
@@ -26,6 +23,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	private String shortName = "";
 	private String toolTipText = "";
 	private String description = "";
+	private String preferredDateTimeFormat = "";
 
 	@Override
 	public void setTemplateManager(WebHookTemplateManager webhookTemplateManager) {
@@ -46,25 +44,12 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	public void register() {
 		/*
 		 *  We are a special case. We don't need to do anything here.
-		 *  Templates are regitered by the file watcher, which is started 
+		 *  Templates are registered by the file watcher, which is started 
 		 *  in TemplateManager's register method.
 		 *  
 		 *  Most other templates should register themselves via Spring,
 		 *  in which case, this method is used.
 		 */
-		
-//		templateContent.clear();
-//		branchTemplateContent.clear();
-//		if (!templateContent.isEmpty() && !branchTemplateContent.isEmpty()){
-//			this.manager.registerTemplateFormatFromXmlConfig(this);
-//		} else {
-//			if (templateContent.isEmpty()){
-//				Loggers.SERVER.error("WebHookTemplateFromXml :: Failed to register template " + getTemplateShortName() + ". No regular template configurations were found.");
-//			}
-//			if (templateContent.isEmpty()){
-//				Loggers.SERVER.error("WebHookTemplateFromXml :: Failed to register template " + getTemplateShortName() + ". No branch template configurations were found.");
-//			}
-//		}
 	}
 
 	@Override
@@ -130,6 +115,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		WebHookTemplateFromXml template = new WebHookTemplateFromXml();
 		template.setRank(entityTemplate.getRank());
 		template.setTemplateShortName(entityTemplate.getName());
+		template.setPreferredDateTimeFormat(entityTemplate.getPreferredDateTimeFormat());
 		
 		if (entityTemplate.getTemplateDescription() != null){
 			template.setTemplateDescription(entityTemplate.getTemplateDescription());
@@ -151,7 +137,8 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 				template.addTemplateContentForState(state, WebHookTemplateContent.create(
 						state.getShortName(), 
 						entityTemplate.getDefaultTemplate(),
-						true));
+						true,
+						template.getPreferredDateTimeFormat()));
 				
 			}
 		}
@@ -164,7 +151,8 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 				template.addBranchTemplateContentForState(state, WebHookTemplateContent.create(
 						state.getShortName(), 
 						entityTemplate.getDefaultBranchTemplate(),
-						true));
+						true,
+						template.getPreferredDateTimeFormat()));
 				
 			}
 		}
@@ -178,7 +166,9 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 							template.addTemplateContentForState(bse, WebHookTemplateContent.create(
 									bse.getShortName(), 
 									item.getTemplateText(),
-									true));
+									true,
+									template.getPreferredDateTimeFormat()
+									));
 						}
 					}
 				}
@@ -194,7 +184,8 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 							template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
 									bse.getShortName(), 
 									item.getBranchTemplateText(),
-									true));
+									true,
+									template.getPreferredDateTimeFormat()));
 						}
 					}
 				}
@@ -210,6 +201,10 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	}
 	
 
+	private void setPreferredDateTimeFormat(String preferredDateTimeFormat) {
+		this.preferredDateTimeFormat = preferredDateTimeFormat;
+	}
+
 	@Override
 	public Set<BuildStateEnum> getSupportedBuildStates() {
 		return templateContent.keySet();
@@ -218,6 +213,11 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	@Override
 	public Set<BuildStateEnum> getSupportedBranchBuildStates() {
 		return branchTemplateContent.keySet();
+	}
+
+	@Override
+	public String getPreferredDateTimeFormat() {
+		return this.preferredDateTimeFormat;
 	}
 
 }

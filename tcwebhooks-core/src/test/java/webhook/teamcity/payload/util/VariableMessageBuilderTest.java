@@ -58,5 +58,15 @@ public class VariableMessageBuilderTest {
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}
+	
+	@Test
+	public void testDateTemplateProperty() {
+		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		VariableMessageBuilder builder = VariableMessageBuilder.create("The date now is ${now(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\")}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		System.out.println(builder.build());
+		builder = VariableMessageBuilder.create("The month now is ${now(\"yyyy-MM\")}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		System.out.println(builder.build());
+		System.out.println(content.getBuildFullName());
+	}
 
 }

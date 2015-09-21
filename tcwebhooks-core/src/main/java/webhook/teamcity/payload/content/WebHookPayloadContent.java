@@ -8,15 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
-
-
-
-
-
-
-
-
-import com.google.common.collect.Sets.SetView;
+import com.ibm.icu.text.DateFormat;
 
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -157,7 +149,21 @@ public class WebHookPayloadContent {
 		private void populateCommonContent(SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState, Map<String, String> templates) {
 			
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locate first, and then override if found.
+			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
+				try {
+					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
+				} 
+				catch (NullPointerException npe){}
+				catch (IllegalArgumentException iea) {}
+				
+			} else if (extraParameters.containsKey("preferredDateFormat")){
+				try {
+					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
+				} 
+				catch (NullPointerException npe){}
+				catch (IllegalArgumentException iea) {}
+			} 
 			
 			if (sRunningBuild instanceof SRunningBuild) {
 				setBuildStartTime(format.format(((SRunningBuild) sRunningBuild).getStartDate()));

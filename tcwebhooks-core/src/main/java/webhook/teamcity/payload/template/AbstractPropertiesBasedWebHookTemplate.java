@@ -87,7 +87,8 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 	    			templateContent.put(state, WebHookTemplateContent.create(
 	    																state.getShortName(), 
 	    																props.getProperty(templatePropKey),
-	    																true));
+	    																true,
+	    																this.getPreferredDateTimeFormat()));
 	    			Loggers.SERVER.info(getLoggingName() + " :: Found and loaded default template as: " + state.getShortName());
 	    			Loggers.SERVER.debug(getLoggingName() + " :: Template content is: " + props.getProperty(templatePropKey));
     			}
@@ -100,12 +101,42 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
     				branchTemplateContent.put(state, WebHookTemplateContent.create(
     						state.getShortName(), 
     						props.getProperty(templatePropKey),
-    						true));
+    						true,
+    						this.getPreferredDateTimeFormat()));
     				Loggers.SERVER.info(getLoggingName() + " :: Found and loaded default branch template as: " + state.getShortName());
     				Loggers.SERVER.debug(getLoggingName() + " :: Template content is: " + props.getProperty(templatePropKey));
     			}
     		}
-	    	
+    		
+    		// Now check if there is a generic template for all (non-branch) finished build states (successful, failed, fixed, broken)
+    		BuildStateEnum[] finishedBuildStates = {BuildStateEnum.BUILD_SUCCESSFUL, BuildStateEnum.BUILD_FAILED, BuildStateEnum.BUILD_FIXED, BuildStateEnum.BUILD_BROKEN};
+    		templatePropKey = "template.buildFinished";
+    		if (props.containsKey(templatePropKey)){
+	    		for (BuildStateEnum state : finishedBuildStates){
+					templateContent.put(state, WebHookTemplateContent.create(
+							state.getShortName(), 
+							props.getProperty(templatePropKey),
+							true,
+							this.getPreferredDateTimeFormat()));
+					Loggers.SERVER.info(getLoggingName() + " :: Found and loaded generic finished template as: " + state.getShortName());
+					Loggers.SERVER.debug(getLoggingName() + " :: Template content is: " + props.getProperty(templatePropKey));
+	    		}
+    		}
+    		
+    		// Now check if there is a generic branch template for all finished build states (successful, failed, fixed, broken)
+    		templatePropKey = "template.buildFinished.branch";
+    		if (props.containsKey(templatePropKey)){
+	    		for (BuildStateEnum state : finishedBuildStates){
+					branchTemplateContent.put(state, WebHookTemplateContent.create(
+							state.getShortName(), 
+							props.getProperty(templatePropKey),
+							true,
+							this.getPreferredDateTimeFormat()));
+					Loggers.SERVER.info(getLoggingName() + " :: Found and loaded generic finished branch template as: " + state.getShortName());
+					Loggers.SERVER.debug(getLoggingName() + " :: Template content is: " + props.getProperty(templatePropKey));
+	    		}
+    		}
+    		
     		// Then load the state specific templates (if any) for non-branch builds.
 	    	for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 	    		templatePropKey = "template." + state.getShortName();
@@ -113,7 +144,8 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 	    			templateContent.put(state, WebHookTemplateContent.create(
 	    																state.getShortName(), 
 	    																props.getProperty(templatePropKey),
-	    																true));
+	    																true,
+	    																this.getPreferredDateTimeFormat()));
 	    			Loggers.SERVER.info(getLoggingName() + " :: Found and loaded template: " + templatePropKey);
 	    			Loggers.SERVER.debug(getLoggingName() + " :: Template content is: " + props.getProperty(templatePropKey));
 	    		}
@@ -126,7 +158,8 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 	    			branchTemplateContent.put(state, WebHookTemplateContent.create(
 	    					state.getShortName(), 
 	    					props.getProperty(templatePropKey),
-	    					true));
+	    					true,
+	    					this.getPreferredDateTimeFormat()));
 	    			Loggers.SERVER.info(getLoggingName() + " :: Found and loaded template: " + templatePropKey);
 	    			Loggers.SERVER.debug(getLoggingName() + " :: Template content is: " + props.getProperty(templatePropKey));
 	    		}

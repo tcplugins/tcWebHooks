@@ -25,6 +25,7 @@ import lombok.Data;
 			<default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template>
 			<template-description>"Test XML Template"</template-description>
 			<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+			<preferred-date-format value="yyyy-MM-dd'T'HH:mm:ss.SSSXXX"/>
 			<formats>
 				<format name="json" enabled="true" />
 				<format name="nvpairs" enabled="true" />
@@ -82,6 +83,9 @@ public class WebHookTemplate {
 	
 	@XmlElement (name="template-tool-tip")
 	String templateToolTip;
+	
+	@XmlElement (name="preferred-date-format")
+	String preferredDateTimeFormat;
 	
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();

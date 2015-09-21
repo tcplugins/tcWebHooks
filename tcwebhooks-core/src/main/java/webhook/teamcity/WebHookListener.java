@@ -191,7 +191,7 @@ public class WebHookListener extends BuildServerAdapter {
 									responsibilityInfoOld, 
 									responsibilityInfoNew, 
 									isUserAction, 
-									WebHookContentBuilder.mergeParameters(whc.getParams(),sBuildType), whc.getEnabledTemplates(), templateForThisBuild));
+									WebHookContentBuilder.mergeParameters(whc.getParams(),sBuildType, templateForThisBuild.getPreferredDateTimeFormat()), whc.getEnabledTemplates(), templateForThisBuild));
 						wh.setEnabled(whc.isEnabledForBuildType(sBuildType) && wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
@@ -262,7 +262,7 @@ public class WebHookListener extends BuildServerAdapter {
 						wh.setPayload(payloadFormat.responsibleChanged(sBuildType, 
 									responsibilityEntryOld, 
 									responsibilityEntryNew, 
-									WebHookContentBuilder.mergeParameters(whc.getParams(),sBuildType), whc.getEnabledTemplates(), templateForThisBuild));
+									WebHookContentBuilder.mergeParameters(whc.getParams(),sBuildType, templateForThisBuild.getPreferredDateTimeFormat()), whc.getEnabledTemplates(), templateForThisBuild));
 						wh.setEnabled(whc.isEnabledForBuildType(sBuildType) && wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());

@@ -3,7 +3,6 @@ package webhook.teamcity.payload.template;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
-import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
 
 public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTemplate implements WebHookTemplate {
 	
@@ -42,6 +41,15 @@ public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTempl
 	@Override
 	public String getPropertiesFileName() {
 		return CONF_PROPERTIES;
+	}
+
+	/**
+	 * Returning an empty string should let SimpleDateFormat
+	 * choose a locale relevant format.
+	 */
+	@Override
+	public String getPreferredDateTimeFormat() {
+		return "";
 	}
 
 }

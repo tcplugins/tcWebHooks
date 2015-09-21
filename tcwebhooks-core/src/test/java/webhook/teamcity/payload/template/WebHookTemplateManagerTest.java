@@ -124,13 +124,13 @@ public class WebHookTemplateManagerTest {
 		@Override
 		public WebHookTemplateContent getTemplateForState(
 				BuildStateEnum buildState) {
-			return WebHookTemplateContent.create(BuildStateEnum.BUILD_SUCCESSFUL.getShortName(), "{ \fallback\": \"${buildName}", true);
+			return WebHookTemplateContent.create(BuildStateEnum.BUILD_SUCCESSFUL.getShortName(), "{ \fallback\": \"${buildName}", true, "");
 		}
 
 		@Override
 		public WebHookTemplateContent getBranchTemplateForState(
 				BuildStateEnum buildState) {
-			return WebHookTemplateContent.create(BuildStateEnum.BUILD_SUCCESSFUL.getShortName(), "{ \fallback\": \"${buildName} - ${branch}", true);		}
+			return WebHookTemplateContent.create(BuildStateEnum.BUILD_SUCCESSFUL.getShortName(), "{ \fallback\": \"${buildName} - ${branch}", true, "");		}
 
 		@Override
 		public Set<BuildStateEnum> getSupportedBuildStates() {
@@ -140,6 +140,11 @@ public class WebHookTemplateManagerTest {
 		@Override
 		public Set<BuildStateEnum> getSupportedBranchBuildStates() {
 			return new HashSet<BuildStateEnum>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
+		}
+
+		@Override
+		public String getPreferredDateTimeFormat() {
+			return "";
 		}
 		
 	}

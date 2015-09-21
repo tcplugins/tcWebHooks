@@ -70,4 +70,12 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 		
 	}
 
+	/**
+	 * Return an empty dateFormat string. This should then let
+	 * SimpleDateFormat pick a format that suits the locale.
+	 */
+	@Override
+	public String getPreferredDateTimeFormat() {
+		return "";
+	}
 }

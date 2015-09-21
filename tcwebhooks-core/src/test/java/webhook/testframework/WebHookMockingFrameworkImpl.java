@@ -200,13 +200,13 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			
 			@Override
 			public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) {
-				return WebHookTemplateContent.create(buildState.getShortName(), "Template for " + buildState.getShortName(), true);
+				return WebHookTemplateContent.create(buildState.getShortName(), "Template for " + buildState.getShortName(), true, "");
 			}
 			
 			@Override
 			public WebHookTemplateContent getBranchTemplateForState(
 					BuildStateEnum buildState) {
-				return WebHookTemplateContent.create(buildState.getShortName(), "Branch template for " + buildState.getShortName(), true);			}
+				return WebHookTemplateContent.create(buildState.getShortName(), "Branch template for " + buildState.getShortName(), true, "");			}
 			
 			@Override
 			public String getTemplateDescription() {
@@ -234,6 +234,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			@Override
 			public Integer getRank() {
 				return 1;
+			}
+
+			@Override
+			public String getPreferredDateTimeFormat() {
+				return "";
 			}
 			
 		};

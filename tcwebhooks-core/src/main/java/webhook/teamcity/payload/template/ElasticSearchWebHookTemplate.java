@@ -44,4 +44,12 @@ public class ElasticSearchWebHookTemplate extends AbstractPropertiesBasedWebHook
 		return CONF_PROPERTIES;
 	}
 
+	/** Return the date format as "yyyy-MM-dd'T'HH:mm:ss.SSSXXX".<br>
+	 *  This is a format that Elastic can use.
+	 */
+	@Override
+	public String getPreferredDateTimeFormat() {
+		return "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	}
+
 }

@@ -1,6 +1,8 @@
 package webhook.teamcity.payload.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -32,6 +34,21 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 	@Override
 	public String resolve(String variableName) {
 		String value = "UNRESOLVED";
+		
+		// if variable is a date formating variable. eg. now() or now(dateformatAsString)
+		if (variableName.startsWith("now(") && variableName.endsWith(")")){
+			try {
+				String datePattern = variableName.substring("now(".length(), variableName.length() - ")".length());
+				SimpleDateFormat format = new SimpleDateFormat(datePattern);
+				return format.format(new Date());
+			} catch (NullPointerException npe){
+				// do nothing and let the logic below handle it.
+			} catch (IllegalArgumentException iae){
+				// do nothing and let the logic below handle it.
+			}
+		}
+
+		
 		try {
 			// Try getting it from teamcity first.
 			if (teamcityProperties != null && teamcityProperties.containsKey(variableName)){
@@ -39,8 +56,11 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			}
 			
 			// Or override it from the PayloadContent if it exists.
-			
-			value = (String) PropertyUtils.getProperty(bean, variableName);
+			try {
+				value = (String) PropertyUtils.getProperty(bean, variableName).toString();
+			} catch (NullPointerException npe){
+				value = (String) PropertyUtils.getProperty(bean, variableName);
+			}
 			
 		} catch (IllegalAccessException e) {
 			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
