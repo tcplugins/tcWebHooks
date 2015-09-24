@@ -86,19 +86,22 @@ public class WebHookTemplateManager {
 	private void rebuildOrderedListOfTemplates() {
 		this.orderedTemplateCollection.clear();
 		
+		HashMap<String, WebHookTemplate> combinedTemplates = new HashMap<String,WebHookTemplate>();
+		
 		// Rebuild the list of configured templates.
 		// Add all the spring ones.
 		for (WebHookTemplate payloadTemplate : springTemplates.values()){
-			this.orderedTemplateCollection.add(payloadTemplate);
+			combinedTemplates.put(payloadTemplate.getTemplateShortName(), payloadTemplate);
 		}
 		
 		// Now add the XML ones. If any have the same name
 		// as a spring one, it should overwrite it. 
 		// If we've just cleared the XML ones, the list will be empty of course.
 		for (WebHookTemplate payloadTemplate : xmlConfigTemplates.values()){
-			this.orderedTemplateCollection.add(payloadTemplate);
+			combinedTemplates.put(payloadTemplate.getTemplateShortName(), payloadTemplate);
 		}
 		
+		this.orderedTemplateCollection.addAll(combinedTemplates.values());
 		Collections.sort(this.orderedTemplateCollection, rankComparator);
 	}
 
