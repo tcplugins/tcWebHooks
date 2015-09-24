@@ -85,7 +85,7 @@ public class WebHookTemplate {
 	String templateToolTip;
 	
 	@XmlElement (name="preferred-date-format")
-	String preferredDateTimeFormat;
+	String preferredDateTimeFormat = "";
 	
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
