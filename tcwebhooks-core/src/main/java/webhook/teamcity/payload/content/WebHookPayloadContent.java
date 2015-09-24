@@ -165,8 +165,9 @@ public class WebHookPayloadContent {
 				catch (IllegalArgumentException iea) {}
 			} 
 			
+			setBuildStartTime(format.format(sRunningBuild.getStartDate()));
+			
 			if (sRunningBuild instanceof SRunningBuild) {
-				setBuildStartTime(format.format(((SRunningBuild) sRunningBuild).getStartDate()));
 				if (((SRunningBuild) sRunningBuild).getFinishDate() != null){
 					setBuildFinishTime(format.format(((SRunningBuild) sRunningBuild).getFinishDate()));
 				}
