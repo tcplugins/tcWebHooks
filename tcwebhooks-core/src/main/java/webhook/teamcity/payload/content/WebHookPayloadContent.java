@@ -52,6 +52,8 @@ public class WebHookPayloadContent {
 		
 		Branch branch;
 		List<String> buildRunners;
+		WebHooksComment buildComment; 
+		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
 		
@@ -158,6 +160,8 @@ public class WebHookPayloadContent {
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
+    		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
+    		setTags(sRunningBuild.getTags());
     		try {
     			if (sRunningBuild.getBranch() != null){
 	    			setBranch(sRunningBuild.getBranch());
@@ -177,7 +181,26 @@ public class WebHookPayloadContent {
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 		}
 		
+		public List<String> getBuildTags() {
+			return buildTags;
+		}
 		
+		private void setTags(List<String> tags) {
+			this.buildTags = new ArrayList<String>();
+			this.buildTags.addAll(tags);
+		}
+
+		public WebHooksComment getBuildComment() {
+			return buildComment;
+		}
+		
+		private void setComment(WebHooksComment webHooksComment) {
+			this.buildComment = webHooksComment;
+			if (webHooksComment != null){
+				this.comment = webHooksComment.getComment();
+			}
+		}
+
 		public String getBuildInternalTypeId() {
 			return this.buildInternalTypeId;
 		}

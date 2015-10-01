@@ -2,6 +2,7 @@ package webhook.teamcity;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -292,8 +293,9 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public List<String> getTags() {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> tags = new ArrayList<String>();
+		tags.add("someTag");
+		return tags;
 	}
 
 	public TriggeredBy getTriggeredBy() {
