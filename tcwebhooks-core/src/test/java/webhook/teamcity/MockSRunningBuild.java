@@ -24,6 +24,7 @@ import jetbrains.buildServer.serverSide.BuildRevision;
 import jetbrains.buildServer.serverSide.BuildStatistics;
 import jetbrains.buildServer.serverSide.BuildStatisticsOptions;
 import jetbrains.buildServer.serverSide.DownloadedArtifacts;
+import jetbrains.buildServer.serverSide.RepositoryVersion;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import jetbrains.buildServer.serverSide.SBuildFeatureDescriptor;
@@ -46,9 +47,11 @@ import jetbrains.buildServer.tests.TestInfo;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.users.UserSet;
+import jetbrains.buildServer.vcs.CheckoutRules;
 import jetbrains.buildServer.vcs.FilteredVcsChange;
 import jetbrains.buildServer.vcs.RelationType;
 import jetbrains.buildServer.vcs.SVcsModification;
+import jetbrains.buildServer.vcs.SVcsRoot;
 import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
 import jetbrains.buildServer.vcs.VcsException;
 import jetbrains.buildServer.vcs.VcsFileModification;
@@ -57,6 +60,7 @@ import jetbrains.buildServer.vcs.VcsRootInstance;
 import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 import jetbrains.buildServer.vcs.VcsRootNotFoundException;
 import jetbrains.buildServer.vcs.VcsChangeInfo.Type;
+import jetbrains.vcs.api.VcsService;
 
 public class MockSRunningBuild implements SRunningBuild {
 
@@ -240,7 +244,136 @@ public class MockSRunningBuild implements SRunningBuild {
 			@Override
 			public VcsRootInstance getVcsRoot() throws VcsRootNotFoundException {
 				// TODO Auto-generated method stub
-				return null;
+				return new VcsRootInstance() {
+					
+					@Override
+					public boolean isCurrentVersionExpensive() {
+						// TODO Auto-generated method stub
+						return false;
+					}
+					
+					@Override
+					public String getVersionDisplayName(String version) throws VcsException {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public <T extends VcsService> T getService(Class<T> serviceClass,
+							CheckoutRules checkoutRules) throws VcsException {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public <T extends VcsService> T getService(Class<T> serviceClass)
+							throws VcsException {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public long getParentId() {
+						// TODO Auto-generated method stub
+						return 0;
+					}
+					
+					@Override
+					public long getCheckoutPropertiesHash(boolean serverSideCheckout) {
+						// TODO Auto-generated method stub
+						return 0;
+					}
+					
+					@Override
+					public <T extends VcsService> T findService(Class<T> serviceClass,
+							CheckoutRules checkoutRules) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public String getVcsDisplayName() {
+						// TODO Auto-generated method stub
+						return "Test VCS";
+					}
+					
+					@Override
+					public String getDescription() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public String describe(boolean verbose) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public String getVcsName() {
+						// TODO Auto-generated method stub
+						return "Test VCS";
+					}
+					
+					@Override
+					public String getProperty(String propertyName, String defaultValue) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public String getProperty(String propertyName) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public Map<String, String> getProperties() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public String getName() {
+						return "Test VCS";
+					}
+					
+					@Override
+					public long getId() {
+						// TODO Auto-generated method stub
+						return 0;
+					}
+					
+					@Override
+					public boolean isDagBased() {
+						// TODO Auto-generated method stub
+						return false;
+					}
+					
+					@Override
+					public Map<SBuildType, CheckoutRules> getUsages() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public SVcsRoot getParent() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public RepositoryVersion getLastUsedRevision() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public RepositoryVersion getCurrentRevision() throws VcsException {
+						// TODO Auto-generated method stub
+						return null;
+					}
+				};
 			}
 			
 			@Override

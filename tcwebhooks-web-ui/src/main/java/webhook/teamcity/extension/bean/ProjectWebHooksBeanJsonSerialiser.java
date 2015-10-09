@@ -1,6 +1,5 @@
 package webhook.teamcity.extension.bean;
 
-import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
 
 import com.thoughtworks.xstream.XStream;

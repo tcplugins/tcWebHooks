@@ -57,7 +57,7 @@ public class WebHookPayloadContent {
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
-		private WebHooksChanges changes;
+		private List<WebHooksChanges> changes = new ArrayList<WebHooksChanges>();
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -205,10 +205,10 @@ public class WebHookPayloadContent {
 		}
 		
 		private void setChanges(List<SVcsModification> modifications){
-			this.changes = WebHooksChanges.build(modifications);
+			this.changes = WebHooksChangeBuilder.build(modifications);
 		}
 		
-		public WebHooksChanges getChanges(){
+		public List<WebHooksChanges> getChanges(){
 			return changes;
 		}
 

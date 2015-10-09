@@ -1,22 +1,19 @@
 package webhook.teamcity.payload.content;
 
-import java.util.ArrayList;
-import java.util.List;
+public class WebHooksChanges {
+	private String version;
+	private WebHooksChange change;
+	
+	public WebHooksChanges(String version, WebHooksChange change) {
+		this.version = version;
+		this.change = change;
+	}
 
-import jetbrains.buildServer.vcs.SVcsModification;
-
-public class WebHooksChanges extends ArrayList<WebHooksChange>{
-	
-	
-	private static final long serialVersionUID = 1L;
-	
-	public static WebHooksChanges build (List<SVcsModification> mods){
-		WebHooksChanges changes = new WebHooksChanges();
-		
-		for (SVcsModification modification: mods){
-			changes.add(WebHooksChange.build(modification));
-		}
-		return changes;
+	public String getVersion() {
+		return version;
 	}
 	
+	public WebHooksChange getChange() {
+		return change;
+	}
 }
