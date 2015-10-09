@@ -12,6 +12,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.vcs.SVcsModification;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
@@ -56,6 +57,7 @@ public class WebHookPayloadContent {
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
+		private WebHooksChanges changes;
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -162,6 +164,7 @@ public class WebHookPayloadContent {
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
     		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
     		setTags(sRunningBuild.getTags());
+    		setChanges(sRunningBuild.getContainingChanges());
     		try {
     			if (sRunningBuild.getBranch() != null){
 	    			setBranch(sRunningBuild.getBranch());
@@ -199,6 +202,14 @@ public class WebHookPayloadContent {
 			if (webHooksComment != null){
 				this.comment = webHooksComment.getComment();
 			}
+		}
+		
+		private void setChanges(List<SVcsModification> modifications){
+			this.changes = WebHooksChanges.build(modifications);
+		}
+		
+		public WebHooksChanges getChanges(){
+			return changes;
 		}
 
 		public String getBuildInternalTypeId() {
