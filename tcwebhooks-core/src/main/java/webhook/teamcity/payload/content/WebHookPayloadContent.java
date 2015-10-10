@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
-import com.ibm.icu.text.DateFormat;
-
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
@@ -17,6 +15,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.vcs.SVcsModification;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
@@ -60,8 +59,11 @@ public class WebHookPayloadContent {
 		
 		Branch branch;
 		List<String> buildRunners;
+		WebHooksComment buildComment; 
+		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
+		private List<WebHooksChanges> changes = new ArrayList<WebHooksChanges>();
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -194,6 +196,9 @@ public class WebHookPayloadContent {
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
+    		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
+    		setTags(sRunningBuild.getTags());
+    		setChanges(sRunningBuild.getContainingChanges());
     		try {
     			if (sRunningBuild.getBranch() != null){
 	    			setBranch(sRunningBuild.getBranch());
@@ -211,6 +216,34 @@ public class WebHookPayloadContent {
     		setBuildStateDescription(buildState.getDescriptionSuffix());
     		setRootUrl(server.getRootUrl());
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
+		}
+		
+		public List<String> getBuildTags() {
+			return buildTags;
+		}
+		
+		private void setTags(List<String> tags) {
+			this.buildTags = new ArrayList<String>();
+			this.buildTags.addAll(tags);
+		}
+
+		public WebHooksComment getBuildComment() {
+			return buildComment;
+		}
+		
+		private void setComment(WebHooksComment webHooksComment) {
+			this.buildComment = webHooksComment;
+			if (webHooksComment != null){
+				this.comment = webHooksComment.getComment();
+			}
+		}
+		
+		private void setChanges(List<SVcsModification> modifications){
+			this.changes = WebHooksChangeBuilder.build(modifications);
+		}
+		
+		public List<WebHooksChanges> getChanges(){
+			return changes;
 		}
 
 		public String getBuildInternalTypeId() {
