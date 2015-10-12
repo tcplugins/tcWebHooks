@@ -81,7 +81,12 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
-		return supportedFormats.contains(payloadFormat);
+		for (String format : supportedFormats){
+			if (payloadFormat.equalsIgnoreCase(format)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
