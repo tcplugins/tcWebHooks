@@ -113,8 +113,7 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 
 	@Override
 	public String getIncludeUrl() {
-		//return myPluginPath + "WebHook/buildWebHookTab.jsp";
-		return myPluginPath + "WebHook/projectWebHookTab.jsp";
+		return myPluginPath + "WebHook/webHookTab.jsp";
 	}
 
 

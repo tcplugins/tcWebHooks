@@ -1,6 +1,8 @@
 <%@ include file="/include.jsp" %>
 	<div>
 	
+	${permissionError}
+	
 	<c:forEach items="${projectAndParents}" var="project">
 		<div style="background-color: #f5f5f5; padding: 5px; margin:0.75em;  margin-top:3em;">
 		<c:choose>
@@ -39,7 +41,7 @@
 
 			<c:forEach items="${project.buildWebhooks}" var="config">
 
-				<div style='margin-top: 2.5em;'><h3 class="title">WebHooks configured for ${projectName} &gt; ${config.buildName}</h3>
+				<div style='margin-top: 2.5em;'><h3 class="title" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for ${projectName} &gt; ${config.buildName}</h3>
 				
 				<c:if test="${config.hasNoBuildWebHooks}" >
 						<div style='margin-left: 1em; margin-right:1em;'>
