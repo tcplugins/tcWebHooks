@@ -173,9 +173,64 @@
 }</branch-template-text>
                         <states>
                                 <state type="buildStarted" enabled="true" />
+                        </states>
+                </template>
+                <template>
+                        <template-text>{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName}",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Responsibility", "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})" },
+                { "label": "Comment", "value": "${comment}" }
+              ],
+    "body": "&lt;a href=\"${rootUrl}/project.html?projectId=${projectId}\"&gt;${projectName}&lt;/a&gt; :: &lt;a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\"&gt;${buildName}&lt;/a&gt; has &lt;strong&gt;${buildStateDescription}&lt;/strong&gt;",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}</template-text>
+                        <branch-template-text> {
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}-${branchDisplayName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#${branchDisplayName}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName} (${branchDisplayName})",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Branch", "value": "${branchDisplayName}" },
+                { "label": "Default Branch", "value": "${branchIsDefault}" },
+                { "label": "Responsibility", "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})" },
+                { "label": "Comment", "value": "${comment}" }
+              ],
+    "body": "&lt;a href=\"${rootUrl}/project.html?projectId=${projectId}\"&gt;${projectName}&lt;/a&gt; :: &lt;a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\"&gt;${buildName}&lt;/a&gt; has &lt;strong&gt;${buildStateDescription}&lt;/strong&gt;",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}</branch-template-text>
+                        <states>
                                 <state type="responsibilityChanged" enabled="true" />
                         </states>
                 </template>
+                
 	</templates>
 </webhook-template>
 </webhook-templates>
