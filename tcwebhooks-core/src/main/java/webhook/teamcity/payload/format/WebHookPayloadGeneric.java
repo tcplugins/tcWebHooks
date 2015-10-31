@@ -154,7 +154,8 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 				+ responsibilityEntryNew.getComment().toString().trim()
 				+ "'"
 			);
-		
+		content.setResponsibilityUserOld(oldUser);
+		content.setResponsibilityUserNew(newUser);
 		content.setComment(responsibilityEntryNew.getComment());
 		return getStatusAsString(content, webHookTemplate);
 	}

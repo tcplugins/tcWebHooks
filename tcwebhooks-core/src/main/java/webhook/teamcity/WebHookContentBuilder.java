@@ -34,48 +34,48 @@ public class WebHookContentBuilder {
 		this.buildServer = server;
 	}
 	
-	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sRunningBuild, BuildStateEnum state, boolean isOverrideEnabled){
+	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isOverrideEnabled){
 		WebHookPayload payloadFormat = payloadManager.getFormat(whc.getPayloadFormat());
 		WebHookTemplateContent templateForThisBuild;
 		wh.setContentType(payloadFormat.getContentType());
 		
 		if (state.equals(BuildStateEnum.BUILD_STARTED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
+			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
 			if (wh.isEnabled()){
-				templateForThisBuild = findTemplateForState(sRunningBuild, state, whc.getPayloadTemplate(), payloadFormat);
-				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
-				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sRunningBuild, mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.buildStarted(sBuild, getPreviousNonPersonalBuild(sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
+				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
+			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
 			if (wh.isEnabled()){
-				templateForThisBuild = findTemplateForState(sRunningBuild, state, whc.getPayloadTemplate(), payloadFormat);
-				wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
-				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sRunningBuild, mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.buildInterrupted(sBuild, getPreviousNonPersonalBuild(sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
+				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
+			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
 			if (wh.isEnabled()){
-				templateForThisBuild = findTemplateForState(sRunningBuild, state, whc.getPayloadTemplate(), payloadFormat);
-				wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
-				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sRunningBuild, mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.beforeBuildFinish(sBuild, getPreviousNonPersonalBuild(sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
+				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_FINISHED) || state.equals(BuildStateEnum.BUILD_SUCCESSFUL) || state.equals(BuildStateEnum.BUILD_FAILED) || state.equals(BuildStateEnum.BUILD_FIXED) || state.equals(BuildStateEnum.BUILD_BROKEN)){
-			wh.setEnabled(whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && wh.getBuildStates().enabled(
+			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(
 					BuildStateEnum.BUILD_FINISHED, 
-					sRunningBuild.getStatusDescriptor().isSuccessful(),
-					hasBuildChangedHistoricalState(sRunningBuild)));
+					sBuild.getStatusDescriptor().isSuccessful(),
+					hasBuildChangedHistoricalState(sBuild)));
 			
 			if (wh.isEnabled() || isOverrideEnabled){
-				templateForThisBuild = findTemplateForState(sRunningBuild, BuildState.getEffectiveState(state, sRunningBuild.getStatusDescriptor().isSuccessful(), this.hasBuildChangedHistoricalState(sRunningBuild)), whc.getPayloadTemplate(), payloadFormat);
-				wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));;
-				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), BuildState.getEffectiveState(state, sRunningBuild.getStatusDescriptor().isSuccessful(), this.hasBuildChangedHistoricalState(sRunningBuild)), sRunningBuild, mergeParameters(whc.getParams(),sRunningBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
+				templateForThisBuild = findTemplateForState(sBuild, BuildState.getEffectiveState(state, sBuild.getStatusDescriptor().isSuccessful(), this.hasBuildChangedHistoricalState(sBuild)), whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.buildFinished(sBuild, getPreviousNonPersonalBuild(sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));;
+				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), BuildState.getEffectiveState(state, sBuild.getStatusDescriptor().isSuccessful(), this.hasBuildChangedHistoricalState(sBuild)), sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		}
 		return wh;
 	}
 	
-	private String getPreferredDateFormat(WebHookTemplateContent templateContent){
+	public static String getPreferredDateFormat(WebHookTemplateContent templateContent){
 		if (templateContent != null){
 			return templateContent.getPreferredDateTimeFormat();
 		}

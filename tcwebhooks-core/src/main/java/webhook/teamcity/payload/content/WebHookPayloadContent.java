@@ -54,7 +54,9 @@ public class WebHookPayloadContent {
 		text,
 		branchName,
 		branchDisplayName,
-		buildStateDescription;
+		buildStateDescription,
+		responsibilityUserOld,
+		responsibilityUserNew;
 		Boolean branchIsDefault;
 		
 		Branch branch;
@@ -592,6 +594,22 @@ public class WebHookPayloadContent {
 
 		public void setText(String text) {
 			this.text = text;
+		}
+		
+		public void setResponsibilityUserOld(String responsibilityUserOld) {
+			this.responsibilityUserOld = responsibilityUserOld;
+		}
+		
+		public void setResponsibilityUserNew(String responsibilityUserNew) {
+			this.responsibilityUserNew = responsibilityUserNew;
+		}
+		
+		public String getResponsibilityUserOld() {
+			return responsibilityUserOld;
+		}
+		
+		public String getResponsibilityUserNew() {
+			return responsibilityUserNew;
 		}
 
 		public ExtraParametersMap getExtraParameters() {

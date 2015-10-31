@@ -16,7 +16,9 @@ public class ExtraParametersMapToJsonConvertor implements Converter {
             MarshallingContext context) {
     	ExtraParametersMap map = (ExtraParametersMap) myMap;
     	for (Entry<String, String> entry : map.getEntriesAsSet()){
-    		this.addNode(writer, entry.getKey().trim(), entry.getValue().toString().trim());
+    		if (entry.getValue() != null){
+    			this.addNode(writer, entry.getKey().trim(), entry.getValue().toString().trim());
+    		}
     	}
     }
     
