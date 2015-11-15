@@ -47,7 +47,24 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				// do nothing and let the logic below handle it.
 			}
 		}
+		
+		if ((variableName.startsWith("sanitise(") || variableName.startsWith("sanitize(")) && variableName.endsWith(")")){
+			try {
+				String dirtyString = variableName.substring("sanitise(".length(), variableName.length() - ")".length());
+				if (teamcityProperties.containsKey(dirtyString)){
+					return StringSanitiser.sanitise(teamcityProperties.get(dirtyString));
+				} else {
+					return StringSanitiser.sanitise((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				}
 
+			// do nothing and let the logic below handle it.
+			} catch (NullPointerException npe){
+			} catch (IllegalArgumentException iae){
+			} catch (IllegalAccessException e) {
+			} catch (InvocationTargetException e) {
+			} catch (NoSuchMethodException e) {
+			}
+		}
 		
 		try {
 			// Try getting it from teamcity first.

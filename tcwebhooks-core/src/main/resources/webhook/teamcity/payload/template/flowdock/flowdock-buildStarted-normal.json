@@ -1,0 +1,24 @@
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName}",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}

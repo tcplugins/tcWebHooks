@@ -148,5 +148,13 @@
 			<value>15</value>
 		</property>
 	</bean>
+	
+	<bean id="flowdockWebHookTemplate"
+		class="webhook.teamcity.payload.template.FlowdockWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>14</value>
+		</property>
+	</bean>
 
 </beans>

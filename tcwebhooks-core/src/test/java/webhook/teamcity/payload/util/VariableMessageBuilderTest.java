@@ -40,6 +40,7 @@ public class VariableMessageBuilderTest {
 		teamcityProperties.put("env.isInATest", "Yes, we are in a test");
 		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
 		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
+		teamcityProperties.put("someTagThing", "A ~peice of text! with <> s<<<tuff in it%.");
 		sBuildServer = mock(SBuildServer.class);
 	}
 	
@@ -65,6 +66,16 @@ public class VariableMessageBuilderTest {
 		VariableMessageBuilder builder = VariableMessageBuilder.create("The date now is ${now(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\")}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
 		builder = VariableMessageBuilder.create("The month now is ${now(\"yyyy-MM\")}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		System.out.println(builder.build());
+		System.out.println(content.getBuildFullName());
+	}
+	
+	@Test
+	public void testSanitiseTemplateProperty() {
+		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising ${sanitise(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		System.out.println(builder.build());
+		builder = VariableMessageBuilder.create("Sanitizing ${sanitize(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}
