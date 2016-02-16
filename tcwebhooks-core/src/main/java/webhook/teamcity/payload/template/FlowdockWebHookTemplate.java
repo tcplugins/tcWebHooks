@@ -65,7 +65,7 @@ public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate
 
 	@Override
 	public String getTemplateFilesLocation() {
-		return "webhook/teamcity/payload/template/flowdock";
+		return "webhook/teamcity/payload/template/flowdock/";
 	}
 
 	@Override

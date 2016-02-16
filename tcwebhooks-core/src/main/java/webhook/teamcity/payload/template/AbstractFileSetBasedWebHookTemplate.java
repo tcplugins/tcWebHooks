@@ -124,7 +124,7 @@ public abstract class AbstractFileSetBasedWebHookTemplate extends AbstractWebHoo
 	private void loadTemplatesFromFileSet() {
 		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 			if (getNormalTemplateMap().containsKey(state)){
-				String templateContents = readFileContents(getTemplateFilesLocation() + File.separator + getNormalTemplateMap().get(state));
+				String templateContents = readFileContents(getTemplateFilesLocation() + getNormalTemplateMap().get(state));
 				if (templateContents != null) {
 	    			templateContent.put(state, WebHookTemplateContent.create(
 							state.getShortName(), 
@@ -139,7 +139,7 @@ public abstract class AbstractFileSetBasedWebHookTemplate extends AbstractWebHoo
 	    } 
 		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 			if (getBranchTemplateMap().containsKey(state)){
-				String templateContents = readFileContents(getTemplateFilesLocation() + File.separator + getBranchTemplateMap().get(state));
+				String templateContents = readFileContents(getTemplateFilesLocation() + getBranchTemplateMap().get(state));
 				if (templateContents != null) {
 					branchTemplateContent.put(state, WebHookTemplateContent.create(
 							state.getShortName(), 
