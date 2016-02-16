@@ -179,6 +179,7 @@
 	<modules>
 		<module>tcwebhooks-rest-api</module>
 		<module>tcwebhooks-web-ui</module>
+		<module>tcwebhooks-template-builder</module>
 		<module>tcwebhooks-core</module>
 	</modules>
 </project>
