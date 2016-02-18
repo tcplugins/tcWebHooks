@@ -29,6 +29,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import webhook.WebHook;
+import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookConfig;
@@ -49,17 +51,19 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookMainSettings myMainSettings;
     private final WebHookPayloadManager myManager;
     private final WebHookFactory webHookFactory;
+    private final WebHookAuthenticatorProvider webHookAuthenticatorProvider;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
-    						WebHookFactory factory) {
+    						WebHookFactory factory, WebHookAuthenticatorProvider webHookAuthenticationProvider) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
         myMainSettings = configSettings;
         myManager = manager;
         webHookFactory = factory;
+        webHookAuthenticatorProvider = webHookAuthenticationProvider;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -74,6 +78,11 @@ public class WebHookListener extends BuildServerAdapter {
 		webHook.setEnabled(webHookConfig.getEnabled());
 		//webHook.addParams(webHookConfig.getParams());
 		webHook.setBuildStates(webHookConfig.getBuildStates());
+		if (webHookConfig.getAuthenticationConfig() != null){
+			WebHookAuthenticator auth = webHookAuthenticatorProvider.getAuthenticator(webHookConfig.getAuthenticationConfig().type);
+			auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
+			webHook.setAuthentication(auth);
+		}
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
 		Loggers.ACTIVITIES.debug("WebHookListener :: Webhook proxy set to " 
 				+ webHook.getProxyHost() + " for " + webHookConfig.getUrl());
