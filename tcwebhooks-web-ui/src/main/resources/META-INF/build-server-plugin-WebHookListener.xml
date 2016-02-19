@@ -65,6 +65,7 @@
 
 	<bean id="usernamePasswordAuthenticatorFactory"
 		class="webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory"
+		init-method="register" 
 		/>
 
 	<bean id="webHookPayloadNameValuePairs"
