@@ -33,6 +33,7 @@ import org.mockito.internal.matchers.Any;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -52,6 +53,7 @@ public class WebHookListenerTest {
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
 	WebHookTemplateResolver templateResolver = mock(WebHookTemplateResolver.class);
 	WebHookContentBuilder contentBuilder;
+	WebHookAuthenticatorProvider authenticatorProvider = mock(WebHookAuthenticatorProvider.class);
 	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
@@ -86,7 +88,7 @@ public class WebHookListenerTest {
 		spyWebHook = spy(webHookImpl);   
 		webHookConfig = mock(WebHookConfig.class);
 		contentBuilder = new WebHookContentBuilder(sBuildServer, manager, templateResolver);
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver, contentBuilder);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver, contentBuilder, authenticatorProvider);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
@@ -116,12 +118,12 @@ public class WebHookListenerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testWebHookListener() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, authenticatorProvider);
 	}
 
 	@Test
 	public void testRegister() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, authenticatorProvider);
 		whl.register();
 		verify(sBuildServer).addListener(whl);
 	}
@@ -214,7 +216,7 @@ public class WebHookListenerTest {
 		
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, authenticatorProvider);
 		Status oldStatus = Status.NORMAL;
 		Status newStatus = Status.FAILURE;
 		whl.register();

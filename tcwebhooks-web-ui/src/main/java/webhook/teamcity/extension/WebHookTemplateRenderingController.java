@@ -47,11 +47,11 @@ public class WebHookTemplateRenderingController extends BaseController {
     private final WebHookPayloadManager myPayloadManager;
 	private final WebHookTemplateResolver myTemplateResolver;
 	private final WebHookContentBuilder myContentBuilder;
-	private final WebHookFactory myWebHookFactory;
+	//private final WebHookFactory myWebHookFactory;
     
     public WebHookTemplateRenderingController(SBuildServer server, WebControllerManager webManager, 
     		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager payloadManager,
-    		WebHookTemplateResolver templateResolver, WebHookContentBuilder builder, WebHookFactory webHookFactory,
+    		WebHookTemplateResolver templateResolver, WebHookContentBuilder builder, //WebHookFactory webHookFactory,
     		PluginDescriptor pluginDescriptor) {
         super(server);
         myWebManager = webManager;
@@ -61,7 +61,7 @@ public class WebHookTemplateRenderingController extends BaseController {
         myPayloadManager = payloadManager;
         myTemplateResolver = templateResolver;
         myContentBuilder = builder;
-        myWebHookFactory = webHookFactory;
+        //myWebHookFactory = webHookFactory;
     }
     
     public void register(){

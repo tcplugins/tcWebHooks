@@ -11,6 +11,7 @@ import jetbrains.buildServer.serverSide.SRunningBuild;
 
 import org.jdom.JDOMException;
 
+import webhook.teamcity.WebHookListener;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -30,6 +31,7 @@ public interface WebHookMockingFramework {
 	public WebHookProjectSettings getWebHookProjectSettings();
 	public WebHookTemplateManager getWebHookTemplateManager();
 	public WebHookTemplateResolver getWebHookTemplateResolver();
+	public WebHookListener getWebHookListener();
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException;
 	public void loadWebHookProjectSettingsFromConfigXml(File xmlConfigFile) throws IOException, JDOMException;
 	public List<SFinishedBuild> getMockedBuildHistory();

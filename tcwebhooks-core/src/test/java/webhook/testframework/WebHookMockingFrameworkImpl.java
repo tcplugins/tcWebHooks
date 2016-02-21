@@ -3,6 +3,7 @@ package webhook.testframework;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,16 +25,21 @@ import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.jdom.JDOMException;
+import org.mockito.internal.matchers.Any;
 
 import webhook.WebHook;
 import webhook.WebHookImpl;
+import webhook.WebHookProxyConfig;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
+import webhook.teamcity.WebHookFactoryImpl;
 import webhook.teamcity.WebHookListener;
+import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -64,14 +70,18 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
 	WebHookTemplateResolver resolver = mock(WebHookTemplateResolver.class);
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
-	WebHookContentBuilder contentBuilder = mock(WebHookContentBuilder.class);
+	//WebHookContentBuilder contentBuilder = mock(WebHookContentBuilder.class);
+	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(getServer(), manager, resolver);
 	WebHookTemplate template;
 	WebHookPayload payloadJson = new WebHookPayloadJson(manager);
 	WebHookPayload payloadXml = new WebHookPayloadXml(manager);
 	WebHookPayload payloadNvpairs = new WebHookPayloadNameValuePairs(manager);
 	WebHookPayload payloadJsonTemplate = new WebHookPayloadJsonTemplate(manager);
+	WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
+	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
-	WebHookFactory factory = mock(WebHookFactory.class);
+	//WebHookFactory factory = mock(WebHookFactory.class);
+	WebHookFactory factory = new WebHookFactoryImpl(configSettings, authenticatorProvider);
 	WebHook webhook = mock (WebHook.class);
 	WebHook webHookImpl;
 	WebHook spyWebHook;
@@ -85,9 +95,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SBuildType sBuildType02 = new MockSBuildType("Test Build-2", "A Test Build 02", "bt2");
 	SBuildType sBuildType03 = new MockSBuildType("Test Build-2", "A Test Build 03", "bt3");
 	SRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
-	SProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
+	SProject sProject = new MockSProject("Test Project", "A test project", "project01", "ATestProject", sBuildType);
 	SProject sProject02 = new MockSProject("Test Project 02", "A test project 02", "project2", "TestProjectNumber02", sBuildType);
 	SProject sProject03 = new MockSProject("Test Project 03", "A test sub project 03", "project3", "TestProjectNumber02_TestProjectNumber03", sBuildType);
+	
+	UsernamePasswordAuthenticatorFactory authenticatorFactory = new UsernamePasswordAuthenticatorFactory(authenticatorProvider);
 	
 	SBuildType build2 = mock(SBuildType.class);
 	SBuildType build3 = mock(SBuildType.class);
@@ -102,13 +114,17 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, authenticatorProvider);
 		projSettings = new WebHookProjectSettings();
-		when(factory.getWebHook(webHookConfig,null)).thenReturn(spyWebHook);
+//		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
+//		when(factory.getWebHook()).thenReturn(webHookImpl);
+//		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
 		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);
 		when(manager.getFormat("nvpairs")).thenReturn(payloadNvpairs);
 		when(manager.isRegisteredFormat("json")).thenReturn(true);
 		when(manager.getFormat("json")).thenReturn(payloadJson);
+		//when(factory.getWebHook()).thenReturn(spyWebHook);
+//		when(factory.getWebHook()).thenReturn(webHookImpl);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payloadJson);
 		when(manager.getServer()).thenReturn(sBuildServer);
@@ -145,11 +161,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		((MockSProject) sProject03).setParentProject(sProject02);
 		((MockSProject) sProject02).addChildProjectToMock(sProject03);
 		whl.register();
+		authenticatorFactory.register();
 		template = getTestingTemplate(); 
 		templateList.add(template);
 		when(templateManager.getRegisteredTemplates()).thenReturn(templateList);
 		when(resolver.findWebHookTemplatesForProject(sProject)).thenReturn(templateList);
-		
 		
 		finishedBuildsHistory.addAll(finishedSuccessfulBuilds);
 		finishedBuildsHistory.addAll(finishedFailedBuilds);
@@ -314,6 +330,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public WebHookTemplateResolver getWebHookTemplateResolver() {
 		return resolver;
+	}
+	
+	@Override
+	public WebHookListener getWebHookListener() {
+		return whl;
 	}
 
 }

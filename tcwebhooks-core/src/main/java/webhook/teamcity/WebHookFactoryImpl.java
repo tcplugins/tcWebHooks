@@ -3,9 +3,20 @@ package webhook.teamcity;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
+import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookMainSettings;
 
 public class WebHookFactoryImpl implements WebHookFactory {
+
+	final WebHookMainSettings myMainSettings;
+	final WebHookAuthenticatorProvider myAuthenticatorProvider;
+	
+	public WebHookFactoryImpl(WebHookMainSettings mainSettings, WebHookAuthenticatorProvider authenticatorProvider) {
+		this.myMainSettings = mainSettings;
+		this.myAuthenticatorProvider = authenticatorProvider;
+	}
 
 	public WebHook getWebHook(WebHookConfig webHookConfig, WebHookProxyConfig proxyConfig) {
 		WebHook webHook = new WebHookImpl(webHookConfig.getUrl(), proxyConfig);
@@ -13,7 +24,13 @@ public class WebHookFactoryImpl implements WebHookFactory {
 		webHook.setEnabled(webHookConfig.getEnabled());
 		//webHook.addParams(webHookConfig.getParams());
 		webHook.setBuildStates(webHookConfig.getBuildStates());
-		//webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
+		if (webHookConfig.getAuthenticationConfig() != null){
+			WebHookAuthenticator auth = myAuthenticatorProvider.getAuthenticator(webHookConfig.getAuthenticationConfig().type);
+			auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
+			webHook.setAuthentication(auth);
+		}
+		
+		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
 		return webHook;
 	}
 	

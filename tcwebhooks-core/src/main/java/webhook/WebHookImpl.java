@@ -17,6 +17,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.WebHookAuthenticator;
 
 
 public class WebHookImpl implements WebHook {
@@ -37,6 +39,7 @@ public class WebHookImpl implements WebHook {
 	private String errorReason = "";
 	private List<NameValuePair> params;
 	private BuildState states;
+	private WebHookAuthenticator authenticator;
 	
 	public WebHookImpl(){
 		this.client = new HttpClient();
@@ -121,6 +124,10 @@ public class WebHookImpl implements WebHook {
 				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
 				httppost.setRequestBody(paramsArray);
 			}
+			if(authenticator != null){
+				authenticator.addAuthentication(httppost, client, url);
+			}
+				
 		    try {
 		        client.executeMethod(httppost);
 		        this.resultCode = httppost.getStatusCode();
@@ -306,5 +313,10 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setBuildStates(BuildState states) {
 		this.states = states;
+	}
+
+	@Override
+	public void setAuthentication(WebHookAuthenticator authenticator) {
+		this.authenticator = authenticator;
 	}
 }

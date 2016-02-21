@@ -26,11 +26,13 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class ElasticSearchWebHookTemplateTest {
@@ -41,6 +43,8 @@ public class ElasticSearchWebHookTemplateTest {
 	@Test
 	public void test() throws JDOMException, IOException {
 		SBuildServer sBuildServer = mock(SBuildServer.class);
+		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
+		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
 		WebHookTemplateManager templateManager = new WebHookTemplateManager(null, payloadManager);
 		
@@ -54,8 +58,9 @@ public class ElasticSearchWebHookTemplateTest {
 		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, payloadManager, templateResolver);
 		
 		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-elastic.xml"));
+		when(mainSettings.getProxyConfigForUrl(webhookElastic.getUrl())).thenReturn(null);
 		
-		WebHookFactory webHookFactory = new WebHookFactoryImpl();
+		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider);
 		WebHook wh = webHookFactory.getWebHook(webhookElastic,null);
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");

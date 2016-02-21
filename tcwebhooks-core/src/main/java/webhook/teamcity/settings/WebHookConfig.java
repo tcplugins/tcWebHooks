@@ -25,6 +25,7 @@ import org.jdom.Element;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
@@ -41,6 +42,9 @@ public class WebHookConfig {
 	private Boolean allBuildTypesEnabled = true;
 	private Boolean subProjectsEnabled = true;
 	private Set<String> enabledBuildTypesSet = new HashSet<String>();
+	private String authType = "";
+	private Boolean authEnabled = false;
+	private SortedMap<String,String> authParameters;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -49,6 +53,7 @@ public class WebHookConfig {
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
 		this.extraParameters = new TreeMap<String,String>();
+		this.authParameters = new TreeMap<String,String>();
 		this.templates = new TreeMap<String,CustomMessageTemplate>();
 		
 		if (e.getAttribute("url") != null){
@@ -149,6 +154,36 @@ public class WebHookConfig {
 			}
 		}
 		
+		if(e.getChild("auth") != null){
+			Element eAuth = e.getChild("auth");
+			if (eAuth.getAttribute("type") != null){
+				// We have an "auth" element
+				// Try to get the enabled flag
+				authType = eAuth.getAttribute("type").getValue();
+				try {
+					authEnabled = eAuth.getAttribute("enabled").getBooleanValue();
+				} catch (DataConversionException e1){
+					// And if it can't be read as boolean default it 
+					// to true anyway (since we have the auth type).
+					authEnabled = true;
+				}
+				Element eParams = eAuth.getChild("auth-parameters");
+				if (eParams != null){
+					List<Element> paramsList = eParams.getChildren("param");
+					if (paramsList.size() > 0){
+						for(Element eParam : paramsList)
+						{
+							this.authParameters.put(
+									eParam.getAttributeValue("name"), 
+									eParam.getAttributeValue("value")
+									);
+						}
+					}
+				}
+			}
+
+		}
+		
 	}
 
 	/**
@@ -180,11 +215,11 @@ public class WebHookConfig {
 		}
 	}
 
-	private Element getKeyAndValueAsElement(String key, String elementName){
+	private Element getKeyAndValueAsElement(Map<String,String> map, String key, String elementName){
 		Element e = new Element(elementName);
-		if (this.extraParameters.containsKey(key)){
+		if (map.containsKey(key)){
 			e.setAttribute("name", key);
-			e.setAttribute("value",this.extraParameters.get(key));
+			e.setAttribute("value",map.get(key));
 		}
 		return e;
 	}
@@ -221,7 +256,7 @@ public class WebHookConfig {
 		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
 			for (String i : this.extraParameters.keySet()){
-				paramsEl.addContent(this.getKeyAndValueAsElement(i, "param"));
+				paramsEl.addContent(this.getKeyAndValueAsElement(this.extraParameters, i, "param"));
 			}
 			el.addContent(paramsEl);
 		}
@@ -232,6 +267,20 @@ public class WebHookConfig {
 				templatesEl.addContent(t.getAsElement());
 			}
 			el.addContent(templatesEl);
+		}
+		
+		if (this.authType != ""){
+			Element authEl = new Element("auth");
+			authEl.setAttribute("enabled", this.authEnabled.toString());
+			authEl.setAttribute("type", this.authType);
+			if (this.authParameters.size() > 0){
+				Element paramsEl = new Element("auth-parameters");
+				for (String i : this.authParameters.keySet()){
+					paramsEl.addContent(this.getKeyAndValueAsElement(this.authParameters, i, "param"));
+				}
+				authEl.addContent(paramsEl);
+			}
+			el.addContent(authEl);
 		}
 		
 		return el;
@@ -488,6 +537,20 @@ public class WebHookConfig {
 			}
 		}
 		return mT;
+	}
+	
+	public Boolean getAuthEnabled() {
+		return authEnabled;
+	}
+
+	public WebHookAuthConfig getAuthenticationConfig() {
+		if (authEnabled && !authType.equals("")){
+			WebHookAuthConfig webhookAuthConfig= new WebHookAuthConfig();
+			webhookAuthConfig.type = authType;
+			webhookAuthConfig.parameters.putAll(authParameters);
+			return webhookAuthConfig;
+		}
+		return null;
 	}	
 	
 }
