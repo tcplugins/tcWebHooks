@@ -10,7 +10,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-public class WebHookTestServer implements ResponeEvent {
+public class WebHookTestServer implements ResponseEvent {
 
 		Server server;
 		public int lastResponseCode = -1;
