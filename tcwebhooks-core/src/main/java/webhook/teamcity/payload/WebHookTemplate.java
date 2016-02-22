@@ -1,11 +1,8 @@
 package webhook.teamcity.payload;
 
-import java.util.List;
 import java.util.Set;
 
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.settings.CustomMessageTemplate;
 
 public interface WebHookTemplate {
 

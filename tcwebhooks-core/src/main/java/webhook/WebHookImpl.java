@@ -17,7 +17,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticator;
 
 

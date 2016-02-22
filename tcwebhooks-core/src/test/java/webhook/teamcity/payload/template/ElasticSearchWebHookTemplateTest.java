@@ -1,6 +1,5 @@
 package webhook.teamcity.payload.template;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +51,7 @@ public class ElasticSearchWebHookTemplateTest {
 		webHookPayloadJsonTemplate.register();
 
 		ElasticSearchWebHookTemplate elasticTemplate = new ElasticSearchWebHookTemplate(templateManager);
-		templateResolver = new WebHookTemplateResolver(sBuildServer, templateManager);
+		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		elasticTemplate.register();
 		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, payloadManager, templateResolver);

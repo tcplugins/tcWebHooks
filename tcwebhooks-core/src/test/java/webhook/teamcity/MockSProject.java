@@ -7,10 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom.Element;
-
-import com.intellij.util.containers.HashMap;
-
 import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
 import jetbrains.buildServer.messages.Status;
@@ -41,6 +37,11 @@ import jetbrains.buildServer.vcs.SVcsRoot;
 import jetbrains.buildServer.vcs.UnknownVcsException;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 
+import org.jdom.Element;
+
+import com.intellij.util.containers.HashMap;
+
+@SuppressWarnings("deprecation")
 public class MockSProject implements SProject {
 
 	private String name;

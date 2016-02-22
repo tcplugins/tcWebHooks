@@ -69,6 +69,7 @@ import org.jdom.Element;
 
 import webhook.testframework.WebHookMockingFramework;
 
+@SuppressWarnings("rawtypes")
 public class MockSBuildType implements SBuildType {
 	
 	private SProject project;
@@ -257,6 +258,7 @@ public class MockSBuildType implements SBuildType {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public LabelingType getLabelingType() {
 		// TODO Auto-generated method stub
 		return null;
@@ -448,6 +450,7 @@ public class MockSBuildType implements SBuildType {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setLabelingType(LabelingType arg0) {
 		// TODO Auto-generated method stub
 
@@ -567,7 +570,6 @@ public class MockSBuildType implements SBuildType {
 		return 0;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public Option[] getChangedOptions() {
 		// TODO Auto-generated method stub
 		return null;

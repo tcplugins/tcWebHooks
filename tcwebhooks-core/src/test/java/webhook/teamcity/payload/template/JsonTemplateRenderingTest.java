@@ -1,12 +1,9 @@
 package webhook.teamcity.payload.template;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.util.Date;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -22,12 +19,7 @@ import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
-import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.content.ExtraParametersMap;
-import webhook.teamcity.payload.content.WebHookPayloadContent;
-import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 

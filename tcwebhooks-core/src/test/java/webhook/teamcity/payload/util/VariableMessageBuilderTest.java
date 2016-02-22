@@ -1,9 +1,7 @@
 package webhook.teamcity.payload.util;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 

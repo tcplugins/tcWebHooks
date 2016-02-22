@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,9 +22,7 @@ import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
-import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
 
 public class WebHookTemplateManagerTest {
 	

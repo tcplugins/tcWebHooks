@@ -12,7 +12,6 @@ import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.tests.TestName;
 
 import org.jetbrains.annotations.NotNull;

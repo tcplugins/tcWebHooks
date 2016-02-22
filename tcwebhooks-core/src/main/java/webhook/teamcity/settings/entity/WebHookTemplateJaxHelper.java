@@ -74,10 +74,8 @@ public class WebHookTemplateJaxHelper {
 		List<WebHookTemplate> itemsToRemove = new ArrayList<WebHookTemplate>();
 
 		// Get supplier instance by id. If it's not found - remove it
-		for (WebHookTemplate templateBean : suppliersBean
-				.getWebHookTemplateList()) {
-			WebHookTemplateFromXml supplier = templates.get(templateBean
-					.getName());
+		for (WebHookTemplate templateBean : suppliersBean.getWebHookTemplateList()) {
+			WebHookTemplateFromXml supplier = templates.get(templateBean.getName());
 			if (null == supplier) {
 				Loggers.SERVER.error(String.format(
 						"Failed to get template by %s name!",

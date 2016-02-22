@@ -6,11 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import webhook.teamcity.Loggers;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.Loggers;
 
 public class WebHookPayloadManager {
 	

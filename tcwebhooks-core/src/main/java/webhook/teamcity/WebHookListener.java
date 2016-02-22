@@ -5,20 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
-import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
-import jetbrains.buildServer.serverSide.ParametersSupport;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
-import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -26,20 +19,15 @@ import jetbrains.buildServer.tests.TestName;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import webhook.WebHook;
-import webhook.teamcity.auth.WebHookAuthenticator;
-import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
-import webhook.teamcity.Loggers;
 
 
 /**
@@ -56,13 +44,12 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookFactory webHookFactory;
     private final WebHookTemplateResolver webHookTemplateResolver;
     private final WebHookContentBuilder webHookContentBuilder;
-    private final WebHookAuthenticatorProvider webHookAuthenticatorProvider;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
-    						WebHookContentBuilder contentBuilder, WebHookAuthenticatorProvider webHookAuthenticationProvider) {
+    						WebHookContentBuilder contentBuilder) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
@@ -71,7 +58,6 @@ public class WebHookListener extends BuildServerAdapter {
         webHookFactory = factory;
         webHookTemplateResolver = resolver;
         webHookContentBuilder = contentBuilder;
-        webHookAuthenticatorProvider = webHookAuthenticationProvider;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -81,35 +67,6 @@ public class WebHookListener extends BuildServerAdapter {
         Loggers.SERVER.info("WebHookListener :: Registering");
     }
 
-//<<<<<<< HEAD
-//	public void getFromConfig(WebHook webHook, WebHookConfig webHookConfig){
-//		webHook.setUrl(webHookConfig.getUrl());
-//		webHook.setEnabled(webHookConfig.getEnabled());
-//		//webHook.addParams(webHookConfig.getParams());
-//		webHook.setBuildStates(webHookConfig.getBuildStates());
-//		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
-//		Loggers.ACTIVITIES.debug("WebHookListener :: Webhook proxy set to " 
-//				+ webHook.getProxyHost() + " for " + webHookConfig.getUrl());
-//	}
-//=======
-    
-    /*
-	public void getFromConfig(WebHook webHook, WebHookConfig webHookConfig){
-		webHook.setUrl(webHookConfig.getUrl());
-		webHook.setEnabled(webHookConfig.getEnabled());
-		//webHook.addParams(webHookConfig.getParams());
-		webHook.setBuildStates(webHookConfig.getBuildStates());
-		if (webHookConfig.getAuthenticationConfig() != null){
-			WebHookAuthenticator auth = webHookAuthenticatorProvider.getAuthenticator(webHookConfig.getAuthenticationConfig().type);
-			auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
-			webHook.setAuthentication(auth);
-		}
-		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
-		Loggers.ACTIVITIES.debug("WebHookListener :: Webhook proxy set to " 
-				+ webHook.getProxyHost() + " for " + webHookConfig.getUrl());
-	}*/
-    
-	
 	private void processBuildEvent(SRunningBuild sRunningBuild, BuildStateEnum state) {
 			
 			boolean overrideIsEnabled = false;

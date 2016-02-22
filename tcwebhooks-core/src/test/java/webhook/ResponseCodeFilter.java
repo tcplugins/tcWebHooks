@@ -28,8 +28,8 @@ public class ResponseCodeFilter implements Filter {
 	private ResponseEvent callback;
 	Logger logger = LoggerFactory.getLogger(ResponseCodeFilter.class);
 	
-	private ResponseCodeFilter(){	
-	}
+	@SuppressWarnings("unused")
+	private ResponseCodeFilter(){}
 
 	public ResponseCodeFilter(ResponseEvent callback) {
 		this.callback = callback;

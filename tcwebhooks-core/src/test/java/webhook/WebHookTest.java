@@ -13,18 +13,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.WebHookFactory;
-import webhook.teamcity.WebHookFactoryImpl;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.auth.UsernamePasswordAuthenticator;
-import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthConfig;
-import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 
 
 public class WebHookTest{

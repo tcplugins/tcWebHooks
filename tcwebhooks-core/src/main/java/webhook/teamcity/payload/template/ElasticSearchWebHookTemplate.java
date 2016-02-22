@@ -3,7 +3,6 @@ package webhook.teamcity.payload.template;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
-import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
 
 public class ElasticSearchWebHookTemplate extends AbstractPropertiesBasedWebHookTemplate implements WebHookTemplate {
 	

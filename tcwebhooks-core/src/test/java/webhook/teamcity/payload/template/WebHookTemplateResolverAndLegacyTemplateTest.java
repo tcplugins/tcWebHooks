@@ -32,7 +32,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
 		ServerPaths serverPaths = mock(ServerPaths.class);
 		WebHookTemplateManager templateManager = new WebHookTemplateManager(serverPaths , payloadManager);
-		WebHookTemplateResolver resolver = new WebHookTemplateResolver(server, templateManager);
+		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager);
 		
 		LegacyDeprecatedFormatWebHookTemplate template = new LegacyDeprecatedFormatWebHookTemplate(templateManager);
 		template.register();

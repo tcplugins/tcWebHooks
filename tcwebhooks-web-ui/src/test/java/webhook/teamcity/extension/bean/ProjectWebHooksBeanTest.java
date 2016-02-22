@@ -1,7 +1,5 @@
 package webhook.teamcity.extension.bean;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.SortedMap;

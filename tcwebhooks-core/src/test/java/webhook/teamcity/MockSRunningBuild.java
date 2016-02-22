@@ -59,7 +59,6 @@ import jetbrains.buildServer.vcs.VcsModification;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 import jetbrains.buildServer.vcs.VcsRootNotFoundException;
-import jetbrains.buildServer.vcs.VcsChangeInfo.Type;
 import jetbrains.vcs.api.VcsService;
 
 public class MockSRunningBuild implements SRunningBuild {

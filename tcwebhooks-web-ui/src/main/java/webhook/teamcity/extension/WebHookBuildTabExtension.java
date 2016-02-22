@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 

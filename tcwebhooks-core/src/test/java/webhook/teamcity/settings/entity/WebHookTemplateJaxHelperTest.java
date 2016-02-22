@@ -1,6 +1,6 @@
 package webhook.teamcity.settings.entity;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -13,7 +13,6 @@ import javax.xml.bind.Marshaller;
 import org.junit.Test;
 
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
-import webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateFormat;
 
 public class WebHookTemplateJaxHelperTest {
 
@@ -40,7 +39,6 @@ public class WebHookTemplateJaxHelperTest {
 	public void testLoad() {
 		Map<String, WebHookTemplateFromXml> templatesMap = new HashMap<String, WebHookTemplateFromXml>(); 
 		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.load("src/test/resources/webhook-templates.xml", templatesMap);
-		
 	}
 
 //	@Test

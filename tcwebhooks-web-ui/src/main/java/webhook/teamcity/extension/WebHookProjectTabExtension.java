@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -19,9 +18,7 @@ import jetbrains.buildServer.web.openapi.project.ProjectTab;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.TeamCityIdResolver;
-import webhook.teamcity.extension.bean.BuildWebhooksBean;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 

@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.httpclient.NameValuePair;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticator;
 
 public interface WebHook {

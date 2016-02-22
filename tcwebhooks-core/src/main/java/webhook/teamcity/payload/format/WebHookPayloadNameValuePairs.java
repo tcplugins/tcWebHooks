@@ -17,7 +17,6 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
-import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {

@@ -3,7 +3,6 @@ package webhook.testframework;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.any;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,11 +24,9 @@ import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
 import org.jdom.JDOMException;
-import org.mockito.internal.matchers.Any;
 
 import webhook.WebHook;
 import webhook.WebHookImpl;
-import webhook.WebHookProxyConfig;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
@@ -114,7 +111,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, authenticatorProvider);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);

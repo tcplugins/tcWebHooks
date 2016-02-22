@@ -2,18 +2,15 @@ package webhook.teamcity.payload;
 
 import java.util.List;
 
-import webhook.teamcity.BuildStateEnum;
-import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import webhook.teamcity.BuildStateEnum;
 
 public class WebHookTemplateResolver {
 	
 	private WebHookTemplateManager webHookTemplateManager;
-	private SBuildServer server;
 
-	public WebHookTemplateResolver(SBuildServer server, WebHookTemplateManager webHookTemplateManager) {
-		this.server = server;
+	public WebHookTemplateResolver(WebHookTemplateManager webHookTemplateManager) {
 		this.webHookTemplateManager = webHookTemplateManager;
 	}
 	

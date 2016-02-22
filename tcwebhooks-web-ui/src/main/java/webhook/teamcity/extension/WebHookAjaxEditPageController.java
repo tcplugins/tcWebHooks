@@ -1,9 +1,7 @@
 package webhook.teamcity.extension;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -29,15 +26,11 @@ import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
-import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
-import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.extension.util.EnabledBuildStateResolver;
 import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
