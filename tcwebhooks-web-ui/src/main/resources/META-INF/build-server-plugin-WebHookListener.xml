@@ -127,6 +127,10 @@
 
 	<bean id="webHookTemplateManager"
 		class="webhook.teamcity.payload.WebHookTemplateManager"
+		/>
+		
+	<bean id="webHookTemplateFileChangeHandler"
+		class="webhook.teamcity.payload.WebHookTemplateFileChangeHandler"
 		init-method="register"
 		/>
 		

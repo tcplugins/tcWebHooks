@@ -53,7 +53,7 @@ public class WebHookContentBuilderTest {
 		WebHookPayloadManager manager = new WebHookPayloadManager(server);
 		WebHookPayloadJson whp = new WebHookPayloadJson(manager);
 		whp.register();
-		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(null, manager);
+		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(manager);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(webHookTemplateManager);
 		WebHookContentBuilder builder = new WebHookContentBuilder(server, manager, resolver);
 		WebHook wh = new WebHookImpl();

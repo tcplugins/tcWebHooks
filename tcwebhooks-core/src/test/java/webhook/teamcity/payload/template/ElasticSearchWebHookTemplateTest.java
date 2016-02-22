@@ -45,7 +45,7 @@ public class ElasticSearchWebHookTemplateTest {
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(null, payloadManager);
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager);
 		
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager);
 		webHookPayloadJsonTemplate.register();

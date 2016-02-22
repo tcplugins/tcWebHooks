@@ -1,14 +1,11 @@
 package webhook.teamcity.payload;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import jetbrains.buildServer.configuration.FileWatcher;
-import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.Loggers;
 
 public class WebHookTemplateManager {
@@ -17,25 +14,11 @@ public class WebHookTemplateManager {
 	HashMap<String, WebHookTemplate> xmlConfigTemplates = new HashMap<String,WebHookTemplate>();
 	Comparator<WebHookTemplate> rankComparator = new WebHookTemplateRankingComparator();
 	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<WebHookTemplate>();
-	ServerPaths serverPaths;
 	WebHookPayloadManager webHookPayloadManager;
 	
-	public WebHookTemplateManager(ServerPaths serverPaths, WebHookPayloadManager webHookPayloadManager){
-		this.serverPaths = serverPaths;
+	public WebHookTemplateManager(WebHookPayloadManager webHookPayloadManager){
 		this.webHookPayloadManager = webHookPayloadManager;
-		Loggers.SERVER.info("WebHookTemplateManager :: Starting");
-	}
-	
-	public void register(){
-		File configFile = new File(this.serverPaths.getConfigDir() + File.separator + "webhook-templates.xml");
-		
-		FileWatcher fw = new FileWatcher(configFile);
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(this, configFile, webHookPayloadManager);
-		
-		changeListener.handleConfigFileChange();
-		
-		fw.registerListener(changeListener);
-		fw.start();
+		Loggers.SERVER.info("WebHookTemplateManager :: Starting (" + toString() + ")");
 	}
 	
 	public void registerTemplateFormatFromSpring(WebHookTemplate payloadTemplate){

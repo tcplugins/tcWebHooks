@@ -198,7 +198,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			
 			@Override
 			public void register() {
-				this.manager.register();
+				//this.manager.register();
 			}
 			
 			@Override

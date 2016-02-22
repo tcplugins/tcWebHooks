@@ -1,11 +1,10 @@
 package webhook.teamcity.payload.template;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.ServerPaths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +29,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		SBuildType build = new MockSBuildType("test", "something else", "build01");
 		SProject project = new MockSProject("test", "something", "project01", "MyProject", build);
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
-		ServerPaths serverPaths = mock(ServerPaths.class);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(serverPaths , payloadManager);
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager);
 		
 		LegacyDeprecatedFormatWebHookTemplate template = new LegacyDeprecatedFormatWebHookTemplate(templateManager);

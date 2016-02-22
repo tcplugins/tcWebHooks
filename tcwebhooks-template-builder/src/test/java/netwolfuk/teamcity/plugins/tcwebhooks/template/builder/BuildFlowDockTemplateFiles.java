@@ -50,11 +50,11 @@ public class BuildFlowDockTemplateFiles extends TemplateGenerator {
 	public void CompareXmlAndSpringTemplates() throws FileNotFoundException, JAXBException{
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookPayloadManager webHookPayloadManager = new WebHookPayloadManager(sBuildServer);
-		WebHookTemplateManager springManager = new WebHookTemplateManager(null, webHookPayloadManager );
+		WebHookTemplateManager springManager = new WebHookTemplateManager(webHookPayloadManager );
 		FlowdockWebHookTemplate springTemplate =  new FlowdockWebHookTemplate(springManager);
 		springTemplate.register();
 		
-		WebHookTemplateManager xmlManager = new WebHookTemplateManager(null, webHookPayloadManager );
+		WebHookTemplateManager xmlManager = new WebHookTemplateManager(webHookPayloadManager );
 		
 		
 		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(XML_TEMPLATES_FILE);
