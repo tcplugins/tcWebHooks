@@ -44,6 +44,7 @@ public class WebHookConfig {
 	private String authType = "";
 	private Boolean authEnabled = false;
 	private SortedMap<String,String> authParameters;
+	private Boolean authPreemptive = false;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -162,6 +163,15 @@ public class WebHookConfig {
 					// to true anyway (since we have the auth type).
 					authEnabled = true;
 				}
+				try {
+					if (eAuth.getAttribute("preemptive") != null){
+						authPreemptive = eAuth.getAttribute("preemptive").getBooleanValue();
+					}
+				} catch (DataConversionException e1){
+					// And if it can't be read as boolean default it 
+					// to true (which means creds are always sent).
+					authPreemptive = true;
+				}
 				Element eParams = eAuth.getChild("auth-parameters");
 				if (eParams != null){
 					List<Element> paramsList = eParams.getChildren("param");
@@ -266,6 +276,7 @@ public class WebHookConfig {
 			Element authEl = new Element("auth");
 			authEl.setAttribute("enabled", this.authEnabled.toString());
 			authEl.setAttribute("type", this.authType);
+			authEl.setAttribute("preemptive", this.authPreemptive.toString() );
 			if (this.authParameters.size() > 0){
 				Element paramsEl = new Element("auth-parameters");
 				for (String i : this.authParameters.keySet()){
@@ -531,6 +542,7 @@ public class WebHookConfig {
 		if (authEnabled && !authType.equals("")){
 			WebHookAuthConfig webhookAuthConfig= new WebHookAuthConfig();
 			webhookAuthConfig.type = authType;
+			webhookAuthConfig.preemptive = authPreemptive;
 			webhookAuthConfig.parameters.putAll(authParameters);
 			return webhookAuthConfig;
 		}
