@@ -130,6 +130,7 @@ public class WebHookTest{
 		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
 		authConfig.type = "userPass";
+		authConfig.preemptive = false;
 		authConfig.parameters.put("username", "user1");
 		authConfig.parameters.put("password", "user1pass");
 		authConfig.parameters.put("realm", "realmywealmy");
@@ -145,6 +146,30 @@ public class WebHookTest{
 		System.out.println(w.getContent());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_UNAUTHORIZED);
+	}
+	
+	@Test
+	public void test_200WithAuthPreemptionButWrongRealm() throws FileNotFoundException, IOException, Exception {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/auth/200");
+		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		WebHookAuthConfig authConfig = new WebHookAuthConfig();
+		authConfig.type = "userPass";
+		authConfig.parameters.put("username", "user1");
+		authConfig.parameters.put("password", "user1pass");
+		authConfig.parameters.put("realm", "realmywealmy");
+		authenticator.setWebHookAuthConfig(authConfig);
+		w.setAuthentication(authenticator);
+		
+		w.addParam("buildID", "foobar");
+		w.addParam("notifiedFor", "someUser");
+		w.addParam("buildResult", "failed");
+		w.addParam("triggeredBy", "Subversion");
+		w.setEnabled(true);
+		w.post();
+		System.out.println(w.getContent());
+		stopWebServer(s);
+		assertTrue(w.getStatus() == HttpStatus.SC_OK);
 	}
 	
 	@Test

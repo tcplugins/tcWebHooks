@@ -30,6 +30,7 @@ public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
 					}
 					Credentials creds = new UsernamePasswordCredentials(config.parameters.get(USERNAME), config.parameters.get(PASSWORD));
 					client.getState().setCredentials(scope, creds);
+					client.getParams().setAuthenticationPreemptive(config.preemptive);
 			}
 		}
 
