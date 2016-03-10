@@ -44,7 +44,7 @@ public class WebHookConfig {
 	private String authType = "";
 	private Boolean authEnabled = false;
 	private SortedMap<String,String> authParameters;
-	private Boolean authPreemptive = false;
+	private Boolean authPreemptive = true;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
