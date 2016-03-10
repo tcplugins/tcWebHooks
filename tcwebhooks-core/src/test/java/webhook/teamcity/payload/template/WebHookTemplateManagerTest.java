@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 
 import java.io.File;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.ServerPaths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,20 +54,42 @@ public class WebHookTemplateManagerTest {
 		assertTrue(wtm.getRegisteredTemplates().contains(wht));
 	}
 	
-/*	@Test
+	@Test
 	public void TestXmlTemplatesViaChangeListener(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(null, null);
+		wtm = new WebHookTemplateManager(null);
 		wpm = new WebHookPayloadManager(mockServer);
 		
-		File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(wtm, configFile, wpm);
+		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
+		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplate"));
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm);
+		changeListener.register();
 		changeListener.handleConfigFileChange();
 
 		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertTrue(regsiteredTemplates.size() == 1);
 		assertTrue(regsiteredTemplates.get(0).getTemplateShortName().equals("testXMLtemplate"));
-	}*/
+	}
+	
+	@Test
+	public void TestCDataTemplatesViaChangeListener(){
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+		wtm = new WebHookTemplateManager(null);
+		wpm = new WebHookPayloadManager(mockServer);
+		
+		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
+		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testCDataTemplate"));
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm);
+		changeListener.register();
+		changeListener.handleConfigFileChange();
+		
+		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		assertTrue(regsiteredTemplates.size() == 1);
+		assertTrue(regsiteredTemplates.get(0).getTemplateShortName().equals("testXMLtemplate"));
+		System.out.println("###########################");
+		System.out.println(regsiteredTemplates.get(0).getTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText());
+		System.out.println("###########################");
+	}
 	
 	@Test
 	public void TestFindMatchingTemplates(){

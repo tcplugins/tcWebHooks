@@ -27,6 +27,16 @@
      	class="webhook.teamcity.extension.WebHookIndexPageController" 
      	init-method="register" 
      	/>
+     	
+    <bean id="webHookTemplateListPageController" 
+     	class="webhook.teamcity.extension.WebHookTemplateListPageController" 
+     	init-method="register" 
+     	/>
+     	
+    <bean id="webHookTemplateEditPageController" 
+     	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
+     	init-method="register" 
+     	/>
 
      <bean id="webHookAjaxSettingsListPageController" 
      	class="webhook.teamcity.extension.WebHookAjaxSettingsListPageController" 
@@ -43,7 +53,7 @@
      	init-method="register" 
      	/>
      			
-     <bean id="webHookContentBuilder" 
+     <bean id="webHookContentBuilder"
      	class="webhook.teamcity.WebHookContentBuilder" 
      	/>
      			

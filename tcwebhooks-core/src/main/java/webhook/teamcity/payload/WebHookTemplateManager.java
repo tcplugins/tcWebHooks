@@ -113,5 +113,48 @@ public class WebHookTemplateManager {
 		return matchingTemplates;
 	}
 	
+	public TemplateState getTemplateState(String template){
+		if (springTemplates.containsKey(template) && xmlConfigTemplates.containsKey(template)){
+			return TemplateState.USER_OVERRIDDEN;
+		} else if (springTemplates.containsKey(template)){
+			return TemplateState.PROVIDED;
+		} else if (xmlConfigTemplates.containsKey(template)){
+			return TemplateState.USER_DEFINED;
+		}
+		return TemplateState.UNKNOWN;
+	}
+	
+	public static enum TemplateState {
+		PROVIDED 		("Template bundled with tcWebhooks"), 
+		USER_DEFINED 	("User defined template"), 
+		USER_OVERRIDDEN ("Overridden by user defined template"), 
+		UNKNOWN			("Unknown origin");
+		
+		private final String description;
+		private TemplateState(String description){
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return this.description;
+		} 
+		
+		public boolean isStateProvided()
+		{
+		    return TemplateState.PROVIDED.equals(this);
+		}
+		public boolean isStateUserDefined()
+		{
+			return TemplateState.USER_DEFINED.equals(this);
+		}
+		public boolean isStateUserOverridden()
+		{
+			return TemplateState.USER_OVERRIDDEN.equals(this);
+		}
+		public boolean isStateUnknown()
+		{
+			return TemplateState.UNKNOWN.equals(this);
+		}
+	}
 	
 }

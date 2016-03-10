@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webhook-templates>
+	<webhook-template enabled="true" name="testXMLtemplate" rank="10">
+		<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
+		<default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template>
+		<template-description>"Test XML Template"</template-description>
+		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+		<formats>
+			<format name="xml" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<template-text><![CDATA[
+				<a href="${rootUrl}/project.html?projectId=${projectId}">${projectName}</a> :: 
+				<a href="${rootUrl}/viewType.html?buildTypeId=${buildTypeId}">${buildName}</a> # 
+				<a href="${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}"><strong>${buildNumber}</strong></a> 
+				has <strong>${buildStateDescription}</strong> with a status of 
+				<a href="${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}">
+					<strong>${buildResult}</strong>
+				</a>
+				]]></template-text>
+				<branch-template-text><![CDATA[{ "buildStatus" : "${buildStatus} - ${branchName}" }]]></branch-template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="true" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>
+</webhook-templates>
