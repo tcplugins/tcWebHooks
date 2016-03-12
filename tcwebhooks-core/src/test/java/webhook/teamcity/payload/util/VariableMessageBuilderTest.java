@@ -9,6 +9,7 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class VariableMessageBuilderTest {
 	@Test
 	public void testBuild() {
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
-		VariableMessageBuilderWithVelocity builder = VariableMessageBuilderWithVelocity.create("This is a test ${buildFullName}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		VariableMessageBuilder builder = VariableMessageBuilder.create("This is a test ${buildFullName}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}
@@ -61,9 +62,10 @@ public class VariableMessageBuilderTest {
 	@Test
 	public void testDateTemplateProperty() {
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
-		VariableMessageBuilder builder = VariableMessageBuilder.create("The date now is ${now(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\")}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		//String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+		VariableMessageBuilder builder = VariableMessageBuilder.create("The date now is #now(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\")", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
-		builder = VariableMessageBuilder.create("The month now is ${now(\"yyyy-MM\")}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		builder = VariableMessageBuilder.create("The month now is #now(\"yyyy-MM\")", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}
@@ -71,9 +73,11 @@ public class VariableMessageBuilderTest {
 	@Test
 	public void testSanitiseTemplateProperty() {
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
-		VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising ${sanitise(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising #sanitise(${someTagThing})", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		//VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising ${string.sanitise(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		//VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising ${string.sanitise(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
-		builder = VariableMessageBuilder.create("Sanitizing ${sanitize(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		builder = VariableMessageBuilder.create("Sanitizing #sanitise(${someTagThing})", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}

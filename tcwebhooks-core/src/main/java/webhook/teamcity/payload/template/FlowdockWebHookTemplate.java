@@ -18,7 +18,7 @@ public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate
 		normalTemplateMap.put(BuildStateEnum.BUILD_BROKEN, "flowdock-buildBroken-buildFailed-buildInterrupted-normal.json");
 		normalTemplateMap.put(BuildStateEnum.BUILD_FAILED, "flowdock-buildBroken-buildFailed-buildInterrupted-normal.json");
 		normalTemplateMap.put(BuildStateEnum.BUILD_INTERRUPTED, "flowdock-buildBroken-buildFailed-buildInterrupted-normal.json");
-		normalTemplateMap.put(BuildStateEnum.BUILD_STARTED, "flowdock-buildStarted-normal.json");
+		normalTemplateMap.put(BuildStateEnum.BUILD_STARTED, "flowdock-buildStarted-branch.json");
 		normalTemplateMap.put(BuildStateEnum.BUILD_SUCCESSFUL, "flowdock-buildSuccessful-buildFixed-normal.json");
 		normalTemplateMap.put(BuildStateEnum.BUILD_FIXED, "flowdock-buildSuccessful-buildFixed-normal.json");
 		normalTemplateMap.put(BuildStateEnum.RESPONSIBILITY_CHANGED, "flowdock-responsibilityChanged-normal.json");

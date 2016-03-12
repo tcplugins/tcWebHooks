@@ -104,9 +104,9 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver, Cont
 	}
 
 	@Override
-	public Object get(String arg0) {
-		if (containsKey(arg0)){
-			return resolve(arg0); 
+	public Object get(String variableName) {
+		if (containsKey(variableName)){
+			return resolve(variableName); 
 		}
 		return null;
 	}
@@ -114,29 +114,74 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver, Cont
 	@Override
 	public Object[] getKeys() {
 		// TODO Auto-generated method stub
-		throw new EeekException();
+		throw new EeekException("getKeys called");
 		//return null;
 	}
 
 	@Override
-	public Object put(String arg0, Object arg1) {
+	public Object put(String key, Object value) {
 		// TODO Auto-generated method stub
-		throw new EeekException();
+		throw new EeekException("put called with key: " + key);
 		//return null;
 	}
 
 	@Override
 	public Object remove(Object arg0) {
 		// TODO Auto-generated method stub
-		throw new EeekException();
+		throw new EeekException("remove called");
 		//return null;
 	}
 
 	public static class EeekException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 
-		public EeekException() {
-			super();
+		public EeekException(String message) {
+			super(message);
 		}
 	}
+	
+	public static class DateWrapper {
+		public String now(String datePattern){
+			try {
+				//String datePattern = variableName.substring("now(".length(), variableName.length() - ")".length());
+				SimpleDateFormat format = new SimpleDateFormat(datePattern);
+				return format.format(new Date());
+			} catch (NullPointerException npe){
+				// do nothing and let the logic below handle it.
+			} catch (IllegalArgumentException iae){
+				// do nothing and let the logic below handle it.
+			}
+			return "";
+		}
+	}
+	
+	
+/*	public static class StringSanitiserWrapper {
+		
+		private ExtraParametersMap teamcityProperties;
+		private Object bean;
+
+		public StringSanitiserWrapper(Object javaBean, ExtraParametersMap teamcityProperties) {
+			this.bean = javaBean;
+			this.teamcityProperties = teamcityProperties;
+		}
+		
+		public String sanitise(String dirtyString){
+*/			
+/*			if (teamcityProperties.containsKey(dirtyString)){
+				return StringSanitiser.sanitise(teamcityProperties.get(dirtyString));
+			} else {
+				try {
+					return StringSanitiser.sanitise((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				}
+			}
+*//*			return StringSanitiser.sanitise(dirtyString);
+		}
+	}*/
 }

@@ -5,14 +5,24 @@
     "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
   },
   "title": "updated build status to ${notifyType}",
-  "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
+#if( $branch )  
+  "external_thread_id": "teamcity-${buildName}-#sanitize(${branchName})",
+#else  
+  "external_thread_id": "teamcity-${buildName}",
+#end  
   "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#${branchDisplayName}", "#teamcity" ],
   "thread": {
-    "title": "${buildName} (${sanitize(branchDisplayName)})",
+#if( $branch )    
+    "title": "${buildName} (#sanitize(${branchDisplayName}))",
+#else
+    "title": "${buildName}",
+#end    
     "fields": [
                 { "label": "Build", "value": "${buildFullName}" },
+#if( $branch )                    
                 { "label": "Branch", "value": "${branchDisplayName}" },
                 { "label": "Default Branch", "value": "${branchIsDefault}" },
+#end                
                 { "label": "Triggered By", "value": "${triggeredBy}" },
                 { "label": "Agent", "value": "${agentName}" }
               ],
