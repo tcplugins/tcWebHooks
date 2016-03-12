@@ -62,7 +62,7 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    }
 
 	    public void register(){
-	      myWebManager.registerController("/webhooks/templates.html", this);
+	      myWebManager.registerController("/webhooks/templateModify.html", this);
 	    }
 
 	    @Nullable
