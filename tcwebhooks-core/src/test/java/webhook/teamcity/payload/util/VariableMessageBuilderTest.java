@@ -45,7 +45,7 @@ public class VariableMessageBuilderTest {
 	@Test
 	public void testBuild() {
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
-		VariableMessageBuilder builder = VariableMessageBuilder.create("This is a test ${buildFullName}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
+		VariableMessageBuilderWithVelocity builder = VariableMessageBuilderWithVelocity.create("This is a test ${buildFullName}", new WebHooksBeanUtilsVariableResolver(content, new ExtraParametersMap(teamcityProperties)));
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}

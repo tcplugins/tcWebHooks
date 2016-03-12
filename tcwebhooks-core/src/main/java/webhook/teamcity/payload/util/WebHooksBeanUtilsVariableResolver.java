@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.velocity.context.Context;
 
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.content.ExtraParametersMap;
@@ -20,7 +21,7 @@ import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
  *
  */
 
-public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
+public class WebHooksBeanUtilsVariableResolver implements VariableResolver, Context {
 	
 	
 	Object bean;
@@ -93,4 +94,49 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 		
 	}
 
+	@Override
+	public boolean containsKey(Object arg0) {
+		if (arg0 instanceof String){
+			String thing = resolve((String)arg0);
+			return (thing != null && !thing.equals("UNRESOLVED"));
+		}
+		return false;
+	}
+
+	@Override
+	public Object get(String arg0) {
+		if (containsKey(arg0)){
+			return resolve(arg0); 
+		}
+		return null;
+	}
+
+	@Override
+	public Object[] getKeys() {
+		// TODO Auto-generated method stub
+		throw new EeekException();
+		//return null;
+	}
+
+	@Override
+	public Object put(String arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		throw new EeekException();
+		//return null;
+	}
+
+	@Override
+	public Object remove(Object arg0) {
+		// TODO Auto-generated method stub
+		throw new EeekException();
+		//return null;
+	}
+
+	public static class EeekException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public EeekException() {
+			super();
+		}
+	}
 }

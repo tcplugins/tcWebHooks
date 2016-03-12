@@ -1,25 +1,40 @@
 package webhook.teamcity.payload.util;
 
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import java.io.StringWriter;
+
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.context.Context;
 
 public class VariableMessageBuilder {
-	static final String VAR_START = "${";
-	static final String VAR_END = "}";
-	
 	String template;
-	VariableResolver resolver;
-	TemplateMatcher matcher;
+	Context resolver;
+	StringWriter sw;
+	VelocityEngine ve ;
 	
-	public static VariableMessageBuilder create(final String template, VariableResolver resolver){
+	public static VariableMessageBuilder create(final String template, Context resolver){
+		
+		
+//	    ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+//	    	      "org.apache.velocity.runtime.log.Log4JLogChute" );
+//
+//	    	    ve.setProperty("runtime.log.logsystem.log4j.logger",
+//	    	                    LOGGER_NAME);
+		
+		
 		VariableMessageBuilder builder = new VariableMessageBuilder();
+		
+		builder.ve = new VelocityEngine();
+		builder.sw =  new StringWriter();
 		builder.template = template;
 		builder.resolver = resolver;
-		builder.matcher = new TemplateMatcher(VAR_START, VAR_END);
 		return builder;
 	}
 
 	public String build(){
-		return matcher.replace(template, resolver);
+	    
+	    Velocity.evaluate(resolver, sw, "logTag", template);
+	    return sw.toString();
 	}
 	
 }
