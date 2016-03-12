@@ -1,0 +1,11 @@
+headers:
+  Authorization:
+    type: string
+    required: true
+    example: Bearer AbCdEf123456
+responses:
+  401:
+    headers:
+      WWW-Authenticate:
+        type: string
+        required: true
