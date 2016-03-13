@@ -2,17 +2,18 @@
 <teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
   <info>
-    <name>tcWebHooks</name>
-    <display-name>Web Hooks plugin</display-name>
+    <name>tcWebHooks-rest-api</name>
+    <display-name>Web Hooks REST API plugin</display-name>
     <version>${version}</version>
-    <description>Trigger webhook POST requests from build events. Adds tabs to the Project and Build pages.</description>
+    <description>REST API for configuring tcWebhooks plugin</description>
     <vendor>
       <name>Net Wolf</name>
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
   <deployment use-separate-classloader="true"/>
-<!--   <dependencies>
+  <dependencies>
+    <plugin name="tcWebHooks"/>
     <plugin name="rest-api"/>
-  </dependencies> -->
+  </dependencies>
 </teamcity-plugin>

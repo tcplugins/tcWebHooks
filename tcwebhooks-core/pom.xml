@@ -34,34 +34,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-
-		<!-- <resources> <resource> <directory>src/main/resources</directory> <filtering>false</filtering> 
-			</resource> <resource> <directory>src/main/teamcity-plugin-resources</directory> 
-			<filtering>true</filtering> <includes> <include>*.xml</include> <include>*.properties</include> 
-			</includes> </resource> <resource> <directory>src/main/teamcity-plugin-resources</directory> 
-			<filtering>false</filtering> <excludes> <exclude>*.xml</exclude> <exclude>*.properties</exclude> 
-			</excludes> </resource> </resources> <pluginManagement> <plugins> </plugins> 
-			</pluginManagement> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-			<artifactId>maven-site-plugin</artifactId> <version>2.0</version> <executions> 
-			<execution> <goals> <goal>jar</goal> </goals> </execution> </executions> 
-			</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
-			<configuration> <source>1.5</source> <target>1.5</target> </configuration> 
-			</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
-			</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-source-plugin</artifactId> 
-			<version>2.1</version> <executions> <execution> <id>attach-sources</id> <phase>package</phase> 
-			<goals> <goal>jar-no-fork</goal> </goals> </execution> </executions> </plugin> 
-			<plugin> <artifactId>maven-antrun-plugin</artifactId> <executions> <execution> 
-			<phase>package</phase> <configuration> <tasks> <echo message="Attempting 
-			to build dist zip file" /> <mkdir dir="${project.build.directory}/dist" /> 
-			<mkdir dir="${project.build.directory}/dist/server" /> <echo message=" - 
-			Copying resources to dist" /> <copy todir="${project.build.directory}/dist/"> 
-			<fileset dir="${project.build.directory}/classes/"> <include name="teamcity-plugin.xml"/> 
-			</fileset> </copy> <echo message=" - Copying dep jar to dist/server" /> <copy 
-			todir="${project.build.directory}/dist/server/"> <fileset dir="${project.build.directory}/"> 
-			<include name="${artifactId}-${version}.jar" /> </fileset> </copy> <echo 
-			message=" - Creating ZIP file" /> <zip destfile="${project.build.directory}/tcWebHooksPlugin-${version}.zip" 
-			basedir="${project.build.directory}/dist" /> </tasks> </configuration> <goals> 
-			<goal>run</goal> </goals> </execution> </executions> </plugin> </plugins> -->
 	</build>
 	<reporting>
 		<plugins>
@@ -86,17 +58,6 @@
 		</plugins>
 	</reporting>
 
-
-	<repositories>
-		<!-- <repository>
-			<id>tcwebhooks.sourceforge</id>
-			<url>http://svn.code.sf.net/p/tcplugins/code/maven2-repo</url>
-		</repository>-->
-		<!--repository>
-			<id>jetbrains-all</id>
-			<url>http://repository.jetbrains.com/all</url> 
-		</repository-->
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -130,29 +91,6 @@
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- TeamCity/webapps/WEB-INF/lib/runtime-util.jar -->
-		<!--dependency>
-			<groupId>com.jetbrains.teamcity</groupId>
-			<artifactId>runtime-util</artifactId>
-			<version>7.1.0</version>
-			<scope>provided</scope>
-		</dependency-->
-
-		<!-- TeamCity/webapps/WEB-INF/lib/server-model.jar -->
-		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>model</artifactId> 
-			<version>4.0.2</version> <scope>provided</scope> </dependency> -->
-
-		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
-		<!--dependency>
-			<groupId>org.jetbrains.teamcity</groupId>
-			<artifactId>common-api</artifactId>
-			<version>9.1.0</version>
-			<scope>provided</scope>
-		</dependency-->
-
-		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>openapi</artifactId> 
-			<version>7.1.0</version> <scope>provided</scope> </dependency> -->
 
 		<dependency>
 			<groupId>com.intellij</groupId>
