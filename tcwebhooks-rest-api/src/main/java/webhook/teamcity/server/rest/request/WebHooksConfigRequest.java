@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import jetbrains.buildServer.server.rest.request.Constants;
 import jetbrains.buildServer.server.rest.util.BeanContext;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ import com.sun.jersey.spi.resource.Singleton;
 @Path(WebHooksConfigRequest.BASE_URI)
 @Singleton
 public class WebHooksConfigRequest implements ApiRequest {
-	static final String BASE_URI = Constants.API_URL + "/webhooks/server";
+	static final String BASE_URI = Constants.API_URL + "/server";
 	private static final String NAME = WebHooksConfigRequest.class.getName();
 	@Context @NotNull private MainConfigManager mainConfigManager;
 //	@Context @NotNull private BeanContext myBeanContext;

@@ -28,13 +28,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
 
-import org.mockito.Mock;
-
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
+import webhook.teamcity.server.rest.util.BeanContext;
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.RequestPathTransformInfo;
 import jetbrains.buildServer.server.rest.jersey.SimplePathTransformer;
-import jetbrains.buildServer.server.rest.util.BeanContext;
 import jetbrains.buildServer.server.rest.util.BeanFactory;
 
 /**
@@ -43,7 +41,7 @@ import jetbrains.buildServer.server.rest.util.BeanFactory;
  */
 @Provider
 public class BeanContextProvider implements InjectableProvider<Context, Type>, Injectable<BeanContext> {
-  @Mock private final RequestPathTransformInfo myRequestPathTransformInfo;
+  private final RequestPathTransformInfo myRequestPathTransformInfo;
 
   //TODO: using request-specific field in singleton provider
   //TODO: may lead to concurrency issue as this instance is
@@ -55,7 +53,8 @@ public class BeanContextProvider implements InjectableProvider<Context, Type>, I
   private final ServiceLocator myServiceLocator;
 
   public BeanContextProvider(final RequestPathTransformInfo requestPathTransformInfo, final BeanFactory factory, final ServiceLocator serviceLocator) {
-    myRequestPathTransformInfo = requestPathTransformInfo;
+	System.out.println("We are here: Trying to provide a real BeanContext instance");
+	myRequestPathTransformInfo = requestPathTransformInfo;
     myFactory = factory;
     myServiceLocator = serviceLocator;
   }

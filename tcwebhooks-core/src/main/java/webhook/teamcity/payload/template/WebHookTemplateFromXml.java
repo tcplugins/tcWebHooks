@@ -224,5 +224,9 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	public String getPreferredDateTimeFormat() {
 		return this.preferredDateTimeFormat;
 	}
+	
+	public void persist(){
+		
+	}
 
 }
