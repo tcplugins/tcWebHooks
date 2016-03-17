@@ -25,7 +25,7 @@ public class WebHooksChange {
 	}
 
 
-	private List<String> files = new ArrayList<>();
+	private List<String> files = new ArrayList<String>();
 	private String comment;
 	private String vcsRoot;
 	private String username;
@@ -53,7 +53,7 @@ public class WebHooksChange {
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public List<String> getFiles() {
 		return files;
 	}
