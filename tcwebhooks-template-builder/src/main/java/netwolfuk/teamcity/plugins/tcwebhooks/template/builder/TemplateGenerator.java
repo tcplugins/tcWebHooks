@@ -8,9 +8,9 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FileUtils;
 
-import webhook.teamcity.settings.entity.WebHookTemplate;
-import webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem;
-import webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateState;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
@@ -32,7 +32,7 @@ public class TemplateGenerator {
 	public void generate(String templateName, String templateFileLocation, String targetFileLocation) throws JAXBException, IOException{
 		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(templateFileLocation);
 		
-		for (WebHookTemplate template : templatesList.getWebHookTemplateList()){
+		for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
 			if (template.isEnabled() && template.getName().equals(templateName)){
 				
 				File defaultTemplateFile = new File(targetFileLocation + "/" + templateName + "-default-normal.json");

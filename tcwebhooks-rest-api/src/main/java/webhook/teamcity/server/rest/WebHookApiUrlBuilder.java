@@ -3,7 +3,7 @@ package webhook.teamcity.server.rest;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.server.rest.request.TemplateRequest;
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import jetbrains.buildServer.server.rest.ApiUrlBuilder;
 import jetbrains.buildServer.server.rest.PathTransformer;
 
@@ -22,7 +22,7 @@ public class WebHookApiUrlBuilder {
 		myPathTransformer = pathTransformer;
 	}
 	
-	public String getHref(final WebHookTemplate template) {
+	public String getHref(final WebHookTemplateEntity template) {
 	    return myPathTransformer.transform(TemplateRequest.getTemplateHref(template));
 	}
 

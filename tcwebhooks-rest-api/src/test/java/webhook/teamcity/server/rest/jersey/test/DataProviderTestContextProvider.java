@@ -15,6 +15,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.data.DataProvider;
+import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.request.Constants;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -29,10 +30,11 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
   @Mock PermissionChecker permissionChecker;
   @Mock WebHookPayloadManager payloadManager;
   @Mock WebHookTemplateManager templateManager;
+  @Mock TemplateFinder templateFinder;
   
   public DataProviderTestContextProvider() {
 	  System.out.println("We are here: Trying to provide a testable DataProvider instance");
-	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager); 
+	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder); 
 
   }
 

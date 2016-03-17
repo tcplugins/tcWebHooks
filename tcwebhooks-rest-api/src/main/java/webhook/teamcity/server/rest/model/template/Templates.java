@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.util.BeanContext;
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 
 @XmlRootElement(name = "templates")
@@ -58,13 +58,13 @@ public class Templates {
 	  public Templates() {
 	  }
 
-	  public Templates(@NotNull final List<WebHookTemplate> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+	  public Templates(@NotNull final List<WebHookTemplateEntity> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 	    if (fields.isIncluded("template", false, true)){
 	      templates = ValueWithDefault.decideDefault(fields.isIncluded("project"), new ValueWithDefault.Value<List<Template>>() {
 	        public List<Template> get() {
 	          final ArrayList<Template> result = new ArrayList<Template>(templateObjects.size());
 	          final Fields nestedField = fields.getNestedField("project");
-	          for (WebHookTemplate template : templateObjects) {
+	          for (WebHookTemplateEntity template : templateObjects) {
 	            result.add(new Template(template, nestedField, beanContext));
 	          }
 	          return result;
@@ -84,11 +84,11 @@ public class Templates {
 	  }
 
 	  @NotNull
-	  public List<WebHookTemplate> getTemplatesFromPosted(@NotNull TemplateFinder templateFinder) {
+	  public List<WebHookTemplateEntity> getTemplatesFromPosted(@NotNull TemplateFinder templateFinder) {
 	    if (templates == null) {
 	      throw new BadRequestException("List of projects should be supplied");
 	    }
-	    final ArrayList<WebHookTemplate> result = new ArrayList<WebHookTemplate>(templates.size());
+	    final ArrayList<WebHookTemplateEntity> result = new ArrayList<WebHookTemplateEntity>(templates.size());
 	    for (Template template : templates) {
 	      result.add(template.getTemplateFromPosted(templateFinder));
 	    }

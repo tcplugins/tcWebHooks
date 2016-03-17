@@ -12,7 +12,4 @@
     </vendor>
   </info>
   <deployment use-separate-classloader="true"/>
-<!--   <dependencies>
-    <plugin name="rest-api"/>
-  </dependencies> -->
 </teamcity-plugin>

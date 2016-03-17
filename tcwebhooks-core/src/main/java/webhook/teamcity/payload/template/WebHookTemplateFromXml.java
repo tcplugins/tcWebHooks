@@ -114,7 +114,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	}
 
 	public static WebHookTemplate build(
-			webhook.teamcity.settings.entity.WebHookTemplate entityTemplate,
+			webhook.teamcity.settings.entity.WebHookTemplateEntity entityTemplate,
 			WebHookPayloadManager payloadManager
 			) {
 		WebHookTemplateFromXml template = new WebHookTemplateFromXml();
@@ -162,9 +162,9 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem item : entityTemplate.getTemplates()){
+		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates()){
 			if (item.isEnabled() && item.getTemplateText()!= null){
-				for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateState state :item.getStates()){
+				for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
 					if (state.isEnabled()){
 						BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
 						if (bse != null){
@@ -180,9 +180,9 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem item : entityTemplate.getTemplates()){
+		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates()){
 			if (item.isEnabled() && item.getBranchTemplateText()!= null){
-				for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateState state :item.getStates()){
+				for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
 					if (state.isEnabled()){
 						BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
 						if (bse != null){
@@ -197,7 +197,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateFormat format : entityTemplate.getFormats()){
+		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat format : entityTemplate.getFormats()){
 			if (format.isEnabled() && payloadManager.isRegisteredFormat(format.getName())){
 				template.supportedFormats.add(format.getName());
 			}

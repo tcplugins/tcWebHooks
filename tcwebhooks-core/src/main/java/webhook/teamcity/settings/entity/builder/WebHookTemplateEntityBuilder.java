@@ -3,12 +3,12 @@ package webhook.teamcity.settings.entity.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public class WebHookTemplateEntityBuilder {
 
-	public static WebHookTemplate build(webhook.teamcity.payload.WebHookTemplate template){
-		WebHookTemplate entityTemplate = new WebHookTemplate(template.getTemplateShortName(), true);
+	public static WebHookTemplateEntity build(webhook.teamcity.payload.WebHookTemplate template){
+		WebHookTemplateEntity entityTemplate = new WebHookTemplateEntity(template.getTemplateShortName(), true);
 		
 		// TODO: Need to handle all the other fields and templates.
 		
@@ -16,8 +16,8 @@ public class WebHookTemplateEntityBuilder {
 	}
 	
 	
-	public static List<WebHookTemplate> buildAll(List<webhook.teamcity.payload.WebHookTemplate> registeredTemplates) {
-		List<WebHookTemplate> entityTemplates = new ArrayList<WebHookTemplate>();
+	public static List<WebHookTemplateEntity> buildAll(List<webhook.teamcity.payload.WebHookTemplate> registeredTemplates) {
+		List<WebHookTemplateEntity> entityTemplates = new ArrayList<WebHookTemplateEntity>();
 		for (webhook.teamcity.payload.WebHookTemplate template : registeredTemplates){
 			entityTemplates.add(build(template));
 		}

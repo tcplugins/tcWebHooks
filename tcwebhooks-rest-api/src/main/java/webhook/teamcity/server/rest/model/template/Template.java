@@ -16,7 +16,7 @@ import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.util.BeanContext;
 import jetbrains.buildServer.server.rest.APIController;
 import webhook.teamcity.server.rest.data.DataProvider;
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.data.ProjectFinder;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
@@ -55,7 +55,7 @@ public class Template {
 	  public Template() {
 	  }
 
-	  public Template(@NotNull final WebHookTemplate template, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+	  public Template(@NotNull final WebHookTemplateEntity template, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 	    id = ValueWithDefault.decideDefault(fields.isIncluded("id"), template.getName());
 	    name = ValueWithDefault.decideDefault(fields.isIncluded("name"), template.getName());
 
@@ -68,7 +68,7 @@ public class Template {
 	  }
 
 	  @Nullable
-	  public static String getFieldValue(final WebHookTemplate template, final String field) {
+	  public static String getFieldValue(final WebHookTemplateEntity template, final String field) {
 	    if ("id".equals(field)) {
 	      return template.getName();
 	    } else if ("description".equals(field)) {
@@ -96,7 +96,7 @@ public class Template {
 	    throw new BadRequestException("Setting field '" + field + "' is not supported. Supported are: name, description, archived");
 	  }
 
-	public WebHookTemplate getTemplateFromPosted(TemplateFinder templateFinder) {
+	public WebHookTemplateEntity getTemplateFromPosted(TemplateFinder templateFinder) {
 		return templateFinder.findTemplateById(this.name);
 	}
 

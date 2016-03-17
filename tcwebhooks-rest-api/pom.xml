@@ -220,7 +220,7 @@
 		<dependency>
 			<groupId>jetbrains.teamcity.9</groupId>
 			<artifactId>rest-api</artifactId>
-			<version>9.0</version>
+			<version>9.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

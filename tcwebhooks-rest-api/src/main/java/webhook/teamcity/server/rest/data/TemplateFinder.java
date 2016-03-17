@@ -11,7 +11,7 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -26,14 +26,14 @@ public class TemplateFinder {
 		myTemplateManager = templateManager;
 	}
 	
-	public static String getLocator(final WebHookTemplate template) {
+	public static String getLocator(final WebHookTemplateEntity template) {
 	    return Locator.createEmptyLocator().setDimension("id", template.getName()).getStringRepresentation();
 	}
 
 	
 	
 	
-	public WebHookTemplate findTemplateById(String templateLocator) {
+	public WebHookTemplateEntity findTemplateById(String templateLocator) {
 
 		if (StringUtil.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");
@@ -45,7 +45,7 @@ public class TemplateFinder {
 		if (locator.isSingleValue()) {
 			// no dimensions found, assume it's a name or internal id or
 			// external id
-			WebHookTemplate template = null;
+			WebHookTemplateEntity template = null;
 			@SuppressWarnings("ConstantConditions")
 			@NotNull
 			final String singleValue = locator.getSingleValue();

@@ -3,11 +3,17 @@ package webhook.teamcity.server.rest.model.template;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import lombok.Data;
+
 import org.jetbrains.annotations.Nullable;
+
+import webhook.teamcity.server.rest.model.mainconfig.Information;
 
 /*
 
@@ -43,7 +49,11 @@ import org.jetbrains.annotations.Nullable;
 
  */
 
+/* Use the XmlAttributes on the fields rather than the getters
+ * and setters provided by Lombok */
+@XmlAccessorType(XmlAccessType.FIELD) 
 
+@Data  // Let Lombok generate the getters and setters.
 @SuppressWarnings("PublicField")
 @XmlRootElement(name = "newTemplateDescription")
 public class NewTemplateDescription {
@@ -59,9 +69,11 @@ public class NewTemplateDescription {
 
 	@XmlAttribute
 	public String name;
-
+	
+	@XmlAttribute
+	public String description;
 
 	@XmlElement(name = "formats")
-	private List<Format> formats;
+	public List<Format> formats;
 
 }

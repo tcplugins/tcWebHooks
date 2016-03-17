@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -25,31 +25,42 @@ public class DataProvider {
 	@NotNull private final PermissionChecker myPermissionChecker;
 	@NotNull private final WebHookTemplateManager myTemplateManager;
 	@NotNull private final WebHookPayloadManager myPayloadManager;
+	@NotNull private final TemplateFinder myTemplateFinder;
 
 	public DataProvider(@NotNull final SBuildServer server,
 						@NotNull final RootUrlHolder rootUrlHolder,
 						@NotNull final PermissionChecker permissionChecker,
 						@NotNull final WebHookPayloadManager payloadManager,
-						@NotNull final WebHookTemplateManager templateManager) {
+						@NotNull final WebHookTemplateManager templateManager,
+						@NotNull final TemplateFinder templateFinder){
 
 		this.myServer = server;
 		this.myRootUrlHolder = rootUrlHolder;
 		this.myPermissionChecker = permissionChecker;
 		this.myTemplateManager = templateManager;
 		this.myPayloadManager = payloadManager;
+		this.myTemplateFinder = templateFinder;
 
 	}
 	
-	public List<WebHookTemplate> getWebHookTemplates(){
+	public List<WebHookTemplateEntity> getWebHookTemplates(){
 		return WebHookTemplateEntityBuilder.buildAll(this.myTemplateManager.getRegisteredTemplates());
 	}
 	
-	public WebHookTemplate getWebHookTemplate(String id){
+	public WebHookTemplateEntity getWebHookTemplate(String id){
 		return WebHookTemplateEntityBuilder.build(this.myTemplateManager.getTemplate(id));
 	}
 
 	public WebHookPayloadManager getPayloadManager() {
 		return this.myPayloadManager;
+	}
+	
+	public WebHookTemplateManager getTemplateManager() {
+		return this.myTemplateManager;
+	}
+	
+	public TemplateFinder getTemplateFinder() {
+		return this.myTemplateFinder;
 	}
 	
 }

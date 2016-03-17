@@ -71,10 +71,10 @@ public class WebHookTemplateJaxHelper {
 
 		assert suppliersBean != null;
 		List<String> templateNames = new ArrayList<String>();
-		List<WebHookTemplate> itemsToRemove = new ArrayList<WebHookTemplate>();
+		List<WebHookTemplateEntity> itemsToRemove = new ArrayList<WebHookTemplateEntity>();
 
 		// Get supplier instance by id. If it's not found - remove it
-		for (WebHookTemplate templateBean : suppliersBean.getWebHookTemplateList()) {
+		for (WebHookTemplateEntity templateBean : suppliersBean.getWebHookTemplateList()) {
 			WebHookTemplateFromXml supplier = templates.get(templateBean.getName());
 			if (null == supplier) {
 				Loggers.SERVER.error(String.format(
@@ -91,7 +91,7 @@ public class WebHookTemplateJaxHelper {
 		// saved in config
 		for (String id : templates.keySet()) {
 			if (!templateNames.contains(id)) {
-				suppliersBean.addWebHookTemplate(new WebHookTemplate(id, true));
+				suppliersBean.addWebHookTemplate(new WebHookTemplateEntity(id, true));
 			}
 		}
 
@@ -105,7 +105,8 @@ public class WebHookTemplateJaxHelper {
 	 */
 	public static void write(@NotNull WebHookTemplates templates,
 			@NotNull String configFilePath) throws JAXBException {
-		JAXBContext context = JAXBContext.newInstance(templates.getClass());
+		
+		JAXBContext context = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller m = context.createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		m.marshal(templates, new File(configFilePath));

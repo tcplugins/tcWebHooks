@@ -16,6 +16,7 @@ import jetbrains.buildServer.server.rest.ApiUrlBuilder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.InvalidStateException;
+import jetbrains.buildServer.server.rest.errors.OperationException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.server.rest.model.Properties;
@@ -29,6 +30,7 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.server.rest.data.DataProvider;
@@ -37,7 +39,7 @@ import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Templates;
-import webhook.teamcity.settings.entity.WebHookTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 /*
  * User: Yegor Yarko
@@ -49,6 +51,7 @@ public class TemplateRequest {
   public static final boolean ID_GENERATION_FLAG = true;
 
   @Context @NotNull private DataProvider myDataProvider;
+  @Context @NotNull private WebHookTemplateManager myTemplateManager;
 
   //@Context @NotNull private WebHookApiUrlBuilder myApiUrlBuilder;
   @Context @NotNull private ServiceLocator myServiceLocator;
@@ -64,7 +67,7 @@ public class TemplateRequest {
   }
 
   @NotNull
-  public static String getTemplateHref(WebHookTemplate template) {
+  public static String getTemplateHref(WebHookTemplateEntity template) {
     return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template);
   }
 
@@ -78,17 +81,27 @@ public class TemplateRequest {
   @Path("/{templateLocator}")
   @Produces({"application/xml", "application/json"})
   public Template serveTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
-	  return new Template(myDataProvider.getWebHookTemplate(templateLocator), new Fields(fields), myBeanContext);
+	  return new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator), new Fields(fields), myBeanContext);
   }
 
   @POST
-  @Consumes({"text/plain"})
+  @Consumes({"application/xml", "application/json"})
   @Produces({"application/xml", "application/json"})
-  public Template createEmptyTemplate(String name) {
-    if (StringUtil.isEmpty(name)) {
+  public Template createEmptyTemplate(NewTemplateDescription templateDescription) {
+    if (StringUtil.isEmpty(templateDescription.getName())) {
       throw new BadRequestException("Template name cannot be empty.");
     }
-    return new Template(new WebHookTemplate(name, true), Fields.LONG, myBeanContext);
+    WebHookTemplateEntity template = new WebHookTemplateEntity(templateDescription.getName(), true);
+    template.setTemplateDescription(templateDescription.getDescription());
+    if (myTemplateManager.getTemplate(template.getName()) != null){
+    	throw new BadRequestException("Template of that name already exists. To update existing template, please use PUT");
+    }
+    myTemplateManager.registerTemplateFormatFromXmlConfig(template);
+    if (myTemplateManager.persistAllXmlConfigTemplates()){
+    	return new Template(template, Fields.LONG, myBeanContext);
+    } else {
+    	throw new OperationException("There was an error saving your template. Sorry.");
+    }
   }
 
   /*

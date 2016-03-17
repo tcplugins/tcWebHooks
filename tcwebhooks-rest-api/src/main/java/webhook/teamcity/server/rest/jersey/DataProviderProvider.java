@@ -15,6 +15,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.data.DataProvider;
+import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.request.Constants;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -29,19 +30,22 @@ public class DataProviderProvider implements InjectableProvider<Context, Type>, 
   private final PermissionChecker permissionChecker;
   private final WebHookPayloadManager payloadManager;
   private final WebHookTemplateManager templateManager;
+  private final TemplateFinder templateFinder;
   
   public DataProviderProvider(
 		  	@NotNull final SBuildServer server,
 			@NotNull final RootUrlHolder rootUrlHolder,
 			@NotNull final PermissionChecker permissionChecker,
 			@NotNull final WebHookPayloadManager payloadManager,
+			@NotNull final TemplateFinder templateFinder,
 			@NotNull final WebHookTemplateManager templateManager
 		  ) {
 	  sBuildServer = server;
 	  this.permissionChecker = permissionChecker;
 	  this.payloadManager = payloadManager;
 	  this.templateManager = templateManager;
-	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager); 
+	  this.templateFinder = templateFinder;
+	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder); 
   }
 
   public ComponentScope getScope() {
