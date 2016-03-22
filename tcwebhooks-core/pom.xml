@@ -195,6 +195,22 @@
 			<scope>provided</scope>
 		</dependency>
 
+     	<!--Jetty dependencies start here -->
+     	<dependency>
+	         <groupId>org.eclipse.jetty</groupId>
+	         <artifactId>jetty-server</artifactId>
+	         <version>9.2.11.v20150529</version>
+			<scope>test</scope>
+     	</dependency>
+
+     	<dependency>
+	         <groupId>org.eclipse.jetty</groupId>
+	         <artifactId>jetty-webapp</artifactId>
+	         <version>9.2.11.v20150529</version>
+			<scope>test</scope>
+	     </dependency>
+    	 <!--Jetty dependencies end here -->
+
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
