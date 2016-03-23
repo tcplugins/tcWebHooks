@@ -17,6 +17,7 @@ public class BuildState {
 	public BuildState() {
 		states.clear();
 		states.put(BuildStateEnum.BUILD_STARTED, 			new SimpleBuildState(BuildStateEnum.BUILD_STARTED, 			false));
+		states.put(BuildStateEnum.CHANGES_LOADED, 			new SimpleBuildState(BuildStateEnum.CHANGES_LOADED, 		false));
 		//states.put(BuildStateEnum.BUILD_CHANGED_STATUS, 	new SimpleBuildState(BuildStateEnum.BUILD_CHANGED_STATUS, 	false)); 	
 		states.put(BuildStateEnum.BEFORE_BUILD_FINISHED, 	new SimpleBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, 	false)); 
 		states.put(BuildStateEnum.RESPONSIBILITY_CHANGED, 	new SimpleBuildState(BuildStateEnum.RESPONSIBILITY_CHANGED,	false));

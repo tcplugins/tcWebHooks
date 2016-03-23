@@ -6,6 +6,7 @@ import static webhook.teamcity.BuildStateEnum.BUILD_FAILED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FINISHED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
 import static webhook.teamcity.BuildStateEnum.BUILD_INTERRUPTED;
+import static webhook.teamcity.BuildStateEnum.CHANGES_LOADED;
 import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
@@ -385,6 +386,9 @@ public class WebHookConfig {
 //			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
 //				enabledStates += ", Build Changed Status";
 //			}
+			if (states.enabled(BuildStateEnum.CHANGES_LOADED)){
+				enabledStates += ", Changes Loaded";
+			}
 			if (states.enabled(BuildStateEnum.BUILD_INTERRUPTED)){
 				enabledStates += ", Build Interrupted";
 			}
@@ -432,6 +436,13 @@ public class WebHookConfig {
 	
 	public String getStateBuildStartedAsChecked() {
 		if (states.enabled(BUILD_STARTED)){
+			return "checked ";
+		}
+		return ""; 
+	}
+	
+	public String getStateChangesLoadedAsChecked() {
+		if (states.enabled(CHANGES_LOADED)){
 			return "checked ";
 		}
 		return ""; 

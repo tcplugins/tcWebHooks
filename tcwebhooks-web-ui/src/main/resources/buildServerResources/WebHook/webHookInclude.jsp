@@ -111,20 +111,27 @@
 														<input onclick='selectBuildState();' class="buildState" id="buildStarted" name="BuildStarted"  type=checkbox />
 														 Build Started</label>
 													</td>
-													<td class="buildInterrupted"><label style='white-space:nowrap;'>
-														<input onclick='selectBuildState();' class="buildState" id="buildInterrupted" name="BuildInterrupted" type=checkbox />
-														 Build Interrupted</label>
+													<td class="changesLoaded"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="changesLoaded" name="ChangesLoaded" type=checkbox />
+														 Changes Loaded</label>
 													</td>
 												</tr>
 												<tr style="border:none;"><td>&nbsp;</td>
-													<td class="beforeBuildFinish" style="padding-left:3px;"><label style='white-space:nowrap;'>
+													<td class="buildInterrupted" style="padding-left:3px;"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="buildInterrupted" name="BuildInterrupted" type=checkbox />
+														 Build Interrupted</label>
+													</td>
+													<td class="beforeBuildFinish"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="beforeBuildFinish" name="BeforeFinished" type=checkbox />
 														 Build Almost Completed</label>
 													</td>
-													<td class="responsibilityChanged"><label style='white-space:nowrap;'>
+												</tr>
+												<tr style="border:none;"><td>&nbsp;</td>
+													<td class="responsibilityChanged" style="padding-left:3px;"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox />
 														 Build Responsibility Changed</label>
 													</td>
+													<td></td>
 												</tr>
 					
 												<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top; padding-top:0.33em;">On Completion:</td>
@@ -168,6 +175,7 @@
 						            		<div>
 							            		Build Event: <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent" class="templateAjaxRefresh">
 							            			<option value="buildStarted">Build Started</option>
+							            			<option value="changesLoaded">Changes Loaded</option>
 							            			<option value="buildInterrupted">Build Interrupted</option>
 							            			<option value="beforeBuildFinish">Build Almost Completed</option>
 							            			<option value="responsibilityChanged">Build Responsibility Changed</option>

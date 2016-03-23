@@ -128,6 +128,11 @@ public class WebHookListener extends BuildServerAdapter {
     	processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_STARTED);
     }	
 	
+	@Override
+	public void changesLoaded(SRunningBuild sRunningBuild){
+		processBuildEvent(sRunningBuild, BuildStateEnum.CHANGES_LOADED);
+	}	
+	
     @Override
     public void buildFinished(SRunningBuild sRunningBuild){
     	processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_FINISHED);

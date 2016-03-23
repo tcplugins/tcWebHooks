@@ -46,6 +46,13 @@ public class WebHookContentBuilder {
 				wh.setPayload(payloadFormat.buildStarted(sBuild, getPreviousNonPersonalBuild(sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
 				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
+		} else if (state.equals(BuildStateEnum.CHANGES_LOADED)){
+			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.CHANGES_LOADED));
+			if (wh.isEnabled()){
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.changesLoaded(sBuild, getPreviousNonPersonalBuild(sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
+				wh.setUrl(resolveTemplatedUrl(whc.getUrl(), state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
+			}
 		} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
 			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
 			if (wh.isEnabled()){
