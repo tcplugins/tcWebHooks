@@ -1,0 +1,12 @@
+{
+    
+    "name" : "testJsonTemplate01",
+    "description" : "A test template in JSON format (version 1).",
+        "formats" : [
+        {
+            "enabled" : true,
+            "name" : "jsonTemplate"
+        }
+    ]
+
+}
