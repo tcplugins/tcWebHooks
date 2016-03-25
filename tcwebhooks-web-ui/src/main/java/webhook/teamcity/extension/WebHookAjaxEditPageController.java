@@ -39,6 +39,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    protected static final String BEFORE_FINISHED = "BeforeFinished";
 		protected static final String BUILD_INTERRUPTED = "BuildInterrupted";
 		protected static final String BUILD_STARTED = "BuildStarted";
+		protected static final String CHANGES_LOADED = "ChangesLoaded";
 		protected static final String BUILD_BROKEN = "BuildBroken";
 		protected static final String BUILD_FIXED = "BuildFixed";
 		protected static final String BUILD_FAILED = "BuildFailed";
@@ -127,6 +128,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.CHANGES_LOADED, CHANGES_LOADED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
 			    						buildStateResolver.checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);

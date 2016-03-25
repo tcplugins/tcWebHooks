@@ -80,6 +80,16 @@ public interface WebHookPayload {
 	 * @return Formatted payload for the WebHook to send for the buildStarted event.
 	 */
     String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    
+    /**
+     * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
+     * or build parameters and returns a String of the WebHook payload.
+     *  
+     * @param sRunningBuild
+     * @param extraParameters
+     * @return Formatted payload for the WebHook to send for the changesLoaded event.
+     */
+    String changesLoaded(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook

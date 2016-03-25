@@ -47,6 +47,7 @@ public class BuildStateTest {
 	public void testAllEnabled_02(){
 		BuildState state = new BuildState();
 		state.enable(BUILD_STARTED);
+		state.enable(CHANGES_LOADED);
 		state.enable(BUILD_INTERRUPTED);
 		state.enable(RESPONSIBILITY_CHANGED);
 		state.enable(BEFORE_BUILD_FINISHED);

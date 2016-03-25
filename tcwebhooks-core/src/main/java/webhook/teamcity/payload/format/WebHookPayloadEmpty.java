@@ -61,6 +61,13 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 	}
 
 	@Override
+	public String changesLoaded(SBuild runningBuild,
+			SFinishedBuild previousBuild,
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+		return "";
+	}
+	
+	@Override
 	public String buildStarted(SBuild runningBuild,
 			SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
