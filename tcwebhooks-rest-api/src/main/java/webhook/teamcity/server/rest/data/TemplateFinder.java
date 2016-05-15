@@ -46,13 +46,39 @@ public class TemplateFinder {
 			// no dimensions found, assume it's a name or internal id or
 			// external id
 			WebHookTemplateEntity template = null;
-			@SuppressWarnings("ConstantConditions")
 			@NotNull
 			final String singleValue = locator.getSingleValue();
 			template = WebHookTemplateEntityBuilder.build(myTemplateManager.getTemplate(singleValue));
 			if (template != null) {
 				return template;
 			}
+			throw new NotFoundException(
+					"No template found by name '"
+							+ singleValue + "'.");
+			
+		} else if (locator.getSingleDimensionValue("id") != null){
+			WebHookTemplateEntity template = null;
+			@NotNull
+			final String templateId = locator.getSingleDimensionValue("id");
+			template = WebHookTemplateEntityBuilder.build(myTemplateManager.getTemplate(templateId));
+			if (template != null) {
+				return template;
+			}
+			throw new NotFoundException(
+					"No template found by id '"
+							+ templateId + "'.");
+			
+		} else if (locator.getSingleDimensionValue("name") != null){
+			WebHookTemplateEntity template = null;
+			@NotNull
+			final String templateName = locator.getSingleDimensionValue("name");
+			template = WebHookTemplateEntityBuilder.build(myTemplateManager.getTemplate(templateName));
+			if (template != null) {
+				return template;
+			}
+			throw new NotFoundException(
+					"No template found by name '"
+							+ templateName + "'.");			
 			
 			//TODO: Add support for returning more than one template.
 			
@@ -68,10 +94,10 @@ public class TemplateFinder {
 			if (project != null) {
 				return project;
 			}*/
-			throw new NotFoundException(
+/*			throw new NotFoundException(
 					"No template found by name id '"
 							+ singleValue + "'.");
-		}
+*/		}
 		
 		throw new BadRequestException("Sorry: Searching for multiple template is not supported.");
 

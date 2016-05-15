@@ -1,4 +1,4 @@
-package webhook.teamcity.server.rest.jersey.test;
+package webhook.teamcity.test.jerseyprovider;
 
 import static org.mockito.Mockito.mock;
 
@@ -17,46 +17,44 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.mockito.Mock;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
 import webhook.teamcity.settings.WebHookMainSettings;
 
 @Provider
-public class MainConfigBuilderTestContextProvider implements InjectableProvider<Context, Type>, Injectable<MainConfigManager> {
-  private final MainConfigManager mainConfigBuilder;
-  private final WebHookMainSettings webHookMainSettings;
-  private final SBuildServer sBuildServer = mock(SBuildServer.class);
+public class WebHookTemplateManagerTestProvider implements InjectableProvider<Context, Type>, Injectable<WebHookTemplateManager> {
+  private final WebHookTemplateManager webHookTemplateManager;
+  @Context WebHookPayloadManager webHookPayloadManager;
   
-  public MainConfigBuilderTestContextProvider() {
+  public WebHookTemplateManagerTestProvider() {
 	  System.out.println("We are here: Trying to provide a testable WebHookMainSettings instance");
-	  	webHookMainSettings = new WebHookMainSettings(sBuildServer);
-	  	webHookMainSettings.register();
-	  	webHookMainSettings.readFrom(getFullConfigElement());
-	  	mainConfigBuilder = new MainConfigManager(webHookMainSettings);
-
+	  	webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager);
   }
 
   public ComponentScope getScope() {
     return ComponentScope.Singleton;
   }
 
-  public Injectable<MainConfigManager> getInjectable(final ComponentContext ic, final Context context, final Type type) {
-    if (type.equals(MainConfigManager.class)) {
+  public Injectable<WebHookTemplateManager> getInjectable(final ComponentContext ic, final Context context, final Type type) {
+    if (type.equals(WebHookTemplateManager.class)) {
       return this;
     }
     return null;
   }
 
-  public MainConfigManager getValue() {
-    return mainConfigBuilder;
+  public WebHookTemplateManager getValue() {
+    return webHookTemplateManager;
   }
   
   private Element getFullConfigElement(){
 		SAXBuilder builder = new SAXBuilder();
 		builder.setIgnoringElementContentWhitespace(true);
 		try {
-			Document doc = builder.build("../tcwebhooks-core/src/test/resources/main-config-full.xml");
+			Document doc = builder.build("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
 			return doc.getRootElement();
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block

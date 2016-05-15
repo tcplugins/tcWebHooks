@@ -10,6 +10,11 @@ public class WebHookTemplateEntityBuilder {
 	public static WebHookTemplateEntity build(webhook.teamcity.payload.WebHookTemplate template){
 		WebHookTemplateEntity entityTemplate = new WebHookTemplateEntity(template.getTemplateShortName(), true);
 		
+		entityTemplate.setTemplateDescription(template.getTemplateDescription());
+		entityTemplate.setPreferredDateTimeFormat(template.getPreferredDateTimeFormat());
+		entityTemplate.setTemplateToolTip(template.getTemplateToolTipText());
+		entityTemplate.setRank(template.getRank());
+		
 		// TODO: Need to handle all the other fields and templates.
 		
 		return entityTemplate;

@@ -48,7 +48,7 @@ public class Template {
 	  public String webUrl;
 
 	  /**
-	   * This is used only when posting a link to a project
+	   * This is used only when posting a link to a template
 	   */
 	  @XmlAttribute public String locator;
 
@@ -58,12 +58,13 @@ public class Template {
 	  public Template(@NotNull final WebHookTemplateEntity template, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 	    id = ValueWithDefault.decideDefault(fields.isIncluded("id"), template.getName());
 	    name = ValueWithDefault.decideDefault(fields.isIncluded("name"), template.getName());
+	    description = ValueWithDefault.decideDefault(fields.isIncluded("description"), template.getTemplateDescription());
 
 	    href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(template));
 	    webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebLinks.class).getProjectPageUrl(template.getName()));
 
-	    final String descriptionText = template.getTemplateDescription();
-	    description = ValueWithDefault.decideDefault(fields.isIncluded("description"), StringUtil.isEmpty(descriptionText) ? null : descriptionText);
+	    //final String descriptionText = template.getTemplateDescription();
+	    //description = ValueWithDefault.decideDefault(fields.isIncluded("description"), StringUtil.isEmpty(descriptionText) ? null : descriptionText);
 
 	  }
 

@@ -1,4 +1,4 @@
-package webhook.teamcity.server.rest.jersey.test;
+package webhook.teamcity.test.jerseyprovider;
 
 import static org.mockito.Mockito.mock;
 

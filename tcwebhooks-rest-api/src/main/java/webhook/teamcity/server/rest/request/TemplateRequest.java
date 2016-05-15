@@ -29,6 +29,7 @@ import jetbrains.buildServer.util.StringUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;

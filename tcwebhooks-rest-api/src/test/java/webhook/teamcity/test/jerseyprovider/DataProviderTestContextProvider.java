@@ -1,10 +1,15 @@
-package webhook.teamcity.server.rest.jersey.test;
+package webhook.teamcity.test.jerseyprovider;
+
+import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Type;
 
+import javax.security.sasl.SaslServer;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
+import org.jetbrains.annotations.NotNull;
 import org.mockito.Mock;
 
 import jetbrains.buildServer.RootUrlHolder;
@@ -26,16 +31,16 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 @Provider
 public class DataProviderTestContextProvider implements InjectableProvider<Context, Type>, Injectable<DataProvider> {
   private final DataProvider dataProvider;
-  @Mock SBuildServer sBuildServer;
-  @Mock PermissionChecker permissionChecker;
-  @Mock WebHookPayloadManager payloadManager;
-  @Mock WebHookTemplateManager templateManager;
-  @Mock TemplateFinder templateFinder;
+  private final SBuildServer sBuildServer;
+  private final PermissionChecker permissionChecker;
+  private final TemplateFinder templateFinder;
   
-  public DataProviderTestContextProvider() {
+  public DataProviderTestContextProvider(WebHookPayloadManager payloadManager, WebHookTemplateManager templateManager) {
 	  System.out.println("We are here: Trying to provide a testable DataProvider instance");
+	  sBuildServer = mock(SBuildServer.class);
+	  permissionChecker = mock(PermissionChecker.class);
+	  templateFinder = mock(TemplateFinder.class);
 	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder); 
-
   }
 
   public ComponentScope getScope() {

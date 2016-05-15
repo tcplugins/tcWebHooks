@@ -178,14 +178,21 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- http://mvnrepository.com/artifact/org.springframework/spring-core -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.0.1</version>
-			<scope>provided</scope>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-core</artifactId>
+		    <version>4.0.9.RELEASE</version>
+		    <scope>provided</scope>
 		</dependency>
 		
-	
+		<!-- http://mvnrepository.com/artifact/org.springframework/spring-test -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-test</artifactId>
+		    <version>4.0.9.RELEASE</version>
+		    <scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -237,7 +244,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.8.0</version>
+			<version>1.8.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

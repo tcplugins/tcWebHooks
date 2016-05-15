@@ -14,7 +14,7 @@ import webhook.teamcity.server.rest.model.mainconfig.Webhooks;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.test.framework.JerseyTest;
 
-public class MainTest extends JerseyTest {
+public class MainConfigTest extends JerseyTest {
 
     private static final String WEBHOOKS_API_BASE = "/app/rest/webhooks";
     private static final String WEBHOOKS_API_SERVER = WEBHOOKS_API_BASE + "/server";
@@ -22,8 +22,8 @@ public class MainTest extends JerseyTest {
     
 
 
-	public MainTest()throws Exception {
-        super("webhook.teamcity.server.rest.jersey.test",  "webhook.teamcity.server.rest.request", "webhook.teamcity.server.rest.model", "webhook.teamcity.settings");
+	public MainConfigTest()throws Exception {
+        super("webhook.teamcity.test.jerseyprovider",  "webhook.teamcity.server.rest.request", "webhook.teamcity.server.rest.model", "webhook.teamcity.settings");
     }
 	
     @Before public void initMocks() {

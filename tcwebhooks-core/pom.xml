@@ -115,8 +115,8 @@
 
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.0.1</version>
+			<artifactId>spring-core</artifactId>
+			<version>4.0.9.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
 
