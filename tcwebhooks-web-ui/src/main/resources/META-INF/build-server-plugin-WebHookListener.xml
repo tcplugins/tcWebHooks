@@ -87,7 +87,7 @@
 		init-method="register" 
 		/>
 
-	<bean id=ntlmAuthenticatorFactory"
+	<bean id="ntlmAuthenticatorFactory"
 		class="webhook.teamcity.auth.NTLMAuthenticatorFactory"
 		init-method="register" 
 		/>
