@@ -14,6 +14,7 @@ import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
+import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
 
 public class WebHookTemplateManager {
 	
@@ -118,6 +119,18 @@ public class WebHookTemplateManager {
 			}
 			if (springTemplates.containsKey(formatShortname)){
 				return springTemplates.get(formatShortname);
+			}
+			return null;
+		}
+	}
+	
+	public WebHookTemplateEntity getTemplateEntity(String formatShortname){
+		synchronized (orderedTemplateCollection) {
+			if (xmlConfigTemplates.containsKey(formatShortname)){
+				return xmlConfigTemplates.get(formatShortname);
+			}
+			if (springTemplates.containsKey(formatShortname)){
+				return WebHookTemplateEntityBuilder.build(springTemplates.get(formatShortname));
 			}
 			return null;
 		}

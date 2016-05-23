@@ -1,5 +1,6 @@
 package webhook.teamcity.payload.template;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -67,8 +68,8 @@ public class WebHookTemplateManagerTest {
 		changeListener.handleConfigFileChange();
 
 		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
-		assertTrue(regsiteredTemplates.size() == 1);
-		assertTrue(regsiteredTemplates.get(0).getTemplateShortName().equals("testXMLtemplate"));
+		assertEquals(4, regsiteredTemplates.size());
+		assertEquals("testXMLtemplate", wtm.getTemplate("testXMLtemplate").getTemplateShortName());
 	}
 	
 	@Test

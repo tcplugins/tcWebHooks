@@ -20,4 +20,5 @@
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
 	<bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/>
+	<bean id="webHookWebLinks" class="webhook.teamcity.server.rest.WebHookWebLinks"/>
 </beans>

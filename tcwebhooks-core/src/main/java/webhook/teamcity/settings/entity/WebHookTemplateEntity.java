@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 import lombok.Data;
 
@@ -71,7 +72,7 @@ public class WebHookTemplateEntity {
 	int rank = 10;
 	
 	@XmlElement(name="default-template")
-	String defaultTemplate;
+	WebHookTemplateText defaultTemplate;
 	
 	@XmlElement(name="default-branch-template")
 	String defaultBranchTemplate;
@@ -114,12 +115,26 @@ public class WebHookTemplateEntity {
 		}
 	}
 	
+	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
+	public static class WebHookTemplateText {
+		@XmlAttribute (name="use-for-branch-template")
+		boolean useTemplateTextForBranch = false;
+		
+		@NotNull @XmlValue
+		String templateContent;
+		
+		WebHookTemplateText() {
+			// empty constructor for JAXB
+		}
+	}
+	
+	
 	@XmlType(name = "template") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateItem {
 		@NotNull @XmlElement(name="template-text")
-		String templateText;
+		WebHookTemplateText templateText;
 		
-		@NotNull @XmlElement(name="branch-template-text")
+		@XmlElement(name="branch-template-text")
 		String branchTemplateText;
 		
 		@XmlAttribute

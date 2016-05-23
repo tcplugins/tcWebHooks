@@ -38,7 +38,7 @@ public class TemplateGenerator {
 				File defaultTemplateFile = new File(targetFileLocation + "/" + templateName + "-default-normal.json");
 				File defaultBranchTemplateFile = new File(targetFileLocation + "/" + templateName + "-default-branch.json");
 				if (template.getDefaultTemplate() != null){
-					FileUtils.writeStringToFile(defaultTemplateFile, template.getDefaultTemplate().trim());
+					FileUtils.writeStringToFile(defaultTemplateFile, template.getDefaultTemplate().getTemplateContent().trim());
 				}
 				if (template.getDefaultBranchTemplate() != null){
 					FileUtils.writeStringToFile(defaultBranchTemplateFile, template.getDefaultBranchTemplate().trim());
@@ -49,7 +49,7 @@ public class TemplateGenerator {
 					File templateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-normal.json");
 					File branchTemplateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-branch.json");
 					
-					FileUtils.writeStringToFile(templateFile, item.getTemplateText().trim());
+					FileUtils.writeStringToFile(templateFile, item.getTemplateText().getTemplateContent().trim());
 					FileUtils.writeStringToFile(branchTemplateFile, item.getBranchTemplateText().trim());
 				}
 			}
