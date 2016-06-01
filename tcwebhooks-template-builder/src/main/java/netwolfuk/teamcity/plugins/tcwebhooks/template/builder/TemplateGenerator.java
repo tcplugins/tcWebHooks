@@ -44,7 +44,7 @@ public class TemplateGenerator {
 					FileUtils.writeStringToFile(defaultBranchTemplateFile, template.getDefaultBranchTemplate().trim());
 				}
 				
-				for (WebHookTemplateItem item : template.getTemplates()){
+				for (WebHookTemplateItem item : template.getTemplates().getTemplates()){
 					String templateFileName = buildFileName(item.getStates());
 					File templateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-normal.json");
 					File branchTemplateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-branch.json");

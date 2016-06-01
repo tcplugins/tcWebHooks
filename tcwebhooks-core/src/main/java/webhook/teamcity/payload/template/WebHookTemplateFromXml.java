@@ -168,7 +168,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates()){
+		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates().getTemplates()){
 			if (item.isEnabled() && item.getTemplateText()!= null){
 				for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
 					if (state.isEnabled()){
@@ -186,7 +186,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 			}
 		}
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates()){
+		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates().getTemplates()){
 			if (item.isEnabled() && ((item.getTemplateText()!= null && item.getTemplateText().isUseTemplateTextForBranch()) || item.getBranchTemplateText()!= null)){
 				for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
 					if (state.isEnabled()){

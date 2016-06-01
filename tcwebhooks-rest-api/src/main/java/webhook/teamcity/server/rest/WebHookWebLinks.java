@@ -1,11 +1,13 @@
 package webhook.teamcity.server.rest;
 
 import jetbrains.buildServer.RootUrlHolder;
+import jetbrains.buildServer.server.rest.util.ValueWithDefault.Value;
 import jetbrains.buildServer.serverSide.WebLinks;
 
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
 
 public class WebHookWebLinks extends WebLinks {
 	
@@ -22,7 +24,7 @@ public class WebHookWebLinks extends WebLinks {
 	 */
 	@NotNull
 	public String getWebHookTemplateUrl(@NotNull WebHookTemplateEntity webHookTemplateEntity) {
-	    return makeWebHookTemplateUrl(webHookTemplateEntity);
+		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 	
 	@NotNull
@@ -39,12 +41,17 @@ public class WebHookWebLinks extends WebLinks {
 
 	@NotNull
 	public String getWebHookDefaultTemplateTextUrl(@NotNull WebHookTemplateEntity webHookTemplateEntity) {
-		return makeWebHookDefaultTemplateTextUrl(webHookTemplateEntity);
+		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 
 	@NotNull
-	private String makeWebHookDefaultTemplateTextUrl(WebHookTemplateEntity entity) {
-		return makeUrl("webhooks/templates.html?template=" + entity.getName());
+	public String getWebHookDefaultBranchTemplateTextUrl(WebHookTemplateEntity webHookTemplateEntity) {
+		return makeWebHookTemplateUrl(webHookTemplateEntity);
+	}
+
+	@NotNull
+	public String getWebHookBranchTemplateTextUrl(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
+		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 
 }

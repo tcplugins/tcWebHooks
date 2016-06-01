@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
 import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -30,7 +31,9 @@ public class TemplateFinder {
 	    return Locator.createEmptyLocator().setDimension("id", template.getName()).getStringRepresentation();
 	}
 
-	
+	public static String getTemplateTextLocator(final String id){
+		return Locator.createEmptyLocator().setDimension("id", id).getStringRepresentation();
+	}
 	
 	
 	public WebHookTemplateEntity findTemplateById(String templateLocator) {

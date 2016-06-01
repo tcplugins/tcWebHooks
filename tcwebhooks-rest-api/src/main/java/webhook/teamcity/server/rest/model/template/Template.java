@@ -28,6 +28,7 @@ import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
@@ -52,12 +53,15 @@ public class Template {
 	@XmlAttribute
 	public String webUrl;
 	
-	@XmlElement(name="templateText")
+	@XmlElement(name="default-template", required=false)
 	public TemplateText templateText;
 	
 	
-	@XmlElement(name="branchTemplateText")
+	@XmlElement(name="default-branch-template", required=false)
 	public BranchTemplateText branchTemplateText;
+	
+	@XmlElement(name = "template")	@XmlElementWrapper(name = "templates")
+	List<TemplateItem> templates;
 	
 	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateText extends BranchTemplateText {
@@ -75,6 +79,16 @@ public class Template {
 				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateEntity.getDefaultTemplate().isUseTemplateTextForBranch());
 			}
 		}
+		
+		TemplateText(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem, String id, final @NotNull Fields fields, @NotNull final BeanContext beanContext){
+			super(webHookTemplateEntity, webHookTemplateItem, id, fields, beanContext);
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateHref(webHookTemplateEntity, webHookTemplateItem));
+			if (webHookTemplateItem.getTemplateText() != null){
+				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateEntity.getDefaultTemplate().isUseTemplateTextForBranch());
+			}
+		}
+		
+				
 
 	}
 		
@@ -97,7 +111,13 @@ public class Template {
 		BranchTemplateText(WebHookTemplateEntity webHookTemplateEntity, String id, Fields fields, BeanContext beanContext) {
 			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultBranchTemplateHref(webHookTemplateEntity));
-			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookDefaultTemplateTextUrl(webHookTemplateEntity));
+			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookDefaultBranchTemplateTextUrl(webHookTemplateEntity));
+		}
+		
+		BranchTemplateText(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem, String id, Fields fields, BeanContext beanContext) {
+			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getBranchTemplateTextHref(webHookTemplateEntity, webHookTemplateItem));
+			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookBranchTemplateTextUrl(webHookTemplateEntity, webHookTemplateItem));
 		}
 		
 	}
@@ -108,7 +128,7 @@ public class Template {
 		TemplateText templateText;
 
 		@XmlElement(name = "branch-template-text")
-		String branchTemplateText;
+		TemplateText branchTemplateText;
 
 		@XmlAttribute
 		boolean enabled = true;
@@ -118,6 +138,11 @@ public class Template {
 
 		TemplateItem() {
 			// empty constructor for JAXB
+		}
+
+		public TemplateItem(WebHookTemplateEntity template, WebHookTemplateItem templateItem, String id, Fields fields, BeanContext beanContext) {
+			this.enabled = templateItem.isEnabled();
+			this.templateText = new TemplateText(template, id, fields, beanContext);
 		}
 		
 		
@@ -147,9 +172,20 @@ public class Template {
 		
 		webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookTemplateUrl(template));
 		
-		templateText = new TemplateText(template, "default", fields, beanContext);
-		branchTemplateText = new BranchTemplateText(template, "defaultBranch", fields, beanContext);
+		if (template.getDefaultTemplate() != null){
+			templateText = new TemplateText(template, "default", fields, beanContext);
+		}
+		if (template.getDefaultBranchTemplate() != null){
+			branchTemplateText = new BranchTemplateText(template, "defaultBranch", fields, beanContext);
+		}
 
+		int count = 0;
+		templates = new ArrayList<Template.TemplateItem>();
+		
+		for (WebHookTemplateItem templateItem: template.getTemplates().getTemplates()){
+			templates.add(new TemplateItem(template, templateItem, description, fields, beanContext));
+			
+		}
 		
 		// final String descriptionText = template.getTemplateDescription();
 		// description =

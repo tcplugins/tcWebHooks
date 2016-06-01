@@ -42,6 +42,7 @@ import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 @Path(TemplateRequest.API_TEMPLATES_URL)
@@ -71,13 +72,23 @@ public class TemplateRequest {
   }
 
   @NotNull
-  public static String getTemplateTextHref(WebHookTemplateEntity template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/defaultTemplateText" ;
+  public static String getDefaultTemplateTextHref(WebHookTemplateEntity template) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/defaultTemplate" ;
   }
   
   @NotNull
-  public static String getBranchTemplateTextHref(WebHookTemplateEntity template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/defaultBranchTemplateText" ;
+  public static String getDefaultBranchTemplateTextHref(WebHookTemplateEntity template) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/defaultBranchTemplate" ;
+  }
+  
+  @NotNull
+  public static String getTemplateTextHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/tt" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) + "/template" ;
+  }
+  
+  @NotNull
+  public static String getBranchTemplateTextHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/tt" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) +  "/branchTemplate" ;
   }
   
   @GET
@@ -112,9 +123,16 @@ public class TemplateRequest {
     	throw new OperationException("There was an error saving your template. Sorry.");
     }
   }
+  
+  @GET
+  @Path("/{templateLocator}/fullConfig")
+  @Produces({"application/xml", "application/json"})
+  public WebHookTemplateEntity serveFullConfigTemplateFor(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
+	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+  }
 
   @GET
-  @Path("/{templateLocator}/templateText/{templateType}")
+  @Path("/{templateLocator}/{templateType}")
   @Produces({"text/plain"})
   public String serveTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType) {
 	  WebHookTemplateEntity template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
@@ -133,13 +151,6 @@ public class TemplateRequest {
 		  return template.getDefaultBranchTemplate();
 	  }
 	  throw new BadRequestException("Sorry. It was not possible to process your request for template content.");
-  }
-  
-  @GET
-  @Path("/{templateLocator}/fullConfig")
-  @Produces({"application/xml", "application/json"})
-  public WebHookTemplateEntity serveFullConfigTemplateFor(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
-	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
   }
 
 

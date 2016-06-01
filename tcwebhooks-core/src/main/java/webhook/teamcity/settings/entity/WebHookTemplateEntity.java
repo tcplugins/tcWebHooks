@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlValue;
 import lombok.Data;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /*
  * 
@@ -90,8 +91,10 @@ public class WebHookTemplateEntity {
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
 	
-	@XmlElement(name="template") @XmlElementWrapper(name="templates")
-	private List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
+//	@XmlElement(name="template") @XmlElementWrapper(name="templates")
+//	private List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
+	@XmlElement(name="templates")
+	WebHookTemplateItems templates;
 	
 	WebHookTemplateEntity() {
 		// empty constructor for JAXB
@@ -100,6 +103,30 @@ public class WebHookTemplateEntity {
 	public WebHookTemplateEntity(String name, boolean enabled) {
 		this.name = name;
 		this.enabled = enabled;
+	}
+	
+	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD)
+	public static class WebHookTemplateItems {
+
+		@XmlAttribute(name="max-id")
+	    Integer maxId = 0;
+		
+		@XmlElement(name="templates")
+	    List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
+
+
+	    public WebHookTemplateItems(Integer maxId, List<WebHookTemplateItem> listOfTemplates) {
+	        this();
+	        this.maxId = maxId;
+	        this.templates = listOfTemplates;  
+	    }
+
+	    /**
+	     * 
+	     */
+	    public WebHookTemplateItems() {
+	        // TODO Auto-generated constructor stub
+	    }
 	}
 	
 	@XmlType(name = "format") @Data  @XmlAccessorType(XmlAccessType.FIELD)
@@ -139,6 +166,9 @@ public class WebHookTemplateEntity {
 		
 		@XmlAttribute
 		boolean enabled = true;
+		
+		@XmlAttribute @Nullable
+		Integer id;
 		
 		@XmlElement(name="state") @XmlElementWrapper(name="states")
 		private List<WebHookTemplateState> states = new ArrayList<WebHookTemplateState>();

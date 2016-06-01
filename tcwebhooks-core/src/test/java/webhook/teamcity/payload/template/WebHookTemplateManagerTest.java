@@ -73,6 +73,23 @@ public class WebHookTemplateManagerTest {
 	}
 	
 	@Test
+	public void TestXmlTemplatesWithTemplateIdsViaChangeListener(){
+		when(mockServer.getRootUrl()).thenReturn("http://test.url");
+		wpm = new WebHookPayloadManager(mockServer);
+		wtm = new WebHookTemplateManager(wpm);
+		
+		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
+		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplateWithTemplateIds"));
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm);
+		changeListener.register();
+		changeListener.handleConfigFileChange();
+		
+		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		assertEquals(4, regsiteredTemplates.size());
+		assertEquals("testXMLtemplate", wtm.getTemplate("testXMLtemplate").getTemplateShortName());
+	}
+	
+	@Test
 	public void TestCDataTemplatesViaChangeListener(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wpm = new WebHookPayloadManager(mockServer);
