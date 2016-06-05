@@ -616,7 +616,11 @@ public class WebHookPayloadContent {
 			if (this.extraParameters.size() > 0){
 				VariableMessageBuilder builder;
 				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties);
-				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
+//				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
+
+				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(this.teamcityProperties);
+				resolvedParametersMap.putAll(extraParameters);
+
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
