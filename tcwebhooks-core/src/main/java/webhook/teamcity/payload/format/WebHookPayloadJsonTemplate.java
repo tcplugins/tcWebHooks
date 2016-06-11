@@ -40,7 +40,7 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		VariableMessageBuilder builder = VariableMessageBuilder.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(content, content.getExtraParameters()));
+		VariableMessageBuilder builder = VariableMessageBuilder.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(content, content.getAllParameters()));
 		return builder.build();
 	}
 

@@ -92,7 +92,7 @@ public class WebHookContentBuilder {
 	public String resolveTemplatedUrl(String url, BuildStateEnum buildState, SBuild runningBuild, SortedMap<String,String> extraParameters, Map<String,String> templates){
 		if (url.contains("#") && url.contains("(") && url.contains(")")){
 			WebHookPayloadContent content = new WebHookPayloadContent(payloadManager.getServer(), runningBuild, getPreviousNonPersonalBuild(runningBuild), buildState, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
-			VariableMessageBuilder builder = VariableMessageBuilder.create(url, new WebHooksBeanUtilsVariableResolver(content, content.getExtraParameters()));
+			VariableMessageBuilder builder = VariableMessageBuilder.create(url, new WebHooksBeanUtilsVariableResolver(content, content.getAllParameters()));
 			return builder.build();
 		} else {
 			return url;
