@@ -33,6 +33,14 @@
      	init-method="register" 
      	/>
      	
+    <bean id="endPointContentStore" 
+     	class="webhook.teamcity.endpoint.EndPointContentStore" 
+     	/>
+     	
+    <bean id="endPointController" 
+     	class="webhook.teamcity.endpoint.EndPointController" 
+     	/>
+     	
     <bean id="webHookTemplateEditPageController" 
      	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
      	init-method="register" 
