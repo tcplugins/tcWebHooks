@@ -3,12 +3,14 @@ package webhook.teamcity.payload.util;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
@@ -25,9 +27,9 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 	
 	
 	Object bean;
-	ExtraParametersMap extraAndTeamCityProperties;
+	Map<String, ExtraParametersMap> extraAndTeamCityProperties;
 	
-	public WebHooksBeanUtilsVariableResolver(Object javaBean, ExtraParametersMap extraAndTeamCityProperties) {
+	public WebHooksBeanUtilsVariableResolver(Object javaBean, Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
 		this.bean = javaBean;
 		this.extraAndTeamCityProperties = extraAndTeamCityProperties;
 	}
@@ -52,12 +54,12 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 		if (variableName.startsWith("escapejson(") && variableName.endsWith(")")){
 			try {
 				String dirtyString = variableName.substring("escapejson(".length(), variableName.length() - ")".length());
-				if (extraAndTeamCityProperties.containsKey(dirtyString)){
-					return StringEscapeUtils.escapeJson(extraAndTeamCityProperties.get(dirtyString));
-				} else {
-					return StringEscapeUtils.escapeJson((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				for (String keyName : this.extraAndTeamCityProperties.keySet()){
+					if (extraAndTeamCityProperties.get(keyName).containsKey(dirtyString)){
+						return StringEscapeUtils.escapeJson(extraAndTeamCityProperties.get(keyName).get(dirtyString));
+					}
 				}
-
+				return StringEscapeUtils.escapeJson((String) PropertyUtils.getProperty(bean, dirtyString).toString());
 			// do nothing and let the logic below handle it.
 			} catch (NullPointerException npe){
 			} catch (IllegalArgumentException iae){
@@ -70,11 +72,12 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 		if ((variableName.startsWith("sanitise(") || variableName.startsWith("sanitize(")) && variableName.endsWith(")")){
 			try {
 				String dirtyString = variableName.substring("sanitise(".length(), variableName.length() - ")".length());
-				if (extraAndTeamCityProperties.containsKey(dirtyString)){
-					return StringSanitiser.sanitise(extraAndTeamCityProperties.get(dirtyString));
-				} else {
-					return StringSanitiser.sanitise((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				for (String keyName : this.extraAndTeamCityProperties.keySet()){
+					if (extraAndTeamCityProperties.get(keyName).containsKey(dirtyString)){
+						return StringSanitiser.sanitise(extraAndTeamCityProperties.get(keyName).get(dirtyString));
+					}
 				}
+				return StringSanitiser.sanitise((String) PropertyUtils.getProperty(bean, dirtyString).toString());
 
 			// do nothing and let the logic below handle it.
 			} catch (NullPointerException npe){
@@ -87,9 +90,11 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 		
 		try {
 			// Try getting it from properties passed in first.
-			if (extraAndTeamCityProperties != null && extraAndTeamCityProperties.containsKey(variableName)){
-				value = (String) extraAndTeamCityProperties.get(variableName);
-			}
+			for (String keyName : this.extraAndTeamCityProperties.keySet()){
+				if (extraAndTeamCityProperties.get(keyName).containsKey(variableName)){
+					value = extraAndTeamCityProperties.get(keyName).get(variableName);
+				}
+			}			
 			
 			// Or override it from the PayloadContent if it exists.
 			try {

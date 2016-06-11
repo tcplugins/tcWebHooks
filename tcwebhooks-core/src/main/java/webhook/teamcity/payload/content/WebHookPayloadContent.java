@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
+import java.util.TreeMap;
+
+import com.intellij.util.containers.hash.LinkedHashMap;
 
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -541,7 +544,7 @@ public class WebHookPayloadContent {
 		
 		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
 			
-			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties));
+			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, getAllParameters()));
 			this.buildStatusHtml = builder.build();
 		}
 		
@@ -611,21 +614,31 @@ public class WebHookPayloadContent {
 		public String getResponsibilityUserNew() {
 			return responsibilityUserNew;
 		}
+		
+		public Map<String, ExtraParametersMap> getAllParameters(){
+			Map<String, ExtraParametersMap> allParameters = new LinkedHashMap<String, ExtraParametersMap>();
+			
+			allParameters.put("teamcity", this.teamcityProperties);
+			allParameters.put("webhook", this.extraParameters);
+			
+			return allParameters;
+			
+		}
 
 		public ExtraParametersMap getExtraParameters() {
 			if (this.extraParameters.size() > 0){
 				VariableMessageBuilder builder;
-				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties);
-//				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
+				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, getAllParameters());
+				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
 
-				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(this.teamcityProperties);
-				resolvedParametersMap.putAll(extraParameters);
+//				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(this.teamcityProperties);
+//				resolvedParametersMap.putAll(extraParameters);
 
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
 				}
-				resolver = new WebHooksBeanUtilsVariableResolver(this, resolvedParametersMap);
+				resolver = new WebHooksBeanUtilsVariableResolver(this, getAllParameters());
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
