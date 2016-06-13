@@ -91,9 +91,9 @@ public class VariableMessageBuilderTest {
 	public void testDateTemplateProperty() {
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		//String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
-		VariableMessageBuilder builder = VariableMessageBuilder.create("The date now is ${now(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\")}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		VariableMessageBuilder builder = VariableMessageBuilder.create("The date now is #now(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\")", new WebHooksBeanUtilsVariableResolver(content, allProperties));
 		System.out.println(builder.build());
-		builder = VariableMessageBuilder.create("The month now is ${now(\"yyyy-MM\")}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		builder = VariableMessageBuilder.create("The month now is #now(\"yyyy-MM\")", new WebHooksBeanUtilsVariableResolver(content, allProperties));
 		System.out.println(builder.build());
 		System.out.println(content.getBuildFullName());
 	}
@@ -101,11 +101,12 @@ public class VariableMessageBuilderTest {
 	@Test
 	public void testSanitiseTemplateProperty() {
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
-		VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising ${sanitise(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		VariableMessageBuilder builder = VariableMessageBuilder.create("Sanitising #sanitise(${someTagThing})", new WebHooksBeanUtilsVariableResolver(content, allProperties));
 		System.out.println(builder.build());
-		builder = VariableMessageBuilder.create("Sanitizing ${sanitize(someTagThing)}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		assertEquals("Sanitising A _peice of text_ with __ s___tuff in it_.", builder.build());
+		builder = VariableMessageBuilder.create("Sanitizing #sanitize(${someTagThing})", new WebHooksBeanUtilsVariableResolver(content, allProperties));
 		System.out.println(builder.build());
-		System.out.println(content.getBuildFullName());
+		assertEquals("Sanitizing A _peice of text_ with __ s___tuff in it_.", builder.build());
 	}
 	
 	@Test
@@ -128,7 +129,7 @@ public class VariableMessageBuilderTest {
 		extraParameters.put("jsonString", " \" Some string that shouldn't be used\"");
 		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		VariableMessageBuilder builder = VariableMessageBuilder.create("{ "
-				+ "\"myJson\": \"${escapejson(jsonString)}\" "
+				+ "\"myJson\": \"#escapejson(${jsonString})\" "
 				+ "}", 
             new WebHooksBeanUtilsVariableResolver(content, content.getAllParameters()));
 		System.out.println(builder.build());

@@ -23,6 +23,7 @@ public class VariableMessageBuilder {
 		
 		builder.ve.setProperty("userdirective", "webhook.teamcity.payload.util.VelocitySanitiseDirective, "
 											  + "webhook.teamcity.payload.util.VelocitySanitizeDirective, "
+											  + "webhook.teamcity.payload.util.VelocityEscapeJsonDirective, "
 											  + "webhook.teamcity.payload.util.VelocityNowDirective");
 		
 		builder.ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
@@ -31,7 +32,6 @@ public class VariableMessageBuilder {
 	    builder.ve.setProperty("runtime.log.logsystem.log4j.logger", "webhook.teamcity.Loggers");
 	    
 		builder.ve.init();
-		builder.sw =  new StringWriter();
 		builder.template = template;
 		builder.resolver = resolver;
 		return builder;
@@ -39,6 +39,7 @@ public class VariableMessageBuilder {
 
 	public String build(){
 	    
+		sw =  new StringWriter();
 	    this.ve.evaluate(resolver, sw, "VariableMessageBuilder", template);
 	    return sw.toString();
 	}

@@ -39,7 +39,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver, Cont
 	public String resolve(String variableName) {
 		String value = "UNRESOLVED";
 		
-		// if variable is a date formating variable. eg. now() or now(dateformatAsString)
+		/*// if variable is a date formating variable. eg. now() or now(dateformatAsString)
 		if (variableName.startsWith("now(") && variableName.endsWith(")")){
 			try {
 				String datePattern = variableName.substring("now(".length(), variableName.length() - ")".length());
@@ -88,7 +88,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver, Cont
 			} catch (NoSuchMethodException e) {
 			}
 		}
-		
+		*/
 		try {
 			// Try getting it from properties passed in first.
 			for (String keyName : this.extraAndTeamCityProperties.keySet()){
