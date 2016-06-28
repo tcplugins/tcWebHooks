@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import webhook.teamcity.Loggers;
@@ -18,10 +17,10 @@ import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
 
 public class WebHookTemplateManager {
 	
-	HashMap<String, WebHookTemplate> springTemplates = new HashMap<String,WebHookTemplate>();
-	HashMap<String, WebHookTemplateEntity> xmlConfigTemplates = new HashMap<String,WebHookTemplateEntity>();
+	HashMap<String, WebHookTemplate> springTemplates = new HashMap<>();
+	HashMap<String, WebHookTemplateEntity> xmlConfigTemplates = new HashMap<>();
 	Comparator<WebHookTemplate> rankComparator = new WebHookTemplateRankingComparator();
-	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<WebHookTemplate>();
+	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<>();
 	WebHookPayloadManager webHookPayloadManager;
 	private String configFilePath;
 	
@@ -93,7 +92,7 @@ public class WebHookTemplateManager {
 	private void rebuildOrderedListOfTemplates() {
 		this.orderedTemplateCollection.clear();
 		
-		HashMap<String, WebHookTemplate> combinedTemplates = new HashMap<String,WebHookTemplate>();
+		HashMap<String, WebHookTemplate> combinedTemplates = new HashMap<>();
 		
 		// Rebuild the list of configured templates.
 		// Add all the spring ones.
@@ -145,7 +144,7 @@ public class WebHookTemplateManager {
 	}
 
 	public List<WebHookTemplate> findAllTemplatesForFormat(String formatShortName){
-		List<WebHookTemplate> matchingTemplates = new ArrayList<WebHookTemplate>();
+		List<WebHookTemplate> matchingTemplates = new ArrayList<>();
 		for (WebHookTemplate template : orderedTemplateCollection){
 			if (template.supportsPayloadFormat(formatShortName)){
 				matchingTemplates.add(template);

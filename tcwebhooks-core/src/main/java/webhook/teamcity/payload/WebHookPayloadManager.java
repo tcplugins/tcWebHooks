@@ -12,9 +12,9 @@ import webhook.teamcity.Loggers;
 
 public class WebHookPayloadManager {
 	
-	HashMap<String, WebHookPayload> formats = new HashMap<String,WebHookPayload>();
+	HashMap<String, WebHookPayload> formats = new HashMap<>();
 	Comparator<WebHookPayload> rankComparator = new WebHookPayloadRankingComparator();
-	List<WebHookPayload> orderedFormatCollection = new ArrayList<WebHookPayload>();
+	List<WebHookPayload> orderedFormatCollection = new ArrayList<>();
 	SBuildServer server;
 	
 	public WebHookPayloadManager(SBuildServer server){

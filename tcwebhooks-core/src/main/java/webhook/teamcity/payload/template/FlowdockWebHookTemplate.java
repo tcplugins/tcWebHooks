@@ -9,8 +9,8 @@ import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 
 public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate {
 
-	private Map<BuildStateEnum, String> normalTemplateMap = new TreeMap<BuildStateEnum, String>();
-	private Map<BuildStateEnum, String> branchTemplateMap = new TreeMap<BuildStateEnum, String>();
+	private Map<BuildStateEnum, String> normalTemplateMap = new TreeMap<>();
+	private Map<BuildStateEnum, String> branchTemplateMap = new TreeMap<>();
 
 	public FlowdockWebHookTemplate(WebHookTemplateManager manager) {
 		super(manager);

@@ -28,8 +28,8 @@ public class WebHookMainConfig {
 	private Pattern singleHostPattern, hostnameOnlyPattern ;
 
 	public WebHookMainConfig() {
-		noProxyUrls = new ArrayList<String>();
-		noProxyPatterns = new ArrayList<Pattern>();
+		noProxyUrls = new ArrayList<>();
+		noProxyPatterns = new ArrayList<>();
 		singleHostPattern = Pattern.compile(SINGLE_HOST_REGEX); 
 		hostnameOnlyPattern = Pattern.compile(HOSTNAME_ONLY_REGEX);
 	}

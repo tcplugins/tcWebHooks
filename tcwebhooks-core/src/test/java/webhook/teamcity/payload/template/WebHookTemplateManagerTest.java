@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.spy;
 
 import java.io.File;
 import java.util.Arrays;
@@ -173,12 +172,12 @@ public class WebHookTemplateManagerTest {
 
 		@Override
 		public Set<BuildStateEnum> getSupportedBuildStates() {
-			return new HashSet<BuildStateEnum>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
+			return new HashSet<>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
 		}
 
 		@Override
 		public Set<BuildStateEnum> getSupportedBranchBuildStates() {
-			return new HashSet<BuildStateEnum>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
+			return new HashSet<>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
 		}
 
 		@Override

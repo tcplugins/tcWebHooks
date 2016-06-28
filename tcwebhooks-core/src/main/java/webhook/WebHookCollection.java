@@ -16,7 +16,7 @@ public class WebHookCollection {
 	private Map <String, String> origParams; 
 	
 	public WebHookCollection(Map <String, String> params) {
-		webHooks = new HashMap<Integer,WebHook>();
+		webHooks = new HashMap<>();
 		this.origParams = params;
 		this.parseParams(params);
 	}

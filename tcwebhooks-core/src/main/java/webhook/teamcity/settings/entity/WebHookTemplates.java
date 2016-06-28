@@ -3,7 +3,6 @@ package webhook.teamcity.settings.entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @XmlRootElement(name = "webhook-templates")
 public class WebHookTemplates {
 	@NotNull
-	private List<WebHookTemplateEntity> templateList = new ArrayList<WebHookTemplateEntity>();
+	private List<WebHookTemplateEntity> templateList = new ArrayList<>();
 
 	@NotNull
 	@XmlElement(name = "webhook-template")

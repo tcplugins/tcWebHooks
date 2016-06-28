@@ -61,8 +61,8 @@ public class WebHookListenerTest {
 	WebHookConfig webHookConfig;
 	SFinishedBuild previousSuccessfulBuild = mock(SFinishedBuild.class);
 	SFinishedBuild previousFailedBuild = mock(SFinishedBuild.class);
-	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<SFinishedBuild>();
-	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
+	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<>();
+	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<>();
 	MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
 	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);

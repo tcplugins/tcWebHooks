@@ -68,7 +68,7 @@ public class WebHookPayloadContent {
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
-		private List<WebHooksChanges> changes = new ArrayList<WebHooksChanges>();
+		private List<WebHooksChanges> changes = new ArrayList<>();
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -228,7 +228,7 @@ public class WebHookPayloadContent {
 		}
 		
 		private void setTags(List<String> tags) {
-			this.buildTags = new ArrayList<String>();
+			this.buildTags = new ArrayList<>();
 			this.buildTags.addAll(tags);
 		}
 
@@ -406,7 +406,7 @@ public class WebHookPayloadContent {
 
 		public void setBuildRunners(List<SBuildRunnerDescriptor> list) {
 			if (list != null){
-				buildRunners = new ArrayList<String>(); 
+				buildRunners = new ArrayList<>();
 				for (SBuildRunnerDescriptor runner : list){
 					buildRunners.add(runner.getRunType().getDisplayName());
 				}

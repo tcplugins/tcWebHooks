@@ -72,8 +72,8 @@ public class WebHookTemplateJaxHelper {
 		}
 
 		assert suppliersBean != null;
-		List<String> templateNames = new ArrayList<String>();
-		List<WebHookTemplateEntity> itemsToRemove = new ArrayList<WebHookTemplateEntity>();
+		List<String> templateNames = new ArrayList<>();
+		List<WebHookTemplateEntity> itemsToRemove = new ArrayList<>();
 
 		// Get supplier instance by id. If it's not found - remove it
 		for (WebHookTemplateEntity templateBean : suppliersBean.getWebHookTemplateList()) {

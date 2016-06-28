@@ -70,7 +70,7 @@ public class MockSRunningBuild implements SRunningBuild {
 	private Status status;
 	private String statusText;
 	private long buildId = 123456;
-	private Map<String,String> buildParameters = new TreeMap<String, String>();
+	private Map<String,String> buildParameters = new TreeMap<>();
 	private ParametersProvider parameterProvider;
 	private List<SVcsModification> modifications;
 

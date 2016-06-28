@@ -20,7 +20,7 @@ public class WebHooksChange {
 	}
 
 
-	private List<String> files = new ArrayList<String>();
+	private List<String> files = new ArrayList<>();
 	private String comment;
 	private String vcsRoot;
 	

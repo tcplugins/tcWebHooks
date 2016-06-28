@@ -14,9 +14,9 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 
 public class WebHookTemplateFromXml implements WebHookTemplate {
 	
-	List<String> supportedFormats = new ArrayList<String>();
-	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
-	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
+	List<String> supportedFormats = new ArrayList<>();
+	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<>();
+	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<>();
 	
 	protected WebHookTemplateManager manager;
 	private int rank = 10; // Default to 10.

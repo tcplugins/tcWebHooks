@@ -376,7 +376,7 @@ public class WebHookTest{
 	
 	@Ignore
 	public void test_WebHookCollection() throws WebHookParameterReferenceException {
-		Map <String, String> params = new HashMap<String, String>();
+		Map <String, String> params = new HashMap<>();
 		params.put("system.webhook.1.url", url);
 		params.put("system.webhook.1.enabled", "true");
 		params.put("system.webhook.1.parameter.1.name","fod");
@@ -399,7 +399,7 @@ public class WebHookTest{
 	
 	@Ignore
 	public void test_WebHookCollectionWithRecursiveParameterReference() throws WebHookParameterReferenceException {
-		Map <String, String> params = new HashMap<String, String>();
+		Map <String, String> params = new HashMap<>();
 		params.put("system.test.recursive1", "%system.test.recursive2%");
 		params.put("system.test.recursive2", "blahblah");
 		params.put("system.webhook.1.url", url);
@@ -418,7 +418,7 @@ public class WebHookTest{
 
 	@Ignore
 	public void test_WebHookCollectionWithNonExistantRecursiveParameterReference(){
-		Map <String, String> params = new HashMap<String, String>();
+		Map <String, String> params = new HashMap<>();
 		params.put("system.test.recursive1", "%system.test.recursive3%");
 		params.put("system.test.recursive2", "blahblah");
 		params.put("system.webhook.1.url", url);
@@ -437,7 +437,7 @@ public class WebHookTest{
 	
 	@Ignore
 	public void test_WebHookCollectionWithPost() throws WebHookParameterReferenceException, InterruptedException {
-		Map <String, String> params = new HashMap<String, String>();
+		Map <String, String> params = new HashMap<>();
 		//params.put("system.webhook.1.url", url + "/200");
 		params.put("system.webhook.1.url", "http://localhost/webhook/" );
 		params.put("system.webhook.1.enabled", "true");

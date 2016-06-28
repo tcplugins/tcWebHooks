@@ -42,7 +42,7 @@ public class WebHookConfig {
 	private SortedMap<String, CustomMessageTemplate> templates; 
 	private Boolean allBuildTypesEnabled = true;
 	private Boolean subProjectsEnabled = true;
-	private Set<String> enabledBuildTypesSet = new HashSet<String>();
+	private Set<String> enabledBuildTypesSet = new HashSet<>();
 	private String authType = "";
 	private Boolean authEnabled = false;
 	private SortedMap<String,String> authParameters;
@@ -54,9 +54,9 @@ public class WebHookConfig {
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
-		this.extraParameters = new TreeMap<String,String>();
-		this.authParameters = new TreeMap<String,String>();
-		this.templates = new TreeMap<String,CustomMessageTemplate>();
+		this.extraParameters = new TreeMap<>();
+		this.authParameters = new TreeMap<>();
+		this.templates = new TreeMap<>();
 		
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -212,8 +212,8 @@ public class WebHookConfig {
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = Rand.toString();
-		this.extraParameters = new TreeMap<String,String>();
-		this.templates = new TreeMap<String,CustomMessageTemplate>();
+		this.extraParameters = new TreeMap<>();
+		this.templates = new TreeMap<>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);

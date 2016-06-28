@@ -67,7 +67,7 @@ public class ElasticSearchWebHookTemplateTest {
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		when (previousBuild.getFinishDate()).thenReturn(new Date());
-		List<SFinishedBuild> finishedBuilds = new ArrayList<SFinishedBuild>();
+		List<SFinishedBuild> finishedBuilds = new ArrayList<>();
 		finishedBuilds.add(previousBuild);
 		BuildHistory buildHistory = mock(BuildHistory.class);
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedBuilds);

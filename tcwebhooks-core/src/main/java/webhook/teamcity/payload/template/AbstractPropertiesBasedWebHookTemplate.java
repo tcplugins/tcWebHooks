@@ -15,8 +15,8 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 
 public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWebHookTemplate {
 	
-	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
-	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<BuildStateEnum, WebHookTemplateContent>();
+	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<>();
+	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<>();
 
 	public abstract String getLoggingName();
 	public abstract String getPropertiesFileName();
