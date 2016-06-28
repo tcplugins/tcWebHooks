@@ -38,13 +38,13 @@ public class VariableMessageBuilderTest {
 	@Before
 	public void setup(){
 		sBuildType.setProject(sProject);
-		extraParameters = new TreeMap<String, String>();
+		extraParameters = new TreeMap<>();
 		//extraParameters.put("build.vcs.number", "${build.vcs.number}");
 		extraParameters.put("body.passed", "Yey, this build has passed for ${buildType}.");
 		extraParameters.put("body", "${body.passed}");
 		extraParameters.put("body2", "${body.failed}");
 		extraParameters.put("sha", "${build.vcs.number}");
-		teamcityProperties = new TreeMap<String, String>();
+		teamcityProperties = new TreeMap<>();
 		teamcityProperties.put("env.isInATest", "Yes, we are in a test");
 		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
 		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
@@ -54,7 +54,7 @@ public class VariableMessageBuilderTest {
 		teamcityProperties.put("config", "This is some config thing");
 		teamcityProperties.put("builder.appVersion", "This is the appVersion");
 		sBuildServer = mock(SBuildServer.class);
-		allProperties = new LinkedHashMap<String, ExtraParametersMap>();
+		allProperties = new LinkedHashMap<>();
 		allProperties.put("teamcity", new ExtraParametersMap(teamcityProperties));
 		allProperties.put("webhook", new ExtraParametersMap(extraParameters));
 	}

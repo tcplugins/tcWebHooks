@@ -52,9 +52,9 @@ public class MockSProject implements SProject {
 	private Status status;
 	private SBuildType buildType;
 	private SProject parentProject;
-	private Map<String,SBuildType> buildTypes = new HashMap<String, SBuildType>();
-	private List<SProject> parentPath = new ArrayList<SProject>();
-	private List<SProject> childProjects = new ArrayList<SProject>();
+	private Map<String,SBuildType> buildTypes = new HashMap<>();
+	private List<SProject> parentPath = new ArrayList<>();
+	private List<SProject> childProjects = new ArrayList<>();
 
 	public MockSProject(String name, String description, String projectId, String projectExternalId, 
 						SBuildType buildType)
@@ -112,7 +112,7 @@ public class MockSProject implements SProject {
 	}
 
 	public List<SBuildType> getBuildTypes() {
-		return new ArrayList<SBuildType>(this.buildTypes.values());
+		return new ArrayList<>(this.buildTypes.values());
 	}
 
 	public File getConfigDirectory() {

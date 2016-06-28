@@ -25,7 +25,7 @@ public class WebHookProjectSettings implements ProjectSettings {
 	private CopyOnWriteArrayList<WebHookConfig> webHooksConfigs;
 	
 	public WebHookProjectSettings(){
-		webHooksConfigs = new CopyOnWriteArrayList<WebHookConfig>();
+		webHooksConfigs = new CopyOnWriteArrayList<>();
 	}
 
     @SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public class WebHookProjectSettings implements ProjectSettings {
      */
     {
     	Loggers.SERVER.debug("readFrom :: " + rootElement.toString());
-    	CopyOnWriteArrayList<WebHookConfig> configs = new CopyOnWriteArrayList<WebHookConfig>();
+    	CopyOnWriteArrayList<WebHookConfig> configs = new CopyOnWriteArrayList<>();
     	
     	if (rootElement.getAttribute("enabled") != null){
     		this.webHooksEnabled = Boolean.parseBoolean(rootElement.getAttributeValue("enabled"));
@@ -85,7 +85,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     }    
     
     public List<WebHookConfig> getProjectWebHooksAsList(){
-    	List<WebHookConfig> projHooks = new ArrayList<WebHookConfig>();
+    	List<WebHookConfig> projHooks = new ArrayList<>();
     	for (WebHookConfig config : getWebHooksAsList()){
     		if (config.isEnabledForAllBuildsInProject()){
     			projHooks.add(config);
@@ -95,7 +95,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     }    
     
     public List<WebHookConfig> getBuildWebHooksAsList(SBuildType buildType){
-    	List<WebHookConfig> buildHooks = new ArrayList<WebHookConfig>();
+    	List<WebHookConfig> buildHooks = new ArrayList<>();
     	for (WebHookConfig config : getWebHooksAsList()){
     		if (config.isSpecificBuildTypeEnabled(buildType)){
     			buildHooks.add(config);
@@ -119,7 +119,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         {
         	updateSuccess = false;
         	updateMessage = "";
-        	List<WebHookConfig> tempWebHookList = new ArrayList<WebHookConfig>();
+        	List<WebHookConfig> tempWebHookList = new ArrayList<>();
             for(WebHookConfig whc : webHooksConfigs)
             {
                 if (whc.getUniqueKey().equals(webHookId)){

@@ -50,7 +50,7 @@ public class JsonTemplateRenderingTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadJsonTemplate whp = new WebHookPayloadJsonTemplate(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");

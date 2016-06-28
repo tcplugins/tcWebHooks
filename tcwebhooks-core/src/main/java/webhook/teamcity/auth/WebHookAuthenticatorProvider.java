@@ -7,7 +7,7 @@ import webhook.teamcity.Loggers;
 
 public class WebHookAuthenticatorProvider {
 	
-	HashMap<String, WebHookAuthenticatorFactory> types = new HashMap<String,WebHookAuthenticatorFactory>();
+	HashMap<String, WebHookAuthenticatorFactory> types = new HashMap<>();
 	
 	public WebHookAuthenticatorProvider(){
 		Loggers.SERVER.info("WebHookAuthenticatorProvider :: Starting");

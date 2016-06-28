@@ -57,7 +57,7 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 
 	@Override
 	public void handleConfigFileChange() {
-		List<WebHookTemplate> newTemplates = new ArrayList<WebHookTemplate>();
+		List<WebHookTemplate> newTemplates = new ArrayList<>();
 		try {
 			WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(configFile.getPath());
 			for (webhook.teamcity.settings.entity.WebHookTemplate template : templatesList.getWebHookTemplateList()){

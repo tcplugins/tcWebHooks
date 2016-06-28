@@ -20,7 +20,7 @@ import webhook.testframework.WebHookMockingFrameworkImpl;
 
 public class UserPassAuthWithRealServerTest {
 
-	SortedMap<String, String> map = new TreeMap<String, String>();
+	SortedMap<String, String> map = new TreeMap<>();
 	ExtraParametersMap  extraParameters  = new ExtraParametersMap(map); 
 	ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
 	WebHookMockingFramework framework;

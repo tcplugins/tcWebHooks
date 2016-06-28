@@ -187,7 +187,7 @@ public class WebHookSettingsTest {
 	@Test
 	public void test_WebookConfig() throws JDOMException, IOException{
 		SAXBuilder builder = new SAXBuilder();
-		List<WebHookConfig> configs = new ArrayList<WebHookConfig>();
+		List<WebHookConfig> configs = new ArrayList<>();
 		builder.setIgnoringElementContentWhitespace(true);
 			Document doc = builder.build("src/test/resources/testdoc2.xml");
 			Element root = doc.getRootElement();

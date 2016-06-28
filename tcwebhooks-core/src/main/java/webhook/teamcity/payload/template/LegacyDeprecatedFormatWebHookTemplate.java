@@ -10,7 +10,7 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 
 public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookTemplate {
 	
-	Set<BuildStateEnum> states = new HashSet<BuildStateEnum>(); 
+	Set<BuildStateEnum> states = new HashSet<>();
 	
 	public LegacyDeprecatedFormatWebHookTemplate(WebHookTemplateManager manager) {
 		super();

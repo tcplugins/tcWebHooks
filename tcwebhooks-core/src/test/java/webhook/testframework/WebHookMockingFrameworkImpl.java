@@ -84,9 +84,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHook spyWebHook;
 	SFinishedBuild previousSuccessfulBuild = mock(SFinishedBuild.class);
 	SFinishedBuild previousFailedBuild = mock(SFinishedBuild.class);
-	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<SFinishedBuild>();
-	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<SFinishedBuild>();
-	List<SFinishedBuild> finishedBuildsHistory = new ArrayList<SFinishedBuild>();
+	List<SFinishedBuild> finishedSuccessfulBuilds = new ArrayList<>();
+	List<SFinishedBuild> finishedFailedBuilds = new ArrayList<>();
+	List<SFinishedBuild> finishedBuildsHistory = new ArrayList<>();
 	
 	SBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 	SBuildType sBuildType02 = new MockSBuildType("Test Build-2", "A Test Build 02", "bt2");
@@ -105,8 +105,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SortedMap<String, String> extraParameters;
 	SortedMap<String, String> teamcityProperties;
 	BuildStateEnum buildstateEnum;
-	List<WebHookTemplate> templateList = new ArrayList<WebHookTemplate>();
-	List<WebHookPayload> formatList = new ArrayList<WebHookPayload>();
+	List<WebHookTemplate> templateList = new ArrayList<>();
+	List<WebHookPayload> formatList = new ArrayList<>();
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
@@ -228,7 +228,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			
 			@Override
 			public Set<BuildStateEnum> getSupportedBuildStates() {
-				Set<BuildStateEnum> states = new HashSet<BuildStateEnum>();
+				Set<BuildStateEnum> states = new HashSet<>();
 				for (BuildStateEnum state: supportedStates){
 					states.add(state);
 				}
@@ -237,7 +237,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			
 			@Override
 			public Set<BuildStateEnum> getSupportedBranchBuildStates() {
-				Set<BuildStateEnum> states = new HashSet<BuildStateEnum>();
+				Set<BuildStateEnum> states = new HashSet<>();
 				for (BuildStateEnum state: supportedStates){
 					states.add(state);
 				}

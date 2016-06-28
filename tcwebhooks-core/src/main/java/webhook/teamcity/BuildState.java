@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class BuildState {
 
-	Map<BuildStateEnum, BuildStateInterface> states = new HashMap<BuildStateEnum, BuildStateInterface>();
+	Map<BuildStateEnum, BuildStateInterface> states = new HashMap<>();
 	
 	public BuildState() {
 		states.clear();

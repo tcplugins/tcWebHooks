@@ -155,12 +155,12 @@ public class WebHookTemplateManagerTest {
 
 		@Override
 		public Set<BuildStateEnum> getSupportedBuildStates() {
-			return new HashSet<BuildStateEnum>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
+			return new HashSet<>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
 		}
 
 		@Override
 		public Set<BuildStateEnum> getSupportedBranchBuildStates() {
-			return new HashSet<BuildStateEnum>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
+			return new HashSet<>(Arrays.asList(BuildStateEnum.BUILD_SUCCESSFUL));
 		}
 
 		@Override

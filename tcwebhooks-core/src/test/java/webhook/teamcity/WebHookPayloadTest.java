@@ -44,7 +44,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		extraParameters.put("something", "somewhere");
 		//String content = wpm.getFormat("nvpairs").buildStarted(sRunningBuild, extraParameters);
 		System.out.println(sRunningBuild.getBuildDescription());

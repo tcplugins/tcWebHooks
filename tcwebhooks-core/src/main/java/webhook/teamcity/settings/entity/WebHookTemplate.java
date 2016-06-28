@@ -87,10 +87,10 @@ public class WebHookTemplate {
 	String preferredDateTimeFormat = "";
 	
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
-	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
+	private List<WebHookTemplateFormat> formats = new ArrayList<>();
 	
 	@XmlElement(name="template") @XmlElementWrapper(name="templates")
-	private List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
+	private List<WebHookTemplateItem> templates = new ArrayList<>();
 	
 	WebHookTemplate() {
 		// empty constructor for JAXB
@@ -126,7 +126,7 @@ public class WebHookTemplate {
 		boolean enabled = true;
 		
 		@XmlElement(name="state") @XmlElementWrapper(name="states")
-		private List<WebHookTemplateState> states = new ArrayList<WebHookTemplateState>();
+		private List<WebHookTemplateState> states = new ArrayList<>();
 		
 		WebHookTemplateItem() {
 			// empty constructor for JAXB

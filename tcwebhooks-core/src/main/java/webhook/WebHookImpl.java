@@ -42,19 +42,19 @@ public class WebHookImpl implements WebHook {
 	
 	public WebHookImpl(){
 		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.params = new ArrayList<>();
 	}
 	
 	public WebHookImpl(String url){
 		this.url = url;
 		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.params = new ArrayList<>();
 	}
 	
 	public WebHookImpl (String url, String proxyHost, String proxyPort){
 		this.url = url;
 		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.params = new ArrayList<>();
 		if (proxyPort.length() != 0) {
 			try {
 				this.proxyPort = Integer.parseInt(proxyPort);
@@ -68,14 +68,14 @@ public class WebHookImpl implements WebHook {
 	public WebHookImpl (String url, String proxyHost, Integer proxyPort){
 		this.url = url;
 		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.params = new ArrayList<>();
 		this.setProxy(proxyHost, proxyPort);
 	}
 	
 	public WebHookImpl (String url, WebHookProxyConfig proxyConfig){
 		this.url = url;
 		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.params = new ArrayList<>();
 		setProxy(proxyConfig);
 	}
 
