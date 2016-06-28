@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class WebHookPayloadDefaultTemplates {
+
+	private WebHookPayloadDefaultTemplates(){}
 	
 	public static final String HTML_BUILDSTATUS_TEMPLATE = "buildStatusHtml";
 	public static final String TEXT_TEMPLATE = "text";

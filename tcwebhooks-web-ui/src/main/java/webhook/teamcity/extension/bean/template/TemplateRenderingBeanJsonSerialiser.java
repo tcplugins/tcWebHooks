@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 
 public class TemplateRenderingBeanJsonSerialiser {
+	private TemplateRenderingBeanJsonSerialiser(){}
 	
 	public static String serialise(TemplateRenderingBean templateRendering){
 		XStream xstream = new XStream(new JsonHierarchicalStreamDriver());

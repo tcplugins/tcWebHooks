@@ -13,6 +13,7 @@ import org.jdom.input.SAXBuilder;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class ConfigLoaderUtil {
+	private ConfigLoaderUtil(){}
 	
 	public static Element getFullConfigElement(File file) throws JDOMException, IOException{
 		SAXBuilder builder = new SAXBuilder();

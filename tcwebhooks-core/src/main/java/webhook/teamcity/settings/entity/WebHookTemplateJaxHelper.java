@@ -20,6 +20,8 @@ import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 
 public class WebHookTemplateJaxHelper {
 
+	private WebHookTemplateJaxHelper(){}
+
 	/**
 	 * Read saved configuration from file
 	 * 
