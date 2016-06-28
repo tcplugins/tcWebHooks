@@ -8,6 +8,8 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 
 public final class TeamCityIdResolver {
+
+	private TeamCityIdResolver(){}
 	
 	public static String getBuildTypeId(SBuildType buildType){
 		try {

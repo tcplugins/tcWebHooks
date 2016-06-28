@@ -7,6 +7,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 
 public class ProjectWebHooksBeanJsonSerialiser {
+    private ProjectWebHooksBeanJsonSerialiser(){}
 	
 	public static String serialise(TemplatesAndProjectWebHooksBean project){
 		XStream xstream = new XStream(new JsonHierarchicalStreamDriver());
