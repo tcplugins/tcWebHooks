@@ -1,6 +1,9 @@
 package webhook.teamcity.settings.converter;
 
 public final class OldStyleBuildState {
+
+	private OldStyleBuildState(){}
+
     public static final Integer BUILD_STARTED  			= Integer.parseInt("00000001",2);
     public static final Integer BUILD_FINISHED 			= Integer.parseInt("00000010",2);
     public static final Integer BUILD_CHANGED_STATUS 	= Integer.parseInt("00000100",2);

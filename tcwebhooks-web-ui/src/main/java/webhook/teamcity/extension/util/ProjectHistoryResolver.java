@@ -11,6 +11,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 
 public class ProjectHistoryResolver {
+	private ProjectHistoryResolver(){}
 	
 	private static final int MAX_BUILDS_PER_BUILD_TYPE = 5;
 

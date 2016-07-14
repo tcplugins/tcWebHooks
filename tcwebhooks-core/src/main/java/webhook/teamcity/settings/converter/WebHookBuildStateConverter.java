@@ -5,6 +5,8 @@ import webhook.teamcity.BuildStateEnum;
 
 public class WebHookBuildStateConverter {
 
+	private WebHookBuildStateConverter(){}
+
 	public static BuildState convert(Integer oldState){
 		BuildState newStates = new BuildState();
 		
