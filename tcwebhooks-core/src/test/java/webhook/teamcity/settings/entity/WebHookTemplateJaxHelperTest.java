@@ -83,7 +83,7 @@ public class WebHookTemplateJaxHelperTest {
 
 	@Test
 	public void testLoad() {
-		Map<String, WebHookTemplateFromXml> templatesMap = new HashMap<String, WebHookTemplateFromXml>(); 
+		Map<String, WebHookTemplateFromXml> templatesMap = new HashMap<>();
 		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.load("src/test/resources/webhook-templates.xml", templatesMap);
 	}
 

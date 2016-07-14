@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 @XmlRootElement(name = "webhook-templates")
 public class WebHookTemplates {
 	@NotNull
-	private List<WebHookTemplate> templateList = new ArrayList<WebHookTemplate>();
+	private List<WebHookTemplate> templateList = new ArrayList<>();
 
 	@NotNull
 	@XmlElement(name = "webhook-template")

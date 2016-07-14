@@ -38,7 +38,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadXml whp = new WebHookPayloadXml(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");
@@ -68,7 +68,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadJson whp = new WebHookPayloadJson(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");
@@ -97,7 +97,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");
@@ -125,7 +125,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadEmpty whp = new WebHookPayloadEmpty(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");

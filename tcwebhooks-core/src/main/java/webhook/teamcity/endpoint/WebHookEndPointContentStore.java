@@ -15,7 +15,7 @@ public class WebHookEndPointContentStore {
 	
 	private static final int MAX_SIZE = 100;
 	
-	List<WebHookEndPointPayload> store = new ArrayList<WebHookEndPointPayload>(50);
+	List<WebHookEndPointPayload> store = new ArrayList<>(50);
 	Comparator<WebHookEndPointPayload> dateComparator = new WebHookEndPointContentStoreCompator();
 	final WebHookPayloadManager webHookPayloadManager;
 	
@@ -44,7 +44,7 @@ public class WebHookEndPointContentStore {
 	
 	@Synchronized
 	public List<WebHookEndPointPayload> getAll(){
-		List<WebHookEndPointPayload> sortedStore = new ArrayList<WebHookEndPointPayload>();
+		List<WebHookEndPointPayload> sortedStore = new ArrayList<>();
 		sortedStore.addAll(store);
 		Collections.sort(sortedStore, dateComparator);
 		return sortedStore;

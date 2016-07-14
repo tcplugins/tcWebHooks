@@ -114,7 +114,7 @@ public class WebHookContentBuilder {
 	}
 	
 	public static SortedMap<String,String> mergeParameters(SortedMap<String,String> parametersFromConfig, ParametersSupport build, String preferredDateFormat){
-		SortedMap<String, String> newMap = new TreeMap<String,String>();
+		SortedMap<String, String> newMap = new TreeMap<>();
 		
 		// First add the preferredDateFormat from the template. This can then be overriden 
 		// by the webhook config (plugin-settings.xml) 

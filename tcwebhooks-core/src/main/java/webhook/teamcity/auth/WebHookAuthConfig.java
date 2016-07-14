@@ -6,5 +6,5 @@ import java.util.TreeMap;
 public class WebHookAuthConfig {
 	public String type = "";
 	public Boolean preemptive = true;
-	public Map<String, String> parameters = new TreeMap<String, String>();
+	public Map<String, String> parameters = new TreeMap<>();
 }

@@ -19,7 +19,7 @@ public class WebHookPayloadDefaultTemplates {
 			 "<strong>${buildResult}</strong></a> and was triggered by <strong>${triggeredBy}</strong></span>"; 
 
 	public static Map<String,String> getDefaultEnabledPayloadTemplates(){
-		Map<String,String> mT = new TreeMap<String, String>();
+		Map<String,String> mT = new TreeMap<>();
 		mT.put(HTML_BUILDSTATUS_TEMPLATE, DEFAULT_HTML_BUILDSTATUS_TEMPLATE);
 		return mT;
 	}

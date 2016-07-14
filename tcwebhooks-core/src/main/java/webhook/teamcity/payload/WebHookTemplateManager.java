@@ -10,10 +10,10 @@ import webhook.teamcity.Loggers;
 
 public class WebHookTemplateManager {
 	
-	HashMap<String, WebHookTemplate> springTemplates = new HashMap<String,WebHookTemplate>();
-	HashMap<String, WebHookTemplate> xmlConfigTemplates = new HashMap<String,WebHookTemplate>();
+	HashMap<String, WebHookTemplate> springTemplates = new HashMap<>();
+	HashMap<String, WebHookTemplate> xmlConfigTemplates = new HashMap<>();
 	Comparator<WebHookTemplate> rankComparator = new WebHookTemplateRankingComparator();
-	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<WebHookTemplate>();
+	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<>();
 	WebHookPayloadManager webHookPayloadManager;
 	
 	public WebHookTemplateManager(WebHookPayloadManager webHookPayloadManager){
@@ -64,7 +64,7 @@ public class WebHookTemplateManager {
 	private void rebuildOrderedListOfTemplates() {
 		this.orderedTemplateCollection.clear();
 		
-		HashMap<String, WebHookTemplate> combinedTemplates = new HashMap<String,WebHookTemplate>();
+		HashMap<String, WebHookTemplate> combinedTemplates = new HashMap<>();
 		
 		// Rebuild the list of configured templates.
 		// Add all the spring ones.
@@ -104,7 +104,7 @@ public class WebHookTemplateManager {
 	}
 
 	public List<WebHookTemplate> findAllTemplatesForFormat(String formatShortName){
-		List<WebHookTemplate> matchingTemplates = new ArrayList<WebHookTemplate>();
+		List<WebHookTemplate> matchingTemplates = new ArrayList<>();
 		for (WebHookTemplate template : orderedTemplateCollection){
 			if (template.supportsPayloadFormat(formatShortName)){
 				matchingTemplates.add(template);
