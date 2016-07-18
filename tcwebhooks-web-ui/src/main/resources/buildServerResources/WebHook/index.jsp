@@ -10,7 +10,6 @@
         /css/admin/vcsRootsTable.css
         
     /css/visibleProjects.css
-    /css/addSidebar.css
     /css/settingsTable.css
     /css/profilePage.css
     /css/userRoles.css
@@ -68,12 +67,12 @@
 									(jQueryWebhook.inArray(state.id, template.supportedBranchStates) >= 0))
 								{
 										jQueryWebhook("td." + state.id).removeClass('buildStateDisabled');
-										jQueryWebhook("input#" + state.id).removeAttr('disabled');
-										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").removeAttr('disabled');
+										jQueryWebhook("input#" + state.id).prop('disabled', false);
+										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").prop('disabled', false);
 								} else {
 										jQueryWebhook("td." + state.id).addClass('buildStateDisabled');
-										jQueryWebhook("input#" + state.id).attr('disabled', 'disabled');
-										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").attr('disabled', 'disabled');
+										jQueryWebhook("input#" + state.id).prop('disabled', 'disabled');
+										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").prop('disabled', 'disabled');
 								}
 							//console.log(state);
 							//console.log(state.id);
@@ -83,7 +82,7 @@
 							//jQueryWebhook.each(template.supportedStates, function(thingy, state){
 							//console.log("My state is: " + state);
 							//		jQueryWebhook("td." + state).removeClass('buildStateDisabled');
-							//		jQueryWebhook("input#" + state).removeAttr('disabled');
+							//		jQueryWebhook("input#" + state).prop('disabled', false);
 							//}); 
 							return false;
 						}
@@ -117,23 +116,23 @@
 		function doExtraCompleted(){
 			if(jQueryWebhook('#buildSuccessful').is(':checked')){
 				jQueryWebhook('.onBuildFixed').removeClass('onCompletionDisabled');
-				jQueryWebhook('tr.onBuildFixed td input').removeAttr('disabled');
+				jQueryWebhook('tr.onBuildFixed td input').prop('disabled', false);
 			} else {
 				jQueryWebhook('.onBuildFixed').addClass('onCompletionDisabled');
-				jQueryWebhook('tr.onBuildFixed td input').attr('disabled', 'disabled');
+				jQueryWebhook('tr.onBuildFixed td input').prop('disabled', true);
 			} 
 			if(jQueryWebhook('#buildFailed').is(':checked')){
 				jQueryWebhook('.onBuildFailed').removeClass('onCompletionDisabled');
-				jQueryWebhook('tr.onBuildFailed td input').removeAttr('disabled');
+				jQueryWebhook('tr.onBuildFailed td input').prop('disabled', false);
 			} else {
 				jQueryWebhook('.onBuildFailed').addClass('onCompletionDisabled');
-				jQueryWebhook('tr.onBuildFailed td input').attr('disabled', 'disabled');
+				jQueryWebhook('tr.onBuildFailed td input').prop('disabled', true);
 			}
 		}
 		
 		function toggleAllBuildTypesSelected(){
 			jQueryWebhook.each(jQueryWebhook('.buildType_single'), function(){
-				jQueryWebhook(this).attr('checked', jQueryWebhook('input.buildType_all').is(':checked'))
+				jQueryWebhook(this).prop('checked', jQueryWebhook('input.buildType_all').is(':checked'))
 			});
 			updateSelectedBuildTypes();
 		}
@@ -145,10 +144,10 @@
 		    }
 		
 			if(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length == jQueryWebhook('#webHookFormContents input.buildType_single').length){
-				jQueryWebhook('input.buildType_all').attr('checked', true);
+				jQueryWebhook('input.buildType_all').prop('checked', true);
 				jQueryWebhook('span#selectedBuildCount').html("all" + subText);
 			} else {
-				jQueryWebhook('input.buildType_all').attr('checked', false);
+				jQueryWebhook('input.buildType_all').prop('checked', false);
 				jQueryWebhook('span#selectedBuildCount').html(jQueryWebhook('#webHookFormContents input.buildType_single:checked').length + subText);
 			}
 
@@ -162,14 +161,14 @@
 				
 					jQueryWebhook('#webHookId').val(webhook.uniqueKey);	
 					jQueryWebhook('#webHookUrl').val(webhook.url);
-				    jQueryWebhook('#webHooksEnabled').attr('checked', webhook.enabled);
+				    jQueryWebhook('#webHooksEnabled').prop('checked', webhook.enabled);
 				    jQueryWebhook.each(webhook.states, function(name, value){
-				    	jQueryWebhook('#' + value.buildStateName).attr('checked', value.enabled);
+				    	jQueryWebhook('#' + value.buildStateName).prop('checked', value.enabled);
 				    });
 				    
 					jQueryWebhook('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate + "_" + webhook.payloadFormat).change();
 					
-					jQueryWebhook('#buildTypeSubProjects').attr('checked', webhook.subProjectsEnabled);
+					jQueryWebhook('#buildTypeSubProjects').prop('checked', webhook.subProjectsEnabled);
 					jQueryWebhook.each(webhook.builds, function(){
 						 if (this.enabled){
 					 	 	jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
@@ -226,8 +225,7 @@
 					var webhook = config[1];
 					jQueryWebhook('.webHookRowTemplate')
 									.clone()
-									.removeAttr("id")
-									.attr("id", "viewRow_" + webhook.uniqueKey)
+									.prop("id", "viewRow_" + webhook.uniqueKey)
 									.removeClass('webHookRowTemplate')
 									.addClass('webHookRow')
 									.appendTo('#webHookTable > tbody');
@@ -275,7 +273,7 @@
 			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 				jQueryWebhook('#tab-container').easytabs('select', tab);
 			    
-			    $('webHookUrl').focus();
+			    jQueryWebhook('#webHookUrl').focus();
 			  },
 
 			  cancelDialog : function() {
@@ -405,16 +403,13 @@
 				          <p>Further Reading:
 				          <ul>${moreInfoText}
 				          	<li><a href="http://netwolfuk.wordpress.com/teamcity-plugins/">tcWebHooks plugin</a></li>
-				          	<li><a href="http://blog.webhooks.org/">Jeff Lindsay's WebHooks blog</a></li>
-				          	<li><a href="http://www.postbin.org/">PostBin</a></li>
 				          </ul>	
 				</c:when>
 		
 				<c:when test="${ShowFurtherReading == 'DEFAULT'}">
 				          <p>Further Reading:
-				          <ul><li><a href="http://netwolfuk.wordpress.com/teamcity-plugins/">tcWebHooks plugin</a></li>
-				          	<li><a href="http://blog.webhooks.org/">Jeff Lindsay's WebHooks blog</a></li>
-				          	<li><a href="http://www.postbin.org/">PostBin</a></li>
+				          <ul>
+				          	<li><a href="http://netwolfuk.wordpress.com/teamcity-plugins/">tcWebHooks plugin</a></li>
 				          </ul>	
 				</c:when>
 		
