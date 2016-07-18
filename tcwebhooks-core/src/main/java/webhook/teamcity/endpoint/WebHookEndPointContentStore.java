@@ -7,6 +7,7 @@ import java.util.List;
 
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 import lombok.Synchronized;
 
@@ -28,7 +29,11 @@ public class WebHookEndPointContentStore {
 		for (WebHookPayload format : webHookPayloadManager.getRegisteredFormats()){
 			if (format.getContentType().equalsIgnoreCase(payload.contentType)){
 				try {
-					payload.setPrettyPayload(format.getWebHookStringRenderer().render(payload.getPayload()));
+					if (payload.contentType.equals(WebHookPayloadNameValuePairs.FORMAT_CONTENT_TYPE)) {
+						payload.setPrettyPayload(format.getWebHookStringRenderer().render(payload.getParameters()));
+					} else {
+						payload.setPrettyPayload(format.getWebHookStringRenderer().render(payload.getPayload()));
+					}
 				} catch (WebHookHtmlRendererException e) {
 					// Don't set anything here. 
 					// The WebHookEndPointPayload.getPrettyPrintedPayload() will do the right thing.

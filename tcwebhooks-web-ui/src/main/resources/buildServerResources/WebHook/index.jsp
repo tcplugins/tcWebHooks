@@ -419,11 +419,15 @@
 				</c:when>
 		
 				<c:when test="${ShowFurtherReading == 'SINGLE'}">
-				          <p>Further Reading:
+				          <p>Further Reading:</p>
 				          <ul>${moreInfoText}</ul>
 				</c:when>
 			</c:choose>
-
+		  <h2>Testing Endpoint</h2>	
+		  <p>It is possible to test webhooks by posting them back to the tcWebHooks plugin inside TeamCity. See <a href="endpoint-viewer.html"/>here for details</a>.</p>
+		  
+		  <h2>Plugin Information</h2>	
+		  <p>tcWebHooks version: <strong>${pluginVersion}</strong></p>
       </div>
     </div>
     <script type=text/javascript>

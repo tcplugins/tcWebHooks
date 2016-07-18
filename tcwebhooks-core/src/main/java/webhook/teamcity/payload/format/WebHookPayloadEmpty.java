@@ -158,6 +158,11 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 			public String render(String input) {
 				return "<i>This payload returns an empty payload</i>";
 			}
+
+			@Override
+			public String render(Map<String, String[]> input) throws WebHookHtmlRendererException {
+				return "<i>This payload returns an empty payload</i>";
+			}
 			
 		};
 	}	
