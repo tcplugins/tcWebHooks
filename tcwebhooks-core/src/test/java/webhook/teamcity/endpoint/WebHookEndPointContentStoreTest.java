@@ -33,7 +33,7 @@ public class WebHookEndPointContentStoreTest {
 											.date(new Date())
 											.contentType("application/json")
 											.payload("blah blah")
-											.build();
+											.build().generateHash();
 		
 		String hash1 = payload1.getHash();
 		
@@ -43,7 +43,7 @@ public class WebHookEndPointContentStoreTest {
 				.date(new Date())
 				.contentType("application/json")
 				.payload("blah blah")
-				.build();
+				.build().generateHash();
 										
 		String hash2 = payload2.getHash();
 		
@@ -52,7 +52,9 @@ public class WebHookEndPointContentStoreTest {
 		store.put(payload2);
 		
 		assertEquals(hash1, store.getAll().get(1).getHash());
+		System.out.println(store.getAll().get(1).getHash());
 		assertEquals(hash2, store.getAll().get(0).getHash());
+		System.out.println(store.getAll().get(0).getHash());
 	}
 
 }

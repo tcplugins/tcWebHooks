@@ -19,11 +19,13 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.Loggers;
+import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 
 public class WebHookEndPointController extends BaseController {
 	
 	
-	public static final String MY_URL = "/webhooks/endpoint.html";
+	public static final String MY_URL_WITHOUT_SLASH = "webhooks/endpoint.html";
+	public static final String MY_URL = "/" + MY_URL_WITHOUT_SLASH;
 	private final WebHookEndPointContentStore endPointContentStore;
 	private final WebControllerManager myWebManager;
 	
@@ -70,21 +72,38 @@ public class WebHookEndPointController extends BaseController {
 				   .append(request.getQueryString());
 			}
 			
-			WebHookEndPointPayload payload = WebHookEndPointPayload.builder()
-			.date(new Date())
-			.contentType(request.getContentType())
-			.payload(buffer.toString())
-			.headers(headers)
-			.url(url.toString())
-			.build();
+			WebHookEndPointPayload payload;
+			
+			
+			if (request.getContentType().equalsIgnoreCase(WebHookPayloadNameValuePairs.FORMAT_CONTENT_TYPE)){
+				
+				payload = WebHookEndPointPayload.builder()
+						.date(new Date())
+						.contentType(request.getContentType())
+						.parameters(request.getParameterMap())
+						.headers(headers)
+						.url(url.toString())
+						.build().generateHash();
+				
+			} else {
+			
+				payload = WebHookEndPointPayload.builder()
+							.date(new Date())
+							.contentType(request.getContentType())
+							.payload(buffer.toString())
+							.headers(headers)
+							.url(url.toString())
+							.build().generateHash();
+			}
 			
 			endPointContentStore.put(payload);
 			
 			
 			response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+			return null;
     		
     	} else if (request.getMethod().equalsIgnoreCase("get")){
-    		response.sendRedirect(WebHookEndPointViewerController.MY_URL);
+    		response.sendRedirect(myServer.getRootUrl() + WebHookEndPointViewerController.MY_URL_WITHOUT_SLASH);
     	}
     	
     	response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);

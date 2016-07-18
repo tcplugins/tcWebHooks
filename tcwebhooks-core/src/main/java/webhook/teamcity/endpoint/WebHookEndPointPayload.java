@@ -9,17 +9,22 @@ import lombok.Getter;
 @Builder @Getter
 public class WebHookEndPointPayload {
 
-	int Min = 1000000, Max = 1000000000;
-	Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-	
 	Date date;
 	String contentType;
 	String payload;
 	String prettyPayload;
-	String hash = Rand.toString();
+	String hash;
 	String url;
 	boolean parseFailure = false;
 	Map<String, String> headers;
+	Map<String, String[]> parameters;
+	
+	public WebHookEndPointPayload generateHash(){
+		int Min = 1000000, Max = 1000000000;
+		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
+		hash = Rand.toString();
+		return this;
+	}
 	
 	public void setPrettyPayload(String pretty){
 		this.prettyPayload = pretty;

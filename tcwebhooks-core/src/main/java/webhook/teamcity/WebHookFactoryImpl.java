@@ -26,8 +26,12 @@ public class WebHookFactoryImpl implements WebHookFactory {
 		webHook.setBuildStates(webHookConfig.getBuildStates());
 		if (webHookConfig.getAuthenticationConfig() != null){
 			WebHookAuthenticator auth = myAuthenticatorProvider.getAuthenticator(webHookConfig.getAuthenticationConfig().type);
-			auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
-			webHook.setAuthentication(auth);
+			if (auth != null){
+				auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
+				webHook.setAuthentication(auth);
+			} else {
+				Loggers.SERVER.warn("Could not enable authentication type '" + webHookConfig.getAuthenticationConfig().type + "' for URL " + webHookConfig.getUrl() );
+			}
 		}
 		
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));

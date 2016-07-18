@@ -20,7 +20,8 @@ import webhook.teamcity.Loggers;
 public class WebHookEndPointViewerController extends BaseController {
 	
 	
-	public static final String MY_URL = "/webhooks/endpoint-viewer.html";
+	public static final String MY_URL_WITHOUT_SLASH = "webhooks/endpoint-viewer.html";
+	public static final String MY_URL = "/" + MY_URL_WITHOUT_SLASH;
 	private final WebHookEndPointContentStore endPointContentStore;
 	private final WebControllerManager myWebManager;
 	private String myPluginPath;
@@ -46,20 +47,20 @@ public class WebHookEndPointViewerController extends BaseController {
     	if (request.getMethod().equalsIgnoreCase("post") && 
     			request.getParameter("delete") != null){
     		endPointContentStore.store.clear();
-    		response.sendRedirect(WebHookEndPointViewerController.MY_URL);
+    		response.sendRedirect(myServer.getRootUrl() + WebHookEndPointViewerController.MY_URL_WITHOUT_SLASH);
     		return null;
     		
     	} else if (request.getMethod().equalsIgnoreCase("post")){
     		
     		final PrintWriter writer = response.getWriter();
-    		  writer.write("Please don't POST here. POST test webhook requests to " + WebHookEndPointController.MY_URL);
+    		  writer.write("Please don't POST here. POST test webhook requests to " + myServer.getRootUrl() + WebHookEndPointController.MY_URL_WITHOUT_SLASH);
     		  writer.write("\r\n"); 
     		
     	} else if (request.getMethod().equalsIgnoreCase("get")){
     		
     		HashMap<String,Object> params = new HashMap<String,Object>();
     		params.put("jspHome",this.myPluginPath);
-    		params.put("postURL", myServer.getRootUrl() + WebHookEndPointController.MY_URL);
+    		params.put("postURL", myServer.getRootUrl() + WebHookEndPointController.MY_URL_WITHOUT_SLASH);
     		params.put("count", endPointContentStore.store.size());
     		params.put("storeItems", endPointContentStore.getAll());
     		

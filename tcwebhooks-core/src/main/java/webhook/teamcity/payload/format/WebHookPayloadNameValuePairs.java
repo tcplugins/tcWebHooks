@@ -17,11 +17,13 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+import webhook.teamcity.payload.template.render.WwwFormUrlEncodedToHtmlPrettyPrintingRenderer;
 
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {
 	
 	public static final String FORMAT_SHORT_NAME = "nvpairs";
+	public static final String FORMAT_CONTENT_TYPE = "application/x-www-form-urlencoded";
 
 	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager) {
 		super(manager);
@@ -141,7 +143,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 
 
 	public String getContentType() {
-		return "application/x-www-form-urlencoded";
+		return FORMAT_CONTENT_TYPE;
 	}
 
 	public Integer getRank() {
@@ -158,18 +160,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 
 	@Override
 	public WebHookStringRenderer getWebHookStringRenderer() {
-		// TODO FixME!!!
-		return new WebHookStringRenderer() {
-			
-			@Override
-			public String render(String input) throws WebHookHtmlRendererException {
-				// TODO Auto-generated method stub
-				return "This needs to be fixed!!!!!!! Need to write nicer NVPair renderer!!!!!";
-			}
-		};
+		return new WwwFormUrlEncodedToHtmlPrettyPrintingRenderer();
 	}
-
-
-
 	
 }

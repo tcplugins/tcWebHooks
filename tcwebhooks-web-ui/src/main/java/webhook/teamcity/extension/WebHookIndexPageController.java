@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.endpoint.WebHookEndPointViewerController;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
@@ -68,6 +69,7 @@ public class WebHookIndexPageController extends BaseController {
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
         	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
         	params.put("rootContext", myServer.getServerRootPath());
+        	params.put("pluginVersion", myPluginDescriptor.getPluginVersion());
 	        
 	    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
 	    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");

@@ -128,6 +128,9 @@ li.payloadContentType {
 }
 
 div.endpointPayload pre {
+	margin:0px; 
+	border:none; 
+	border-right:none;
     height: auto;
     max-height: 500px;
     width:auto;
@@ -137,4 +140,61 @@ div.endpointPayload pre {
     word-wrap: normal !important;
     white-space: pre !important;
     padding: 1em;
+}
+
+div.endpointPayloadHidden {
+	display: none;
+}
+
+div.endpointPayload div.tableWrapper table.settings {
+	margin-top:0px; 
+	border:none; 
+	border-right:none;
+}
+
+div.endpointPayload div.tableWrapper {
+	margin-top:0px; 
+	border:none; 
+	border-right:none;
+	height: auto;
+    max-height: 500px;
+    width:auto;
+    max-width: 100%;
+    overflow: auto;
+    word-break: normal !important;
+    word-wrap: normal !important;
+}
+
+div.endpointPayload div.tableWrapper table.settings thead tr {
+	background-color: rgb(245, 245, 245);
+}
+
+div.endpointPayload div.tableWrapper table.settings th :last-child, div.endpointPayload table.settings tr :last-child {
+	border-right:none;
+}
+
+div.endpointPayloadHeader {
+	cursor: pointer; 
+}
+
+div.endpointPayloadHeaders {
+	display:none;
+}
+
+div.endpointPayloadHeaders table {
+	margin-left:40px;
+}
+
+div.endpointPayloadHeaders table th {
+	text-align: left;
+	font-size:15px;
+}
+
+div.endpointPayloadHeaders table td {
+	padding:0.15em;
+}
+
+div.endpointPayloadHeaders table tr :first-child {
+	text-align:right;
+	font-weight: bold;	
 }
