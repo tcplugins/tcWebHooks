@@ -46,14 +46,18 @@ public class WebHookEndPointController extends BaseController {
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
     	if (request.getMethod().equalsIgnoreCase("post")){
+    		
+    		boolean debug = Loggers.SERVER.isDebugEnabled();
+    		
+    		if (debug) Loggers.SERVER.debug(WebHookEndPointController.this.getClass().getName() + ":: Showing received content.");
 			
 			// Read from request
 			StringBuilder buffer = new StringBuilder();
 			BufferedReader reader = request.getReader();
 			String line;
 			while ((line = reader.readLine()) != null) {
-			buffer.append(line);
-			Loggers.SERVER.info(line);
+				buffer.append(line);
+				if (debug) Loggers.SERVER.debug(line);
 			}
 			
 			Map<String, String> headers = new TreeMap<String, String>();
@@ -61,9 +65,9 @@ public class WebHookEndPointController extends BaseController {
 			//request.getH
 			Enumeration<String> headerNames = request.getHeaderNames();
 			while (headerNames.hasMoreElements()) {
-			String key = (String) headerNames.nextElement();
-			String value = request.getHeader(key);
-			headers.put(key, value);
+				String key = (String) headerNames.nextElement();
+				String value = request.getHeader(key);
+				headers.put(key, value);
 			}
 			
 			StringBuffer url = request.getRequestURL();
