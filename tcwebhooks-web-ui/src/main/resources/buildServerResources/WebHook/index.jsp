@@ -15,6 +15,7 @@
     /css/userRoles.css
     
     ${jspHome}WebHook/css/styles.css
+    ${jspHome}WebHook/highlight/styles/tomorrow.css
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -52,6 +53,8 @@
     <script type=text/javascript>
 		var jQueryWebhook = jQuery.noConflict();
 		var webhookDialogWidth = -1;
+		var webhookDialogHeight = -1;
+		var templatePaneOuterHeight = -1;
 		jQueryWebhook(document).ready( function() {
 				jQueryWebhook('#tab-container').easytabs({
 					  animate: false,
@@ -105,9 +108,23 @@
 											console.log(data.templatesOutput);
 											jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
 											jQueryWebhook('#currentTemplateRendered').html(data.templatesOutput.webhookTemplateRendered);
+											
+											  jQueryWebhook('#currentTemplateRendered pre code').each(function(i, block) {
+											    hljs.highlightBlock(block);
+											  });
 									});
 				});
 		});
+		
+		function maximizeDialog(){
+			var maxDialogWidth = jQueryWebhook( document ).width() - 40;
+			var maxDialogHeight = jQueryWebhook( document ).height() - 40;
+			 
+		}
+		
+		function restoreDialog(){
+			
+		}
 
 		function selectBuildState(){
 			doExtraCompleted();
@@ -272,12 +289,42 @@
 			    jQueryWebhook('#hookPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 				jQueryWebhook('#tab-container').easytabs('select', tab);
+				
+				if (webhookDialogHeight < 0){
+			    	webhookDialogHeight = jQueryWebhook('#editWebHookDialog').innerHeight();
+			    	templatePaneOuterHeight = jQueryWebhook('#templatePane').outerHeight();
+			    }
 			    
 			    jQueryWebhook('#webHookUrl').focus();
 			  },
 
 			  cancelDialog : function() {
 			    this.close();
+			  },
+			  
+			  maximizeDialog : function() {
+			    var maxDialogWidth = jQueryWebhook( document ).width() - 40;
+				var maxDialogHeight = jQueryWebhook( window ).height() - 80;
+			  	jQueryWebhook('#editWebHookDialog').innerWidth(maxDialogWidth);
+			  	jQueryWebhook('#editWebHookDialog').innerHeight(maxDialogHeight);
+			  	var dialogDiff = webhookDialogHeight - templatePaneOuterHeight;
+			  	//maxDialogHeight - ( jQueryWebhook('.dialogHeader').outerHeight() + jQueryWebhook('ul#etabs').outerHeight() + jQueryWebhook('.popupSaveButtonsBlock').outerHeight() );
+			  	jQueryWebhook('#templatePane').innerHeight(templatePaneOuterHeight + dialogDiff);
+			  	jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	jQueryWebhook('.maxtoggle').toggle();
+			  	this.showCentered();
+			  	
+			  },
+			  
+			  restoreDialog : function() {
+			  	jQueryWebhook('#editWebHookDialog').innerWidth(webhookDialogWidth);
+			  	jQueryWebhook('#editWebHookDialog').innerHeight(webhookDialogHeight);
+			  	jQueryWebhook('#templatePane').outerHeight(templatePaneOuterHeight);
+			  	jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	jQueryWebhook('.maxtoggle').toggle();
+			  	this.showCentered();
 			  }
 			});
 
@@ -442,5 +489,6 @@
 	        }
 
 	</script>
+    	<script type=text/javascript src="..${jspHome}WebHook/highlight/highlight.pack.js"></script>
     </jsp:attribute>
 </bs:page>

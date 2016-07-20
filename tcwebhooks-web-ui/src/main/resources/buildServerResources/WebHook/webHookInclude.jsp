@@ -75,15 +75,15 @@
 												
 												<tr style="border:none;">
 													<td>URL:</td>
-													<td colspan=2><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
+													<td colspan=2 style="padding-left:0.5em;"><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
 												</tr>
 												<tr>
 													<td></td>
 													<td colspan=2><span class="error" id="error_webHookUrl" style="margin-left: 0.5em;"></span></td>
 												</tr>
 												<tr style="border:none;">
-													<td><label for="webHooksEnabled">Enabled:</label></td>
-													<td style="padding-left:3px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled"/></td>
+													<td><label class="webhookEnabled" for="webHooksEnabled">Enabled:</label></td>
+													<td style="padding-left:2px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled" style="margin-left:0.5em; padding-left:0.5em;"/></td>
 												</tr>
 												
 												<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
@@ -105,7 +105,7 @@
 													<td colspan=2><span class="error" id="error_payloadFormat" style="margin-left: 0.5em;"></span></td>
 												</tr>												
 												
-												<tr style="border:none;">
+												<tr style="border:none;" class="onDuring">
 													<td>Trigger on Events:</td>
 													<td  class="buildStarted" style="padding-left:3px;"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="buildStarted" name="BuildStarted"  type=checkbox />
@@ -134,7 +134,7 @@
 													<td></td>
 												</tr>
 					
-												<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top; padding-top:0.33em;">On Completion:</td>
+												<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top;">On Completion:</td>
 													<td colspan=2 >
 														<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
 																<tr style="padding:0; margin:0; left: 0px;"><td class="buildSuccessful" style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
@@ -171,20 +171,25 @@
 						            <div id='templatePane'>
 						            	<div id='templateLeftPanel'>
 						            		<div id="currentTemplateName"></div>
-						            		<div>Build History: <select name="currentTemplateBuildId" id="currentTemplateBuildId" class="templateAjaxRefresh"></select></div>
-						            		<div>
-							            		Build Event: <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent" class="templateAjaxRefresh">
-							            			<option value="buildStarted">Build Started</option>
-							            			<option value="changesLoaded">Changes Loaded</option>
-							            			<option value="buildInterrupted">Build Interrupted</option>
-							            			<option value="beforeBuildFinish">Build Almost Completed</option>
-							            			<option value="responsibilityChanged">Build Responsibility Changed</option>
-							            			<option value="buildSuccessful">Build Successful</option>
-							            			<option value="buildFixed"> - Build changes from Failure to Success</option>
-							            			<option value="buildFailed">Build Failed</option>
-							            			<option value="buildBroken"> - Build changes from Success to Failure</option>
-							            		</select> 
-							            		<!--label><checkbox id="currentTemplateCustomise" disabled>&nbsp;Customise Template</label-->
+						            		<div>						            		
+						            		     <a href="javascript://" showdiscardchangesmessage="false" onclick="BS.EditWebHookDialog.maximizeDialog()" class="maximize maxtoggle">Maximize</a>
+						            		     <a href="javascript://" showdiscardchangesmessage="false" onclick="BS.EditWebHookDialog.restoreDialog()" class="restore maxtoggle">Restore</a>
+						            		
+							            		<table><tr><td>Build History:</td>
+							            		<td> <select name="currentTemplateBuildId" id="currentTemplateBuildId" class="templateAjaxRefresh"></select></td></tr>
+							            		<tr><td>Build Event:</td>
+							            		<td> <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent" class="templateAjaxRefresh">
+								            			<option value="buildStarted">Build Started</option>
+								            			<option value="changesLoaded">Changes Loaded</option>
+								            			<option value="buildInterrupted">Build Interrupted</option>
+								            			<option value="beforeBuildFinish">Build Almost Completed</option>
+								            			<option value="responsibilityChanged">Build Responsibility Changed</option>
+								            			<option value="buildSuccessful">Build Successful</option>
+								            			<option value="buildFixed"> - Build changes from Failure to Success</option>
+								            			<option value="buildFailed">Build Failed</option>
+								            			<option value="buildBroken"> - Build changes from Success to Failure</option>
+								            		</select>
+								            	</td></tr></table> 
 											</div>
 						            		<div id="currentTemplateRaw"></div>
 						            		<div id="currentTemplateRendered"></div>

@@ -2,6 +2,10 @@ tr.onCompletionDisabled td {
 	color: #ccc;
 }
 
+tr.onCompletion td, tr.onDuring td {
+	padding-top: 1.5em;
+}
+
 td.buildStateDisabled {
 	color: #ccc;
 }
@@ -18,6 +22,10 @@ div#buildList{
 label {
 	padding: 0.5em;
 	border-top: 1px black;
+}
+
+label.webhookEnabled {
+	padding: 0em;
 }
 
 .webHookRowTemplate {
@@ -197,4 +205,46 @@ div.endpointPayloadHeaders table td {
 div.endpointPayloadHeaders table tr :first-child {
 	text-align:right;
 	font-weight: bold;	
+}
+
+
+#editWebHookDialog .dialogHeader {
+	padding:0.75em;
+}
+
+#editWebHookDialog .dialogHeader .closeWindow {
+	margin:1px 1px 0 0;
+}
+
+#buildSuccessful.buildState, #buildFailed.buildState {
+    margin-left: 2px;
+}
+
+/*
+span.templateRenderHeader {
+	display: table-cell;
+}
+
+div#templateLeftPanel {
+	display: table;
+}
+
+div#templateLeftPanel > div {
+	display: table-row;
+}*/
+
+div.popupSaveButtonsBlock {
+	padding-left: 0.75em;
+}
+
+select#currentTemplateBuildId, select#currentTemplateBuildEvent {
+	width: 100%;
+}
+
+.maxtoggle {
+	float:right;
+}
+
+a.restore {
+	display:none;
 }
