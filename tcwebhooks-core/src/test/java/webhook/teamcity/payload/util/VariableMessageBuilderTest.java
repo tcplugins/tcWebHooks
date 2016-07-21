@@ -1,63 +1,14 @@
 package webhook.teamcity.payload.util;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import jetbrains.buildServer.messages.Status;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-
-import org.junit.Before;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.MockSBuildType;
-import webhook.teamcity.MockSProject;
-import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
-import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 
-public class VariableMessageBuilderTest {
-	
-	MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
-	MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
-	SFinishedBuild previousSuccessfulBuild = mock(SFinishedBuild.class);
-	MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
-	SBuildServer sBuildServer;
-	SortedMap<String, String> extraParameters;
-	SortedMap<String, String> teamcityProperties;
-	Map<String, ExtraParametersMap> allProperties;
-	
-
-	@Before
-	public void setup(){
-		sBuildType.setProject(sProject);
-		extraParameters = new TreeMap<>();
-		//extraParameters.put("build.vcs.number", "${build.vcs.number}");
-		extraParameters.put("body.passed", "Yey, this build has passed for ${buildType}.");
-		extraParameters.put("body", "${body.passed}");
-		extraParameters.put("body2", "${body.failed}");
-		extraParameters.put("sha", "${build.vcs.number}");
-		teamcityProperties = new TreeMap<>();
-		teamcityProperties.put("env.isInATest", "Yes, we are in a test");
-		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
-		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
-		teamcityProperties.put("someTagThing", "A ~peice of text! with <> s<<<tuff in it%.");
-		teamcityProperties.put("build.vcs.number", "3b0a11eda029aaeb349993cb070a1c2e5987906c");
-		teamcityProperties.put("body.failed", "Boo, this build has failed for ${buildType}.");
-		teamcityProperties.put("config", "This is some config thing");
-		teamcityProperties.put("builder.appVersion", "This is the appVersion");
-		sBuildServer = mock(SBuildServer.class);
-		allProperties = new LinkedHashMap<>();
-		allProperties.put("teamcity", new ExtraParametersMap(teamcityProperties));
-		allProperties.put("webhook", new ExtraParametersMap(extraParameters));
-	}
+public class VariableMessageBuilderTest extends VariableMessageBuilderTestBase {
 	
 	@Test
 	public void testBuild() {

@@ -23,6 +23,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.jdom.JDOMException;
 
 import webhook.WebHook;
@@ -34,6 +35,8 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.WebHookHttpClientFactory;
+import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
@@ -78,7 +81,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
 	//WebHookFactory factory = mock(WebHookFactory.class);
-	WebHookFactory factory = new WebHookFactoryImpl(configSettings, authenticatorProvider);
+	WebHookFactory factory = new WebHookFactoryImpl(configSettings, authenticatorProvider, new WebHookHttpClientFactoryImpl());
 	WebHook webhook = mock (WebHook.class);
 	WebHook webHookImpl;
 	WebHook spyWebHook;

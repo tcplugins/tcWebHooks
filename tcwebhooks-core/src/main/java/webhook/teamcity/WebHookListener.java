@@ -280,8 +280,7 @@ public class WebHookListener extends BuildServerAdapter {
 				if ((wh.getStatus() == null || wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES))
 					Loggers.ACTIVITIES.warn("WebHookListener :: " + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
 			} else {
-				Loggers.SERVER.debug("WebHook NOT triggered: " 
-						+ wh.getParam("buildStatus") + " " + wh.getUrl());	
+				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	
 			}
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
