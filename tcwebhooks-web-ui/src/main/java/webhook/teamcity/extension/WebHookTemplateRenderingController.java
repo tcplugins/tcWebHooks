@@ -22,6 +22,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookContentBuilder;
+import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.extension.bean.template.TemplateRenderingBean;
 import webhook.teamcity.extension.bean.template.TemplateRenderingBeanJsonSerialiser;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -41,10 +42,12 @@ public class WebHookTemplateRenderingController extends BaseController {
     private final WebHookPayloadManager myPayloadManager;
 	private final WebHookTemplateResolver myTemplateResolver;
 	private final WebHookContentBuilder myContentBuilder;
+	private final WebHookFactory myWebHookFactory;
     
     public WebHookTemplateRenderingController(SBuildServer server, WebControllerManager webManager, 
     		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager payloadManager,
-    		WebHookTemplateResolver templateResolver, WebHookContentBuilder builder, PluginDescriptor pluginDescriptor) {
+    		WebHookTemplateResolver templateResolver, WebHookContentBuilder builder, PluginDescriptor pluginDescriptor,
+    		WebHookFactory webhookFactory) {
         super(server);
         myWebManager = webManager;
         myServer = server;
@@ -52,6 +55,7 @@ public class WebHookTemplateRenderingController extends BaseController {
         myPayloadManager = payloadManager;
         myTemplateResolver = templateResolver;
         myContentBuilder = builder;
+        myWebHookFactory = webhookFactory;
     }
     
     public void register(){
@@ -84,7 +88,7 @@ public class WebHookTemplateRenderingController extends BaseController {
 				content = myTemplateResolver.findWebHookTemplate(state, myproject, payloadFormat, payloadTemplate);
 			}
 			
-			WebHook wh = new WebHookImpl();
+			WebHook wh = myWebHookFactory.getWebHook();
 			wh.setEnabled(true);
 			wh.setBuildStates(new BuildState().setAllEnabled());
 			

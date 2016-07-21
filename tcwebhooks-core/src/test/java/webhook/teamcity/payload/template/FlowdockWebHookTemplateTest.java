@@ -22,9 +22,11 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.TestingWebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -59,7 +61,7 @@ public class FlowdockWebHookTemplateTest {
 		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-flowdock.xml"));
 		when(mainSettings.getProxyConfigForUrl(webhookElastic.getUrl())).thenReturn(null);
 		
-		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider);
+		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider, new WebHookHttpClientFactoryImpl());
 		WebHook wh = webHookFactory.getWebHook(webhookElastic,null);
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");

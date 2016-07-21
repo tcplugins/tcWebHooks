@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.velocity.context.Context;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.settings.WebHookFilterConfig;
 
 public interface WebHook {
 
@@ -86,6 +89,12 @@ public interface WebHook {
 	public abstract void setCharset(String charset);
 
 	public abstract void setAuthentication(WebHookAuthenticator authenticator);
+
+	public abstract boolean checkFilters(Context variableResolver);
+
+	public abstract void addFilter(WebHookFilterConfig filterHolder);
+
+	public abstract String getDisabledReason();
 
 
 

@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.velocity.context.Context;
+
 /**
  * @author Santhosh Kumar T
  * 
@@ -94,7 +96,7 @@ public class TemplateMatcher{
 
     /*-------------------------------------------------[ VariableResolver ]---------------------------------------------------*/
     
-    public static interface VariableResolver{
+    public static interface VariableResolver extends Context{
         public String resolve(String variable);
     }
 
@@ -109,6 +111,36 @@ public class TemplateMatcher{
         public String resolve(String variable){
             return variables.get(variable);
         }
+
+		@Override
+		public Object put(String key, Object value) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object get(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean containsKey(Object key) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public Object[] getKeys() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object remove(Object key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 
 }

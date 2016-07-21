@@ -28,4 +28,9 @@ public class ConfigLoaderUtil {
 		return new WebHookConfig((Element) fileAsElement.getChild("webhooks").getChildren("webhook").get(0));
 	}
 	
+	public static WebHookConfig getSpecificWebHookInConfig(int itemNumber, File f) throws JDOMException, IOException{
+		Element fileAsElement = ConfigLoaderUtil.getFullConfigElement(f);
+		return new WebHookConfig((Element) fileAsElement.getChild("webhooks").getChildren("webhook").get(itemNumber -1));
+	}
+	
 }

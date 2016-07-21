@@ -220,7 +220,7 @@ public class WebHookPayloadContent {
     		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
     		setRootUrl(server.getRootUrl());
-			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
+			//setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 		}
 		
 		public List<String> getBuildTags() {

@@ -64,6 +64,10 @@
      	class="webhook.teamcity.extension.WebHookTemplateRenderingController" 
      	init-method="register" 
      	/>
+
+     <bean id="webHookHttpClientFactory"
+     	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
+     	/>     	
      			
      <bean id="webHookContentBuilder"
      	class="webhook.teamcity.WebHookContentBuilder" 

@@ -11,6 +11,8 @@ import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ public class WebHookConfig {
 	private Boolean authEnabled = false;
 	private SortedMap<String,String> authParameters;
 	private Boolean authPreemptive = true;
+	private List<WebHookFilterConfig> filters;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -57,6 +60,7 @@ public class WebHookConfig {
 		this.extraParameters = new TreeMap<>();
 		this.authParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
+		this.filters = new ArrayList<>();
 		
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -195,6 +199,29 @@ public class WebHookConfig {
 
 		}
 		
+		/*
+		    <trigger-filters>
+	  			<filter value="${branchDisplayName}" regex="^master$" />
+	  		</trigger-filters>
+		 */
+		if(e.getChild("trigger-filters") != null){
+			Element eParams = e.getChild("trigger-filters");
+			List<Element> filterList = eParams.getChildren("filter");
+			if (filterList.size() > 0){
+				for(Element eParam : filterList)
+				{
+					this.filters.add(
+							
+							WebHookFilterConfig.create(
+									eParam.getAttributeValue(WebHookFilterConfig.VALUE),
+									eParam.getAttributeValue(WebHookFilterConfig.REGEX),
+									Boolean.parseBoolean(eParam.getAttributeValue(WebHookFilterConfig.ENABLED))
+									)
+							);
+				}
+			}
+		}
+		
 	}
 
 	/**
@@ -263,6 +290,14 @@ public class WebHookConfig {
 			}
 		}
 		el.addContent(buildsEl);
+		
+		if (this.filters.size() > 0){
+			Element filtersEl = new Element("trigger-filters");
+			for (WebHookFilterConfig f : this.filters){
+				filtersEl.addContent(f.getAsElement());
+			}
+			el.addContent(filtersEl);
+		}		
 		
 		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
@@ -576,4 +611,7 @@ public class WebHookConfig {
 		return null;
 	}	
 	
+	public List<WebHookFilterConfig> getTriggerFilters() {
+		return this.filters;
+	}
 }

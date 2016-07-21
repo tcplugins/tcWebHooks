@@ -25,6 +25,8 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.WebHookHttpClientFactory;
+import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -46,6 +48,7 @@ public class ElasticSearchWebHookTemplateTest {
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
 		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager);
+		WebHookHttpClientFactory clientFactory = new WebHookHttpClientFactoryImpl();
 		
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager);
 		webHookPayloadJsonTemplate.register();
@@ -59,7 +62,7 @@ public class ElasticSearchWebHookTemplateTest {
 		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-elastic.xml"));
 		when(mainSettings.getProxyConfigForUrl(webhookElastic.getUrl())).thenReturn(null);
 		
-		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider);
+		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider, clientFactory);
 		WebHook wh = webHookFactory.getWebHook(webhookElastic,null);
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");

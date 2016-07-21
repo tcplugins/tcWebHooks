@@ -5,7 +5,7 @@ import webhook.WebHookProxyConfig;
 import webhook.teamcity.settings.WebHookConfig;
 
 public interface WebHookFactory {
-//	public abstract WebHook getWebHook();
+	public abstract WebHook getWebHook();
 //	public abstract WebHook getWebHook(String url, String proxy,
 //			Integer proxyPort);
 //	public abstract WebHook getWebHook(String string);
