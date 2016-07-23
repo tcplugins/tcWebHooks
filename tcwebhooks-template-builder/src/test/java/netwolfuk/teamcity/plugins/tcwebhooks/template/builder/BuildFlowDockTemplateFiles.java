@@ -58,8 +58,8 @@ public class BuildFlowDockTemplateFiles extends TemplateGenerator {
 		
 		
 		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(XML_TEMPLATES_FILE);
-		for (webhook.teamcity.settings.entity.WebHookTemplate template : templatesList.getWebHookTemplateList()){
-			xmlManager.registerTemplateFormatFromXmlConfig(WebHookTemplateFromXml.build(template, webHookPayloadManager));
+		for (webhook.teamcity.settings.entity.WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
+			xmlManager.registerTemplateFormatFromXmlConfig(template);
 		}
 		
 		WebHookTemplate springFlowTemplate = springManager.getTemplate("flowdock");

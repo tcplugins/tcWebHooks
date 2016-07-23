@@ -38,6 +38,7 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 		this.configFile = new File(this.serverPaths.getConfigDir() + File.separator + "webhook-templates.xml");
 		
 		this.fw = new FileWatcher(configFile);
+		this.webHookTemplateManager.setConfigFilePath(this.configFile.getAbsolutePath());
 
 		this.changeOccured("Startup");
 		
@@ -57,17 +58,12 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 
 	@Override
 	public void handleConfigFileChange() {
-		List<WebHookTemplate> newTemplates = new ArrayList<>();
 		try {
 			WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(configFile.getPath());
-			for (webhook.teamcity.settings.entity.WebHookTemplate template : templatesList.getWebHookTemplateList()){
-				newTemplates.add(WebHookTemplateFromXml.build(template, webHookPayloadManager));
-			}
 			this.webHookTemplateManager.unregisterAllXmlConfigTemplates();
-			for (WebHookTemplate newTemplate : newTemplates){
-				this.webHookTemplateManager.registerTemplateFormatFromXmlConfig(newTemplate);
+			for (webhook.teamcity.settings.entity.WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
+				this.webHookTemplateManager.registerTemplateFormatFromXmlConfig(template);
 			}
-			
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. File not found: " + this.configFile.getPath());
 			Loggers.SERVER.debug(e);

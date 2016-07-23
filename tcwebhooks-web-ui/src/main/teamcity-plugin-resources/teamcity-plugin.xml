@@ -11,5 +11,5 @@
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
-  <deployment use-separate-classloader="false"/>
+  <deployment use-separate-classloader="true"/>
 </teamcity-plugin>

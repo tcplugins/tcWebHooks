@@ -25,5 +25,9 @@ public class StringSanitiser {
 				.replace("^", "_")
 				;
 	}
+	
+	public static String sanitize(String dirtyString){
+		return sanitise(dirtyString);
+	}
  
 }
