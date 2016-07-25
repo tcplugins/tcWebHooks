@@ -84,8 +84,8 @@ public class WebHookTemplateManagerTest {
 		changeListener.handleConfigFileChange();
 		
 		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
-		assertEquals(4, regsiteredTemplates.size());
-		assertEquals("testXMLtemplate", wtm.getTemplate("testXMLtemplate").getTemplateShortName());
+		assertEquals(2, regsiteredTemplates.size());
+		assertEquals("testXMLtemplateWithId", wtm.getTemplate("testXMLtemplateWithId").getTemplateShortName());
 	}
 	
 	@Test

@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
@@ -111,15 +112,15 @@ public class WebHookTemplateEntity {
 		@XmlAttribute(name="max-id")
 	    Integer maxId = 0;
 		
-		@XmlElement(name="templates")
+		@XmlElements(@XmlElement(name="template", type=WebHookTemplateItem.class))
 	    List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
 
 
-	    public WebHookTemplateItems(Integer maxId, List<WebHookTemplateItem> listOfTemplates) {
+/*	    public WebHookTemplateItems(Integer maxId, List<WebHookTemplateItem> listOfTemplates) {
 	        this();
 	        this.maxId = maxId;
 	        this.templates = listOfTemplates;  
-	    }
+	    }*/
 
 	    /**
 	     * 
