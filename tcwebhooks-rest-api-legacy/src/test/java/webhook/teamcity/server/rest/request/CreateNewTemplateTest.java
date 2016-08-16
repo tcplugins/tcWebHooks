@@ -1,4 +1,4 @@
-package webhook.teamcity.server.rest.model.template.rest;
+package webhook.teamcity.server.rest.request;
 
 import static org.junit.Assert.*;
 import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES_URL;
