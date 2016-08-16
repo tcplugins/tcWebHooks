@@ -1,12 +1,6 @@
 package webhook.teamcity.test.jerseyprovider;
 
-import static org.mockito.Mockito.mock;
-
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.InjectableProvider;
-
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -17,22 +11,25 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.mockito.Mock;
 
-import jetbrains.buildServer.serverSide.SBuildServer;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
-import webhook.teamcity.settings.WebHookMainSettings;
+
+import com.sun.jersey.core.spi.component.ComponentContext;
+import com.sun.jersey.core.spi.component.ComponentScope;
+import com.sun.jersey.spi.inject.Injectable;
+import com.sun.jersey.spi.inject.InjectableProvider;
 
 @Provider
 public class WebHookTemplateManagerTestProvider implements InjectableProvider<Context, Type>, Injectable<WebHookTemplateManager> {
-  private final WebHookTemplateManager webHookTemplateManager;
+  private WebHookTemplateManager webHookTemplateManager;
   @Context WebHookPayloadManager webHookPayloadManager;
   
-  public WebHookTemplateManagerTestProvider() {
-	  System.out.println("We are here: Trying to provide a testable WebHookMainSettings instance");
-	  	webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager);
+  public WebHookTemplateManagerTestProvider() throws IOException {
+	  System.out.println("We are here: Trying to provide a testable WebHookTemplateManager instance");
+	  	//webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager);
+	  	
+
   }
 
   public ComponentScope getScope() {
@@ -47,7 +44,22 @@ public class WebHookTemplateManagerTestProvider implements InjectableProvider<Co
   }
 
   public WebHookTemplateManager getValue() {
-    return webHookTemplateManager;
+	  if (webHookTemplateManager != null){
+		  System.out.println("WebHookTemplateManagerTestProvider: Providing value " + webHookTemplateManager.toString());
+		  return webHookTemplateManager;
+	  }
+		File tempDir;
+		try {
+			tempDir = File.createTempFile("tempWebHooksDir", "", new File("target/"));
+			tempDir.mkdir();
+			webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager);
+			webHookTemplateManager.setConfigFilePath(tempDir.getAbsolutePath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("WebHookTemplateManagerTestProvider: Providing value " + webHookTemplateManager.toString());
+		return webHookTemplateManager;
   }
   
   private Element getFullConfigElement(){

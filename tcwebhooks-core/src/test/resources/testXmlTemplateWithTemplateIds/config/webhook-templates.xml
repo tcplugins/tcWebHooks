@@ -36,17 +36,87 @@
 			<format name="json" enabled="true" />
 		</formats>
 		<templates max-id="5">
-			<template id="5">
-				<template-text use-for-branch-template="true">{ "anotherMergedbuildStatus" : "${buildStatus}" }</template-text>
+			<template id="1">
+				<template-text use-for-branch-template="true">{ "buildStarted" : "${buildStatus}" }</template-text>
 				<states>
 					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="2">
+				<template-text use-for-branch-template="true">{ "beforeBuildFinish" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
 					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="2">
+				<template-text use-for-branch-template="true">{ "buildFinished" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
 					<state type="buildFinished" enabled="true" />
 					<state type="buildBroken" enabled="false" />
-					<state type="buildInterrupted" enabled="true" />
-					<state type="buildSuccessful" enabled="true" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
 					<state type="buildFixed" enabled="false" />
-					<state type="buildFailed" enabled="true" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="4">
+				<template-text use-for-branch-template="true">{ "buildInterrupted" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="6">
+				<template-text use-for-branch-template="true">{ "responsibilityChanged" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="true" />
+				</states>
+			</template>
+			<template id="7">
+				<template-text use-for-branch-template="true">{ "buildBroken" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="true" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="true" />
+					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="false" />
 				</states>
 			</template>

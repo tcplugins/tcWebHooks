@@ -33,8 +33,8 @@ import org.jetbrains.annotations.Nullable;
 				<format name="nvpairs" enabled="true" />
 				<format name="tailoredjson" enabled="true" />
 			</formats>
-			<templates>
-				<template>
+			<templates max-id="10">
+				<template id="10">
 					<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
 					<branch-template-text>{ "buildStatus" : "${buildStatus}" }</branch-template-text>
 					<states>
@@ -77,7 +77,7 @@ public class WebHookTemplateEntity {
 	WebHookTemplateText defaultTemplate;
 	
 	@XmlElement(name="default-branch-template")
-	String defaultBranchTemplate;
+	WebHookTemplateBranchText defaultBranchTemplate;
 	
 	@NotNull 
 	@XmlElement (name="template-description")
@@ -106,6 +106,11 @@ public class WebHookTemplateEntity {
 		this.enabled = enabled;
 	}
 	
+
+	public void fixTemplateIds() {
+		templates.fixTemplateIds();
+	}
+	
 	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateItems {
 
@@ -116,18 +121,22 @@ public class WebHookTemplateEntity {
 	    List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
 
 
-/*	    public WebHookTemplateItems(Integer maxId, List<WebHookTemplateItem> listOfTemplates) {
-	        this();
-	        this.maxId = maxId;
-	        this.templates = listOfTemplates;  
-	    }*/
-
-	    /**
-	     * 
-	     */
 	    public WebHookTemplateItems() {
 	        // TODO Auto-generated constructor stub
 	    }
+	    
+		
+		public void fixTemplateIds() {
+			List<Integer> usedIds = new ArrayList<>();
+			for (WebHookTemplateItem item : templates){
+				if (item.getId() == null || usedIds.contains(item.getId())) {
+					item.setId(++maxId);
+				} else {
+					usedIds.add(item.getId());
+				}
+			}
+		}
+	    
 	}
 	
 	@XmlType(name = "format") @Data  @XmlAccessorType(XmlAccessType.FIELD)
@@ -154,6 +163,25 @@ public class WebHookTemplateEntity {
 		WebHookTemplateText() {
 			// empty constructor for JAXB
 		}
+		
+		public WebHookTemplateText(String templateContent){
+			this.templateContent = templateContent;
+		
+		}
+	}
+	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
+	public static class WebHookTemplateBranchText {
+	
+		@NotNull @XmlValue
+		String templateContent;
+		
+		WebHookTemplateBranchText() {
+			// empty constructor for JAXB
+		}
+		
+		public WebHookTemplateBranchText(String templateContent){
+			this.templateContent = templateContent;
+		}
 	}
 	
 	
@@ -163,7 +191,7 @@ public class WebHookTemplateEntity {
 		WebHookTemplateText templateText;
 		
 		@XmlElement(name="branch-template-text")
-		String branchTemplateText;
+		WebHookTemplateBranchText branchTemplateText;
 		
 		@XmlAttribute
 		boolean enabled = true;
@@ -191,6 +219,5 @@ public class WebHookTemplateEntity {
 			// empty constructor for JAXB
 		}
 	}
-	
 	
 }

@@ -20,6 +20,11 @@
 		    <id>Internal company repository</id>
 		    <url>file://${basedir}/lib-compile</url>
 		  </repository>
+		  
+		  <repository>
+		    <id>RiffPie Repo for Jersey Test addon</id>
+		    <url>http://maven.riffpie.com/releases/</url>
+		  </repository>
 	</repositories>
 	<build>
 		<defaultGoal>package</defaultGoal>
@@ -247,11 +252,29 @@
 			<version>1.8.3</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- <dependency>
+			<groupId>com.sun.jersey.jersey-test-framework</groupId>
+			<artifactId>jersey-test-framework-grizzly</artifactId>
+			<version>1.16</version>
+			<scope>test</scope>
+		</dependency>-->
 		<dependency>
+		    <groupId>com.sun.jersey.contribs</groupId>
+		    <artifactId>jersey-apache-client</artifactId>
+		    <version>1.16</version>
+		    <scope>test</scope>
+		</dependency>
+ 		<dependency>
 			<groupId>com.sun.jersey.jersey-test-framework</groupId>
 			<artifactId>jersey-test-framework-inmemory</artifactId>
 			<version>1.16</version>
 			<scope>test</scope>
 		</dependency>
+	    <dependency>
+		    <groupId>com.riffpie.common.testing</groupId>
+		    <artifactId>jersey-test-support</artifactId>
+		    <version>1.0</version>
+		    <scope>test</scope>
+	    </dependency>		
 	</dependencies>
 </project>

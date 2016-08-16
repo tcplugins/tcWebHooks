@@ -35,7 +35,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateTex
 import com.intellij.openapi.util.text.StringUtil;
 
 @XmlRootElement(name = "template")
-@XmlType(name = "template", propOrder = { "id", "name", "description", "href",	"webUrl", "templateText", "branchTemplateText" })
+@XmlType(name = "template", propOrder = { "id", "name", "description", "href",	"webUrl", "templateText", "branchTemplateText", "templates" })
 
 public class Template {
 	@XmlAttribute
@@ -60,7 +60,7 @@ public class Template {
 	@XmlElement(name="default-branch-template", required=false)
 	public BranchTemplateText branchTemplateText;
 	
-	@XmlElement(name = "template")	@XmlElementWrapper(name = "templates")
+	@XmlElement(name = "template-item") @XmlElementWrapper(name = "templates")
 	List<TemplateItem> templates;
 	
 	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
@@ -122,7 +122,7 @@ public class Template {
 		
 	}
 
-	@XmlType(name = "template") @Data @XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "template-item") @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateItem {
 		@NotNull @XmlElement(name = "template-text")
 		TemplateText templateText;
@@ -182,9 +182,10 @@ public class Template {
 		int count = 0;
 		templates = new ArrayList<Template.TemplateItem>();
 		
-		for (WebHookTemplateItem templateItem: template.getTemplates().getTemplates()){
-			templates.add(new TemplateItem(template, templateItem, description, fields, beanContext));
-			
+		if (template.getTemplates() != null){
+			for (WebHookTemplateItem templateItem: template.getTemplates().getTemplates()){
+				templates.add(new TemplateItem(template, templateItem, description, fields, beanContext));
+			}	
 		}
 		
 		// final String descriptionText = template.getTemplateDescription();

@@ -41,7 +41,7 @@ public class TemplateGenerator {
 					FileUtils.writeStringToFile(defaultTemplateFile, template.getDefaultTemplate().getTemplateContent().trim());
 				}
 				if (template.getDefaultBranchTemplate() != null){
-					FileUtils.writeStringToFile(defaultBranchTemplateFile, template.getDefaultBranchTemplate().trim());
+					FileUtils.writeStringToFile(defaultBranchTemplateFile, template.getDefaultBranchTemplate().getTemplateContent().trim());
 				}
 				
 				for (WebHookTemplateItem item : template.getTemplates().getTemplates()){

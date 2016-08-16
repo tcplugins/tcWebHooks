@@ -17,7 +17,7 @@ public class MainConfigManagerProvider implements InjectableProvider<Context, Ty
   private final MainConfigManager mainConfigManager;
 
   public MainConfigManagerProvider(final MainConfigManager manager) {
-	  System.out.println("We are here: Trying to provide a real WebHookMainSettings instance");
+	  System.out.println("We are here: Trying to provide a real MainConfigManager instance");
 	  mainConfigManager = manager;
   }
 

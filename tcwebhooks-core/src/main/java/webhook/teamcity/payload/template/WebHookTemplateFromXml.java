@@ -161,55 +161,56 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 				} else {
 					template.addBranchTemplateContentForState(state, WebHookTemplateContent.create(
 							state.getShortName(), 
-							entityTemplate.getDefaultBranchTemplate(),
+							entityTemplate.getDefaultBranchTemplate().getTemplateContent(),
 							true,
 							template.getPreferredDateTimeFormat()));
 				}
 			}
 		}
-		
-		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates().getTemplates()){
-			if (item.isEnabled() && item.getTemplateText()!= null){
-				for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
-					if (state.isEnabled()){
-						BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
-						if (bse != null){
-							template.addTemplateContentForState(bse, WebHookTemplateContent.create(
-									bse.getShortName(), 
-									item.getTemplateText().getTemplateContent(),
-									true,
-									template.getPreferredDateTimeFormat()
-									));
-						}
-					}
-				}
-			}
-		}
-		
-		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates().getTemplates()){
-			if (item.isEnabled() && ((item.getTemplateText()!= null && item.getTemplateText().isUseTemplateTextForBranch()) || item.getBranchTemplateText()!= null)){
-				for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
-					if (state.isEnabled()){
-						BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
-						if (bse != null){
-							if (item.getTemplateText() != null && item.getTemplateText().isUseTemplateTextForBranch()){
-								template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
+		if (entityTemplate.getTemplates() != null){
+			for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates().getTemplates()){
+				if (item.isEnabled() && item.getTemplateText()!= null){
+					for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
+						if (state.isEnabled()){
+							BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
+							if (bse != null){
+								template.addTemplateContentForState(bse, WebHookTemplateContent.create(
 										bse.getShortName(), 
 										item.getTemplateText().getTemplateContent(),
 										true,
-										template.getPreferredDateTimeFormat()));
-							} else {
-								template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
-										bse.getShortName(), 
-										item.getBranchTemplateText(),
-										true,
-										template.getPreferredDateTimeFormat()));
+										template.getPreferredDateTimeFormat()
+										));
 							}
 						}
 					}
 				}
 			}
-		}
+			
+			for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem item : entityTemplate.getTemplates().getTemplates()){
+				if (item.isEnabled() && ((item.getTemplateText()!= null && item.getTemplateText().isUseTemplateTextForBranch()) || item.getBranchTemplateText()!= null)){
+					for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState state :item.getStates()){
+						if (state.isEnabled()){
+							BuildStateEnum bse =  BuildStateEnum.findBuildState(state.getType());
+							if (bse != null){
+								if (item.getTemplateText() != null && item.getTemplateText().isUseTemplateTextForBranch()){
+									template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
+											bse.getShortName(), 
+											item.getTemplateText().getTemplateContent(),
+											true,
+											template.getPreferredDateTimeFormat()));
+								} else {
+									template.addBranchTemplateContentForState(bse, WebHookTemplateContent.create(
+											bse.getShortName(), 
+											item.getBranchTemplateText().getTemplateContent(),
+											true,
+											template.getPreferredDateTimeFormat()));
+								}
+							}
+						}
+					}
+				}
+			}
+		} // End if entityTemplate.getTemplates() != null
 		
 		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat format : entityTemplate.getFormats()){
 			if (format.isEnabled() && payloadManager.isRegisteredFormat(format.getName())){
