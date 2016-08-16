@@ -30,9 +30,13 @@ import javax.ws.rs.ext.Provider;
 
 import org.mockito.Mock;
 
+import static org.mockito.Mockito.*;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
+import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.BeanContext;
+import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.ServiceLocator;
+import jetbrains.buildServer.server.rest.PathTransformer;
 import jetbrains.buildServer.server.rest.RequestPathTransformInfo;
 import jetbrains.buildServer.server.rest.jersey.SimplePathTransformer;
 import jetbrains.buildServer.server.rest.util.BeanFactory;
@@ -53,10 +57,13 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
   @Context private HttpServletRequest request;
 
   @Mock private BeanFactory myFactory;
-  @Mock private  ServiceLocator myServiceLocator;
+  
+  @Mock private ServiceLocator myServiceLocator;
   
   public MockingBeanContextProvider() {
 	System.out.println("We are here: Trying to provide a test BeanContext instance");
+	myServiceLocator = mock(ServiceLocator.class);
+	when(myServiceLocator.getSingletonService(WebHookWebLinks.class)).thenReturn(new WebHookWebLinks(new DataProviderTestContextProvider.TestUrlHolder()));
   }
 
   public ComponentScope getScope() {
@@ -71,6 +78,13 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
   }
 
   public BeanContext getValue() {
-    return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
+    //return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
+    return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new PathTransformer() {
+		
+		@Override
+		public String transform(String path) {
+			return path;
+		}
+	}));
   }
 }

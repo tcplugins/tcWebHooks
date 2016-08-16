@@ -31,7 +31,7 @@ public class MainConfigTest extends JerseyTest {
     }
 
 
-    @Test @Ignore
+    @Test
     public void testXmlRequest() {
         WebResource webResource = resource();
         Webhooks responseMsg = webResource.path(WEBHOOKS_API_SERVER).accept(MediaType.APPLICATION_XML_TYPE).get(Webhooks.class);
@@ -39,7 +39,7 @@ public class MainConfigTest extends JerseyTest {
         assertEquals("http://intranet.mycompany.com/docs/UsingWebHooks", responseMsg.getInfo().getUrl());
     }
     
-    @Test @Ignore
+    @Test
     public void testJsonRequest() {
     	WebResource webResource = resource();
     	Webhooks responseMsg = webResource.path(WEBHOOKS_API_SERVER_JSON).accept(MediaType.APPLICATION_JSON_TYPE).get(Webhooks.class);
@@ -48,7 +48,7 @@ public class MainConfigTest extends JerseyTest {
     }
 
     
-    @Test @Ignore
+    @Test
     public void testJsonRequestAndUpdate() {
     	WebResource webResource = resource();
     	Webhooks responseMsg = webResource.path(WEBHOOKS_API_SERVER).accept(MediaType.APPLICATION_JSON_TYPE).get(Webhooks.class);

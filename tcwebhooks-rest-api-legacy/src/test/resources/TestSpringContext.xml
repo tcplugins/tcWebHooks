@@ -68,6 +68,13 @@
 	<bean id="webHookTemplateResolver"
 		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
+
+     <bean id="webHookHttpClientFactory"
+     	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
+     	/>  
 		
-	<!-- <bean id="dataProviderTestContextProvider" class="webhook.teamcity.test.jerseyprovider.DataProviderTestContextProvider"/> -->
+	<bean id="dataProviderTestContextProvider" 
+		class="webhook.teamcity.test.jerseyprovider.DataProviderTestContextProvider"
+		/>
+		
 </beans>

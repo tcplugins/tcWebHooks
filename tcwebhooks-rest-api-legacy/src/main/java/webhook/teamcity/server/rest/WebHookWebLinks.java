@@ -1,20 +1,17 @@
 package webhook.teamcity.server.rest;
 
 import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.server.rest.util.ValueWithDefault.Value;
-import jetbrains.buildServer.serverSide.WebLinks;
 
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
 
-public class WebHookWebLinks extends WebLinks {
+public class WebHookWebLinks {
 	
 	RootUrlHolder myHolder;
 
 	public WebHookWebLinks(RootUrlHolder urlHolder) {
-		super(urlHolder);
 		myHolder = urlHolder;
 	}
 	

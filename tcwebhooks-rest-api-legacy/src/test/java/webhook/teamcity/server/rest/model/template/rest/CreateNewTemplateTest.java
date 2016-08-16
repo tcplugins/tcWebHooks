@@ -1,5 +1,6 @@
 package webhook.teamcity.server.rest.model.template.rest;
 
+import static org.junit.Assert.*;
 import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES_URL;
 
 import javax.ws.rs.core.MediaType;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Templates;
 
 import com.sun.jersey.api.client.WebResource;
@@ -25,10 +27,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 //@RunWith(MockitoJUnitRunner.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-	    "classpath:/TestSpringContext.xml"
-	    })
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {
+//	    "classpath:/TestSpringContext.xml"
+//	    })
 
 public class CreateNewTemplateTest extends JerseyTest {
 	
@@ -53,38 +55,34 @@ public class CreateNewTemplateTest extends JerseyTest {
 //    }
 
 
-    @Test @Ignore
-    public void testXmlRequest() {
+    @Test
+    public void testXmlTemplatesRequest() {
         WebResource webResource = resource();
         Templates responseMsg = webResource.path(API_URL).accept(MediaType.APPLICATION_XML_TYPE).get(Templates.class);
-
+        assertTrue(responseMsg.count == 0);
     }
     
-    @Test @Ignore
-    public void testJsonRequest() {
+    @Test
+    public void testJsonTemplatesRequest() {
         WebResource webResource = resource();
         Templates responseMsg = webResource.path(API_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+        assertTrue(responseMsg.count == 0);
     }
     
-/*    @Test
-    public void testJsonRequest() {
-    	WebResource webResource = resource();
-    	Templates responseMsg = webResource.path(API_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
-    	assertEquals("Using WebHooks in myCompany Inc.", responseMsg.getInfo().getText());
-    	assertEquals("http://intranet.mycompany.com/docs/UsingWebHooks", responseMsg.getInfo().getUrl());
-    }
-    
-    @Test @Ignore
+    @Test
     public void testJsonRequestAndUpdate() {
     	WebResource webResource = resource();
-    	Webhooks responseMsg = webResource.path(WEBHOOKS_API_SERVER).accept(MediaType.APPLICATION_JSON_TYPE).get(Webhooks.class);
-    	assertEquals("Using WebHooks in myCompany Inc.", responseMsg.getInfo().getText());
-    	assertEquals("http://intranet.mycompany.com/docs/UsingWebHooks", responseMsg.getInfo().getUrl());
+    	Templates responseMsg = webResource.path(API_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertTrue(responseMsg.count == 0);
+    	
+    	NewTemplateDescription newTemplateDescription = new NewTemplateDescription();
+    	newTemplateDescription.description = "A test template";
+    	newTemplateDescription.name = "testTemplateFromUnitTest";
+    	
 
-    	responseMsg.getInfo().setText("Using WebHooks in some other company Inc.");
-    	webResource.path(WEBHOOKS_API_SERVER).accept(MediaType.APPLICATION_JSON_TYPE).put(responseMsg);
-    	Webhooks updatedResponse = webResource.path(WEBHOOKS_API_SERVER).accept(MediaType.APPLICATION_JSON_TYPE).get(Webhooks.class);
-    	assertEquals("Using WebHooks in some other company Inc.", updatedResponse.getInfo().getText());
+    	webResource.path(API_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplateDescription);
+    	Templates updatedResponse = webResource.path(API_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertTrue(updatedResponse.count == 1);
 
-    }*/
+    }
 }

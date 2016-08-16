@@ -35,7 +35,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 
 @XmlRootElement(name = "templates")
-@XmlType(name = "templates")
+@XmlType(name = "templates-rest")
 public class Templates {
 	@XmlElement(name = "template")
 	private List<Template> templates = new ArrayList<Template>();

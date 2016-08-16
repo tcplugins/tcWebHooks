@@ -58,7 +58,7 @@ public class TemplateTest {
 		ServerPaths serverPaths = new ServerPaths(new File("../tcwebhooks-core/src/test/resources/testXmlTemplate"));
 		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm);
 		changeListener.register();
-		changeListener.handleConfigFileChange();
+		//changeListener.handleConfigFileChange();
 		
 		when(rootUrlHolder.getRootUrl()).thenReturn("http://some.test.server/");
 		when(serviceLocator.getSingletonService(WebHookWebLinks.class)).thenReturn(new WebHookWebLinks(rootUrlHolder));
