@@ -50,7 +50,7 @@ public class TemplateGenerator {
 					File branchTemplateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-branch.json");
 					
 					FileUtils.writeStringToFile(templateFile, item.getTemplateText().getTemplateContent().trim());
-					FileUtils.writeStringToFile(branchTemplateFile, item.getBranchTemplateText().trim());
+					FileUtils.writeStringToFile(branchTemplateFile, item.getBranchTemplateText().getTemplateContent().trim());
 				}
 			}
 		}
