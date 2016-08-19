@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webhook-templates>
+	<webhook-template enabled="true" name="elasticsearch" rank="10">
+		<template-description>ElasticSearch Document Creation</template-description>
+		<template-tool-tip>Creates document in Elastic Search index</template-tool-tip>
+        <preferred-date-format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</preferred-date-format>
+		<formats>
+			<format name="jsonTemplate" enabled="true" />
+		</formats>
+		<!--  Default Template (non-branch) -->
+		<default-template><![CDATA[
+{
+  "build_start_time": "${buildStartTime}", 
+  "timestamp": "${currentTime}", 
+  "build_event": "${notifyType}", 
+  "build_name": "${buildName}", 
+  "build_status_url": "${buildStatusUrl}", 
+  "build_number": "${buildNumber}", 
+  "triggered_by": "${triggeredBy}", 
+  "build_result": "${buildResult}", 
+  "build_result_previous": "${buildResultPrevious}", 
+  "build_result_delta": "${buildResultDelta}"
+}
+]]>
+		</default-template>
+		
+		<!--  Default Template (branch) -->
+		<default-branch-template><![CDATA[
+{ 
+  "branch_name": "${branchName}", 
+  "branch_display_name": "${branchDisplayName}", 
+  "branch_is_default": "${branchIsDefault}", 
+  "build_start_time": "${buildStartTime}", 
+  "timestamp": "${currentTime}", 
+  "build_event": "${notifyType}", 
+  "build_name": "${buildName}", 
+  "build_status_url": "${buildStatusUrl}", 
+  "build_number": "${buildNumber}", 
+  "triggered_by": "${triggeredBy}", 
+  "build_result": "${buildResult}", 
+  "build_result_previous": "${buildResultPrevious}", 
+  "build_result_delta": "${buildResultDelta}" 
+}
+]]>
+		</default-branch-template>
+
+		<templates>
+			<template>
+				<!--  Additional Template is only for finished builds -->
+				<states>
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="true" />
+					<state type="buildFailed" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for finished builds -->
+				<template-text><![CDATA[
+{ 
+  "build_start_time": "${buildStartTime}", 
+  "timestamp": "${currentTime}", 
+  "build_finish_time": "${currentTime}", 
+  "build_event": "${notifyType}", 
+  "build_name": "${buildName}", 
+  "build_status_url": "${buildStatusUrl}", 
+  "build_number": "${buildNumber}", 
+  "triggered_by": "${triggeredBy}", 
+  "build_result": "${buildResult}", 
+  "build_result_previous": "${buildResultPrevious}", 
+  "build_result_delta": "${buildResultDelta}"
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for finished builds -->
+				<branch-template-text><![CDATA[
+{ 
+  "branch_name": "${branchName}", 
+  "branch_display_name": "${branchDisplayName}", 
+  "branch_is_default": "${branchIsDefault}", 
+  "build_start_time": "${buildStartTime}", 
+  "timestamp": "${currentTime}", 
+  "build_finish_time": "${currentTime}", 
+  "build_event": "${notifyType}", 
+  "build_name": "${buildName}", 
+  "build_status_url": "${buildStatusUrl}", 
+  "build_number": "${buildNumber}", 
+  "triggered_by": "${triggeredBy}", 
+  "build_result": "${buildResult}", 
+  "build_result_previous": "${buildResultPrevious}", 
+  "build_result_delta": "${buildResultDelta}"
+}
+				]]></branch-template-text>
+			</template>
+		</templates>
+	</webhook-template>
+</webhook-templates>

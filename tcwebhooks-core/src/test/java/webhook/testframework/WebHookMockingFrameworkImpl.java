@@ -56,6 +56,11 @@ import webhook.teamcity.payload.format.WebHookPayloadXml;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
@@ -205,7 +210,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			}
 			
 			@Override
-			public String getTemplateToolTipText() {
+			public String getTemplateToolTip() {
 				return "Test Tool Tip";
 			}
 			
@@ -248,13 +253,19 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			}
 			
 			@Override
-			public Integer getRank() {
+			public int getRank() {
 				return 1;
 			}
 
 			@Override
 			public String getPreferredDateTimeFormat() {
 				return "";
+			}
+
+			@Override
+			public WebHookTemplateEntity getAsEntity() {
+				// TODO Auto-generated method stub
+				return null;
 			}
 			
 		};

@@ -10,21 +10,22 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import webhook.teamcity.server.rest.model.mainconfig.Webhooks;
+import webhook.teamcity.server.rest.request.WebHookAbstractSpringAwareJerseyTest;
 
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.test.framework.JerseyTest;
 
-public class MainConfigTest extends JerseyTest {
+public class MainConfigTest extends WebHookAbstractSpringAwareJerseyTest {
 
     private static final String WEBHOOKS_API_BASE = "/app/rest/webhooks";
     private static final String WEBHOOKS_API_SERVER = WEBHOOKS_API_BASE + "/server";
     private static final String WEBHOOKS_API_SERVER_JSON = WEBHOOKS_API_SERVER + "/json";
     
 
-
-	public MainConfigTest()throws Exception {
-        super("webhook.teamcity.test.jerseyprovider",  "webhook.teamcity.server.rest.request", "webhook.teamcity.server.rest.model", "webhook.teamcity.settings");
-    }
+//
+//	public MainConfigTest()throws Exception {
+//        super("webhook.teamcity.test.jerseyprovider",  "webhook.teamcity.server.rest.request", "webhook.teamcity.server.rest.model", "webhook.teamcity.settings");
+//    }
 	
     @Before public void initMocks() {
         MockitoAnnotations.initMocks(this);

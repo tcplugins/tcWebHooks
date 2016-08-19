@@ -26,7 +26,7 @@ public class WebHookTemplateJaxHelperTest {
 
 	@Test
 	public void testReadString() throws FileNotFoundException, JAXBException {
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read("src/test/resources/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -41,7 +41,7 @@ public class WebHookTemplateJaxHelperTest {
 	
 	@Test
 	public void testReadStringAndOutputWithCData() throws FileNotFoundException, JAXBException, ParserConfigurationException, TransformerException {
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read("src/test/resources/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -72,24 +72,5 @@ public class WebHookTemplateJaxHelperTest {
 		     new StreamResult(System.out));
 		
 	}
-	
-	
-	
-
-//	@Test
-//	public void testReadInputStream() {
-//		fail("Not yet implemented");
-//	}
-
-	@Test
-	public void testLoad() {
-		Map<String, WebHookTemplateFromXml> templatesMap = new HashMap<>();
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.load("src/test/resources/webhook-templates.xml", templatesMap);
-	}
-
-//	@Test
-//	public void testWrite() {
-//		fail("Not yet implemented");
-//	}
 
 }

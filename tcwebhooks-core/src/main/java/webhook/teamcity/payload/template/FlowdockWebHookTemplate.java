@@ -6,6 +6,7 @@ import java.util.TreeMap;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate {
 
@@ -39,7 +40,7 @@ public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate
 	}
 
 	@Override
-	public String getTemplateToolTipText() {
+	public String getTemplateToolTip() {
 		return "Supports the TeamCity Flowdock JSON integration";
 	}
 
@@ -76,6 +77,12 @@ public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate
 	@Override
 	public Map<BuildStateEnum, String> getBranchTemplateMap() {
 		return this.branchTemplateMap;
+	}
+
+	@Override
+	public WebHookTemplateEntity getAsEntity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

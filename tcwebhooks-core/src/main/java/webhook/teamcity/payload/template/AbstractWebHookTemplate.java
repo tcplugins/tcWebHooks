@@ -14,7 +14,7 @@ public abstract class AbstractWebHookTemplate implements WebHookTemplate {
 	}
 
 	@Override
-	public Integer getRank() {
+	public int getRank() {
 		return rank;
 	}
 

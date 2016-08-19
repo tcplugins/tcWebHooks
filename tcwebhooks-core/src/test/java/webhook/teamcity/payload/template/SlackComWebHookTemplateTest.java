@@ -22,10 +22,10 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
-import webhook.teamcity.TestingWebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.WebHookHttpClientFactory;
 import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -35,9 +35,10 @@ import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.testframework.util.ConfigLoaderUtil;
 
-public class FlowdockWebHookTemplateTest {
+public class SlackComWebHookTemplateTest {
 
 	private WebHookContentBuilder webHookContentBuilder;
 	private WebHookTemplateResolver templateResolver;
@@ -47,40 +48,43 @@ public class FlowdockWebHookTemplateTest {
 	public void test() throws JDOMException, IOException {
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
-		WebHookTemplateJaxHelper webHookTemplateJaxHelper = mock(WebHookTemplateJaxHelper.class);
+		WebHookTemplateJaxHelper webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
 		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, webHookTemplateJaxHelper);
+		WebHookHttpClientFactory clientFactory = new WebHookHttpClientFactoryImpl();
 		
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager);
 		webHookPayloadJsonTemplate.register();
 
-		FlowdockWebHookTemplate flockdockTemplate = new FlowdockWebHookTemplate(templateManager);
+		SlackComCompactXmlWebHookTemplate slackCompactTemplate = new SlackComCompactXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
-		flockdockTemplate.register();
+		slackCompactTemplate.register();
 		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, payloadManager, templateResolver);
 		
-		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-flowdock.xml"));
-		when(mainSettings.getProxyConfigForUrl(webhookElastic.getUrl())).thenReturn(null);
+		WebHookConfig webhookSlackCompact  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-slackcompact.xml"));
+		when(mainSettings.getProxyConfigForUrl(webhookSlackCompact.getUrl())).thenReturn(null);
 		
-		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider, new WebHookHttpClientFactoryImpl());
-		WebHook wh = webHookFactory.getWebHook(webhookElastic,null);
+		WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, authenticatorProvider, clientFactory);
+		WebHook wh = webHookFactory.getWebHook(webhookSlackCompact,null);
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		SFinishedBuild previousBuild = mock(SFinishedBuild.class);
 		when (previousBuild.getFinishDate()).thenReturn(new Date());
-		List<SFinishedBuild> finishedBuilds = new ArrayList<SFinishedBuild>();
+		List<SFinishedBuild> finishedBuilds = new ArrayList<>();
 		finishedBuilds.add(previousBuild);
 		BuildHistory buildHistory = mock(BuildHistory.class);
+		Status buildHistoryStatus = Status.FAILURE;
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedBuilds);
 		when (sBuildServer.getHistory()).thenReturn(buildHistory);
+		when (previousBuild.getBuildStatus()).thenReturn(buildHistoryStatus);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 
-		wh = webHookContentBuilder.buildWebHookContent(wh, webhookElastic, sRunningBuild, BuildStateEnum.BUILD_STARTED, true);
+		wh = webHookContentBuilder.buildWebHookContent(wh, webhookSlackCompact, sRunningBuild, BuildStateEnum.BUILD_SUCCESSFUL, true);
 		System.out.println(wh.getPayload());
 		//wh = webHookContentBuilder.buildWebHookContent(wh, whc, sRunningBuild, state, overrideIsEnabled);
 	}

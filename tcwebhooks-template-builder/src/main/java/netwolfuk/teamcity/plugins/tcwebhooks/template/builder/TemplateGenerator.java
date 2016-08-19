@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState;
-import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
 public class TemplateGenerator {
@@ -30,7 +30,7 @@ public class TemplateGenerator {
 	 * @throws IOException
 	 */
 	public void generate(String templateName, String templateFileLocation, String targetFileLocation) throws JAXBException, IOException{
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(templateFileLocation);
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read(templateFileLocation);
 		
 		for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
 			if (template.isEnabled() && template.getName().equals(templateName)){

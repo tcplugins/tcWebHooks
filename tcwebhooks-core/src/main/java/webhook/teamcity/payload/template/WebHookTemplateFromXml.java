@@ -11,6 +11,11 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 public class WebHookTemplateFromXml implements WebHookTemplate {
 	
@@ -18,20 +23,21 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<>();
 	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<>();
 	
-	protected WebHookTemplateManager manager;
+	protected WebHookTemplateManager templateManager;
 	private int rank = 10; // Default to 10.
 	private String shortName = "";
 	private String toolTipText = "";
 	private String description = "";
 	private String preferredDateTimeFormat = "";
+	private WebHookTemplateEntity entity;
 
 	@Override
 	public void setTemplateManager(WebHookTemplateManager webhookTemplateManager) {
-		this.manager = webhookTemplateManager;
+		this.templateManager = webhookTemplateManager;
 	}
 
 	@Override
-	public Integer getRank() {
+	public int getRank() {
 		return rank;
 	}
 
@@ -62,7 +68,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	}
 
 	@Override
-	public String getTemplateToolTipText() {
+	public String getTemplateToolTip() {
 		return this.toolTipText;
 	}
 	
@@ -114,10 +120,11 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	}
 
 	public static WebHookTemplate build(
-			webhook.teamcity.settings.entity.WebHookTemplateEntity entityTemplate,
+			WebHookTemplateEntity entityTemplate,
 			WebHookPayloadManager payloadManager
 			) {
 		WebHookTemplateFromXml template = new WebHookTemplateFromXml();
+		template.entity = entityTemplate;
 		template.setRank(entityTemplate.getRank());
 		template.setTemplateShortName(entityTemplate.getName());
 		template.setPreferredDateTimeFormat(entityTemplate.getPreferredDateTimeFormat());
@@ -243,5 +250,12 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	public void persist(){
 		
 	}
+
+	@Override
+	public WebHookTemplateEntity getAsEntity() {
+		return entity;
+	}
+
+
 
 }

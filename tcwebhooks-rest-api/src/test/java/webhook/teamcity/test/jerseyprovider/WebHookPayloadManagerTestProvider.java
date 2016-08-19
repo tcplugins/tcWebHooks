@@ -18,6 +18,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.mockito.Mock;
+import org.springframework.web.context.ContextLoader;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -28,14 +29,12 @@ import webhook.teamcity.settings.WebHookMainSettings;
 
 @Provider
 public class WebHookPayloadManagerTestProvider implements InjectableProvider<Context, Type>, Injectable<WebHookPayloadManager> {
-  private final WebHookPayloadManager webHookPayloadManager;
+  private WebHookPayloadManager webHookPayloadManager;
   private final SBuildServer sBuildServer = mock(SBuildServer.class);
   
   public WebHookPayloadManagerTestProvider() {
 	  System.out.println("We are here: Trying to provide a testable WebHookPayloadManager instance");
-	  	webHookPayloadManager = new WebHookPayloadManager(sBuildServer);
-		WebHookPayloadJsonTemplate whp = new WebHookPayloadJsonTemplate(webHookPayloadManager);
-		whp.register();
+
   }
 
   public ComponentScope getScope() {
@@ -53,6 +52,7 @@ public class WebHookPayloadManagerTestProvider implements InjectableProvider<Con
 @Override
 public WebHookPayloadManager getValue() {
 	System.out.println("WebHookPayloadManagerTestProvider: Providing value " + webHookPayloadManager.toString());
+	webHookPayloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	return webHookPayloadManager;
 }
 

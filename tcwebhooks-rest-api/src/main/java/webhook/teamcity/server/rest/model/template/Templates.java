@@ -25,6 +25,7 @@ import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
+import lombok.Getter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 @XmlRootElement(name = "templates")
 @XmlType(name = "templates-rest")
 public class Templates {
-	@XmlElement(name = "template")
+	@XmlElement(name = "template") @Getter
 	private List<Template> templates = new ArrayList<Template>();
 
 	  @XmlAttribute
@@ -60,7 +61,7 @@ public class Templates {
 
 	  public Templates(@NotNull final List<WebHookTemplateEntity> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 	    if (fields.isIncluded("template", false, true)){
-	      templates = ValueWithDefault.decideDefault(fields.isIncluded("project"), new ValueWithDefault.Value<List<Template>>() {
+	      templates = ValueWithDefault.decideDefault(fields.isIncluded("template"), new ValueWithDefault.Value<List<Template>>() {
 	        public List<Template> get() {
 	          final ArrayList<Template> result = new ArrayList<Template>(templateObjects.size());
 	          final Fields nestedField = fields.getNestedField("project");

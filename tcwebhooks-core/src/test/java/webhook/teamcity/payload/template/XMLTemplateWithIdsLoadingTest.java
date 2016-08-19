@@ -17,6 +17,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 
 public class XMLTemplateWithIdsLoadingTest {
 
@@ -28,11 +29,11 @@ public class XMLTemplateWithIdsLoadingTest {
 	public void TestXmlTemplatesWithIdsViaChangeListener(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wpm = new WebHookPayloadManager(mockServer);
-		wtm = new WebHookTemplateManager(wpm);
+		wtm = new WebHookTemplateManager(wpm, new WebHookTemplateJaxHelperImpl());
 		
 		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
 		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplateWithTemplateIds"));
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm);
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl());
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		

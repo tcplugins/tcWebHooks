@@ -165,7 +165,7 @@ public class TemplateRequest {
   @Consumes({"text/plain"})
   @Produces({"text/plain"})
   public String updateTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType, String templateText) {
-	  WebHookTemplateEntity template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  webhook.teamcity.settings.entity.WebHookTemplateEntity template = (webhook.teamcity.settings.entity.WebHookTemplateEntity)myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
 	  }

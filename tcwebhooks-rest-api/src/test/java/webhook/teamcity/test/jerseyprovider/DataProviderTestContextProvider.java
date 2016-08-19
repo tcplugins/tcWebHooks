@@ -13,6 +13,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.mockito.Mock;
+import org.springframework.web.context.ContextLoader;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.PathTransformer;
@@ -25,6 +26,7 @@ import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.request.Constants;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -36,15 +38,15 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
   private DataProvider dataProvider;
   private final SBuildServer sBuildServer;
   private final PermissionChecker permissionChecker;
-  private final TemplateFinder templateFinder;
-  @Context WebHookPayloadManager payloadManager;
+  private TemplateFinder templateFinder;
+  WebHookPayloadManager payloadManager;
   @Context WebHookTemplateManager templateManager;
   
   public DataProviderTestContextProvider() {
 	  System.out.println("We are here: Trying to provide a testable DataProvider instance");
 	  sBuildServer = mock(SBuildServer.class);
 	  permissionChecker = mock(PermissionChecker.class);
-	  templateFinder = mock(TemplateFinder.class);
+	  //templateFinder = mock(TemplateFinder.class);
   }
 
   public ComponentScope getScope() {
@@ -62,7 +64,10 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
 	  if (dataProvider != null){
 		  return dataProvider;
 	  }
-	  return new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder);
+	  payloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
+	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
+	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder);
+	  return dataProvider;
   }
   
   public static class TestUrlHolder implements RootUrlHolder {

@@ -33,7 +33,7 @@ public class JsonTemplateRenderingTest {
 	@Test
 	public void TestJsonTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException, WebHookPayloadContentAssemblyException {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(null);
+		wtm = new WebHookTemplateManager(null, null);
 		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
 		wht.register();
 
