@@ -2,9 +2,7 @@ package webhook.teamcity.server.rest.data;
 
 import java.util.List;
 
-import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.server.rest.data.Locator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.SBuildServer;
 
@@ -13,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
 
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -44,11 +41,11 @@ public class DataProvider {
 	}
 	
 	public List<WebHookTemplateEntity> getWebHookTemplates(){
-		return WebHookTemplateEntityBuilder.buildAll(this.myTemplateManager.getRegisteredTemplates());
+		return this.myTemplateManager.getRegisteredTemplatesAsEntities();
 	}
 	
 	public WebHookTemplateEntity getWebHookTemplate(String id){
-		return WebHookTemplateEntityBuilder.build(this.myTemplateManager.getTemplate(id));
+		return this.myTemplateManager.getTemplate(id).getAsEntity();
 	}
 
 	public WebHookPayloadManager getPayloadManager() {

@@ -11,9 +11,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.ContextLoader;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -22,8 +26,9 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 
 @Provider
 public class WebHookTemplateManagerTestProvider implements InjectableProvider<Context, Type>, Injectable<WebHookTemplateManager> {
-  private WebHookTemplateManager webHookTemplateManager;
-  @Context WebHookPayloadManager webHookPayloadManager;
+  WebHookTemplateManager webHookTemplateManager;
+  WebHookPayloadManager webHookPayloadManager;
+  WebHookTemplateJaxHelper webHookTemplateJaxHelper;
   
   public WebHookTemplateManagerTestProvider() throws IOException {
 	  System.out.println("We are here: Trying to provide a testable WebHookTemplateManager instance");
@@ -44,21 +49,26 @@ public class WebHookTemplateManagerTestProvider implements InjectableProvider<Co
   }
 
   public WebHookTemplateManager getValue() {
+	  
+	  webHookPayloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
+	  webHookTemplateManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookTemplateManager.class);
+	  webHookTemplateJaxHelper = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookTemplateJaxHelper.class);
+	  
 	  if (webHookTemplateManager != null){
-		  System.out.println("WebHookTemplateManagerTestProvider: Providing value " + webHookTemplateManager.toString());
+		  System.out.println("WebHookTemplateManagerTestProvider: Providing (existing) value " + webHookTemplateManager.toString());
 		  return webHookTemplateManager;
 	  }
 		File tempDir;
 		try {
 			tempDir = File.createTempFile("tempWebHooksDir", "", new File("target/"));
 			tempDir.mkdir();
-			webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager);
+			webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
 			webHookTemplateManager.setConfigFilePath(tempDir.getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("WebHookTemplateManagerTestProvider: Providing value " + webHookTemplateManager.toString());
+		System.out.println("WebHookTemplateManagerTestProvider: Providing (new) value " + webHookTemplateManager.toString());
 		return webHookTemplateManager;
   }
   

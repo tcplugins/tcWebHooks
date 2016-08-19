@@ -18,6 +18,7 @@ import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.WebLinks;
 import lombok.Data;
+import lombok.Getter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +61,7 @@ public class Template {
 	@XmlElement(name="default-branch-template", required=false)
 	public BranchTemplateText branchTemplateText;
 	
-	@XmlElement(name = "template-item") @XmlElementWrapper(name = "templates")
+	@XmlElement(name = "template-item") @XmlElementWrapper(name = "templates") @Getter
 	List<TemplateItem> templates;
 	
 	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)

@@ -28,6 +28,7 @@ import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 
 public class TemplateTest {
 	
@@ -53,10 +54,10 @@ public class TemplateTest {
 		MockitoAnnotations.initMocks(this);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wpm = new WebHookPayloadManager(mockServer);
-		wtm = new WebHookTemplateManager(wpm);
+		wtm = new WebHookTemplateManager(wpm, new WebHookTemplateJaxHelperImpl());
 		
 		ServerPaths serverPaths = new ServerPaths(new File("../tcwebhooks-core/src/test/resources/testXmlTemplate"));
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm);
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl());
 		changeListener.register();
 		//changeListener.handleConfigFileChange();
 		

@@ -10,6 +10,7 @@
        default-autowire="constructor">
 
 	<context:component-scan base-package="jetbrains.buildServer.server.rest"/>
+	<context:component-scan base-package="webhook.teamcity.test.jerseyprovider"/>
 	
 <!--  	<bean id="securityContext" class="org.mockito.Mockito" factory-method="mock">
     	<constructor-arg value="jetbrains.buildServer.serverSide.auth.SecurityContext" />
@@ -30,7 +31,7 @@
 	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.DataProviderProvider"/>
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
-	<bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/>
+	<!--bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/-->
 	
 	<bean id="webHookContentBuilder"
      	class="webhook.teamcity.WebHookContentBuilder" 
@@ -68,6 +69,10 @@
 	<bean id="webHookTemplateResolver"
 		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
+		
+	<bean id="webHookTemplateJaxHelper"
+		class="webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper"
+		/>
 
      <bean id="webHookHttpClientFactory"
      	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
@@ -75,6 +80,10 @@
 		
 	<bean id="dataProviderTestContextProvider" 
 		class="webhook.teamcity.test.jerseyprovider.DataProviderTestContextProvider"
+		/>
+		
+	<bean id="webHookTemplateManagerTestProvider" 
+		class="webhook.teamcity.test.jerseyprovider.WebHookTemplateManagerTestProvider"
 		/>
 		
 </beans>

@@ -51,7 +51,7 @@ public class TemplateFinder {
 			WebHookTemplateEntity template = null;
 			@NotNull
 			final String singleValue = locator.getSingleValue();
-			template = myTemplateManager.getTemplateEntity(singleValue);
+			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(singleValue);
 			if (template != null) {
 				return template;
 			}
@@ -63,7 +63,7 @@ public class TemplateFinder {
 			WebHookTemplateEntity template = null;
 			@NotNull
 			final String templateId = locator.getSingleDimensionValue("id");
-			template = myTemplateManager.getTemplateEntity(templateId);
+			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(templateId);
 			if (template != null) {
 				return template;
 			}
@@ -75,7 +75,7 @@ public class TemplateFinder {
 			WebHookTemplateEntity template = null;
 			@NotNull
 			final String templateName = locator.getSingleDimensionValue("name");
-			template = myTemplateManager.getTemplateEntity(templateName);
+			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(templateName);
 			if (template != null) {
 				return template;
 			}
