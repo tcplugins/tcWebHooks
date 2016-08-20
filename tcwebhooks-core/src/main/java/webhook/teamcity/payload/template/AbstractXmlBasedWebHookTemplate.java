@@ -22,6 +22,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 	protected WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 	private WebHookTemplateFromXml template;
 	protected WebHookTemplateManager templateManager;
+	private Integer rank;
 
 	public AbstractXmlBasedWebHookTemplate(WebHookTemplateManager templateManager, WebHookPayloadManager payloadManager, WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
 		this.templateManager = templateManager;
@@ -37,6 +38,13 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 	public void register() {
 		
 		template = (WebHookTemplateFromXml) WebHookTemplateFromXml.build(loadFirstTemplateFromXmlFile(), payloadManager);
+		
+		// Is rank is set by spring initialisation then use that value
+		// rather than the one in the XML file.
+		
+		if (this.rank != null){
+			template.setRank(this.rank);
+		}
 		
 		if (!template.templateContent.isEmpty() && !template.branchTemplateContent.isEmpty()){
 			this.templateManager.registerTemplateFormatFromSpring(template);
@@ -123,12 +131,15 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 
 	@Override
 	public int getRank() {
-		return template.getRank();
+		return rank;
 	}
 
 	@Override
 	public void setRank(Integer rank) {
-		template.setRank(rank);
+		this.rank = rank;
+		if (template != null){
+			template.setRank(rank);
+		}
 		
 	}
 

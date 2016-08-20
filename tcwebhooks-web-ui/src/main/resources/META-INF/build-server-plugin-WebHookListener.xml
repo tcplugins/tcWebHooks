@@ -192,8 +192,8 @@
 		</property>
 	</bean>
 	
-	<bean id="slackComCompactWebHookTemplate"
-		class="webhook.teamcity.payload.template.SlackComCompactWebHookTemplate"
+	<bean id="slackComCompactXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>16</value>
