@@ -218,6 +218,13 @@ public class WebHookTemplateEntity {
 		WebHookTemplateState() {
 			// empty constructor for JAXB
 		}
+
+		public WebHookTemplateState(String shortName, boolean b) {
+			this.type = shortName;
+			this.enabled = b;
+		}
+		
+		
 	}
 	
 }

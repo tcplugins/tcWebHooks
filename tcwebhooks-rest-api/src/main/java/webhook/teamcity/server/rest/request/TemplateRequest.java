@@ -89,13 +89,23 @@ public class TemplateRequest {
   }
   
   @NotNull
-  public static String getTemplateTextHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/tt" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) + "/templateContent" ;
+  public static String getTemplateItemHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString());
   }
   
   @NotNull
-  public static String getBranchTemplateTextHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/tt" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) +  "/branchTemplateContent" ;
+  public static String getTemplateItemTextHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) + "/templateContent" ;
+  }
+  
+  @NotNull
+  public static String getTemplateItemBranchTextHref(WebHookTemplateEntity template, WebHookTemplateItem webHookTemplateItem) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) +  "/branchTemplateContent" ;
+  }
+ 
+  @NotNull  
+  public static String getTemplateItemStateHref(WebHookTemplateEntity template,	WebHookTemplateItem templateItem, String state) {
+		return getTemplateItemHref(template, templateItem) + "/" + state;
   }
   
   @GET
@@ -206,6 +216,8 @@ public class TemplateRequest {
 	  
 	  throw new BadRequestException("Sorry. It was not possible to process your request for template content.");
   }
+
+
 
 
   

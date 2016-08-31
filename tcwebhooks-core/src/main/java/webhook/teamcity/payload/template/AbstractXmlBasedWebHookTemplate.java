@@ -80,12 +80,12 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 	 * Calls getXmlFileName() which must be implemented in subclass.
 	 */
 	private WebHookTemplateEntity loadFirstTemplateFromXmlFile() {
-		WebHookTemplateEntity props = null;
+		WebHookTemplateEntity webhookEntity = null;
 		URL url = findXmlFileUrlInVariousClassloaders(getXmlFileName());
 	    if (url != null) {
 	        try {
 	            InputStream in = url.openStream();
-	            props = webHookTemplateJaxHelper.read(in).getWebHookTemplateList().get(0);
+	            webhookEntity = webHookTemplateJaxHelper.read(in).getWebHookTemplateList().get(0);
 	        } catch (IOException | JAXBException e) {
 	        	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ".");
 	        	Loggers.SERVER.debug(e);
@@ -96,7 +96,8 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 	    } else {
 	    	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ". The file was not found in the classpath.");
 	    }
-	    return props;
+	    webhookEntity.fixTemplateIds();
+	    return webhookEntity;
 	}
 
 	public abstract  String getXmlFileName();
