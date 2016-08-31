@@ -21,6 +21,7 @@ import webhook.WebHookImpl;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.settings.WebHookConfig;
 
@@ -48,7 +49,7 @@ public class WebHookContentBuilderTest {
 	}
 
 	@Test @Ignore
-	public void testBuildWebHookContent() {
+	public void testBuildWebHookContent() throws WebHookPayloadContentAssemblyException {
 		
 		WebHookPayloadManager manager = new WebHookPayloadManager(server);
 		WebHookPayloadJson whp = new WebHookPayloadJson(manager);

@@ -19,11 +19,12 @@ import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 
 public class WebHookPayloadTest {
 	
 	@Test
-	public void test_Xml(){
+	public void test_Xml() throws WebHookPayloadContentAssemblyException{
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
@@ -54,7 +55,7 @@ public class WebHookPayloadTest {
 	
 	
 	@Test
-	public void test_Json(){
+	public void test_Json() throws WebHookPayloadContentAssemblyException{
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
@@ -83,7 +84,7 @@ public class WebHookPayloadTest {
 	}
 	
 	@Test
-	public void test_NvPairs(){
+	public void test_NvPairs() throws WebHookPayloadContentAssemblyException{
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
@@ -113,7 +114,7 @@ public class WebHookPayloadTest {
 
 	@SuppressWarnings("deprecation")
 	@Test
-	public void test_Empty(){
+	public void test_Empty() throws WebHookPayloadContentAssemblyException{
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running","TestBuild01");

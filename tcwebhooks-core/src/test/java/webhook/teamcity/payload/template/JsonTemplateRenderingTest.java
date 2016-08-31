@@ -20,6 +20,7 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 
@@ -30,7 +31,7 @@ public class JsonTemplateRenderingTest {
 	WebHookPayloadManager wpm;
 	
 	@Test
-	public void TestJsonTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException {
+	public void TestJsonTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException, WebHookPayloadContentAssemblyException {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wtm = new WebHookTemplateManager(null);
 		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);

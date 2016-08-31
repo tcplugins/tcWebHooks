@@ -22,6 +22,7 @@ import webhook.WebHookTestServer;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -30,7 +31,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class WebHookPayloadTest {
 
 	@Test
-	public void TestNVPairsPayloadContent(){
+	public void TestNVPairsPayloadContent() throws WebHookPayloadContentAssemblyException{
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
@@ -55,7 +56,7 @@ public class WebHookPayloadTest {
 	}
 	
 	@Test
-	public void TestNVPairsPayloadWithPostToJetty() throws InterruptedException{
+	public void TestNVPairsPayloadWithPostToJetty() throws InterruptedException, WebHookPayloadContentAssemblyException{
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
