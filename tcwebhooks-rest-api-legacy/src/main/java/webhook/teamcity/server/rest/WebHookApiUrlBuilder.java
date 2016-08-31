@@ -4,6 +4,7 @@ import jetbrains.buildServer.server.rest.PathTransformer;
 
 import org.jetbrains.annotations.NotNull;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.server.rest.request.TemplateRequest;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
@@ -26,28 +27,32 @@ public class WebHookApiUrlBuilder {
 	    return myPathTransformer.transform(TemplateRequest.getTemplateHref(template));
 	}
 	
-	public String getDefaultTemplateHref(final WebHookTemplateEntity template) {
+	public String getTemplateItemHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemHref(webHookTemplateEntity, webHookTemplateItem));
+	}	
+	
+	public String getDefaultTemplateTextHref(final WebHookTemplateEntity template) {
 		return myPathTransformer.transform(TemplateRequest.getDefaultTemplateTextHref(template));
 	}
 
-	public String getDefaultBranchTemplateHref(final WebHookTemplateEntity template) {
+	public String getDefaultBranchTemplateTextHref(final WebHookTemplateEntity template) {
 		return myPathTransformer.transform(TemplateRequest.getDefaultBranchTemplateTextHref(template));
 	}
-	
-	public String getTemplateHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
-		return myPathTransformer.transform(TemplateRequest.getTemplateTextHref(webHookTemplateEntity, webHookTemplateItem));
-	}
 
-	public String getBranchTemplateHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
-		return myPathTransformer.transform(TemplateRequest.getBranchTemplateTextHref(webHookTemplateEntity, webHookTemplateItem));
+	public String getTemplateItemTextHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemTextHref(webHookTemplateEntity, webHookTemplateItem));
 	}
 	
-	public String getBranchTemplateTextHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
-		return myPathTransformer.transform(TemplateRequest.getBranchTemplateTextHref(webHookTemplateEntity, webHookTemplateItem));
+	public String getTemplateItemBranchTextHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemBranchTextHref(webHookTemplateEntity, webHookTemplateItem));
 	}
 	
 	public String transformRelativePath(final String internalRelativePath) {
 		return myPathTransformer.transform(internalRelativePath);
+	}
+
+	public String getWebHookTemplateItemStateUrl(WebHookTemplateEntity template, WebHookTemplateItem templateItem, String state) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemStateHref(template, templateItem, state));
 	}
 
 	

@@ -19,10 +19,12 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.WebLinks;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.data.DataProvider;
@@ -34,6 +36,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateSta
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 import com.intellij.openapi.util.text.StringUtil;
+import com.thoughtworks.xstream.io.xml.SjsxpDriver;
 
 @XmlRootElement(name = "template")
 @XmlType(name = "template", propOrder = { "id", "name", "description", "href",	"webUrl", "templateText", "branchTemplateText", "templates" })
@@ -64,7 +67,7 @@ public class Template {
 	@XmlElement(name = "template-item") @XmlElementWrapper(name = "templates") @Getter
 	List<TemplateItem> templates;
 	
-	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType @Getter @Setter @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateText extends BranchTemplateText {
 		@XmlAttribute(name = "use-for-branch-template")
 		public Boolean useTemplateTextForBranch = false;
@@ -75,7 +78,7 @@ public class Template {
 		
 		TemplateText(WebHookTemplateEntity webHookTemplateEntity, String id, final @NotNull Fields fields, @NotNull final BeanContext beanContext){
 			super(webHookTemplateEntity, id, fields, beanContext);
-			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultTemplateHref(webHookTemplateEntity));
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultTemplateTextHref(webHookTemplateEntity));
 			if (webHookTemplateEntity.getDefaultTemplate() != null){
 				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateEntity.getDefaultTemplate().isUseTemplateTextForBranch());
 			}
@@ -83,9 +86,9 @@ public class Template {
 		
 		TemplateText(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem, String id, final @NotNull Fields fields, @NotNull final BeanContext beanContext){
 			super(webHookTemplateEntity, webHookTemplateItem, id, fields, beanContext);
-			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateHref(webHookTemplateEntity, webHookTemplateItem));
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateItemTextHref(webHookTemplateEntity, webHookTemplateItem));
 			if (webHookTemplateItem.getTemplateText() != null){
-				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateEntity.getDefaultTemplate().isUseTemplateTextForBranch());
+				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateItem.getTemplateText().isUseTemplateTextForBranch());
 			}
 		}
 		
@@ -95,9 +98,6 @@ public class Template {
 		
 	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class BranchTemplateText {
-
-		@XmlAttribute
-		public String id;
 		
 		@XmlAttribute
 		public String href;
@@ -110,43 +110,82 @@ public class Template {
 		}
 		
 		BranchTemplateText(WebHookTemplateEntity webHookTemplateEntity, String id, Fields fields, BeanContext beanContext) {
-			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
-			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultBranchTemplateHref(webHookTemplateEntity));
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultBranchTemplateTextHref(webHookTemplateEntity));
 			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookDefaultBranchTemplateTextUrl(webHookTemplateEntity));
 		}
 		
 		BranchTemplateText(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem, String id, Fields fields, BeanContext beanContext) {
-			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
-			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getBranchTemplateTextHref(webHookTemplateEntity, webHookTemplateItem));
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateItemBranchTextHref(webHookTemplateEntity, webHookTemplateItem));
 			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookBranchTemplateTextUrl(webHookTemplateEntity, webHookTemplateItem));
 		}
 		
 	}
 
-	@XmlType(name = "template-item") @Data @XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "template-item", propOrder = { "id", "enabled", "href", "templateText", "branchTemplateText", "states"}) @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateItem {
 		@NotNull @XmlElement(name = "template-text")
 		TemplateText templateText;
 
 		@XmlElement(name = "branch-template-text")
-		TemplateText branchTemplateText;
+		BranchTemplateText branchTemplateText;
 
 		@XmlAttribute
 		boolean enabled = true;
+		
+		@XmlAttribute
+		public String id;
+		
+		@XmlAttribute
+		public String href;
 
 		@XmlElement(name = "state")	@XmlElementWrapper(name = "states")
-		private List<WebHookTemplateState> states = new ArrayList<WebHookTemplateState>();
+		private List<WebHookTemplateStateRest> states = new ArrayList<WebHookTemplateStateRest>();
 
 		TemplateItem() {
 			// empty constructor for JAXB
 		}
 
 		public TemplateItem(WebHookTemplateEntity template, WebHookTemplateItem templateItem, String id, Fields fields, BeanContext beanContext) {
-			this.enabled = templateItem.isEnabled();
-			this.templateText = new TemplateText(template, id, fields, beanContext);
+			this.enabled = ValueWithDefault.decideDefault(fields.isIncluded("enabled"), Boolean.valueOf(templateItem.isEnabled()));;
+			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
+			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateItemHref(template, templateItem)));
+			this.templateText = new TemplateText(template, templateItem, id, fields, beanContext);
+			this.branchTemplateText = new BranchTemplateText(template, templateItem, id, fields, beanContext);
+			this.states.clear();
+			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
+				WebHookTemplateStateRest myState = new WebHookTemplateStateRest(state.getShortName(), 
+														false, 
+														beanContext.getApiUrlBuilder()
+																   .getWebHookTemplateItemStateUrl(template, templateItem, state.getShortName()));
+				for (WebHookTemplateState itemState: templateItem.getStates()){
+					if (state.getShortName().equals(itemState.getType())){
+						myState.setEnabled(itemState.isEnabled());
+					}
+				}
+				this.states.add(myState);
+			}
+			//this.states.addAll(templateItem.getStates());
 		}
 		
 		
+	}
+	
+	@XmlType (name = "buildState", propOrder = { "type", "enabled", "href" }) 
+	@Getter @Setter @XmlAccessorType(XmlAccessType.FIELD)
+	public static class WebHookTemplateStateRest {
+		@NotNull String type;
+		boolean enabled;
+		@NotNull String href;
+		
+		public WebHookTemplateStateRest(String shortName, boolean b, String href) {
+			this.type = shortName;
+			this.enabled = b;
+			this.href = href;
+		}
+		
+		WebHookTemplateStateRest() {
+			// empty constructor for JAXB
+		}
 	}
 
 	/**
@@ -185,7 +224,7 @@ public class Template {
 		
 		if (template.getTemplates() != null){
 			for (WebHookTemplateItem templateItem: template.getTemplates().getTemplates()){
-				templates.add(new TemplateItem(template, templateItem, description, fields, beanContext));
+				templates.add(new TemplateItem(template, templateItem, templateItem.getId().toString(), fields, beanContext));
 			}	
 		}
 		
@@ -215,7 +254,7 @@ public class Template {
 			final String value, @NotNull final DataProvider dataProvider) {
 		if ("name".equals(field)) {
 			if (StringUtil.isEmpty(value)) {
-				throw new BadRequestException("Project name cannot be empty.");
+				throw new BadRequestException("Template name cannot be empty.");
 			}
 			template.setTemplateShortName(value);
 			template.persist();
