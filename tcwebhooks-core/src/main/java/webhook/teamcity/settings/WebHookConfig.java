@@ -241,6 +241,7 @@ public class WebHookConfig {
 		this.uniqueKey = Rand.toString();
 		this.extraParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
+		this.filters = new ArrayList<>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
@@ -291,7 +292,7 @@ public class WebHookConfig {
 		}
 		el.addContent(buildsEl);
 		
-		if (this.filters.size() > 0){
+		if (this.filters != null && this.filters.size() > 0){
 			Element filtersEl = new Element("trigger-filters");
 			for (WebHookFilterConfig f : this.filters){
 				filtersEl.addContent(f.getAsElement());

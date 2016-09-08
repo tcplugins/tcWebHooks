@@ -85,6 +85,24 @@ public class ProjectWebHooksBean {
 		return bean;
 		
 	}
+	
+	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList){
+		ProjectWebHooksBean bean = new ProjectWebHooksBean();
+		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
+		Set<String> enabledBuildTypes = new HashSet<String>();
+		enabledBuildTypes.add(sBuildType.getBuildTypeId());
+		
+		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
+		bean.webHookList = new LinkedHashMap<String, WebhookConfigAndBuildTypeListHolder>();
+		
+		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
+		for (WebHookConfig config : projSettings.getBuildWebHooksAsList(sBuildType)){
+			addWebHookConfigHolder(bean, projectBuildTypes, config, registeredPayloads, templateList);
+		}
+		
+		return bean;
+		
+	}
 
 
 	private static void addWebHookConfigHolder(ProjectWebHooksBean bean,
