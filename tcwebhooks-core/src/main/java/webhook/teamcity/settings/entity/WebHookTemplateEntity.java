@@ -108,7 +108,9 @@ public class WebHookTemplateEntity {
 	
 
 	public void fixTemplateIds() {
-		templates.fixTemplateIds();
+		if (templates != null){
+			templates.fixTemplateIds();
+		}
 	}
 	
 	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD)

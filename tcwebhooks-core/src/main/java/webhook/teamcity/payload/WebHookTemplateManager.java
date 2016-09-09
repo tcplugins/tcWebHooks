@@ -49,6 +49,7 @@ public class WebHookTemplateManager {
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
 					+ payloadTemplate.getName() 
 					+ " with rank of " + payloadTemplate.getRank());
+			payloadTemplate.fixTemplateIds();
 			xmlConfigTemplates.put(payloadTemplate.getName(),WebHookTemplateFromXml.build(payloadTemplate, webHookPayloadManager));
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");

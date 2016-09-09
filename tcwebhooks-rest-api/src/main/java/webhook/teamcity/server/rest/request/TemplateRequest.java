@@ -218,6 +218,27 @@ public class TemplateRequest {
   }
 
 
+  @GET
+  @Path("/{templateLocator}/templateItem/{templateId}/{templateContentType}")
+  @Produces({"text/plain"})
+  public String serveSpecificTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateId") String templateId, @PathParam("templateContentType") String templateContentType) {
+	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateId);
+	  if (template == null){
+		  throw new NotFoundException("No template item found by that name/id");
+	  }
+	  if(templateContentType.equals("templateContent")){
+		  if (template.getTemplateText() == null){
+			  throw new NotFoundException("This template does not have a non-branch template configured.");
+		  }
+		  return template.getTemplateText().getTemplateContent();
+	  } else if(templateContentType.equals("branchTemplateContent")){
+		  if (template.getBranchTemplateText() == null){
+			  throw new NotFoundException("This template does not have a  branch template configured.");
+		  }
+		  return template.getBranchTemplateText().getTemplateContent();
+	  }
+	  throw new BadRequestException("Sorry. It was not possible to process your request for template content.");
+  }
 
 
   

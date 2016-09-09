@@ -31,6 +31,7 @@ import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
@@ -45,7 +46,7 @@ public class SlackComWebHookTemplateTest {
 	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 
 	@Test
-	public void test() throws JDOMException, IOException {
+	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
 		WebHookTemplateJaxHelper webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
