@@ -67,4 +67,43 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	assertTrue(updatedResponse.count == 1);
 
     }
+    
+    @Test(expected=com.sun.jersey.api.client.UniformInterfaceException.class)
+    public void testJsonRequestAndUpdateFailsForSameTemplateName() {
+    	WebResource webResource = resource();
+    	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertTrue(responseMsg.count == 0);
+    	
+    	NewTemplateDescription newTemplateDescription = new NewTemplateDescription();
+    	newTemplateDescription.description = "A test template";
+    	newTemplateDescription.name = "testTemplateFromUnitTest";
+    	
+    	
+    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplateDescription);
+    	Templates updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertTrue(updatedResponse.count == 1);
+    	
+    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplateDescription);
+    	updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	
+    }
+    
+    @Test
+    public void testJsonRequestAndUpdateWithMoreTemplateDetail() {
+    	WebResource webResource = resource();
+    	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertTrue(responseMsg.count == 0);
+    	
+    	NewTemplateDescription newTemplateDescription = new NewTemplateDescription();
+    	newTemplateDescription.description = "A test template";
+    	newTemplateDescription.name = "testTemplateFromUnitTest";
+    	
+    	
+    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplateDescription);
+    	Templates updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertTrue(updatedResponse.count == 1);
+    	
+    	prettyPrint(updatedResponse);
+    	
+    }
 }
