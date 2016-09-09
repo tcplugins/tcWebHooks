@@ -36,6 +36,7 @@ import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class FlowdockWebHookTemplateTest {
@@ -48,7 +49,7 @@ public class FlowdockWebHookTemplateTest {
 	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
-		WebHookTemplateJaxHelper webHookTemplateJaxHelper = mock(WebHookTemplateJaxHelper.class);
+		WebHookTemplateJaxHelper webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
 		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, webHookTemplateJaxHelper);
@@ -56,7 +57,7 @@ public class FlowdockWebHookTemplateTest {
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager);
 		webHookPayloadJsonTemplate.register();
 
-		FlowdockWebHookTemplate flockdockTemplate = new FlowdockWebHookTemplate(templateManager);
+		FlowdockXmlWebHookTemplate flockdockTemplate = new FlowdockXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		flockdockTemplate.register();

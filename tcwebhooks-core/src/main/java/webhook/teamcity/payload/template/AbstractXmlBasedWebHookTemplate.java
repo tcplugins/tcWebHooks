@@ -44,7 +44,11 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 		
 		if (this.rank != null){
 			template.setRank(this.rank);
+		} else {
+			this.setRank(template.getRank());
 		}
+		
+		
 		
 		if (!template.templateContent.isEmpty() && !template.branchTemplateContent.isEmpty()){
 			this.templateManager.registerTemplateFormatFromSpring(template);

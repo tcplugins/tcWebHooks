@@ -46,7 +46,7 @@ public class FlowdockWebHookTemplate extends AbstractFileSetBasedWebHookTemplate
 
 	@Override
 	public String getTemplateShortName() {
-		return "flowdock";
+		return "flowdock-old";
 	}
 
 	@Override

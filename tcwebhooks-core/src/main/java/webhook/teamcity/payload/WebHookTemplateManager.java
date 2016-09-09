@@ -150,7 +150,9 @@ public class WebHookTemplateManager {
 	public List<WebHookTemplateEntity> getRegisteredTemplatesAsEntities(){
 		List<WebHookTemplateEntity> orderedEntities = new ArrayList<>();
 		for (WebHookTemplate xmlConfig : orderedTemplateCollection){
-			orderedEntities.add(xmlConfig.getAsEntity());
+			if (xmlConfig.getAsEntity()!=null){
+				orderedEntities.add(xmlConfig.getAsEntity());
+			}
 		}
 		return orderedEntities;
 	}

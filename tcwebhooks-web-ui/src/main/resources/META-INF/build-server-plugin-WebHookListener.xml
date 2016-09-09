@@ -184,8 +184,8 @@
 		</property>
 	</bean>
 	
-	<bean id="slackComWebHookTemplate"
-		class="webhook.teamcity.payload.template.SlackComWebHookTemplate"
+	<bean id="slackComXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.SlackComXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>15</value>
@@ -200,8 +200,8 @@
 		</property>
 	</bean>
 	
-	<bean id="flowdockWebHookTemplate"
-		class="webhook.teamcity.payload.template.FlowdockWebHookTemplate"
+	<bean id="flowdockXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.FlowdockXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>14</value>

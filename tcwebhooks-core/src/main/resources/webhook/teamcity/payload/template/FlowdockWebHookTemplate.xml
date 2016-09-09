@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webhook-templates>
+	<webhook-template enabled="true" name="flowdock" rank="14">
+		<template-description>Flowdock JSON templates</template-description>
+		<template-tool-tip>Supports the TeamCity Flowdock JSON integration</template-tool-tip>
+        <preferred-date-format></preferred-date-format>
+		<formats>
+			<format name="jsonTemplate" enabled="true" />
+		</formats>
+
+		<templates>
+			<template>
+				<!--  Additional Template is only for broken, interrupted and failed builds -->
+				<states>
+					<state type="buildBroken" enabled="true" />
+					<state type="buildFailed" enabled="true" />
+					<state type="buildInterrupted" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for broken, interrupted and failed builds -->
+				<template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildFailed%402x.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName}",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "red",
+      "value": "${buildResult}"
+    }
+  }
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for broken, interrupted and failed builds -->
+				<branch-template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildFailed%402x.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#${branchDisplayName}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName} (${sanitize(branchDisplayName)})",
+    "fields": [
+		{ "label": "Build", "value": "${buildFullName}" },
+                { "label": "Branch", "value": "${branchDisplayName}" },
+                { "label": "Default Branch", "value": "${branchIsDefault}" },
+		{ "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+	      ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "red",
+      "value": "${buildResult}"
+    }
+  }
+}
+				]]></branch-template-text>
+			</template>
+			<template>
+				<!--  Additional Template is only for finished builds -->
+				<states>
+					<state type="buildStarted" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for started builds -->
+				<template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName}",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for started builds -->
+				<branch-template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#${branchDisplayName}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName} (${sanitize(branchDisplayName)})",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Branch", "value": "${branchDisplayName}" },
+                { "label": "Default Branch", "value": "${branchIsDefault}" },
+                { "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}
+				]]></branch-template-text>
+			</template>
+			<template>
+				<!--  Additional Template is only for successful/fixed builds -->
+				<states>
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for successful/fixed builds -->
+				<template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildSuccessful%402x.png"
+  },
+  "title": "updated build status to ${buildResult}",
+  "external_thread_id": "teamcity-${buildName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${buildResult}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName}",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "green",
+      "value": "${buildResult}"
+    }
+  }
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for successful/fixed builds -->
+				<branch-template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildSuccessful%402x.png"
+  },
+  "title": "updated build status to ${buildResult}",
+  "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${buildResult}", "#${branchDisplayName}", "#teamcity" ],
+  "thread": {
+  "title": "${buildName} (${sanitize(branchDisplayName)})",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Branch", "value": "${branchDisplayName}" },
+                { "label": "Default Branch", "value": "${branchIsDefault}" },
+                { "label": "Triggered By", "value": "${triggeredBy}" },
+                { "label": "Agent", "value": "${agentName}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> # <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildNumber}</strong></a> has <strong>${buildStateDescription}</strong> with a status of <a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&buildId=${buildId}\"><strong>${buildResult}</strong></a>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "green",
+      "value": "${buildResult}"
+    }
+  }
+}
+				]]></branch-template-text>
+			</template>
+			<template>
+				<!--  Additional Template is only for responsibility changed -->
+				<states>
+					<state type="responsibilityChanged" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for responsibility changed -->
+				<template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName}",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Responsibility", "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})" },
+                { "label": "Comment", "value": "${comment}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> has <strong>${buildStateDescription}</strong>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for responsibility changed -->
+				<branch-template-text><![CDATA[
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
+  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#${branchDisplayName}", "#teamcity" ],
+  "thread": {
+    "title": "${buildName} (${sanitize(branchDisplayName)})",
+    "fields": [
+                { "label": "Build", "value": "${buildFullName}" },
+                { "label": "Branch", "value": "${branchDisplayName}" },
+                { "label": "Default Branch", "value": "${branchIsDefault}" },
+                { "label": "Responsibility", "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})" },
+                { "label": "Comment", "value": "${comment}" }
+              ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> has <strong>${buildStateDescription}</strong>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}
+				]]></branch-template-text>
+			</template>
+		</templates>
+	</webhook-template>
+</webhook-templates>
