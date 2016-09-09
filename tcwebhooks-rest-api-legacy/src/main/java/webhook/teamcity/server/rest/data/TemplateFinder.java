@@ -105,4 +105,47 @@ public class TemplateFinder {
 		throw new BadRequestException("Sorry: Searching for multiple template is not supported.");
 
 	}
+	
+	public WebHookTemplateItem findTemplateByIdAndTemplateContentById(String templateLocator, String templateContentLocator) {
+		
+		WebHookTemplateEntity entity =  findTemplateById(templateLocator);
+		
+		if (StringUtil.isEmpty(templateLocator)) {
+			throw new BadRequestException("Empty template locator is not supported.");
+		}
+
+		final Locator locator = new Locator(templateContentLocator, "id", "name",
+				Locator.LOCATOR_SINGLE_VALUE_UNUSED_NAME);
+
+		if (locator.isSingleValue()) {
+			// no dimensions found, assume it's a name or internal id or
+			// external id
+			
+			@NotNull
+			final String singleValue = locator.getSingleValue();
+			for (WebHookTemplateItem template : entity.getTemplates().getTemplates()){
+				if (template.getId().intValue() == Integer.valueOf(singleValue)){
+					return template;
+				}
+			}
+			throw new NotFoundException(
+					"No template found by id '"
+							+ singleValue + "'.");
+			
+		} else if (locator.getSingleDimensionValue("id") != null){
+			@NotNull
+			final String templateId = locator.getSingleDimensionValue("id");
+			for (WebHookTemplateItem template : entity.getTemplates().getTemplates()){
+				if (template.getId().intValue() == Integer.valueOf(templateId)){
+					return template;
+				}
+			}
+			throw new NotFoundException(
+					"No template found by id '"
+							+ templateId + "'.");
+		} else {
+			throw new BadRequestException("Sorry: Searching for multiple template is not supported.");
+		}
+		
+	}
 }

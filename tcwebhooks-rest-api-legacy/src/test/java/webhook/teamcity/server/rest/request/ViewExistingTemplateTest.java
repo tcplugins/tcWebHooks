@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -70,11 +71,9 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookTemplateEntity templateEntity = templatesList.getWebHookTemplateList().get(0);
     	webHookTemplateManager.registerTemplateFormatFromXmlConfig(templateEntity);
     	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
-    	//assertEquals(templateEntity.getDefaultTemplate().getTemplateContent(), responseMsg.);
     	assertEquals(1, (int)responseMsg.count);
     	assertEquals(1, responseMsg.getTemplates().size());
     	assertEquals(1, responseMsg.getTemplates().get(0).getTemplates().size());
-    	//assertEquals(1, responseMsg.getTemplates().get(0).getTemplates().get(0).);
     }
 
     @Test
@@ -86,7 +85,6 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		webHookTemplateManager.registerTemplateFormatFromXmlConfig(templateEntity);
     	}
     	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
-    	//assertEquals(templateEntity.getDefaultTemplate().getTemplateContent(), responseMsg.);
     	assertEquals(3, (int)responseMsg.count);
     	assertEquals(3, responseMsg.getTemplates().size());
     	assertEquals(1, responseMsg.getTemplates().get(0).getTemplates().size());
@@ -97,18 +95,15 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	WebResource webResource = resource();
     	WebHookTemplates templatesList =  webHookTemplateJaxHelper.read("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
-    	assertEquals("There should be 3 templates laoded from file", 3, templatesList.getWebHookTemplateList().size());
+    	assertEquals("There should be 3 templates loaded from file", 3, templatesList.getWebHookTemplateList().size());
     	
     	for (WebHookTemplateEntity templateEntity : templatesList.getWebHookTemplateList()){
     		webHookTemplateManager.registerTemplateFormatFromXmlConfig(templateEntity);
     	}
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:testXMLtemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	//assertEquals(templateEntity.getDefaultTemplate().getTemplateContent(), responseMsg.);
-    	//assertEquals(1, (int)responseMsg.count);
     	assertEquals(1, responseMsg.getTemplates().size());
     	assertEquals("testXMLtemplate", responseMsg.id);
-    	//assertEquals(1, responseMsg.getTemplates().get(0).getTemplates().size());
     }    
     
     @Test
@@ -118,16 +113,25 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	elastic.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	//assertEquals(templateEntity.getDefaultTemplate().getTemplateContent(), responseMsg.);
-    	//assertEquals(1, (int)responseMsg.count);
-    	
     	assertEquals(1, responseMsg.getTemplates().size());
     	assertEquals("elasticsearch", responseMsg.id);
     	
     	prettyPrint(responseMsg);
+    }  
+    
+    @Test
+    public void testJsonTemplatesRequestTempaletContentUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	//assertEquals(0, responseMsg.getTemplates().get(0).getStates().size());
-    	//assertEquals(1, responseMsg.getTemplates().get(0).getTemplates().size());
+    	WebHookTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	assertEquals(elastic.getTemplateForState(BuildStateEnum.BUILD_FIXED).getTemplateText(), responseMsg);
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	assertEquals(elastic.getBranchTemplateForState(BuildStateEnum.BUILD_FIXED).getTemplateText(), responseMsg);
+    	prettyPrint(responseMsg);
     }  
     
     @Test
@@ -137,16 +141,10 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	//assertEquals(templateEntity.getDefaultTemplate().getTemplateContent(), responseMsg.);
-    	//assertEquals(1, (int)responseMsg.count);
     	
     	assertEquals(2, responseMsg.getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.id);
-    	
     	prettyPrint(responseMsg);
-    	
-    	//assertEquals(0, responseMsg.getTemplates().get(0).getStates().size());
-    	//assertEquals(1, responseMsg.getTemplates().get(0).getTemplates().size());
     }  
     
 
