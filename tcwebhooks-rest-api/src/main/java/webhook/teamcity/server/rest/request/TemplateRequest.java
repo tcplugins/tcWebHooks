@@ -32,18 +32,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
+import webhook.teamcity.server.rest.data.WebHookTemplateEntityWrapper;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
+import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 @Path(TemplateRequest.API_TEMPLATES_URL)
@@ -105,7 +109,7 @@ public class TemplateRequest {
  
   @NotNull  
   public static String getTemplateItemStateHref(WebHookTemplateEntity template,	WebHookTemplateItem templateItem, String state) {
-		return getTemplateItemHref(template, templateItem) + "/" + state;
+		return getTemplateItemHref(template, templateItem) + "/buildState/" + state;
   }
   
   @GET
@@ -135,7 +139,7 @@ public class TemplateRequest {
     }
     myTemplateManager.registerTemplateFormatFromXmlConfig(template);
     if (myTemplateManager.persistAllXmlConfigTemplates()){
-    	return new Template(template, Fields.LONG, myBeanContext);
+    	return new Template(new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(templateDescription.getName())), Fields.LONG, myBeanContext);
     } else {
     	throw new OperationException("There was an error saving your template. Sorry.");
     }
@@ -145,14 +149,14 @@ public class TemplateRequest {
   @Path("/{templateLocator}/fullConfig")
   @Produces({"application/xml", "application/json"})
   public WebHookTemplateEntity serveFullConfigTemplateFor(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
-	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
   }
 
   @GET
   @Path("/{templateLocator}/{templateType}/templateContent")
   @Produces({"text/plain"})
   public String serveTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType) {
-	  WebHookTemplateEntity template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  WebHookTemplateEntity template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
 	  }
@@ -175,7 +179,7 @@ public class TemplateRequest {
   @Consumes({"text/plain"})
   @Produces({"text/plain"})
   public String updateTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType, String templateText) {
-	  webhook.teamcity.settings.entity.WebHookTemplateEntity template = (webhook.teamcity.settings.entity.WebHookTemplateEntity)myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  WebHookTemplateEntity template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
 	  }
@@ -219,10 +223,12 @@ public class TemplateRequest {
 
 
   @GET
-  @Path("/{templateLocator}/templateItem/{templateId}/{templateContentType}")
+  @Path("/{templateLocator}/templateItem/{templateItemId}/{templateContentType}")
   @Produces({"text/plain"})
-  public String serveSpecificTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateId") String templateId, @PathParam("templateContentType") String templateContentType) {
-	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateId);
+  public String serveSpecificTemplateContent(@PathParam("templateLocator") String templateLocator, 
+		  									 @PathParam("templateItemId") String templateItemId, 
+		  									 @PathParam("templateContentType") String templateContentType) {
+	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template == null){
 		  throw new NotFoundException("No template item found by that name/id");
 	  }
@@ -240,8 +246,56 @@ public class TemplateRequest {
 	  throw new BadRequestException("Sorry. It was not possible to process your request for template content.");
   }
 
+  /**
+   * /webhooks/templates/id:elasticsearch/templateItem/id:1
+   */
+  @GET
+  @Path("/{templateLocator}/templateItem/{templateItemId}")
+  @Produces({"application/xml", "application/json"})
+  public WebHookTemplateItem serveTemplateItem(@PathParam("templateLocator") String templateLocator,
+		  											 @PathParam("templateItemId") String templateItemId,
+		  											 @QueryParam("fields") String fields) {
+	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  if (template == null){
+		  throw new NotFoundException("No template item found by that name/id");
+	  }
+	  return template;
+  }
 
+  /**
+   *  /app/rest/webhooks/templates/id:flowdock/templateItem/id:2/buildState/buildStarted
+   *  							  /id:elasticsearch/templateItem/id:1/buildState/buildStarted
+   */
+  @GET
+  @Path("/{templateLocator}/templateItem/{templateItemId}/buildState/{buildState}")
+  @Produces({"application/xml", "application/json"})
+  public WebHookTemplateStateRest serveTemplateItemBuildStateSetting(@PathParam("templateLocator") String templateLocator,
+		  											 @PathParam("templateItemId") String templateItemId,
+		  											 @PathParam("buildState") String buildState,
+		  											 @QueryParam("fields") String fields) {
+	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  if (template == null){
+		  throw new NotFoundException("No template item found by that name/id");
+	  }
+	  return new WebHookTemplateStateRest(template, buildState, new Fields(fields), myBeanContext);
+	  
+  }
   
+  @PUT
+  @Path("/{templateLocator}/templateItem/{templateItemId}/buildState/{buildState}")
+  @Produces({"application/xml", "application/json"})
+  public WebHookTemplateStateRest updateTemplateItemBuildStateSetting(@PathParam("templateLocator") String templateLocator,
+		  @PathParam("templateItemId") String templateItemId,
+		  @PathParam("buildState") String buildState,
+		  WebHookTemplateStateRest updatedBuildState) {
+	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  if (template == null){
+		  throw new NotFoundException("No template item found by that name/id");
+	  }
+	  //for (template.get)
+	  return new WebHookTemplateStateRest(template, buildState, new Fields(null), myBeanContext);
+	  
+  }
   
   /*
   @POST

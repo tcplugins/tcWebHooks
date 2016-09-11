@@ -2,13 +2,13 @@ package webhook.teamcity.payload.template;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;

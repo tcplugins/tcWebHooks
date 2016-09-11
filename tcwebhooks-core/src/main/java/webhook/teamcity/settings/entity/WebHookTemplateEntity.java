@@ -186,7 +186,7 @@ public class WebHookTemplateEntity {
 		}
 	}
 	
-	
+	@XmlRootElement
 	@XmlType(name = "template") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateItem {
 		@NotNull @XmlElement(name="template-text")

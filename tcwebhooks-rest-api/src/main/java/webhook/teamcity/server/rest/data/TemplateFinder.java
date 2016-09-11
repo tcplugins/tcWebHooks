@@ -36,7 +36,7 @@ public class TemplateFinder {
 	}
 	
 	
-	public WebHookTemplateEntity findTemplateById(String templateLocator) {
+	public WebHookTemplateEntityWrapper findTemplateById(String templateLocator) {
 
 		if (StringUtil.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");
@@ -53,7 +53,7 @@ public class TemplateFinder {
 			final String singleValue = locator.getSingleValue();
 			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(singleValue);
 			if (template != null) {
-				return template;
+				return new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(template.getName()));
 			}
 			throw new NotFoundException(
 					"No template found by name '"
@@ -65,7 +65,7 @@ public class TemplateFinder {
 			final String templateId = locator.getSingleDimensionValue("id");
 			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(templateId);
 			if (template != null) {
-				return template;
+				return new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(template.getName()));
 			}
 			throw new NotFoundException(
 					"No template found by id '"
@@ -77,7 +77,7 @@ public class TemplateFinder {
 			final String templateName = locator.getSingleDimensionValue("name");
 			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(templateName);
 			if (template != null) {
-				return template;
+				return new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(template.getName()));
 			}
 			throw new NotFoundException(
 					"No template found by name '"
@@ -108,7 +108,7 @@ public class TemplateFinder {
 	
 	public WebHookTemplateItem findTemplateByIdAndTemplateContentById(String templateLocator, String templateContentLocator) {
 		
-		WebHookTemplateEntity entity =  findTemplateById(templateLocator);
+		WebHookTemplateEntity entity =  findTemplateById(templateLocator).getEntity();
 		
 		if (StringUtil.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");

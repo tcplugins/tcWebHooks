@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import webhook.teamcity.server.rest.data.TemplateFinder;
+import webhook.teamcity.server.rest.data.WebHookTemplateEntityWrapper;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
@@ -59,13 +60,13 @@ public class Templates {
 	  public Templates() {
 	  }
 
-	  public Templates(@NotNull final List<WebHookTemplateEntity> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+	  public Templates(@NotNull final List<WebHookTemplateEntityWrapper> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 	    if (fields.isIncluded("template", false, true)){
 	      templates = ValueWithDefault.decideDefault(fields.isIncluded("template"), new ValueWithDefault.Value<List<Template>>() {
 	        public List<Template> get() {
 	          final ArrayList<Template> result = new ArrayList<Template>(templateObjects.size());
-	          final Fields nestedField = fields.getNestedField("project");
-	          for (WebHookTemplateEntity template : templateObjects) {
+	          final Fields nestedField = new Fields("id,name,description,status,href,webUrl");
+	          for (WebHookTemplateEntityWrapper template : templateObjects) {
 	            result.add(new Template(template, nestedField, beanContext));
 	          }
 	          return result;

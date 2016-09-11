@@ -6,6 +6,8 @@
 	<properties>
     	<majorVersion>1.1</majorVersion>
     	<minorVersion>snapshot</minorVersion>
+    	<gitHash>${GIT_HASH}</gitHash>
+    	<gitBranch>${GIT_BRANCH}</gitBranch>
     	<currentVersion>${majorVersion}.${minorVersion}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>9.1</teamcityVersion>
