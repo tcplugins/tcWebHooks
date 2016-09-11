@@ -1,5 +1,6 @@
 package webhook.teamcity.server.rest.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jetbrains.buildServer.RootUrlHolder;
@@ -40,8 +41,15 @@ public class DataProvider {
 
 	}
 	
-	public List<WebHookTemplateEntity> getWebHookTemplates(){
-		return this.myTemplateManager.getRegisteredTemplatesAsEntities();
+	public List<WebHookTemplateEntityWrapper> getWebHookTemplates(){
+		List<WebHookTemplateEntityWrapper> templates = new ArrayList<>();
+		for (WebHookTemplateEntity template : this.myTemplateManager.getRegisteredTemplatesAsEntities()){
+			templates.add(new WebHookTemplateEntityWrapper(template, 
+														   this.myTemplateManager.getTemplateState(template.getName())
+														  )
+						 );
+		}
+		return templates;
 	}
 	
 	public WebHookTemplateEntity getWebHookTemplate(String id){

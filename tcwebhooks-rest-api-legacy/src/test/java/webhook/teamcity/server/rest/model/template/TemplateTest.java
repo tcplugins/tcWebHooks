@@ -26,6 +26,7 @@ import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
+import webhook.teamcity.server.rest.data.WebHookTemplateEntityWrapper;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
@@ -79,7 +80,7 @@ public class TemplateTest {
 		BeanFactory factory = new BeanFactory(ctx);
 		BeanContext beanContext = new BeanContext(factory, serviceLocator, new WebHookApiUrlBuilder(pathTransformer));
 		
-		Template t = new Template(template, new Fields(null), beanContext);
+		Template t = new Template(new WebHookTemplateEntityWrapper(template, wtm.getTemplateState(template.getName())), new Fields(null), beanContext);
 		
 		
 		
