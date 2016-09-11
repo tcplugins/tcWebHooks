@@ -6,7 +6,7 @@
     <display-name>Web Hooks plugin</display-name>
     <version>${version}</version>
     <description>Trigger webhook POST requests from build events. Adds tabs to the Project and Build pages.<br/>
-    	Branch: ${gitBranch} - ${gitBash} 
+    	Branch: ${gitBranch} - ${gitHash} 
     </description>
     <vendor>
       <name>Net Wolf</name>
