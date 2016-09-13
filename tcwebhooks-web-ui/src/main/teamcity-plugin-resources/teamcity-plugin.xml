@@ -3,10 +3,14 @@
                  xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
   <info>
     <name>tcWebHooks</name>
-    <display-name>Web Hooks plugin</display-name>
+    <display-name>Web Hooks plugin (tcWebHooks)</display-name>
     <version>${version}</version>
-    <description>Trigger webhook POST requests from build events. Adds tabs to the Project and Build pages.<br/>
-    	Branch: ${gitBranch} - ${gitHash} 
+    <description>Trigger webhook POST requests from build events. &lt;br/&gt;
+           This plugin adds new tabs to the Project and Build pages for viewing and configuring WebHook events.
+        &lt;ul&gt;
+    	   &lt;li&gt;Branch: ${gitBranch}&lt;/li&gt;
+    	   &lt;li&gt;Revision: ${gitHash}&lt;/li&gt;
+    	&lt;/ul&gt; 
     </description>
     <vendor>
       <name>Net Wolf</name>
