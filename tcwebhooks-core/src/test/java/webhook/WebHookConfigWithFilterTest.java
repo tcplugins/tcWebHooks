@@ -1,7 +1,6 @@
 package webhook;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,18 +16,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TestingWebHookHttpClientFactoryImpl;
 import webhook.teamcity.TestingWebHookHttpClientFactoryImpl.TestableHttpClient;
-import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.WebHookFactory;
-import webhook.teamcity.WebHookFactoryImpl;
 import webhook.teamcity.WebHookHttpClientFactory;
 import webhook.teamcity.payload.content.ExtraParametersMap;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
-import webhook.testframework.util.ConfigLoaderUtil;
 
 public class WebHookConfigWithFilterTest extends WebHookTestServerTestBase {
 	

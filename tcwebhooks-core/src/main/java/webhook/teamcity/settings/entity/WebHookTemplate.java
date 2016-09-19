@@ -58,7 +58,6 @@ import org.jetbrains.annotations.NotNull;
 
 @Data  // Let Lombok generate the getters and setters.
 
-@SuppressWarnings("UnusedDeclaration")
 @XmlRootElement(name = "webhook-template")
 public class WebHookTemplate {
 	@NotNull @XmlAttribute(name="name")

@@ -1,8 +1,6 @@
 package webhook.teamcity.settings.entity;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -11,7 +9,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -19,8 +16,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
-
-import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 
 public class WebHookTemplateJaxHelperTest {
 
@@ -73,23 +68,4 @@ public class WebHookTemplateJaxHelperTest {
 		
 	}
 	
-	
-	
-
-//	@Test
-//	public void testReadInputStream() {
-//		fail("Not yet implemented");
-//	}
-
-	@Test
-	public void testLoad() {
-		Map<String, WebHookTemplateFromXml> templatesMap = new HashMap<>();
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.load("src/test/resources/webhook-templates.xml", templatesMap);
-	}
-
-//	@Test
-//	public void testWrite() {
-//		fail("Not yet implemented");
-//	}
-
 }

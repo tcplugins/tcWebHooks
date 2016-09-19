@@ -248,3 +248,25 @@ select#currentTemplateBuildId, select#currentTemplateBuildEvent {
 a.restore {
 	display:none;
 }
+
+.authParameterName {
+	padding-right:1em;
+	text-align: right;
+}
+
+.authParameterName > label {
+	padding:0;
+}
+
+.authParameterValueWrapper {
+	width: 85%;
+}
+
+.authParameterValue {
+	width: 100%;
+}
+
+div.extraAuthParametersWrapper {
+	padding: 2em;
+	padding-top: 0.5em;
+} 

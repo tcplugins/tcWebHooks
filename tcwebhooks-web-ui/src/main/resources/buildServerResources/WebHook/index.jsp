@@ -62,9 +62,8 @@
 				});
 				jQueryWebhook('#payloadFormatHolder').change(function() {
 					var formatName = jQueryWebhook(this).val();
-  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
-						if (formatName === config[0]){
-							var template = config[1];
+  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, template){
+						if (formatName === formatKey){
 							jQueryWebhook("#hookPane .buildState").each(function(thing, state){
 								if ((jQueryWebhook.inArray(state.id, template.supportedStates) >= 0) &&
 									(jQueryWebhook.inArray(state.id, template.supportedBranchStates) >= 0))
@@ -77,22 +76,18 @@
 										jQueryWebhook("input#" + state.id).prop('disabled', 'disabled');
 										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").prop('disabled', 'disabled');
 								}
-							//console.log(state);
-							//console.log(state.id);
 							});
-							
-							//if (jQueryWebhook.inArray
-							//jQueryWebhook.each(template.supportedStates, function(thingy, state){
-							//console.log("My state is: " + state);
-							//		jQueryWebhook("td." + state).removeClass('buildStateDisabled');
-							//		jQueryWebhook("input#" + state).prop('disabled', false);
-							//}); 
 							return false;
 						}
 					});
 				});
 				
-				
+				jQueryWebhook('#extraAuthType').empty();
+				jQueryWebhook('#extraAuthType').append(jQueryWebhook("<option />").val("").text("No Authentication"));
+				jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes, function(key, authType){
+					jQueryWebhook('#extraAuthType').append(jQueryWebhook("<option />").val(key).text(authType.description));
+				});
+ 				
 				jQueryWebhook('select.templateAjaxRefresh').change(function() {
 					var selectedBuildState = jQueryWebhook('#currentTemplateBuildEvent').val();
 					var selectedBuildId = jQueryWebhook('#currentTemplateBuildId').val();
@@ -116,16 +111,6 @@
 				});
 		});
 		
-		function maximizeDialog(){
-			var maxDialogWidth = jQueryWebhook( document ).width() - 40;
-			var maxDialogHeight = jQueryWebhook( document ).height() - 40;
-			 
-		}
-		
-		function restoreDialog(){
-			
-		}
-
 		function selectBuildState(){
 			doExtraCompleted();
 		}
@@ -169,13 +154,97 @@
 			}
 
 		}
+		/*
+			If a webhook has an auth config, it will look like this:
+					"authConfig": {
+			            "type": "userpass",
+			            "preemptive": false,
+			            "parameters": {
+			              "password": "pass1234",
+			              "realm": "TeamCity",
+			              "username": "user"
+			            }
+			          }
+		
+			So, using the map of registeredAuthTypes find the matching authType's options to show
+			and populate its values from the webhook's config.
+			
+				    "registeredAuthTypes": {
+				        "userpass": {
+				          "description": "Username/Password Authentication (Basic Auth)",
+				          "paramaters": [
+				            {
+				              "key": "username",
+				              "required": true,
+				              "hidden": false,
+				              "name": "Username",
+				              "toolTip": "The username to authenticate as"
+				            },
+				            {
+				              "key": "password",
+				              "required": true,
+				              "hidden": true,
+				              "name": "Password",
+				              "toolTip": "The password to authenticate with"
+				            },
+				            {
+				              "key": "realm",
+				              "required": false,
+				              "hidden": false,
+				              "name": "Realm",
+				              "toolTip": "The Realm the server must present. This is ignored if preemptive is enabled (the default)"
+				            }
+				          ]
+				        }
+				      }			
+		*/
+		function populateWebHookAuthExtrasPane(webhookObj){
+			if (webhookObj.hasOwnProperty("authConfig") && ProjectBuilds.templatesAndWebhooks.registeredAuthTypes.hasOwnProperty(webhookObj.authConfig.type)){
+				jQueryWebhook('#extraAuthType').val(webhookObj.authConfig.type);
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive">Preemptive</label></td><td class="authParameterValueWrapper"><input type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
+				jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
+				jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[webhookObj.authConfig.type].parameters, function(index, paramObj){
+					jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
+																	+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="' 
+																	+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
+				});
+			} else {
+				jQueryWebhook('#extraAuthType').val("");
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+			}					
+		}
+		
+		function populateWebHookAuthExtrasPaneFromChange(webhookObj){
+			var authType = jQueryWebhook('#extraAuthType').val();
+			if (authType === ''){
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+			} else {
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive">Preemptive</label></td><td class="authParameterValueWrapper"><input type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
+				if (webhookObj.hasOwnProperty("authConfig") && webhookObj.authConfig.type == authType){
+					jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
+					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
+						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
+																		+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="extraAuthParam_' 
+																		+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
+					});
+				} else {
+					jQueryWebhook('#extraAuthPreemptive').prop('checked', true);
+					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
+						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
+																		+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="extraAuthParam_' 
+																		+ paramObj.key + '" class="authParameterValue"></td></tr>');
+					});					
+				}
+			
+			}
+		}
 		
 		function populateWebHookDialog(id){
 			jQueryWebhook('#buildList').empty();
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(thing, config){
-				if (id === config[0]){
-					var webhook = config[1];
-				
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
+				if (id === webHookKey){
 					jQueryWebhook('#webHookId').val(webhook.uniqueKey);	
 					jQueryWebhook('#webHookUrl').val(webhook.url);
 				    jQueryWebhook('#webHooksEnabled').prop('checked', webhook.enabled);
@@ -193,11 +262,20 @@
 						 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
 						 }
 					});
+					
+					populateWebHookAuthExtrasPane(webhook);
+					jQueryWebhook('select#extraAuthType').change(function() {
+						populateWebHookAuthExtrasPaneFromChange(webhook);
+					});
 				}
 			});
 			updateSelectedBuildTypes();
 			jQueryWebhook('#currentTemplateBuildId').empty();
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build) {
+				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
+			});
+			
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build) {
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 			
@@ -205,9 +283,8 @@
 
 		function lookupTemplate(templateFormatCombinationKey){
 			var name;
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
-				if (templateFormatCombinationKey === config[0]){
-					var template = config[1];
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
+				if (templateFormatCombinationKey === templateKey){
 					name = template.templateShortName;
 					return false;
 				}
@@ -217,9 +294,8 @@
 		
 		function lookupFormat(templateFormatCombinationKey){
 			var name;
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
-				if (templateFormatCombinationKey === config[0]){
-					var template = config[1];
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
+				if (templateFormatCombinationKey === templateKey){
 					name = template.formatShortName;
 					return false;
 				}
@@ -237,9 +313,9 @@
 		}
 		
 		function addWebHooksFromJsonCallback(){
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(thing, config){
-				if ('new' !== config[0]){
-					var webhook = config[1];
+			var webhookItems = ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList;
+			jQueryWebhook.each(webhookItems, function(webHookKey, webhook){
+				if ('new' !== webHookKey){
 					jQueryWebhook('.webHookRowTemplate')
 									.clone()
 									.prop("id", "viewRow_" + webhook.uniqueKey)
@@ -254,6 +330,7 @@
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){BS.WebHookForm.removeWebHook(webhook.uniqueKey,'#hookPane');});
 					
 				}
+				console.log("Adding webhook with uniqueId" + webhook.uniqueKey);
 			});
 			
 			jQueryWebhook('#currentTemplateBuildId').empty();
@@ -288,6 +365,7 @@
 			    this.showCentered();
 			    jQueryWebhook('#hookPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
+			    jQueryWebhook('#extrasPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 				jQueryWebhook('#tab-container').easytabs('select', tab);
 				
 				if (webhookDialogHeight < 0){
@@ -308,7 +386,6 @@
 			  	jQueryWebhook('#editWebHookDialog').innerWidth(maxDialogWidth);
 			  	jQueryWebhook('#editWebHookDialog').innerHeight(maxDialogHeight);
 			  	var dialogDiff = webhookDialogHeight - templatePaneOuterHeight;
-			  	//maxDialogHeight - ( jQueryWebhook('.dialogHeader').outerHeight() + jQueryWebhook('ul#etabs').outerHeight() + jQueryWebhook('.popupSaveButtonsBlock').outerHeight() );
 			  	jQueryWebhook('#templatePane').innerHeight(templatePaneOuterHeight + dialogDiff);
 			  	jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
 			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );

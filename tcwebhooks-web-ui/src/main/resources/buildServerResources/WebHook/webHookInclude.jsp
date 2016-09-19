@@ -67,6 +67,7 @@
 								  <ul class='etabs'>
 												   <li class='tab'><a href="#hookPane" class="active">WebHook Config</a></li>
 												   <li class='tab'><a href="#buildPane">Builds (<span id="selectedBuildCount">all</span>)</a></li>
+												   <li class='tab'><a href="#extrasPane">Extra Config</a></li>
 												   <li class='tab'><a href="#templatePane">Payload Content</a></li>
 								  </ul>
 						 <div class='panel-container'>
@@ -168,6 +169,21 @@
 					            		<div id='buildList' style="overflow:auto; padding:0;">
 						            	</div>
 						            </div><!--buildPane -->
+					    			<div id='extrasPane'>
+					    				<div id='extrasAuthPanel'>
+						    				<h2>Authentication</h2>
+						    				<div class="extraAuthParametersWrapper">
+												<table style="border:none;" id='extraAuthParameters'>
+													<thead>
+													<tr><th class="authParameterName">Type</th><th class="authParameterValueWrapper">
+									    				<select name="extraAuthType" id="extraAuthType" class="extraAuthRefresh authParameterValue"></select>
+									    			</th></tr>
+									    			</thead>
+									    			<tbody></tbody>
+												</table>
+											</div>
+						            	</div>
+						            </div><!--extrasPane -->
 						            <div id='templatePane'>
 						            	<div id='templateLeftPanel'>
 						            		<div id="currentTemplateName"></div>
