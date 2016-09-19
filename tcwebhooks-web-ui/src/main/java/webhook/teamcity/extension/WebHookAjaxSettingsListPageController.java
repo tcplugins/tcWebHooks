@@ -5,6 +5,9 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.Nullable;
+import org.springframework.web.servlet.ModelAndView;
+
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -12,13 +15,11 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
-
-import org.jetbrains.annotations.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
-import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
+import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.extension.util.ProjectHistoryResolver;
@@ -35,10 +36,11 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
 	    private final WebHookTemplateResolver myTemplateResolver;
+		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 
 	    public WebHookAjaxSettingsListPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor, 
-	    		WebHookTemplateResolver webHookTemplateResolver) {
+	    		WebHookTemplateResolver webHookTemplateResolver, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
@@ -46,6 +48,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        myPluginDescriptor = pluginDescriptor;
 	        myManager = manager;
 	        myTemplateResolver = webHookTemplateResolver;
+	        myAuthenticatorProvider = authenticatorProvider;
 	    }
 
 	    public void register(){
@@ -66,7 +69,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        	} else {
 			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 			    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
-		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 		    													TemplatesAndProjectWebHooksBean.build(
 		    															RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 		    																								myManager.getRegisteredFormats()), 
@@ -75,7 +78,8 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    																						myManager.getRegisteredFormatsAsCollection(),
 		    																						myTemplateResolver.findWebHookTemplatesForProject(project)
 		    																						),
-		    															ProjectHistoryResolver.getProjectHistory(project)		    																						
+		    															ProjectHistoryResolver.getProjectHistory(project),
+		    															RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 		    															)
 	        														)
 		    													);
@@ -87,7 +91,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		        	if (project != null){
 				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
 				    			mySettings.getSettings(project.getProjectId(), "webhooks");
-		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 		        				TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()
@@ -96,7 +100,8 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 																			myManager.getRegisteredFormatsAsCollection(), 
 																			myTemplateResolver.findWebHookTemplatesForProject(project)
 																),
-										ProjectHistoryResolver.getBuildHistory(sBuildType)																
+										ProjectHistoryResolver.getBuildHistory(sBuildType),
+										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 									)
 								));
 		        	}

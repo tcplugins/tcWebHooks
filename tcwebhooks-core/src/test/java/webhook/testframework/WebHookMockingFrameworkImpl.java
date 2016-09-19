@@ -337,4 +337,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return whl;
 	}
 
+	@Override
+	public WebHookAuthenticatorProvider getWebHookAuthenticatorProvider() {
+		return authenticatorProvider;
+	}
+
 }

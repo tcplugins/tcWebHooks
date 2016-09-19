@@ -62,7 +62,7 @@
 				});
 				jQueryWebhook('#payloadFormatHolder').change(function() {
 					var formatName = jQueryWebhook(this).val();
-  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
+  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, config){
 						if (formatName === config[0]){
 							var template = config[1];
 							jQueryWebhook("#hookPane .buildState").each(function(thing, state){
@@ -92,7 +92,12 @@
 					});
 				});
 				
-				
+				jQueryWebhook('#extraAuthType').empty();
+				jQueryWebhook('#extraAuthType').append(jQueryWebhook("<option />").val("").text("No Authentication"));
+				jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes, function(key, authType){
+					jQueryWebhook('#extraAuthType').append(jQueryWebhook("<option />").val(key).text(authType.description));
+				});
+ 				
 				jQueryWebhook('select.templateAjaxRefresh').change(function() {
 					var selectedBuildState = jQueryWebhook('#currentTemplateBuildEvent').val();
 					var selectedBuildId = jQueryWebhook('#currentTemplateBuildId').val();
@@ -172,9 +177,9 @@
 		
 		function populateWebHookDialog(id){
 			jQueryWebhook('#buildList').empty();
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(thing, config){
-				if (id === config[0]){
-					var webhook = config[1];
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
+				if (id === webHookKey){
+					//var webhook = config[1];
 				
 					jQueryWebhook('#webHookId').val(webhook.uniqueKey);	
 					jQueryWebhook('#webHookUrl').val(webhook.url);
@@ -193,6 +198,12 @@
 						 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
 						 }
 					});
+					
+					if (webhook.hasOwnProperty("authConfig")){
+						jQueryWebhook('#extraAuthType').val(authConfig.type).change();							
+					} else {
+						jQueryWebhook('#extraAuthType').val("").change();
+					}					
 				}
 			});
 			updateSelectedBuildTypes();
@@ -201,13 +212,17 @@
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 			
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
+			});
+			
 		}
 
 		function lookupTemplate(templateFormatCombinationKey){
 			var name;
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
-				if (templateFormatCombinationKey === config[0]){
-					var template = config[1];
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
+				if (templateFormatCombinationKey === templateKey){
+					//var template = config[1];
 					name = template.templateShortName;
 					return false;
 				}
@@ -217,9 +232,9 @@
 		
 		function lookupFormat(templateFormatCombinationKey){
 			var name;
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(thing, config){
-				if (templateFormatCombinationKey === config[0]){
-					var template = config[1];
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
+				if (templateFormatCombinationKey === templateKey){
+					//var template = config[1];
 					name = template.formatShortName;
 					return false;
 				}
@@ -237,9 +252,10 @@
 		}
 		
 		function addWebHooksFromJsonCallback(){
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(thing, config){
-				if ('new' !== config[0]){
-					var webhook = config[1];
+			var webhookItems = ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList;
+			jQueryWebhook.each(webhookItems, function(webHookKey, webhook){
+				if ('new' !== webHookKey){
+					//var webhook = config[1];
 					jQueryWebhook('.webHookRowTemplate')
 									.clone()
 									.prop("id", "viewRow_" + webhook.uniqueKey)
@@ -254,6 +270,7 @@
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){BS.WebHookForm.removeWebHook(webhook.uniqueKey,'#hookPane');});
 					
 				}
+				console.log("Adding webhook with uniqueId" + webhook.uniqueKey);
 			});
 			
 			jQueryWebhook('#currentTemplateBuildId').empty();
@@ -288,6 +305,7 @@
 			    this.showCentered();
 			    jQueryWebhook('#hookPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 			    jQueryWebhook('#buildPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
+			    jQueryWebhook('#extrasPane').innerHeight(jQueryWebhook('#templatePane').innerHeight());
 				jQueryWebhook('#tab-container').easytabs('select', tab);
 				
 				if (webhookDialogHeight < 0){

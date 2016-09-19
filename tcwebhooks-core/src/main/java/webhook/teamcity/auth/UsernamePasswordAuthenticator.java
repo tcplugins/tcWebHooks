@@ -11,13 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
 
-		private static final String REALM = "realm";
-		private static final String PASSWORD = "password";
-		private static final String USERNAME = "username";
+		protected static final String REALM = "realm";
+		protected static final String PASSWORD = "password";
+		protected static final String USERNAME = "username";
 		WebHookAuthenticatorProvider myProvider;
 		WebHookAuthConfig config;
-	
-
+		
 		@Override
 		public void addAuthentication(PostMethod method, HttpClient client, String url) {
 			if (config.parameters.containsKey(USERNAME) && config.parameters.containsKey(PASSWORD)){
@@ -44,5 +43,6 @@ public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
 			this.config = authenticationConfig;
 			
 		}
+
 }
 

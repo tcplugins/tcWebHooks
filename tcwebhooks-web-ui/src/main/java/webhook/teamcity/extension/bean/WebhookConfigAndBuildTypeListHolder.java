@@ -22,6 +22,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<WebhookBuildTypeEnabledStatusBean>();
 	private String enabledEventsListForWeb;
 	private String enabledBuildsListForWeb;
+	private WebhookAuthenticationConfigBean authConfig = null;
 	
 	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList) {
 		url = config.getUrl();
@@ -36,7 +37,9 @@ public class WebhookConfigAndBuildTypeListHolder {
 		for (BuildStateEnum state : config.getBuildStates().getStateSet()){
 			states.add(new StateBean(state.getShortName(), config.getBuildStates().enabled(state)));
 		}
-		
+		if (config.getAuthenticationConfig() != null){
+			this.authConfig = WebhookAuthenticationConfigBean.build(config.getAuthenticationConfig());
+		}
 		WebHookTemplate t = null;
 		
 		if (payloadFormat != null){
@@ -120,6 +123,14 @@ public class WebhookConfigAndBuildTypeListHolder {
 	
 	public List<StateBean> getStates() {
 		return states;
+	}
+	
+	public WebhookAuthenticationConfigBean getAuthConfig() {
+		return authConfig;
+	}
+	
+	public void setAuthConfig(WebhookAuthenticationConfigBean authConfig) {
+		this.authConfig = authConfig;
 	}
 	
 }
