@@ -174,6 +174,92 @@
 			}
 
 		}
+		/*
+			If a webhook has an auth config, it will look like this:
+					"authConfig": {
+			            "type": "userpass",
+			            "preemptive": false,
+			            "parameters": {
+			              "password": "pass1234",
+			              "realm": "TeamCity",
+			              "username": "user"
+			            }
+			          }
+		
+			So, using the map of registeredAuthTypes find the matching authType's options to show
+			and populate its values from the webhook's config.
+			
+				    "registeredAuthTypes": {
+				        "userpass": {
+				          "description": "Username/Password Authentication (Basic Auth)",
+				          "paramaters": [
+				            {
+				              "key": "username",
+				              "required": true,
+				              "hidden": false,
+				              "name": "Username",
+				              "toolTip": "The username to authenticate as"
+				            },
+				            {
+				              "key": "password",
+				              "required": true,
+				              "hidden": true,
+				              "name": "Password",
+				              "toolTip": "The password to authenticate with"
+				            },
+				            {
+				              "key": "realm",
+				              "required": false,
+				              "hidden": false,
+				              "name": "Realm",
+				              "toolTip": "The Realm the server must present. This is ignored if preemptive is enabled (the default)"
+				            }
+				          ]
+				        }
+				      }			
+		*/
+		function populateWebHookAuthExtrasPane(webhookObj){
+			if (webhookObj.hasOwnProperty("authConfig") && ProjectBuilds.templatesAndWebhooks.registeredAuthTypes.hasOwnProperty(webhookObj.authConfig.type)){
+				jQueryWebhook('#extraAuthType').val(webhookObj.authConfig.type);
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive">Preemptive</label></td><td class="authParameterValueWrapper"><input type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
+				jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
+				jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[webhookObj.authConfig.type].parameters, function(index, paramObj){
+					jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
+																	+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="' 
+																	+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
+				});
+			} else {
+				jQueryWebhook('#extraAuthType').val("");
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+			}					
+		}
+		
+		function populateWebHookAuthExtrasPaneFromChange(webhookObj){
+			var authType = jQueryWebhook('#extraAuthType').val();
+			if (authType === ''){
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+			} else {
+				jQueryWebhook('#extraAuthParameters > tbody').empty();
+				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive">Preemptive</label></td><td class="authParameterValueWrapper"><input type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
+				if (webhookObj.hasOwnProperty("authConfig") && webhookObj.authConfig.type == authType){
+					jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
+					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
+						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
+																		+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="extraAuthParam_' 
+																		+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
+					});
+				} else {
+					jQueryWebhook('#extraAuthPreemptive').prop('checked', true);
+					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
+						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
+																		+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="extraAuthParam_' 
+																		+ paramObj.key + '" class="authParameterValue"></td></tr>');
+					});					
+				}
+			
+			}
+		}
 		
 		function populateWebHookDialog(id){
 			jQueryWebhook('#buildList').empty();
@@ -199,20 +285,19 @@
 						 }
 					});
 					
-					if (webhook.hasOwnProperty("authConfig")){
-						jQueryWebhook('#extraAuthType').val(authConfig.type).change();							
-					} else {
-						jQueryWebhook('#extraAuthType').val("").change();
-					}					
+					populateWebHookAuthExtrasPane(webhook);
+					jQueryWebhook('select#extraAuthType').change(function() {
+						populateWebHookAuthExtrasPaneFromChange(webhook);
+					});
 				}
 			});
 			updateSelectedBuildTypes();
 			jQueryWebhook('#currentTemplateBuildId').empty();
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build) {
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 			
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build) {
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 			

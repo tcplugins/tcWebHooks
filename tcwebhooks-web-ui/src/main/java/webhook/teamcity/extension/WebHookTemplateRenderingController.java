@@ -92,7 +92,7 @@ public class WebHookTemplateRenderingController extends BaseController {
 			wh.setEnabled(true);
 			wh.setBuildStates(new BuildState().setAllEnabled());
 			
-			wh = myContentBuilder.buildWebHookContent(wh, new WebHookConfig("", true, wh.getBuildStates(), payloadFormat, payloadTemplate, true, true, new TreeSet<String>()), sBuild, state, true);
+			wh = myContentBuilder.buildWebHookContent(wh, new WebHookConfig("", true, wh.getBuildStates(), payloadFormat, payloadTemplate, true, true, new TreeSet<String>(), null), sBuild, state, true);
 			
 			WebHookStringRenderer renderer = myPayloadManager.getFormat(payloadFormat).getWebHookStringRenderer();
 			

@@ -1,5 +1,6 @@
 package webhook.teamcity.extension;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +23,7 @@ import jetbrains.buildServer.web.util.SessionUser;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
@@ -150,10 +152,29 @@ public class WebHookAjaxEditPageController extends BaseController {
 												}
 			    							}
 			    						}
-		    						
+			    						WebHookAuthConfig webHookAuthConfig = null;
+			    						if (request.getParameter("extraAuthType") !=null 
+			    								&& !request.getParameter("extraAuthType").equals("")){
+			    							
+			    							webHookAuthConfig =  new WebHookAuthConfig();
+			    							webHookAuthConfig.type = request.getParameter("extraAuthType").toString();
+			    							webHookAuthConfig.preemptive = false;
+			    							if (request.getParameter("extraAuthPreemptive") != null){
+			    								webHookAuthConfig.preemptive = request.getParameter("extraAuthPreemptive").equalsIgnoreCase("on");
+			    							}
+				    						Enumeration<String> attrs =  request.getParameterNames();
+				    						while(attrs.hasMoreElements()) {
+				    							String paramName = attrs.nextElement();
+				    							if (paramName.startsWith("extraAuthParam_") && request.getParameter(paramName) != null){
+				    								webHookAuthConfig.parameters.put(paramName.substring("extraAuthParam_".length()), request.getParameter(paramName).toString());
+				    							}
+				    						}
+			    						}
+			    						
 			    						if (request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
-			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -163,7 +184,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");

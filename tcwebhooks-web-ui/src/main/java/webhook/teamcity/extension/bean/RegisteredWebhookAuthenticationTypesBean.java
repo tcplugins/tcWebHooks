@@ -31,11 +31,11 @@ public class RegisteredWebhookAuthenticationTypesBean {
 	public static class SimpleAuthType {
 		
 		private String description;
-		private List<WebHookAuthenticationParameter> paramaters = new ArrayList<WebHookAuthenticationParameter>();
+		private List<WebHookAuthenticationParameter> parameters = new ArrayList<WebHookAuthenticationParameter>();
 
 		public SimpleAuthType(String description, List<WebHookAuthenticationParameter> params) {
 			this.description = description;
-			this.paramaters.addAll(params);
+			this.parameters.addAll(params);
 		}
 	}
 

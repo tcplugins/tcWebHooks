@@ -171,11 +171,17 @@
 						            </div><!--buildPane -->
 					    			<div id='extrasPane'>
 					    				<div id='extrasAuthPanel'>
-										<table style="border:none;">
-											<tr style="border:none;"><td>Authentication:</td>
-												<td> <select name="extraAuthType" id="extraAuthType" class="extraAuthRefresh"></select></td>
-											</tr>
-										</table>
+						    				<h2>Authentication</h2>
+						    				<div class="extraAuthParametersWrapper">
+												<table style="border:none;" id='extraAuthParameters'>
+													<thead>
+													<tr><th class="authParameterName">Type</th><th class="authParameterValueWrapper">
+									    				<select name="extraAuthType" id="extraAuthType" class="extraAuthRefresh authParameterValue"></select>
+									    			</th></tr>
+									    			</thead>
+									    			<tbody></tbody>
+												</table>
+											</div>
 						            	</div>
 						            </div><!--extrasPane -->
 						            <div id='templatePane'>
