@@ -64,7 +64,6 @@
 					var formatName = jQueryWebhook(this).val();
   					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, template){
 						if (formatName === formatKey){
-							//var template = config[1];
 							jQueryWebhook("#hookPane .buildState").each(function(thing, state){
 								if ((jQueryWebhook.inArray(state.id, template.supportedStates) >= 0) &&
 									(jQueryWebhook.inArray(state.id, template.supportedBranchStates) >= 0))
@@ -77,16 +76,7 @@
 										jQueryWebhook("input#" + state.id).prop('disabled', 'disabled');
 										jQueryWebhook("#currentTemplateBuildEvent option[value=" + state.id + "]").prop('disabled', 'disabled');
 								}
-							//console.log(state);
-							//console.log(state.id);
 							});
-							
-							//if (jQueryWebhook.inArray
-							//jQueryWebhook.each(template.supportedStates, function(thingy, state){
-							//console.log("My state is: " + state);
-							//		jQueryWebhook("td." + state).removeClass('buildStateDisabled');
-							//		jQueryWebhook("input#" + state).prop('disabled', false);
-							//}); 
 							return false;
 						}
 					});
@@ -255,8 +245,6 @@
 			jQueryWebhook('#buildList').empty();
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
 				if (id === webHookKey){
-					//var webhook = config[1];
-				
 					jQueryWebhook('#webHookId').val(webhook.uniqueKey);	
 					jQueryWebhook('#webHookUrl').val(webhook.url);
 				    jQueryWebhook('#webHooksEnabled').prop('checked', webhook.enabled);
@@ -297,7 +285,6 @@
 			var name;
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
 				if (templateFormatCombinationKey === templateKey){
-					//var template = config[1];
 					name = template.templateShortName;
 					return false;
 				}
@@ -309,7 +296,6 @@
 			var name;
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
 				if (templateFormatCombinationKey === templateKey){
-					//var template = config[1];
 					name = template.formatShortName;
 					return false;
 				}
@@ -330,7 +316,6 @@
 			var webhookItems = ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList;
 			jQueryWebhook.each(webhookItems, function(webHookKey, webhook){
 				if ('new' !== webHookKey){
-					//var webhook = config[1];
 					jQueryWebhook('.webHookRowTemplate')
 									.clone()
 									.prop("id", "viewRow_" + webhook.uniqueKey)
@@ -401,7 +386,6 @@
 			  	jQueryWebhook('#editWebHookDialog').innerWidth(maxDialogWidth);
 			  	jQueryWebhook('#editWebHookDialog').innerHeight(maxDialogHeight);
 			  	var dialogDiff = webhookDialogHeight - templatePaneOuterHeight;
-			  	//maxDialogHeight - ( jQueryWebhook('.dialogHeader').outerHeight() + jQueryWebhook('ul#etabs').outerHeight() + jQueryWebhook('.popupSaveButtonsBlock').outerHeight() );
 			  	jQueryWebhook('#templatePane').innerHeight(templatePaneOuterHeight + dialogDiff);
 			  	jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
 			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );

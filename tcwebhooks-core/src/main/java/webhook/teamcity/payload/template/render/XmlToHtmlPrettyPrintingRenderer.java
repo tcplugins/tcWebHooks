@@ -10,8 +10,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
-
 public class XmlToHtmlPrettyPrintingRenderer implements WebHookStringRenderer {
 	
 	
