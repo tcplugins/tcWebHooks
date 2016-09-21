@@ -62,9 +62,9 @@
 				});
 				jQueryWebhook('#payloadFormatHolder').change(function() {
 					var formatName = jQueryWebhook(this).val();
-  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, config){
-						if (formatName === config[0]){
-							var template = config[1];
+  					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, template){
+						if (formatName === formatKey){
+							//var template = config[1];
 							jQueryWebhook("#hookPane .buildState").each(function(thing, state){
 								if ((jQueryWebhook.inArray(state.id, template.supportedStates) >= 0) &&
 									(jQueryWebhook.inArray(state.id, template.supportedBranchStates) >= 0))
@@ -121,16 +121,6 @@
 				});
 		});
 		
-		function maximizeDialog(){
-			var maxDialogWidth = jQueryWebhook( document ).width() - 40;
-			var maxDialogHeight = jQueryWebhook( document ).height() - 40;
-			 
-		}
-		
-		function restoreDialog(){
-			
-		}
-
 		function selectBuildState(){
 			doExtraCompleted();
 		}
