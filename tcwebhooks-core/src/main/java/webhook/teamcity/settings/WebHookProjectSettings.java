@@ -161,6 +161,11 @@ public class WebHookProjectSettings implements ProjectSettings {
             			whc.setAuthType(webHookAuthConfig.type);
             			whc.setAuthPreemptive(webHookAuthConfig.preemptive);
             			whc.setAuthParameters(webHookAuthConfig.parameters);
+            		} else {
+            			whc.setAuthEnabled(false);
+            			whc.setAuthType("");
+            			whc.setAuthPreemptive(true);
+            			whc.clearAuthParameters();
             		}
                 	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + ProjectId + " with URL " + whc.getUrl());
                    	this.updateSuccess = true;

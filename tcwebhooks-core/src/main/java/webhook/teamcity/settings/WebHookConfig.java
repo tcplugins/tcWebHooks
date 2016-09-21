@@ -616,6 +616,10 @@ public class WebHookConfig {
 		this.authParameters.putAll(authParameters);
 	}
 	
+	public void clearAuthParameters() {
+		this.authParameters.clear();
+	}
+	
 	public void setAuthType(String authType) {
 		this.authType = authType;
 	}
