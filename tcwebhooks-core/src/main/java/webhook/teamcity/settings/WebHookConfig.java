@@ -12,8 +12,8 @@ import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class WebHookConfig {
 	private Set<String> enabledBuildTypesSet = new HashSet<>();
 	private String authType = "";
 	private Boolean authEnabled = false;
-	private SortedMap<String,String> authParameters;
+	private Map<String,String> authParameters;
 	private Boolean authPreemptive = true;
 	private List<WebHookFilterConfig> filters;
 	
@@ -56,9 +56,9 @@ public class WebHookConfig {
 		
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		this.uniqueKey = Rand.toString();
+		this.uniqueKey = "id_" + Rand.toString();
 		this.extraParameters = new TreeMap<>();
-		this.authParameters = new TreeMap<>();
+		this.authParameters = new LinkedHashMap<>();
 		this.templates = new TreeMap<>();
 		this.filters = new ArrayList<>();
 		
@@ -234,11 +234,12 @@ public class WebHookConfig {
 	 * @param enabled
 	 * @param stateMask
 	 * @param payloadFormat (unvalidated)
+	 * @param webHookAuthConfig 
 	 */
-	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes){
+	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		this.uniqueKey = Rand.toString();
+		this.uniqueKey = "id_" + Rand.toString();
 		this.extraParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
 		this.setUrl(url);
@@ -250,6 +251,12 @@ public class WebHookConfig {
 		this.allBuildTypesEnabled = buildTypeAllEnabled;
 		if (!this.allBuildTypesEnabled){
 			this.enabledBuildTypesSet = enabledBuildTypes;
+		}
+		if (webHookAuthConfig != null){
+			this.authType = webHookAuthConfig.type;
+			this.authPreemptive = webHookAuthConfig.preemptive;
+			this.authEnabled = true;
+			this.authParameters.putAll(webHookAuthConfig.parameters);
 		}
 	}
 
@@ -599,7 +606,27 @@ public class WebHookConfig {
 	public Boolean getAuthEnabled() {
 		return authEnabled;
 	}
-
+	
+	public void setAuthEnabled(Boolean authEnabled) {
+		this.authEnabled = authEnabled;
+	}
+	
+	public void setAuthParameters(Map<String, String> authParameters) {
+		this.authParameters.putAll(authParameters);
+	}
+	
+	public void clearAuthParameters() {
+		this.authParameters.clear();
+	}
+	
+	public void setAuthType(String authType) {
+		this.authType = authType;
+	}
+	
+	public void setAuthPreemptive(Boolean authPreemptive) {
+		this.authPreemptive = authPreemptive;
+	}
+	
 	public WebHookAuthConfig getAuthenticationConfig() {
 		if (authEnabled && !authType.equals("")){
 			WebHookAuthConfig webhookAuthConfig= new WebHookAuthConfig();

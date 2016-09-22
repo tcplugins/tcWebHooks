@@ -1,11 +1,15 @@
 package webhook.teamcity.extension;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jetbrains.annotations.Nullable;
+import org.springframework.web.servlet.ModelAndView;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
@@ -16,15 +20,14 @@ import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
-
-import org.jetbrains.annotations.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
-import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
+import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.extension.util.EnabledBuildStateResolver;
@@ -51,10 +54,11 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
 		private final WebHookTemplateResolver myTemplateResolver;
+		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
-	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor) {
+	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
@@ -62,6 +66,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	        myManager = manager;
 	        myTemplateResolver = templateResolver;
+	        myAuthenticatorProvider = authenticatorProvider;
 	    }
 
 	    public void register(){
@@ -147,10 +152,29 @@ public class WebHookAjaxEditPageController extends BaseController {
 												}
 			    							}
 			    						}
-		    						
+			    						WebHookAuthConfig webHookAuthConfig = null;
+			    						if (request.getParameter("extraAuthType") !=null 
+			    								&& !request.getParameter("extraAuthType").equals("")){
+			    							
+			    							webHookAuthConfig =  new WebHookAuthConfig();
+			    							webHookAuthConfig.type = request.getParameter("extraAuthType").toString();
+			    							webHookAuthConfig.preemptive = false;
+			    							if (request.getParameter("extraAuthPreemptive") != null){
+			    								webHookAuthConfig.preemptive = request.getParameter("extraAuthPreemptive").equalsIgnoreCase("on");
+			    							}
+				    						Enumeration<String> attrs =  request.getParameterNames();
+				    						while(attrs.hasMoreElements()) {
+				    							String paramName = attrs.nextElement();
+				    							if (paramName.startsWith("extraAuthParam_") && request.getParameter(paramName) != null){
+				    								webHookAuthConfig.parameters.put(paramName.substring("extraAuthParam_".length()), request.getParameter(paramName).toString());
+				    							}
+				    						}
+			    						}
+			    						
 			    						if (request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
-			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -160,7 +184,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -218,7 +243,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
 			    		
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats()), 
@@ -227,7 +252,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 																	myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																	),
-										ProjectHistoryResolver.getProjectHistory(project)																	
+										ProjectHistoryResolver.getProjectHistory(project),
+										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 										)
 									)
 								);

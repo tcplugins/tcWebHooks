@@ -12,12 +12,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.ServerPaths;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplate;

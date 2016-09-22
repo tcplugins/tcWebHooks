@@ -13,6 +13,7 @@ import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.auth.WebHookAuthConfig;
 
 
 public class WebHookProjectSettings implements ProjectSettings {
@@ -134,7 +135,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    	
     }
 
-	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled) {
+	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
         if(this.webHooksConfigs != null)
         {
         	updateSuccess = false;
@@ -155,6 +156,17 @@ public class WebHookProjectSettings implements ProjectSettings {
                 			whc.enableBuildInProject(bt);
                 		}
                 	}
+            		if (webHookAuthConfig != null){
+            			whc.setAuthEnabled(true);
+            			whc.setAuthType(webHookAuthConfig.type);
+            			whc.setAuthPreemptive(webHookAuthConfig.preemptive);
+            			whc.setAuthParameters(webHookAuthConfig.parameters);
+            		} else {
+            			whc.setAuthEnabled(false);
+            			whc.setAuthType("");
+            			whc.setAuthPreemptive(true);
+            			whc.clearAuthParameters();
+            		}
                 	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + ProjectId + " with URL " + whc.getUrl());
                    	this.updateSuccess = true;
                 }
@@ -163,7 +175,11 @@ public class WebHookProjectSettings implements ProjectSettings {
 	}
 
 	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
-		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled));
+		addNewWebHook(ProjectId, URL, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null);
+	}
+	
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig));
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSuccess = true;
 	}

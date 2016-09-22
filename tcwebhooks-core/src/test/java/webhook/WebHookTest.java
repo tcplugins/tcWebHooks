@@ -1,20 +1,15 @@
 package webhook;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
@@ -35,7 +30,6 @@ public class WebHookTest{
 	public String proxyPassword = "bar";
 	
 	TestingWebHookFactory factory = new TestingWebHookFactory();
-	//WebHookFactory actualfactory = new WebHookFactoryImpl();
 	
 	@Test
 	public void test_BuildStates(){

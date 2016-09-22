@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.jdom.JDOMException;
+
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
 import jetbrains.buildServer.serverSide.ProjectManager;
@@ -22,10 +24,6 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.jdom.JDOMException;
-
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.teamcity.BuildStateEnum;
@@ -35,7 +33,6 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
-import webhook.teamcity.WebHookHttpClientFactory;
 import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
@@ -187,7 +184,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 
 	private WebHookTemplate getTestingTemplate() {
 		return new WebHookTemplate() {
-			WebHookTemplateManager manager;
+			@SuppressWarnings("unused")
+			WebHookTemplateManager manager = null;
 			BuildStateEnum[] supportedStates = {BuildStateEnum.BUILD_SUCCESSFUL, BuildStateEnum.BUILD_FAILED, BuildStateEnum.BUILD_BROKEN, BuildStateEnum.BUILD_FIXED};
 			
 			@Override
@@ -346,6 +344,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public WebHookListener getWebHookListener() {
 		return whl;
+	}
+
+	@Override
+	public WebHookAuthenticatorProvider getWebHookAuthenticatorProvider() {
+		return authenticatorProvider;
 	}
 
 }
