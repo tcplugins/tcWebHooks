@@ -20,12 +20,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
+import static webhook.teamcity.endpoint.WebHookEndPointViewerController.stripTrailingSlash;
 
 public class WebHookEndPointController extends BaseController {
 	
 	
-	public static final String MY_URL_WITHOUT_SLASH = "webhooks/endpoint.html";
-	public static final String MY_URL = "/" + MY_URL_WITHOUT_SLASH;
+	public static final String MY_URL = "/webhooks/endpoint.html";
 	private final WebHookEndPointContentStore endPointContentStore;
 	private final WebControllerManager myWebManager;
 	
@@ -107,7 +107,7 @@ public class WebHookEndPointController extends BaseController {
 			return null;
     		
     	} else if (request.getMethod().equalsIgnoreCase("get")){
-    		response.sendRedirect(myServer.getRootUrl() + WebHookEndPointViewerController.MY_URL_WITHOUT_SLASH);
+    		response.sendRedirect(stripTrailingSlash(myServer.getRootUrl()) + WebHookEndPointViewerController.MY_URL);
     	}
     	
     	response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
