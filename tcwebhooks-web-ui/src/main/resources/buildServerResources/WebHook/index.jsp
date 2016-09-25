@@ -50,6 +50,7 @@
     	<script type=text/javascript src="..${jspHome}WebHook/js/jquery-1.4.3.min.js"></script>
     </c:if>
 	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
     <script type=text/javascript>
 		var jQueryWebhook = jQuery.noConflict();
 		var webhookDialogWidth = -1;
@@ -99,8 +100,6 @@
 										payloadFormat: lookupFormat(jQueryWebhook('#payloadFormatHolder').val())
 									})
 									.done(function(data){
-											console.log(data);
-											console.log(data.templatesOutput);
 											jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
 											jQueryWebhook('#currentTemplateRendered').html(data.templatesOutput.webhookTemplateRendered);
 											
@@ -198,15 +197,21 @@
 				        }
 				      }			
 		*/
+		
+		var preemptiveToolTip = "Preemptively sends credentials on first request. " +
+								"Without preemption, the webhook will only send credentials when a 401 UNAUTHORIZED response is received " +
+								"and the Server\'s Realm (if any) matches, which would require two requests for each webhook event.";
+		
 		function populateWebHookAuthExtrasPane(webhookObj){
 			if (webhookObj.hasOwnProperty("authConfig") && ProjectBuilds.templatesAndWebhooks.registeredAuthTypes.hasOwnProperty(webhookObj.authConfig.type)){
 				jQueryWebhook('#extraAuthType').val(webhookObj.authConfig.type);
 				jQueryWebhook('#extraAuthParameters > tbody').empty();
-				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive">Preemptive</label></td><td class="authParameterValueWrapper"><input type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
+				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive" title="' + preemptiveToolTip +'">Preemptive</label></td>' + 
+																	 '<td class="authParameterValueWrapper"><input title="' + preemptiveToolTip +'" type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
 				jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
 				jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[webhookObj.authConfig.type].parameters, function(index, paramObj){
-					jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
-																	+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="' 
+					jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthParam_' + paramObj.key + '" title="'+ paramObj.toolTip + '">' 
+																	+ paramObj.name + '</label></td><td class="authParameterValueWrapper"><input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
 																	+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
 				});
 			} else {
@@ -221,7 +226,8 @@
 				jQueryWebhook('#extraAuthParameters > tbody').empty();
 			} else {
 				jQueryWebhook('#extraAuthParameters > tbody').empty();
-				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive">Preemptive</label></td><td class="authParameterValueWrapper"><input type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
+				jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive" title="' + preemptiveToolTip +'">Preemptive</label></td>' + 
+																	 '<td class="authParameterValueWrapper"><input title="' + preemptiveToolTip +'" type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
 				if (webhookObj.hasOwnProperty("authConfig") && webhookObj.authConfig.type == authType){
 					jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
 					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
@@ -245,6 +251,11 @@
 			jQueryWebhook('#buildList').empty();
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
 				if (id === webHookKey){
+					
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey).animate({
+			            backgroundColor: "#ffffcc"
+			    	}, 1000 );
+					
 					jQueryWebhook('#webHookId').val(webhook.uniqueKey);	
 					jQueryWebhook('#webHookUrl').val(webhook.url);
 				    jQueryWebhook('#webHooksEnabled').prop('checked', webhook.enabled);
@@ -330,7 +341,12 @@
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){BS.WebHookForm.removeWebHook(webhook.uniqueKey,'#hookPane');});
 					
 				}
-				console.log("Adding webhook with uniqueId" + webhook.uniqueKey);
+				if (webhook.uniqueKey === jQueryWebhook('#webHookId').val()){
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey).css('background-color', '#cceecc');
+		            jQueryWebhook("#viewRow_" + webhook.uniqueKey).animate({
+		                backgroundColor: "#ffffff"
+		            }, 1500 );
+				}
 			});
 			
 			jQueryWebhook('#currentTemplateBuildId').empty();
@@ -378,6 +394,10 @@
 
 			  cancelDialog : function() {
 			    this.close();
+			    jQueryWebhook('li.tab').removeAttr('style');
+	            jQueryWebhook("#viewRow_" + jQueryWebhook('#webHookId').val()).animate({
+	                backgroundColor: "#ffffff"
+	            }, 500 );
 			  },
 			  
 			  maximizeDialog : function() {
@@ -439,19 +459,31 @@
 			      onEmptyWebHookUrlError : function(elem) {
 			        $("error_webHookUrl").innerHTML = elem.firstChild.nodeValue;
 			        that.highlightErrorField($('webHookUrl'));
+			        jQueryWebhook('li.tab').removeAttr('style');
+			        jQueryWebhook("#hookPaneTab").animate({
+			        	backgroundColor: "#eecccc"
+			        }, 500);
 			      },
 
 			      onEmptyPayloadFormatError : function(elem) {
 			        $("error_payloadFormat").innerHTML = elem.firstChild.nodeValue;
 			        that.highlightErrorField($('payloadFormatTable'));
+			        jQueryWebhook('li.tab').removeAttr('style');
+			        jQueryWebhook("#hookPaneTab").animate({
+			        	backgroundColor: "#eecccc"
+			        }, 500);
 			      },
 
 			      onCompleteSave : function(form, responseXML, err) {
 			    	BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 			        form.enable();
 			        if (!err) {
-			          $('systemParams').updateContainer();
-			          BS.EditWebHookDialog.close();
+			        	jQueryWebhook('li.tab').removeAttr('style');	
+			            jQueryWebhook("#viewRow_" + jQueryWebhook('#webHookId').val()).animate({
+			                backgroundColor: "#cceecc"
+			            }, 500 );	
+			            $('systemParams').updateContainer();
+			            BS.EditWebHookDialog.close();
 			        }
 			      }
 			    }));
