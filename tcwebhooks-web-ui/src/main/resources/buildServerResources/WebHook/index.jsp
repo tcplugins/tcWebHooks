@@ -231,15 +231,15 @@
 				if (webhookObj.hasOwnProperty("authConfig") && webhookObj.authConfig.type == authType){
 					jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
 					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
-						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
-																		+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="extraAuthParam_' 
+						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthParam_' + paramObj.key + '" title="'+ paramObj.toolTip + '">' 
+																		+ paramObj.name + '</label></td><td class="authParameterValueWrapper"><input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
 																		+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
 					});
 				} else {
 					jQueryWebhook('#extraAuthPreemptive').prop('checked', true);
 					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
-						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName">' 
-																		+ paramObj.name + '</td><td class="authParameterValueWrapper"><input type=text name="extraAuthParam_' 
+						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthParam_' + paramObj.key + '" title="'+ paramObj.toolTip + '">' 
+																		+ paramObj.name + '</label></td><td class="authParameterValueWrapper"><input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
 																		+ paramObj.key + '" class="authParameterValue"></td></tr>');
 					});					
 				}
