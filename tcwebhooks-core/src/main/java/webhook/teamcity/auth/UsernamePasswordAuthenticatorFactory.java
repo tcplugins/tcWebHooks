@@ -13,9 +13,9 @@ public class UsernamePasswordAuthenticatorFactory implements WebHookAuthenticato
 		public UsernamePasswordAuthenticatorFactory(WebHookAuthenticatorProvider provider) {
 			myProvider = provider;
 			parameterDefinition = new ArrayList<>();
-			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.USERNAME, true, false, "Username", "The username to authenticate as"));
-			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.PASSWORD, true, true, "Password", "The password to authenticate with"));
-			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.REALM, false, false, "Realm", "The Realm the server must present. This is ignored if preemptive is enabled (the default)"));
+			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.USERNAME, true, false, "Username", "The username that the webhook should send to authenticate with the webserver."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.PASSWORD, true, true, "Password", "The password that the webhook should send to authenticate with the webserver."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.REALM, false, false, "Realm", "The Realm the server must present before this webhook will send credentials. This is ignored if preemptive is enabled, because the webhook does not make a first request to expect a 401 repsonse and to retreive the realm."));
 		
 		}
 		
