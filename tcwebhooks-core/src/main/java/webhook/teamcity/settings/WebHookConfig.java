@@ -47,7 +47,7 @@ public class WebHookConfig {
 	private Set<String> enabledBuildTypesSet = new HashSet<>();
 	private String authType = "";
 	private Boolean authEnabled = false;
-	private Map<String,String> authParameters;
+	private Map<String,String> authParameters = new LinkedHashMap<>();
 	private Boolean authPreemptive = true;
 	private List<WebHookFilterConfig> filters;
 	
@@ -58,7 +58,6 @@ public class WebHookConfig {
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
 		this.uniqueKey = "id_" + Rand.toString();
 		this.extraParameters = new TreeMap<>();
-		this.authParameters = new LinkedHashMap<>();
 		this.templates = new TreeMap<>();
 		this.filters = new ArrayList<>();
 		
