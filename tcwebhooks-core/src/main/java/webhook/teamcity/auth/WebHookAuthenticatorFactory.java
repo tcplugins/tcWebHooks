@@ -8,4 +8,5 @@ public interface WebHookAuthenticatorFactory {
 	public void register();
 	public WebHookAuthenticator getAuthenticatorInstance();
 	public List<WebHookAuthenticationParameter> getParameterList();
+	public boolean areAllRequiredParametersPresent(WebHookAuthConfig webHookAuthConfig);
 }

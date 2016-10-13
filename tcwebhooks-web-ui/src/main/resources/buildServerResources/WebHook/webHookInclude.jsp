@@ -173,6 +173,7 @@
 					    				<div id='extrasAuthPanel'>
 						    				<h2>Authentication</h2>
 						    				<div class="extraAuthParametersWrapper">
+						    					<div class="error" id="error_authParameter"></div>
 												<table style="border:none;" id='extraAuthParameters'>
 													<thead>
 													<tr><th class="authParameterName">Type</th><th class="authParameterValueWrapper">
