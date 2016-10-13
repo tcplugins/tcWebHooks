@@ -84,14 +84,16 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        WebHookProjectSettings projSettings = null;
 	    	
 	    	if (request.getMethod().equalsIgnoreCase("post")){
+	    		boolean noErrors = true;
 	    		if ((request.getParameter("projectId") != null)){
 	    			myProject = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 		        	if (myProject == null){
 		        		params.put("messages", "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
+		        		noErrors = false;
 		        	} else {
 	    		    	projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 
-			    		if ((projSettings != null) && (myProject != null)
+			    		if (noErrors && (projSettings != null) && (myProject != null)
 			    				&& (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT))){
 			    			if ((request.getParameter("submitAction") != null ) 
 			    				&& (request.getParameter("submitAction").equals("removeWebHook"))
@@ -102,9 +104,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						params.put("messages", "<errors />");
 			    					} else {
 			    						params.put("messages", "<errors><error id=\"messageArea\">The webhook was not found. Have the WebHooks been edited on disk or by another user?</error></errors>");		
+			    						noErrors = false;
 			    					}
 			    					
-			    			} else if ((request.getParameter("submitAction") != null ) 
+			    			} else if (noErrors && (request.getParameter("submitAction") != null ) 
 				    				&& (request.getParameter("submitAction").equals("updateWebHook"))){
 			    				if((request.getParameter("URL") != null ) 
 				    				&& (request.getParameter("URL").length() > 0 )
@@ -116,6 +119,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					
 			    					if (!myTemplateResolver.templateIsValid(myProject, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"))){
 			    						params.put("messages", "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
+			    						noErrors = false;
 			    					}else if (request.getParameter("webHookId") != null){
 			    						Boolean enabled = false;
 			    						Boolean buildTypeAll = false;
@@ -153,7 +157,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							}
 			    						}
 			    						WebHookAuthConfig webHookAuthConfig = null;
-			    						if (request.getParameter("extraAuthType") !=null 
+			    						if (noErrors && request.getParameter("extraAuthType") !=null 
 			    								&& !request.getParameter("extraAuthType").equals("")){
 			    							
 			    							webHookAuthConfig =  new WebHookAuthConfig();
@@ -169,9 +173,19 @@ public class WebHookAjaxEditPageController extends BaseController {
 				    								webHookAuthConfig.parameters.put(paramName.substring("extraAuthParam_".length()), request.getParameter(paramName).toString());
 				    							}
 				    						}
+				    						if (myAuthenticatorProvider.isRegisteredType(webHookAuthConfig.type)) {
+				    							if (myAuthenticatorProvider.areAllRequiredParametersPresent(webHookAuthConfig)){
+				    								params.put("messages", "<errors />");
+				    							} else {
+				    								params.put("messages", "<errors><error id=\"emptyAuthParameter\">Please complete all required authentication fields.</error></errors>");
+				    								noErrors = false;
+				    							}
+				    						} else {
+				    							params.put("messages", "<errors><error id=\"emptyAuthParameter\">The authentication type selected is not valid.</error></errors>");
+				    						}
 			    						}
 			    						
-			    						if (request.getParameter("webHookId").equals("new")){
+			    						if (noErrors && request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
 			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
@@ -181,7 +195,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							} else {
 			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
 			    							}
-			    						} else {
+			    						} else if (noErrors) {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 

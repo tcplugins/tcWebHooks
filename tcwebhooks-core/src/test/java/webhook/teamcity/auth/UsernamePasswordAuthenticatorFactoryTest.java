@@ -36,5 +36,26 @@ public class UsernamePasswordAuthenticatorFactoryTest {
 		assertTrue(factory2 instanceof UsernamePasswordAuthenticator);
 		assertNotSame(factory, factory2);
 	}
+	
+	@Test
+	public void testAllRequiredParamtersPresentReturnsTrue() {
+		WebHookAuthenticatorFactory factory = new UsernamePasswordAuthenticatorFactory(provider);
+		WebHookAuthConfig webHookAuthConfig = WebHookAuthConfig.builder()
+						 .parameter(UsernamePasswordAuthenticator.USERNAME,"username")
+						 .parameter(UsernamePasswordAuthenticator.PASSWORD, "password")
+						 .preemptive(false)
+						 .build();
+		factory.areAllRequiredParametersPresent(webHookAuthConfig);
+	}
+	
+	@Test
+	public void testMissingRequiredParamterPresentReturnsFalse() {
+		WebHookAuthenticatorFactory factory = new UsernamePasswordAuthenticatorFactory(provider);
+		WebHookAuthConfig webHookAuthConfig = WebHookAuthConfig.builder()
+				.parameter(UsernamePasswordAuthenticator.USERNAME,"username")
+				.preemptive(false)
+				.build();
+		factory.areAllRequiredParametersPresent(webHookAuthConfig);
+	}
 
 }

@@ -210,9 +210,7 @@
 																	 '<td class="authParameterValueWrapper"><input title="' + preemptiveToolTip +'" type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
 				jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
 				jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[webhookObj.authConfig.type].parameters, function(index, paramObj){
-					jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthParam_' + paramObj.key + '" title="'+ paramObj.toolTip + '">' 
-																	+ paramObj.name + '</label></td><td class="authParameterValueWrapper"><input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
-																	+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
+					jQueryWebhook('#extraAuthParameters > tbody').append(buildWebHookAuthParameterHtml(paramObj, webhookObj, true));
 				});
 			} else {
 				jQueryWebhook('#extraAuthType').val("");
@@ -231,20 +229,34 @@
 				if (webhookObj.hasOwnProperty("authConfig") && webhookObj.authConfig.type == authType){
 					jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
 					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
-						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthParam_' + paramObj.key + '" title="'+ paramObj.toolTip + '">' 
-																		+ paramObj.name + '</label></td><td class="authParameterValueWrapper"><input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
-																		+ paramObj.key + '" value="' + webhookObj.authConfig.parameters[paramObj.key] + '" class="authParameterValue"></td></tr>');
+						jQueryWebhook('#extraAuthParameters > tbody').append(buildWebHookAuthParameterHtml(paramObj, webhookObj, true));
 					});
 				} else {
-					jQueryWebhook('#extraAuthPreemptive').prop('checked', true);
+					jQueryWebhook('#extraAuthPreemptive').prop('checked', webhookObj, true);
 					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
-						jQueryWebhook('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthParam_' + paramObj.key + '" title="'+ paramObj.toolTip + '">' 
-																		+ paramObj.name + '</label></td><td class="authParameterValueWrapper"><input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
-																		+ paramObj.key + '" class="authParameterValue"></td></tr>');
+						jQueryWebhook('#extraAuthParameters > tbody').append(buildWebHookAuthParameterHtml(paramObj, webhookObj, false));
 					});					
 				}
 			
 			}
+		}
+		
+		function buildWebHookAuthParameterHtml(paramObj, webhookObj, setValue) {
+			var value = '';
+			var requireText = '';
+			if (setValue) {
+				value = 'value="' + webhookObj.authConfig.parameters[paramObj.key] + '" ';
+			}
+			
+			if (paramObj.required) {
+				requireText = '<span class="mandatoryAsterix" title="Mandatory field">*</span>';
+			}
+			return '<tr><td class="authParameterName"><label for="extraAuthParam_' 
+					+ paramObj.key + '" title="'+ paramObj.toolTip + '">' 
+					+ paramObj.name + requireText + '</label></td><td class="authParameterValueWrapper">' 
+					+ '<input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
+					+ paramObj.key + '" ' + value + 'class="authParameterValue"></td></tr>';
+					
 		}
 		
 		function populateWebHookDialog(id){
@@ -470,6 +482,15 @@
 			        that.highlightErrorField($('payloadFormatTable'));
 			        jQueryWebhook('li.tab').removeAttr('style');
 			        jQueryWebhook("#hookPaneTab").animate({
+			        	backgroundColor: "#eecccc"
+			        }, 500);
+			      },
+			      
+			      onEmptyAuthParameterError : function(elem) {
+			        $("error_authParameter").innerHTML = elem.firstChild.nodeValue;
+			        that.highlightErrorField($('extraAuthParameters'));
+			        jQueryWebhook('li.tab').removeAttr('style');
+			        jQueryWebhook("#extrasPaneTab").animate({
 			        	backgroundColor: "#eecccc"
 			        }, 500);
 			      },

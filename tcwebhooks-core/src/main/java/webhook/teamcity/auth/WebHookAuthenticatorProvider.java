@@ -31,6 +31,10 @@ public class WebHookAuthenticatorProvider {
 		return null;
 	}
 	
+	public boolean areAllRequiredParametersPresent(WebHookAuthConfig webHookAuthConfig){
+		return types.get(webHookAuthConfig.type).areAllRequiredParametersPresent(webHookAuthConfig);
+	}
+	
 	public String getDescription(String typeName){
 		if (types.containsKey(typeName)){
 			return types.get(typeName).getDescription();
