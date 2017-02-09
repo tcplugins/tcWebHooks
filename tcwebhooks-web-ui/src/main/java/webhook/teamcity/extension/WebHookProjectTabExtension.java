@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -19,9 +18,7 @@ import jetbrains.buildServer.web.openapi.project.ProjectTab;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.TeamCityIdResolver;
-import webhook.teamcity.extension.bean.BuildWebhooksBean;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -50,8 +47,14 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		
 		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<ProjectAndBuildWebhooksBean>();  
 		List<SProject> parentProjects = project.getProjectPath();
+		
+		model.put("permissionError", "");
+		
 		if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
 			parentProjects.remove(0);
+			if (project.getProjectId().equals("_Root")){
+				model.put("permissionError", "<strong>You do not have permission to view WebHooks for the <em>_Root</em> project. Please contact your TeamCity Administrator</strong>");
+			}
 		}
 		for (SProject projectParent : parentProjects){
 			projectAndParents.add(
@@ -73,6 +76,8 @@ public class WebHookProjectTabExtension extends ProjectTab {
 
 		model.put("projectAndParents", projectAndParents);
 		
+		
+		
 //    	model.put("projectWebHookCount", projectWebhooks.size());
 //    	if (projectWebhooks.size() == 0){
 //    		model.put("noProjectWebHooks", "true");
@@ -93,7 +98,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 
 	@Override
 	public String getIncludeUrl() {
-		return myPluginPath+ "WebHook/projectWebHookTab.jsp";
+		return myPluginPath+ "WebHook/webHookTab.jsp";
 	}
 
 }

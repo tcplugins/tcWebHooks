@@ -1,13 +1,14 @@
 package webhook.teamcity.auth;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import webhook.teamcity.Loggers;
 
 public class WebHookAuthenticatorProvider {
 	
-	HashMap<String, WebHookAuthenticatorFactory> types = new HashMap<String,WebHookAuthenticatorFactory>();
+	HashMap<String, WebHookAuthenticatorFactory> types = new HashMap<>();
 	
 	public WebHookAuthenticatorProvider(){
 		Loggers.SERVER.info("WebHookAuthenticatorProvider :: Starting");
@@ -28,6 +29,20 @@ public class WebHookAuthenticatorProvider {
 			return types.get(typeName).getAuthenticatorInstance();
 		}
 		return null;
+	}
+	
+	public String getDescription(String typeName){
+		if (types.containsKey(typeName)){
+			return types.get(typeName).getDescription();
+		}
+		return null;		
+	}
+	
+	public List<WebHookAuthenticationParameter> getAuthenticationParameters(String typeName){
+		if (types.containsKey(typeName)){
+			return types.get(typeName).getParameterList();
+		}
+		return null;		
 	}
 	
 	public Boolean isRegisteredType(String type){

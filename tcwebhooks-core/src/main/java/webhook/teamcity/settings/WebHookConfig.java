@@ -6,11 +6,14 @@ import static webhook.teamcity.BuildStateEnum.BUILD_FAILED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FINISHED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
 import static webhook.teamcity.BuildStateEnum.BUILD_INTERRUPTED;
+import static webhook.teamcity.BuildStateEnum.CHANGES_LOADED;
 import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,25 +39,27 @@ public class WebHookConfig {
 	private String uniqueKey = "";
 	private String url;
 	private String payloadFormat = null;
+	private String payloadTemplate = "none";
 	private BuildState states = new BuildState();
 	private SortedMap<String, CustomMessageTemplate> templates; 
 	private Boolean allBuildTypesEnabled = true;
 	private Boolean subProjectsEnabled = true;
-	private Set<String> enabledBuildTypesSet = new HashSet<String>();
+	private Set<String> enabledBuildTypesSet = new HashSet<>();
 	private String authType = "";
 	private Boolean authEnabled = false;
-	private SortedMap<String,String> authParameters;
+	private Map<String,String> authParameters = new LinkedHashMap<>();
 	private Boolean authPreemptive = true;
+	private List<WebHookFilterConfig> filters;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
 		
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		this.uniqueKey = Rand.toString();
-		this.extraParameters = new TreeMap<String,String>();
-		this.authParameters = new TreeMap<String,String>();
-		this.templates = new TreeMap<String,CustomMessageTemplate>();
+		this.uniqueKey = "id_" + Rand.toString();
+		this.extraParameters = new TreeMap<>();
+		this.templates = new TreeMap<>();
+		this.filters = new ArrayList<>();
 		
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -77,6 +82,10 @@ public class WebHookConfig {
 		} else {
 			// Set to nvpairs by default for backward compatibility.
 			this.setPayloadFormat("nvpairs");
+		}
+		
+		if (e.getAttribute("template") != null){
+			this.setPayloadTemplate(e.getAttributeValue("template"));
 		}
 		
 		if(e.getChild("states") != null){
@@ -189,8 +198,31 @@ public class WebHookConfig {
 
 		}
 		
+		/*
+		    <trigger-filters>
+	  			<filter value="${branchDisplayName}" regex="^master$" />
+	  		</trigger-filters>
+		 */
+		if(e.getChild("trigger-filters") != null){
+			Element eParams = e.getChild("trigger-filters");
+			List<Element> filterList = eParams.getChildren("filter");
+			if (filterList.size() > 0){
+				for(Element eParam : filterList)
+				{
+					this.filters.add(
+							
+							WebHookFilterConfig.create(
+									eParam.getAttributeValue(WebHookFilterConfig.VALUE),
+									eParam.getAttributeValue(WebHookFilterConfig.REGEX),
+									Boolean.parseBoolean(eParam.getAttributeValue(WebHookFilterConfig.ENABLED))
+									)
+							);
+				}
+			}
+		}
+		
 	}
-	
+
 	/**
 	 * WebHooksConfig constructor. Unchecked version. Use with caution!!
 	 * This constructor does not check if the payloadFormat is valid.
@@ -201,21 +233,30 @@ public class WebHookConfig {
 	 * @param enabled
 	 * @param stateMask
 	 * @param payloadFormat (unvalidated)
+	 * @param webHookAuthConfig 
 	 */
-	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes){
+	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
 		int Min = 1000000, Max = 1000000000;
 		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		this.uniqueKey = Rand.toString();
-		this.extraParameters = new TreeMap<String,String>();
-		this.templates = new TreeMap<String,CustomMessageTemplate>();
+		this.uniqueKey = "id_" + Rand.toString();
+		this.extraParameters = new TreeMap<>();
+		this.templates = new TreeMap<>();
+		this.filters = new ArrayList<>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
 		this.setPayloadFormat(payloadFormat);
+		this.setPayloadTemplate(payloadTemplate);
 		this.subProjectsEnabled = buildTypeSubProjects;
 		this.allBuildTypesEnabled = buildTypeAllEnabled;
 		if (!this.allBuildTypesEnabled){
 			this.enabledBuildTypesSet = enabledBuildTypes;
+		}
+		if (webHookAuthConfig != null){
+			this.authType = webHookAuthConfig.type;
+			this.authPreemptive = webHookAuthConfig.preemptive;
+			this.authEnabled = true;
+			this.authParameters.putAll(webHookAuthConfig.parameters);
 		}
 	}
 
@@ -233,6 +274,7 @@ public class WebHookConfig {
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute("enabled", String.valueOf(this.enabled));
 		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
+		el.setAttribute("template", String.valueOf(this.payloadTemplate));
 		
 		Element statesEl = new Element("states");
 		for (BuildStateEnum state : states.getStateSet()){
@@ -255,6 +297,14 @@ public class WebHookConfig {
 			}
 		}
 		el.addContent(buildsEl);
+		
+		if (this.filters != null && this.filters.size() > 0){
+			Element filtersEl = new Element("trigger-filters");
+			for (WebHookFilterConfig f : this.filters){
+				filtersEl.addContent(f.getAsElement());
+			}
+			el.addContent(filtersEl);
+		}		
 		
 		if (this.extraParameters.size() > 0){
 			Element paramsEl = new Element("parameters");
@@ -378,6 +428,9 @@ public class WebHookConfig {
 //			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
 //				enabledStates += ", Build Changed Status";
 //			}
+			if (states.enabled(BuildStateEnum.CHANGES_LOADED)){
+				enabledStates += ", Changes Loaded";
+			}
 			if (states.enabled(BuildStateEnum.BUILD_INTERRUPTED)){
 				enabledStates += ", Build Interrupted";
 			}
@@ -425,6 +478,13 @@ public class WebHookConfig {
 	
 	public String getStateBuildStartedAsChecked() {
 		if (states.enabled(BUILD_STARTED)){
+			return "checked ";
+		}
+		return ""; 
+	}
+	
+	public String getStateChangesLoadedAsChecked() {
+		if (states.enabled(CHANGES_LOADED)){
 			return "checked ";
 		}
 		return ""; 
@@ -489,6 +549,10 @@ public class WebHookConfig {
 	public String getPayloadFormat() {
 		return payloadFormat;
 	}
+	
+	public String getPayloadTemplate() {
+		return payloadTemplate;
+	}
 
 	/**
 	 * Sets the payload format to whatever string is passed.
@@ -498,6 +562,11 @@ public class WebHookConfig {
 	 */
 	public void setPayloadFormat(String payloadFormat) {
 		this.payloadFormat = payloadFormat;
+	}
+	
+	
+	public void setPayloadTemplate(String payloadTemplate) {
+		this.payloadTemplate = payloadTemplate;
 	}
 
 	public Boolean isEnabledForAllBuildsInProject() {
@@ -537,7 +606,27 @@ public class WebHookConfig {
 	public Boolean getAuthEnabled() {
 		return authEnabled;
 	}
-
+	
+	public void setAuthEnabled(Boolean authEnabled) {
+		this.authEnabled = authEnabled;
+	}
+	
+	public void setAuthParameters(Map<String, String> authParameters) {
+		this.authParameters.putAll(authParameters);
+	}
+	
+	public void clearAuthParameters() {
+		this.authParameters.clear();
+	}
+	
+	public void setAuthType(String authType) {
+		this.authType = authType;
+	}
+	
+	public void setAuthPreemptive(Boolean authPreemptive) {
+		this.authPreemptive = authPreemptive;
+	}
+	
 	public WebHookAuthConfig getAuthenticationConfig() {
 		if (authEnabled && !authType.equals("")){
 			WebHookAuthConfig webhookAuthConfig= new WebHookAuthConfig();
@@ -549,4 +638,7 @@ public class WebHookConfig {
 		return null;
 	}	
 	
+	public List<WebHookFilterConfig> getTriggerFilters() {
+		return this.filters;
+	}
 }

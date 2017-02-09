@@ -4,6 +4,7 @@
     <webhook url="http://localhost/test" enabled="true" format="nvpairs">
       <states>
         <state type="buildStarted" enabled="true" />
+        <state type="changesLoaded" enabled="true" />
         <state type="beforeBuildFinish" enabled="true" />
         <state type="buildFinished" enabled="true" />
         <state type="buildBroken" enabled="false" />

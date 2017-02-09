@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class WebHookPayloadDefaultTemplates {
+
+	private WebHookPayloadDefaultTemplates(){}
 	
 	public static final String HTML_BUILDSTATUS_TEMPLATE = "buildStatusHtml";
 	public static final String TEXT_TEMPLATE = "text";
@@ -17,7 +19,7 @@ public class WebHookPayloadDefaultTemplates {
 			 "<strong>${buildResult}</strong></a> and was triggered by <strong>${triggeredBy}</strong></span>"; 
 
 	public static Map<String,String> getDefaultEnabledPayloadTemplates(){
-		Map<String,String> mT = new TreeMap<String, String>();
+		Map<String,String> mT = new TreeMap<>();
 		mT.put(HTML_BUILDSTATUS_TEMPLATE, DEFAULT_HTML_BUILDSTATUS_TEMPLATE);
 		return mT;
 	}

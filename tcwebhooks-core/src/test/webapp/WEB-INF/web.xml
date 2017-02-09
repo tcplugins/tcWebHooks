@@ -19,5 +19,15 @@
 			<role-name>user</role-name>
 		</auth-constraint>
 	</security-constraint>
+<!-- 
+    <filter>
+        <filter-name>filterName</filter-name>
+        <filter-class>webhook.ResponseCodeFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>filterName</filter-name>
+        <url-pattern>/auth/*</url-pattern>
+    </filter-mapping> -->
+
 
 </web-app>

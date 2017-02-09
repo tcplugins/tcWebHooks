@@ -22,6 +22,7 @@ import webhook.WebHookTestServer;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -30,7 +31,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class WebHookPayloadTest {
 
 	@Test
-	public void TestNVPairsPayloadContent(){
+	public void TestNVPairsPayloadContent() throws WebHookPayloadContentAssemblyException{
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
@@ -44,18 +45,18 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<String, String>();
+		SortedMap<String, String> extraParameters = new TreeMap<>();
 		extraParameters.put("something", "somewhere");
 		//String content = wpm.getFormat("nvpairs").buildStarted(sRunningBuild, extraParameters);
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("nvpairs").getContentType().equals("application/x-www-form-urlencoded"));
 		assertTrue(wpm.getFormat("nvpairs").getFormatDescription().equals("Name Value Pairs"));
-		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates()));
+		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
 		
 	}
 	
 	@Test
-	public void TestNVPairsPayloadWithPostToJetty() throws InterruptedException{
+	public void TestNVPairsPayloadWithPostToJetty() throws InterruptedException, WebHookPayloadContentAssemblyException{
 		
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		String triggeredBy = "SubVersion";
@@ -76,7 +77,7 @@ public class WebHookPayloadTest {
 		WebHookProjectSettings whps = new WebHookProjectSettings();
 		
 		BuildState state = new BuildState().setAllEnabled();
-		whps.addNewWebHook("project1", url, true, state, "nvpairs", true, true, new HashSet<String>());
+		whps.addNewWebHook("project1", url, true, state, "nvpairs", "originalNvpairsTemplate", true, true, new HashSet<String>());
 		
     	for (WebHookConfig whc : whps.getWebHooksConfigs()){
 			WebHook wh = new WebHookImpl();
@@ -95,7 +96,7 @@ public class WebHookPayloadTest {
 				WebHookPayload payloadFormat = wpm.getFormat(whc.getPayloadFormat());
 				wh.setContentType(payloadFormat.getContentType());
 				wh.setCharset(payloadFormat.getCharset());
-				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams(), whc.getEnabledTemplates()));
+				wh.setPayload(payloadFormat.buildStarted(sRunningBuild, previousBuild, whc.getParams(), whc.getEnabledTemplates(), null));
 				if (wh.isEnabled()){
 					try {
 						wh.post();

@@ -5,8 +5,11 @@ package webhook.teamcity.payload.format;
 
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
+import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
@@ -36,8 +39,14 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 		return "Send the payload formatted in JSON";
 	}
 	
-	protected String getStatusAsString(WebHookPayloadContent content){
+	@Override
+	protected String getStatusAsString(WebHookPayloadContent content,WebHookTemplateContent webHookTemplate){
 
+		if (content.getExtraParameters().containsKey("showAllTeamCityParameters") && content.getExtraParameters().get("showAllTeamCityParameters").equalsIgnoreCase("true")){
+			// let teamcity values through
+		} else {
+			//content.te
+		}
 		XStream xstream = new XStream(new JsonHierarchicalStreamDriver());
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToJsonConvertor());
@@ -64,5 +73,12 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 	public String getCharset() {
 		return this.charset;
 	}
+
+	@Override
+	public WebHookStringRenderer getWebHookStringRenderer() {
+		return new JsonToHtmlPrettyPrintingRenderer();
+	}
+	
+	
 
 }

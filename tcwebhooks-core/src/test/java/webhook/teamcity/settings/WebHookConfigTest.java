@@ -22,6 +22,7 @@ public class WebHookConfigTest {
 	WebHookConfig webhookDisabled;
 	WebHookConfig webhookMostEnabled;
 	WebHookConfig webhookWithAuth;
+	WebHookConfig webhookWithFilters;
 	
 	
 	@Before
@@ -32,6 +33,7 @@ public class WebHookConfigTest {
 		webhookDisabled    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-webhook-disabled.xml"));
 		webhookMostEnabled = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-but-respchange-states-enabled.xml"));
 		webhookWithAuth    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
+		webhookWithFilters    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branchNameFilter.xml"));
 	}
 	
 //	private WebHookConfig getFirstWebHookInConfig(File f) throws JDOMException, IOException{
@@ -111,7 +113,7 @@ public class WebHookConfigTest {
 	public void testGetEnabledListAsString() {
 		assertTrue(webhookAllEnabled.getEnabledListAsString().equals("All Build Events"));
 		assertTrue(webhookAllDisabled.getEnabledListAsString().equals("None"));
-		assertTrue(webhookMostEnabled.getEnabledListAsString().equals(" Build Started, Build Interrupted, Build Almost Completed, Build Failed, Build Successful"));
+		assertEquals(webhookMostEnabled.getEnabledListAsString()," Build Started, Changes Loaded, Build Interrupted, Build Almost Completed, Build Failed, Build Successful");
 	}
 
 	@Test
@@ -207,5 +209,12 @@ public class WebHookConfigTest {
 		assertTrue(webhookWithAuth.getAuthEnabled());
 		WebHookConfig newTestAuthConfig = new WebHookConfig(webhookWithAuth.getAsElement());
 		assertEquals(webhookWithAuth.getAuthEnabled(), newTestAuthConfig.getAuthEnabled());
+	}
+	
+	@Test
+	public void testWebHookElementFiltersSerialisation(){
+		assertTrue(webhookWithFilters.getTriggerFilters().size() == 1);
+		WebHookConfig newTestFilterConfig = new WebHookConfig(webhookWithFilters.getAsElement());
+		assertEquals(webhookWithFilters.getTriggerFilters().get(0).regex, newTestFilterConfig.getTriggerFilters().get(0).regex);
 	}
 }

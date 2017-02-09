@@ -37,26 +37,36 @@ public class TestListener extends BuildServerAdapter {
 	public void beforeBuildFinish(SRunningBuild runningBuild,
 			boolean buildFailed) {
 		logit("beforeBuildFinish(SRunningBuild runningBuild,boolean buildFailed)");
+		logit("beforeBuildFinish()" + runningBuild.getBranch().getDisplayName());
+		logit("beforeBuildFinish()" + runningBuild.getBranch().getName());
 	}
 
 	@Override
 	public void beforeBuildFinish(SRunningBuild runningBuild) {
 		logit("beforeBuildFinish(SRunningBuild runningBuild)");
+		logit("beforeBuildFinish()" + runningBuild.getBranch().getDisplayName());
+		logit("beforeBuildFinish()" + runningBuild.getBranch().getName());
 	}
 
 	@Override
 	public void buildFinished(SRunningBuild build) {
 		logit("buildFinished(SRunningBuild build)");
+		logit("buildFinished()" + build.getBranch().getDisplayName());
+		logit("buildFinished()" + build.getBranch().getName());
 	}
 
 	@Override
 	public void buildInterrupted(SRunningBuild build) {
 		logit("buildInterrupted(SRunningBuild build)");
+		logit("buildInterrupted()" + build.getBranch().getDisplayName());
+		logit("buildInterrupted()" + build.getBranch().getName());
 	}
 
 	@Override
 	public void buildStarted(SRunningBuild build) {
 		logit("buildStarted(SRunningBuild build)");
+		logit("buildStarted()" + build.getBranch().getDisplayName());
+		logit("buildStarted()" + build.getBranch().getName());
 	}
 
 	public void responsibleChanged(SBuildType bt, ResponsibilityInfo oldValue,

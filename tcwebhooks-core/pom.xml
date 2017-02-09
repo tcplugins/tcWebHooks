@@ -17,8 +17,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -80,6 +80,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
 			</plugin>
 
 		</plugins>
@@ -100,7 +101,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
+			<version>4.7</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -115,6 +116,12 @@
 			<version>1.4</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+  			<artifactId>commons-lang3</artifactId>
+  			<version>3.4</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
@@ -143,12 +150,12 @@
 			<version>4.0.2</version> <scope>provided</scope> </dependency> -->
 
 		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
-		<!--dependency>
+		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>9.1.0</version>
+			<version>10.0</version>
 			<scope>provided</scope>
-		</dependency-->
+		</dependency>
 
 		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>openapi</artifactId> 
 			<version>7.1.0</version> <scope>provided</scope> </dependency> -->
@@ -246,6 +253,11 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -254,8 +266,19 @@
 			<scope>provided</scope>
 		</dependency>
 
-
-
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.7</version>
+		</dependency>
+		
+		
 	</dependencies>
 
 </project>

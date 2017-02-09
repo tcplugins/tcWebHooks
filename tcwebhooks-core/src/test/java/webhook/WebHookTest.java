@@ -1,29 +1,20 @@
 package webhook;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.WebHookFactory;
-import webhook.teamcity.WebHookFactoryImpl;
 import webhook.teamcity.auth.UsernamePasswordAuthenticator;
-import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthConfig;
-import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 
 
 public class WebHookTest{
@@ -38,7 +29,7 @@ public class WebHookTest{
 	public String proxyUsername = "foo";
 	public String proxyPassword = "bar";
 	
-	WebHookFactory factory = new WebHookFactoryImpl();
+	TestingWebHookFactory factory = new TestingWebHookFactory();
 	
 	@Test
 	public void test_BuildStates(){
@@ -378,98 +369,6 @@ public class WebHookTest{
 
 	}
 	
-	@Ignore
-	public void test_WebHookCollection() throws WebHookParameterReferenceException {
-		Map <String, String> params = new HashMap<String, String>();
-		params.put("system.webhook.1.url", url);
-		params.put("system.webhook.1.enabled", "true");
-		params.put("system.webhook.1.parameter.1.name","fod");
-		params.put("system.webhook.1.parameter.1.value","baa");
-		params.put("system.webhook.1.parameter.2.name","slash");
-		params.put("system.webhook.1.parameter.2.value","dot");
-		params.put("system.webhook.2.url", url + "/something");
-		params.put("system.webhook.2.enabled", "false");
-		params.put("system.webhook.2.parameter.1.name","foo");
-		params.put("system.webhook.2.parameter.1.value","bar");
-		WebHookCollection whc = new WebHookCollection(params);
-		System.out.println("Test 1" + whc.getWebHooks().get(1).getParameterisedUrl());
-		System.out.println("Test 2" + whc.getWebHooks().get(2).getParameterisedUrl());
-		assertTrue(whc.getWebHooks().get(1).getUrl().equals(url));
-		assertTrue((whc.getWebHooks().get(1).getParameterisedUrl().equals(url + "?fod=baa&slash=dot"))
-				|| (whc.getWebHooks().get(1).getParameterisedUrl().equals(url + "?slash=dot&fod=baa")));
-		assertTrue(whc.getWebHooks().get(2).getParameterisedUrl().equals(url + "/something?foo=bar"));
-		assertFalse(whc.getWebHooks().get(1).isErrored());
-	}
-	
-	@Ignore
-	public void test_WebHookCollectionWithRecursiveParameterReference() throws WebHookParameterReferenceException {
-		Map <String, String> params = new HashMap<String, String>();
-		params.put("system.test.recursive1", "%system.test.recursive2%");
-		params.put("system.test.recursive2", "blahblah");
-		params.put("system.webhook.1.url", url);
-		params.put("system.webhook.1.enabled", "true");
-		params.put("system.webhook.1.parameter.1.name","foo");
-		params.put("system.webhook.1.parameter.1.value","bar");
-		params.put("system.webhook.1.parameter.2.name","slash");
-		params.put("system.webhook.1.parameter.2.value","%system.test.recursive1%");
-		WebHookCollection whc = new WebHookCollection(params);
-		System.out.println("Test 1" + whc.getWebHooks().get(1).getParameterisedUrl());
-		assertTrue(whc.getWebHooks().get(1).getUrl().equals(url));
-		assertTrue((whc.getWebHooks().get(1).getParameterisedUrl().equals(url + "?foo=bar&slash=blahblah"))
-				|| (whc.getWebHooks().get(1).getParameterisedUrl().equals(url + "?slash=blahblah&foo=bar")));
-		assertFalse(whc.getWebHooks().get(1).isErrored());
-	}
-
-	@Ignore
-	public void test_WebHookCollectionWithNonExistantRecursiveParameterReference(){
-		Map <String, String> params = new HashMap<String, String>();
-		params.put("system.test.recursive1", "%system.test.recursive3%");
-		params.put("system.test.recursive2", "blahblah");
-		params.put("system.webhook.1.url", url);
-		params.put("system.webhook.1.enabled", "true");
-		params.put("system.webhook.1.parameter.1.name","foo");
-		params.put("system.webhook.1.parameter.1.value","bar");
-		params.put("system.webhook.1.parameter.2.name","slash");
-		params.put("system.webhook.1.parameter.2.value","%system.test.recursive1%");
-		WebHookCollection whc = new WebHookCollection(params);
-		System.out.println("Test 1" + whc.getWebHooks().get(1).getParameterisedUrl());
-		assertTrue(whc.getWebHooks().get(1).getUrl().equals(url));
-		assertTrue(whc.getWebHooks().get(1).getParameterisedUrl().equals(url + "?foo=bar"));
-		assertTrue(whc.getWebHooks().get(1).isErrored());
-		System.out.println(whc.getWebHooks().get(1).getErrorReason());
-	}
-	
-	@Ignore
-	public void test_WebHookCollectionWithPost() throws WebHookParameterReferenceException, InterruptedException {
-		Map <String, String> params = new HashMap<String, String>();
-		//params.put("system.webhook.1.url", url + "/200");
-		params.put("system.webhook.1.url", "http://localhost/webhook/" );
-		params.put("system.webhook.1.enabled", "true");
-		params.put("system.webhook.1.parameter.1.name","fod");
-		params.put("system.webhook.1.parameter.1.value","baa");
-		params.put("system.webhook.1.parameter.2.name","slash");
-		params.put("system.webhook.1.parameter.2.value","dot");
-		params.put("system.webhook.2.url", "http://localhost/webhook/test/" );
-		params.put("system.webhook.2.enabled", "true");
-		WebHookCollection whc = new WebHookCollection(params);
-		WebHookTestServer s = startWebServer();
-		for (Iterator<WebHook> i = whc.getWebHooksAsCollection().iterator(); i.hasNext();){
-			WebHook wh = i.next();
-			try {
-					wh.post();					
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				//Loggers.SERVER.error(e.toString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				//Loggers.SERVER.error(e.toString());
-			}
-		}
-		stopWebServer(s);
-		assertTrue(whc.getWebHooks().get(1).getStatus() == HttpStatus.SC_OK);
-		assertTrue(whc.getWebHooks().get(2).getStatus() == HttpStatus.SC_NOT_FOUND);
-	}
-	
 	public WebHookTestServer startWebServer(){
 		try {
 			WebHookTestServer s = new WebHookTestServer(webserverHost, webserverPort);
@@ -524,4 +423,25 @@ public class WebHookTest{
 			e.printStackTrace();
 		}
 	}	
+	
+	public static class TestingWebHookFactory {
+		public WebHook getWebHook(){
+			return new WebHookImpl();
+		}
+
+		public WebHook getWebHook(String url, String proxy, Integer proxyPort) {
+			return new WebHookImpl(url, proxy, proxyPort, new HttpClient());
+		}
+
+		public WebHook getWebHook(String url) {
+			return new WebHookImpl(url, new HttpClient());
+		}
+
+		public WebHook getWebHook(String url, String proxy, String proxyPort) {
+			return new WebHookImpl(url, proxy, proxyPort, new HttpClient());
+		}
+		public WebHook getWebHook(String url, WebHookProxyConfig proxyConfig) {
+			return new WebHookImpl(url, proxyConfig, new HttpClient());
+		}
+	}
 }

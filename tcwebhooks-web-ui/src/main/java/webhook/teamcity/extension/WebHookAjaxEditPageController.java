@@ -1,17 +1,18 @@
 package webhook.teamcity.extension;
 
-import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.Nullable;
+import org.springframework.web.servlet.ModelAndView;
+
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -19,19 +20,20 @@ import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
-
-import org.jetbrains.annotations.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
-import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
-import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
-import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
+import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
+import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
+import webhook.teamcity.extension.util.EnabledBuildStateResolver;
+import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
@@ -40,6 +42,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    protected static final String BEFORE_FINISHED = "BeforeFinished";
 		protected static final String BUILD_INTERRUPTED = "BuildInterrupted";
 		protected static final String BUILD_STARTED = "BuildStarted";
+		protected static final String CHANGES_LOADED = "ChangesLoaded";
 		protected static final String BUILD_BROKEN = "BuildBroken";
 		protected static final String BUILD_FIXED = "BuildFixed";
 		protected static final String BUILD_FAILED = "BuildFailed";
@@ -50,42 +53,26 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
+		private final WebHookTemplateResolver myTemplateResolver;
+		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
-	    		PluginDescriptor pluginDescriptor) {
+	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
 	        mySettings = settings;
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	        myManager = manager;
+	        myTemplateResolver = templateResolver;
+	        myAuthenticatorProvider = authenticatorProvider;
 	    }
 
 	    public void register(){
 	      myWebManager.registerController("/webhooks/ajaxEdit.html", this);
 	    }
 	    
-	    protected static void checkAndAddBuildState(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
-	    	if ((r.getParameter(varName) != null)
-	    		&& (r.getParameter(varName).equalsIgnoreCase("on"))){
-	    		state.enable(myBuildState);
-	    	} else {
-	    		state.disable(myBuildState);;
-	    	}
-	    }
-	    
-	    protected static void checkAndAddBuildStateIfEitherSet(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName, String otherVarName){
-	    	if ((r.getParameter(varName) != null)
-	    			&& (r.getParameter(varName).equalsIgnoreCase("on"))){
-	    		state.enable(myBuildState);
-	    	} else if ((r.getParameter(otherVarName) != null)
-	    			&& (r.getParameter(otherVarName).equalsIgnoreCase("on"))){
-		    	state.enable(myBuildState);
-	    	} else {
-	    		state.disable(myBuildState);;
-	    	}
-	    }
 
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -122,9 +109,14 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    				if((request.getParameter("URL") != null ) 
 				    				&& (request.getParameter("URL").length() > 0 )
 				    				&& (request.getParameter("payloadFormat") != null)
-				    				&& (request.getParameter("payloadFormat").length() > 0)){
+				    				&& (request.getParameter("payloadFormat").length() > 0)
+				    				&& (request.getParameter("payloadTemplate") != null)
+				    				&& (request.getParameter("payloadTemplate").length() > 0))
+				    				{
 			    					
-			    					if (request.getParameter("webHookId") != null){
+			    					if (!myTemplateResolver.templateIsValid(myProject, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"))){
+			    						params.put("messages", "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
+			    					}else if (request.getParameter("webHookId") != null){
 			    						Boolean enabled = false;
 			    						Boolean buildTypeAll = false;
 			    						Boolean buildTypeSubProjects = false;
@@ -134,16 +126,18 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							enabled = true;
 			    						}
 			    						BuildState states = new BuildState();
+			    						EnabledBuildStateResolver buildStateResolver = new EnabledBuildStateResolver(myTemplateResolver, myProject);
 			    						
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
-			    						checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
-			    						checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
-			    						checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_SUCCESSFUL, BUILD_SUCCESSFUL);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.CHANGES_LOADED, CHANGES_LOADED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
+			    						buildStateResolver.checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 			    						
 			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){
 			    							buildTypeSubProjects = true;
@@ -158,10 +152,29 @@ public class WebHookAjaxEditPageController extends BaseController {
 												}
 			    							}
 			    						}
-		    						
+			    						WebHookAuthConfig webHookAuthConfig = null;
+			    						if (request.getParameter("extraAuthType") !=null 
+			    								&& !request.getParameter("extraAuthType").equals("")){
+			    							
+			    							webHookAuthConfig =  new WebHookAuthConfig();
+			    							webHookAuthConfig.type = request.getParameter("extraAuthType").toString();
+			    							webHookAuthConfig.preemptive = false;
+			    							if (request.getParameter("extraAuthPreemptive") != null){
+			    								webHookAuthConfig.preemptive = request.getParameter("extraAuthPreemptive").equalsIgnoreCase("on");
+			    							}
+				    						Enumeration<String> attrs =  request.getParameterNames();
+				    						while(attrs.hasMoreElements()) {
+				    							String paramName = attrs.nextElement();
+				    							if (paramName.startsWith("extraAuthParam_") && request.getParameter(paramName) != null){
+				    								webHookAuthConfig.parameters.put(paramName.substring("extraAuthParam_".length()), request.getParameter(paramName).toString());
+				    							}
+				    						}
+			    						}
+			    						
 			    						if (request.getParameter("webHookId").equals("new")){
 			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
-			    														states,request.getParameter("payloadFormat"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -171,7 +184,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else {
 			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"), buildTypeAll, buildTypeSubProjects, buildTypes);
+			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
 			    	    						params.put("messages", "<errors />");
@@ -199,7 +213,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    		}
 	    	}
 
-	    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+	    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(myProject),
+					myManager.getRegisteredFormats()).getTemplateList());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
 	        		&& request.getParameter("projectId") != null ){
@@ -227,14 +242,30 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, 
+																	project, 
+																	myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																	),
+										ProjectHistoryResolver.getProjectHistory(project),
+										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
+										)
+									)
+								);
+
+			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(RegisteredWebHookTemplateBean.ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 			    	}
 			    	
 	        	} else {
 	        		params.put("haveProject", "false");
 	        	}
-	        } else {
-	        	params.put("haveProject", "false");
+//	        } else {
+//	        	params.put("haveProject", "false");
 	        }
 	        
 	        return new ModelAndView(myPluginPath + "WebHook/ajaxEdit.jsp", params);

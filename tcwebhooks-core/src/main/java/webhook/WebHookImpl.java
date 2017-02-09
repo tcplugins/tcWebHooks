@@ -5,9 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import jetbrains.buildServer.log.Loggers;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -18,8 +20,10 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.settings.WebHookFilterConfig;
 
 
 public class WebHookImpl implements WebHook {
@@ -38,25 +42,33 @@ public class WebHookImpl implements WebHook {
 	private Boolean enabled = false;
 	private Boolean errored = false;
 	private String errorReason = "";
+	private String disabledReason = "";
 	private List<NameValuePair> params;
 	private BuildState states;
 	private WebHookAuthenticator authenticator;
+	private List<WebHookFilterConfig> filters;
+	
 	
 	public WebHookImpl(){
 		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.params = new ArrayList<>();
 	}
 	
-	public WebHookImpl(String url){
-		this.url = url;
-		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+	protected WebHookImpl(HttpClient client){
+		this.client = client;
+		this.params = new ArrayList<>();
 	}
 	
-	public WebHookImpl (String url, String proxyHost, String proxyPort){
+	public WebHookImpl(String url, HttpClient client){
 		this.url = url;
-		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.client = client;
+		this.params = new ArrayList<>();
+	}
+	
+	public WebHookImpl (String url, String proxyHost, String proxyPort, HttpClient client){
+		this.url = url;
+		this.client = client;
+		this.params = new ArrayList<>();
 		if (proxyPort.length() != 0) {
 			try {
 				this.proxyPort = Integer.parseInt(proxyPort);
@@ -67,17 +79,17 @@ public class WebHookImpl implements WebHook {
 		this.setProxy(proxyHost, this.proxyPort);
 	}
 	
-	public WebHookImpl (String url, String proxyHost, Integer proxyPort){
+	public WebHookImpl (String url, String proxyHost, Integer proxyPort, HttpClient client){
 		this.url = url;
-		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.client = client;
+		this.params = new ArrayList<>();
 		this.setProxy(proxyHost, proxyPort);
 	}
 	
-	public WebHookImpl (String url, WebHookProxyConfig proxyConfig){
+	public WebHookImpl (String url, WebHookProxyConfig proxyConfig, HttpClient client){
 		this.url = url;
-		this.client = new HttpClient();
-		this.params = new ArrayList<NameValuePair>();
+		this.client = client;
+		this.params = new ArrayList<>();
 		setProxy(proxyConfig);
 	}
 
@@ -320,4 +332,46 @@ public class WebHookImpl implements WebHook {
 	public void setAuthentication(WebHookAuthenticator authenticator) {
 		this.authenticator = authenticator;
 	}
+	
+	@Override
+	public void addFilter(WebHookFilterConfig filter){
+		if (this.filters == null){
+			this.filters = new ArrayList<>();
+		}
+		this.filters.add(filter);
+	}
+
+	@Override
+	public boolean checkFilters(VariableResolver variableResolver) {
+		if (this.filters == null){
+			return true;
+		}
+		
+		for (WebHookFilterConfig filter : this.filters){
+			
+			/* If this filter is disabled, skip it */
+			if (!filter.isEnabled()){
+				continue;
+			}
+			
+			/* Otherwise, parse it and test it */
+			String variable = VariableMessageBuilder.create(filter.getValue(), variableResolver).build();
+			Pattern p = filter.getPattern();
+			if (!p.matcher(variable).matches()){
+				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
+				this.enabled = false;
+				return false;
+			} {
+				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHookImpl: Filter match found: " + filter.getValue() + " (" + variable + ") matches using regex " + filter.getRegex() );
+			}
+			
+		}
+		return true;
+	}
+	
+	@Override
+	public String getDisabledReason() {
+		return disabledReason;
+	}
+
 }

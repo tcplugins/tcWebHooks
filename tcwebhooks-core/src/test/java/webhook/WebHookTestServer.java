@@ -1,14 +1,20 @@
 package webhook;
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-public class WebHookTestServer {
+public class WebHookTestServer implements ResponseEvent {
 
 		Server server;
+		public int lastResponseCode = -1;
+		
 		
 		public Server getServer() {
 			return server;
@@ -24,6 +30,7 @@ public class WebHookTestServer {
 			ctx.setResourceBase("src/test/webapp");
 			ctx.setContextPath("/");
 			
+			
 			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK)), "/200");
 			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/302");
 			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/500");
@@ -31,6 +38,8 @@ public class WebHookTestServer {
 			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK)), "/auth/200");
 			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/auth/302");
 			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/auth/500");
+			
+			ctx.addFilter(new FilterHolder(new ResponseCodeFilter(this)), "/*" , EnumSet.of(DispatcherType.REQUEST));
 	
 			//3. Creating the LoginService for the realm
 			HashLoginService loginService = new HashLoginService("TestRealm");
@@ -45,4 +54,20 @@ public class WebHookTestServer {
 			server.setHandler(ctx);
 
 		}
+		
+		@Override
+		public int getReponseCode(){
+			synchronized (server) {
+				return this.lastResponseCode;
+			}
+		}
+
+		@Override
+		public void updateRepsoneCode(int responseCode) {
+			synchronized (server) {
+				this.lastResponseCode = responseCode;
+			}
+		}
+		
+
 }

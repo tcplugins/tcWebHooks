@@ -14,11 +14,17 @@ import org.apache.commons.beanutils.BeanUtils;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+import webhook.teamcity.payload.template.render.WwwFormUrlEncodedToHtmlPrettyPrintingRenderer;
 
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {
 	
+	public static final String FORMAT_SHORT_NAME = "nvpairs";
+	public static final String FORMAT_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
 	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager) {
 		super(manager);
 	}
@@ -39,7 +45,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 	}
 
 	public String getFormatShortName() {
-		return "nvpairs";
+		return FORMAT_SHORT_NAME;
 	}
 
 	public String getFormatToolTipText() {
@@ -48,7 +54,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected String getStatusAsString(WebHookPayloadContent content){
+	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 		String returnString = ""; 
 		
 		Map<String, String> contentMap = null;
@@ -137,7 +143,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 
 
 	public String getContentType() {
-		return "application/x-www-form-urlencoded";
+		return FORMAT_CONTENT_TYPE;
 	}
 
 	public Integer getRank() {
@@ -152,7 +158,9 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		return this.charset;
 	}
 
-
-
+	@Override
+	public WebHookStringRenderer getWebHookStringRenderer() {
+		return new WwwFormUrlEncodedToHtmlPrettyPrintingRenderer();
+	}
 	
 }

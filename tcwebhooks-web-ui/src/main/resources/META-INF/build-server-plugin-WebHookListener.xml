@@ -27,6 +27,28 @@
      	class="webhook.teamcity.extension.WebHookIndexPageController" 
      	init-method="register" 
      	/>
+     	
+    <bean id="webHookTemplateListPageController" 
+     	class="webhook.teamcity.extension.WebHookTemplateListPageController" 
+     	init-method="register" 
+     	/>
+     	
+    <bean id="webHookEndPointContentStore" 
+     	class="webhook.teamcity.endpoint.WebHookEndPointContentStore" 
+     	/>
+     	
+    <bean id="webHookEndPointController" 
+     	class="webhook.teamcity.endpoint.WebHookEndPointController" 
+     	/>
+     	
+    <bean id="webHookEndPointViewerController" 
+     	class="webhook.teamcity.endpoint.WebHookEndPointViewerController" 
+     	/>
+     	
+    <bean id="webHookTemplateEditPageController" 
+     	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
+     	init-method="register" 
+     	/>
 
      <bean id="webHookAjaxSettingsListPageController" 
      	class="webhook.teamcity.extension.WebHookAjaxSettingsListPageController" 
@@ -36,6 +58,19 @@
      <bean id="webHookAjaxEditPageController" 
      	class="webhook.teamcity.extension.WebHookAjaxEditPageController" 
      	init-method="register" 
+     	/>
+
+     <bean id="webHookTemplateRenderingController" 
+     	class="webhook.teamcity.extension.WebHookTemplateRenderingController" 
+     	init-method="register" 
+     	/>
+
+     <bean id="webHookHttpClientFactory"
+     	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
+     	/>     	
+     			
+     <bean id="webHookContentBuilder"
+     	class="webhook.teamcity.WebHookContentBuilder" 
      	/>
      			
      <bean id="webHookFactory" 
@@ -105,6 +140,59 @@
 		init-method="register">
 		<property name="rank">
 			<value>5</value>
+		</property>
+	</bean>
+	
+	<bean id="webHookPayloadJsonTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadJsonTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>50</value>
+		</property>
+	</bean>
+
+	<bean id="webHookTemplateManager"
+		class="webhook.teamcity.payload.WebHookTemplateManager"
+		/>
+		
+	<bean id="webHookTemplateFileChangeHandler"
+		class="webhook.teamcity.payload.WebHookTemplateFileChangeHandler"
+		init-method="register"
+		/>
+		
+	<bean id="webHookTemplateResolver"
+		class="webhook.teamcity.payload.WebHookTemplateResolver"
+		/>
+
+	<bean id="legacyDepricatedFormatWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyDeprecatedFormatWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>500</value>
+		</property>
+	</bean>
+	
+	<bean id="elasticSearchWebHookTemplate"
+		class="webhook.teamcity.payload.template.ElasticSearchWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>14</value>
+		</property>
+	</bean>
+	
+	<bean id="slackComWebHookTemplate"
+		class="webhook.teamcity.payload.template.SlackComWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>15</value>
+		</property>
+	</bean>
+	
+	<bean id="flowdockWebHookTemplate"
+		class="webhook.teamcity.payload.template.FlowdockWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>14</value>
 		</property>
 	</bean>
 

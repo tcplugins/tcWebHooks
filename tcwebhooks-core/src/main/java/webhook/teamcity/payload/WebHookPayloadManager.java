@@ -6,17 +6,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import webhook.teamcity.Loggers;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.Loggers;
 
 public class WebHookPayloadManager {
 	
-	HashMap<String, WebHookPayload> formats = new HashMap<String,WebHookPayload>();
+	HashMap<String, WebHookPayload> formats = new HashMap<>();
 	Comparator<WebHookPayload> rankComparator = new WebHookPayloadRankingComparator();
-	List<WebHookPayload> orderedFormatCollection = new ArrayList<WebHookPayload>();
+	List<WebHookPayload> orderedFormatCollection = new ArrayList<>();
 	SBuildServer server;
 	
 	public WebHookPayloadManager(SBuildServer server){
@@ -28,7 +26,7 @@ public class WebHookPayloadManager {
 		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering payload " 
 				+ payloadFormat.getFormatShortName() 
 				+ " with rank of " + payloadFormat.getRank());
-		formats.put(payloadFormat.getFormatShortName(),payloadFormat);
+		formats.put(payloadFormat.getFormatShortName().toLowerCase(),payloadFormat);
 		this.orderedFormatCollection.add(payloadFormat);
 		
 		Collections.sort(this.orderedFormatCollection, rankComparator);
@@ -39,18 +37,18 @@ public class WebHookPayloadManager {
 	}
 
 	public WebHookPayload getFormat(String formatShortname){
-		if (formats.containsKey(formatShortname)){
-			return formats.get(formatShortname);
+		if (formats.containsKey(formatShortname.toLowerCase())){
+			return formats.get(formatShortname.toLowerCase());
 		}
 		return null;
 	}
 	
 	public Boolean isRegisteredFormat(String format){
-		return formats.containsKey(format);
+		return formats.containsKey(format.toLowerCase());
 	}
 	
-	public Set<String> getRegisteredFormats(){
-		return formats.keySet();
+	public List<WebHookPayload> getRegisteredFormats(){
+		return orderedFormatCollection;
 	}
 	
 	public Collection<WebHookPayload> getRegisteredFormatsAsCollection(){

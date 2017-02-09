@@ -13,6 +13,7 @@ import org.jdom.Element;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.auth.WebHookAuthConfig;
 
 
 public class WebHookProjectSettings implements ProjectSettings {
@@ -25,7 +26,7 @@ public class WebHookProjectSettings implements ProjectSettings {
 	private CopyOnWriteArrayList<WebHookConfig> webHooksConfigs;
 	
 	public WebHookProjectSettings(){
-		webHooksConfigs = new CopyOnWriteArrayList<WebHookConfig>();
+		webHooksConfigs = new CopyOnWriteArrayList<>();
 	}
 
     @SuppressWarnings("unchecked")
@@ -35,7 +36,7 @@ public class WebHookProjectSettings implements ProjectSettings {
      */
     {
     	Loggers.SERVER.debug("readFrom :: " + rootElement.toString());
-    	CopyOnWriteArrayList<WebHookConfig> configs = new CopyOnWriteArrayList<WebHookConfig>();
+    	CopyOnWriteArrayList<WebHookConfig> configs = new CopyOnWriteArrayList<>();
     	
     	if (rootElement.getAttribute("enabled") != null){
     		this.webHooksEnabled = Boolean.parseBoolean(rootElement.getAttributeValue("enabled"));
@@ -85,7 +86,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     }    
     
     public List<WebHookConfig> getProjectWebHooksAsList(){
-    	List<WebHookConfig> projHooks = new ArrayList<WebHookConfig>();
+    	List<WebHookConfig> projHooks = new ArrayList<>();
     	for (WebHookConfig config : getWebHooksAsList()){
     		if (config.isEnabledForAllBuildsInProject()){
     			projHooks.add(config);
@@ -95,7 +96,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     }    
     
     public List<WebHookConfig> getBuildWebHooksAsList(SBuildType buildType){
-    	List<WebHookConfig> buildHooks = new ArrayList<WebHookConfig>();
+    	List<WebHookConfig> buildHooks = new ArrayList<>();
     	for (WebHookConfig config : getWebHooksAsList()){
     		if (config.isSpecificBuildTypeEnabled(buildType)){
     			buildHooks.add(config);
@@ -119,7 +120,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         {
         	updateSuccess = false;
         	updateMessage = "";
-        	List<WebHookConfig> tempWebHookList = new ArrayList<WebHookConfig>();
+        	List<WebHookConfig> tempWebHookList = new ArrayList<>();
             for(WebHookConfig whc : webHooksConfigs)
             {
                 if (whc.getUniqueKey().equals(webHookId)){
@@ -134,7 +135,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    	
     }
 
-	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled) {
+	public void updateWebHook(String ProjectId, String webHookId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
         if(this.webHooksConfigs != null)
         {
         	updateSuccess = false;
@@ -146,6 +147,7 @@ public class WebHookProjectSettings implements ProjectSettings {
                 	whc.setUrl(URL);
                 	whc.setBuildStates(buildState);
                 	whc.setPayloadFormat(format);
+                	whc.setPayloadTemplate(template);
                 	whc.enableForSubProjects(buildSubProjects);
                 	whc.enableForAllBuildsInProject(buildTypeAll);
                 	if (!buildTypeAll){
@@ -154,6 +156,17 @@ public class WebHookProjectSettings implements ProjectSettings {
                 			whc.enableBuildInProject(bt);
                 		}
                 	}
+            		if (webHookAuthConfig != null){
+            			whc.setAuthEnabled(true);
+            			whc.setAuthType(webHookAuthConfig.type);
+            			whc.setAuthPreemptive(webHookAuthConfig.preemptive);
+            			whc.setAuthParameters(webHookAuthConfig.parameters);
+            		} else {
+            			whc.setAuthEnabled(false);
+            			whc.setAuthType("");
+            			whc.setAuthPreemptive(true);
+            			whc.clearAuthParameters();
+            		}
                 	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + ProjectId + " with URL " + whc.getUrl());
                    	this.updateSuccess = true;
                 }
@@ -161,8 +174,12 @@ public class WebHookProjectSettings implements ProjectSettings {
         }    			
 	}
 
-	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
-		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, buildTypeAll, buildTypeSubProjects, buildTypesEnabled));
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
+		addNewWebHook(ProjectId, URL, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null);
+	}
+	
+	public void addNewWebHook(String ProjectId, String URL, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+		this.webHooksConfigs.add(new WebHookConfig(URL, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig));
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + ProjectId + " with URL " + URL);
 		this.updateSuccess = true;
 	}

@@ -12,11 +12,12 @@ import java.util.Set;
 
 public class BuildState {
 
-	Map<BuildStateEnum, BuildStateInterface> states = new HashMap<BuildStateEnum, BuildStateInterface>();
+	Map<BuildStateEnum, BuildStateInterface> states = new HashMap<>();
 	
 	public BuildState() {
 		states.clear();
 		states.put(BuildStateEnum.BUILD_STARTED, 			new SimpleBuildState(BuildStateEnum.BUILD_STARTED, 			false));
+		states.put(BuildStateEnum.CHANGES_LOADED, 			new SimpleBuildState(BuildStateEnum.CHANGES_LOADED, 		false));
 		//states.put(BuildStateEnum.BUILD_CHANGED_STATUS, 	new SimpleBuildState(BuildStateEnum.BUILD_CHANGED_STATUS, 	false)); 	
 		states.put(BuildStateEnum.BEFORE_BUILD_FINISHED, 	new SimpleBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, 	false)); 
 		states.put(BuildStateEnum.RESPONSIBILITY_CHANGED, 	new SimpleBuildState(BuildStateEnum.RESPONSIBILITY_CHANGED,	false));
@@ -65,6 +66,34 @@ public class BuildState {
     		}
     	}
     	return false;
+    }
+    
+    /**
+     * Determine the WebHook build state from a TeamCity build event state. For anything except finished
+     * this will simply return the TeamCity state.<br/>
+     * However, for finished builds, determine if it was success or failure, and then with builds that changed state, if it was a fix or break.  
+     * 
+     * @param currentBuildState
+     * @param success
+     * @param changed
+     * @return The WebHook state for use detemining template etc.
+     */
+    public static BuildStateEnum getEffectiveState(BuildStateEnum currentBuildState, boolean success, boolean changed){
+    	
+    	if (currentBuildState.equals(BUILD_FINISHED)){
+    		if (success){
+    			if (changed){
+    				return BUILD_FIXED;
+    			}
+    			return BUILD_SUCCESSFUL;
+    		} else {
+    			if (changed){
+    				return BUILD_BROKEN;
+    			}
+    			return BUILD_FAILED;
+    		}
+    	}
+    	return currentBuildState;
     }
     
     public void setEnabled(BuildStateEnum currentBuildState, boolean enabled){

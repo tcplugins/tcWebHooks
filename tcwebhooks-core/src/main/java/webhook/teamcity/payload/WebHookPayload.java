@@ -4,17 +4,19 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 
+import org.jetbrains.annotations.NotNull;
+
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.tests.TestName;
-
-import org.jetbrains.annotations.NotNull;
+import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
+import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 public interface WebHookPayload {
 	
@@ -27,7 +29,7 @@ public interface WebHookPayload {
 	public final static String BUILD_STATUS_UNKNOWN   = "unknown";
 	
 	/** 
-	 * Sets the PayloadManger so that register() can register this payload with that manager.
+	 * Sets the PayloadManger so that register() can register this payload with that webHookTemplateManager.
 	 * 
 	 * @param webhookPayloadManager
 	 */
@@ -77,7 +79,17 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildStarted event.
 	 */
-    String buildStarted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    
+    /**
+     * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
+     * or build parameters and returns a String of the WebHook payload.
+     *  
+     * @param sRunningBuild
+     * @param extraParameters
+     * @return Formatted payload for the WebHook to send for the changesLoaded event.
+     */
+    String changesLoaded(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -87,7 +99,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildFinished event.
 	 */
-    String buildFinished(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String buildFinished(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -97,7 +109,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildInterrupted event.
 	 */
-    String buildInterrupted(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String buildInterrupted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -107,17 +119,17 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the beforeBuildFinish event.
 	 */
-    String beforeBuildFinish(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    String beforeBuildFinish(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
     
 	/**
 	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
 	 * It will no longer be called by the WebHookListener
 	 */
 	@Deprecated
-    String buildChangedStatus(SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
+    String buildChangedStatus(SBuild sRunningBuild, SFinishedBuild previousBuild, 
     		Status oldStatus, 
     		Status newStatus, 
-    		SortedMap<String,String> extraParameters, Map<String, String> templates);
+    		SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 	
 
     /**
@@ -132,7 +144,7 @@ public interface WebHookPayload {
     String responsibleChanged(@NotNull SBuildType sBuildType, 
     		@NotNull ResponsibilityInfo responsibilityInfoOld, 
     		@NotNull ResponsibilityInfo responsibilityInfoNew, 
-    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates);
+    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
 
     /**
      * Used by TC 7.x and above
@@ -145,7 +157,7 @@ public interface WebHookPayload {
 	String responsibleChanged(SBuildType sBuildType,
 			ResponsibilityEntry responsibilityEntryOld,
 			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String,String> extraParameters, Map<String, String> templates); 
+			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException; 
     
 	/**
 	 * Gets the content type of the format.
@@ -192,10 +204,12 @@ public interface WebHookPayload {
 	String responsibleChanged(SProject project,
 			TestNameResponsibilityEntry oldTestNameResponsibilityEntry,
 			TestNameResponsibilityEntry newTestNameResponsibilityEntry,
-			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates);
+			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
 	String responsibleChanged(SProject project, Collection<TestName> testNames,
 			ResponsibilityEntry entry, boolean isUserAction,
-			SortedMap<String,String> extraParameters, Map<String, String> templates);
+			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+	
+	public abstract WebHookStringRenderer getWebHookStringRenderer();
 
 }

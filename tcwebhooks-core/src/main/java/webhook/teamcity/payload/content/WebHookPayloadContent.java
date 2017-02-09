@@ -1,12 +1,17 @@
 package webhook.teamcity.payload.content;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
+import com.intellij.util.containers.hash.LinkedHashMap;
+
 import jetbrains.buildServer.serverSide.Branch;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -33,6 +38,9 @@ public class WebHookPayloadContent {
 		buildExternalTypeId,
 		buildStatusUrl,
 		buildStatusHtml,
+		buildStartTime,
+		currentTime,
+		buildFinishTime,
 		rootUrl,
 		projectName,
 		projectId,
@@ -48,7 +56,9 @@ public class WebHookPayloadContent {
 		text,
 		branchName,
 		branchDisplayName,
-		buildStateDescription;
+		buildStateDescription,
+		responsibilityUserOld,
+		responsibilityUserNew;
 		Boolean branchIsDefault;
 		
 		Branch branch;
@@ -57,7 +67,7 @@ public class WebHookPayloadContent {
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
-		private List<WebHooksChanges> changes = new ArrayList<WebHooksChanges>();
+		private List<WebHooksChanges> changes = new ArrayList<>();
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -80,7 +90,7 @@ public class WebHookPayloadContent {
 		 * @param buildState
 		 * @param extraParameters
 		 */
-		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
+		public WebHookPayloadContent(SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
 				Map<String, String> extraParameters, 
 				Map<String, String> teamcityProperties,
@@ -93,7 +103,7 @@ public class WebHookPayloadContent {
     		populateArtifacts(sRunningBuild);
 		}
 
-		private void populateArtifacts(SRunningBuild runningBuild) {
+		private void populateArtifacts(SBuild runningBuild) {
 			//ArtifactsInfo artInfo = new ArtifactsInfo(runningBuild);
 			//artInfo.
 			
@@ -107,6 +117,7 @@ public class WebHookPayloadContent {
 		 * @param state
 		 */
 		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
+			
 			setNotifyType(state.getShortName());
 			setBuildRunners(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
@@ -122,7 +133,7 @@ public class WebHookPayloadContent {
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
 		
-		private void populateMessageAndText(SRunningBuild sRunningBuild,
+		private void populateMessageAndText(SBuild sRunningBuild,
 				BuildStateEnum state, Map<String,String> templates) {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
@@ -141,8 +152,35 @@ public class WebHookPayloadContent {
 		 * @param previousBuild
 		 * @param buildState
 		 */
-		private void populateCommonContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild,
+		private void populateCommonContent(SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState, Map<String, String> templates) {
+			
+			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locate first, and then override if found.
+			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
+				try {
+					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
+				} 
+				catch (NullPointerException npe){}
+				catch (IllegalArgumentException iea) {}
+				
+			} else if (extraParameters.containsKey("preferredDateFormat")){
+				try {
+					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
+				} 
+				catch (NullPointerException npe){}
+				catch (IllegalArgumentException iea) {}
+			} 
+			
+			setBuildStartTime(format.format(sRunningBuild.getStartDate()));
+			
+			if (sRunningBuild instanceof SRunningBuild) {
+				if (((SRunningBuild) sRunningBuild).getFinishDate() != null){
+					setBuildFinishTime(format.format(((SRunningBuild) sRunningBuild).getFinishDate()));
+				}
+			}
+			
+			setCurrentTime(format.format(new Date()));
+
 			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(buildState.getShortName());
@@ -189,7 +227,7 @@ public class WebHookPayloadContent {
 		}
 		
 		private void setTags(List<String> tags) {
-			this.buildTags = new ArrayList<String>();
+			this.buildTags = new ArrayList<>();
 			this.buildTags.addAll(tags);
 		}
 
@@ -279,7 +317,7 @@ public class WebHookPayloadContent {
 		 * @param previousBuild
 		 * @param buildState
 		 */
-		private void setBuildResult(SRunningBuild sRunningBuild,
+		private void setBuildResult(SBuild sRunningBuild,
 				SFinishedBuild previousBuild, BuildStateEnum buildState) {
 
 			if (previousBuild != null){
@@ -367,7 +405,7 @@ public class WebHookPayloadContent {
 
 		public void setBuildRunners(List<SBuildRunnerDescriptor> list) {
 			if (list != null){
-				buildRunners = new ArrayList<String>(); 
+				buildRunners = new ArrayList<>();
 				for (SBuildRunnerDescriptor runner : list){
 					buildRunners.add(runner.getRunType().getDisplayName());
 				}
@@ -505,9 +543,33 @@ public class WebHookPayloadContent {
 		
 		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
 			
-			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties));
+			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, getAllParameters()));
 			this.buildStatusHtml = builder.build();
-		}		
+		}
+		
+		public String getBuildStartTime() {
+			return buildStartTime;
+		}
+		
+		public void setBuildStartTime(String timeString) {
+			this.buildStartTime = timeString;
+		}
+		
+		public String getBuildFinishTime() {
+			return buildFinishTime;
+		}
+		
+		public void setBuildFinishTime(String finishTime) {
+			this.buildFinishTime = finishTime;
+		}
+		
+		public String getCurrentTime() {
+			return currentTime;
+		}
+		
+		public void setCurrentTime(String now) {
+			this.currentTime = now;
+		}
 		
 		public String getComment() {
 			return comment;
@@ -535,17 +597,47 @@ public class WebHookPayloadContent {
 		public void setText(String text) {
 			this.text = text;
 		}
+		
+		public void setResponsibilityUserOld(String responsibilityUserOld) {
+			this.responsibilityUserOld = responsibilityUserOld;
+		}
+		
+		public void setResponsibilityUserNew(String responsibilityUserNew) {
+			this.responsibilityUserNew = responsibilityUserNew;
+		}
+		
+		public String getResponsibilityUserOld() {
+			return responsibilityUserOld;
+		}
+		
+		public String getResponsibilityUserNew() {
+			return responsibilityUserNew;
+		}
+		
+		public Map<String, ExtraParametersMap> getAllParameters(){
+			Map<String, ExtraParametersMap> allParameters = new LinkedHashMap<String, ExtraParametersMap>();
+			
+			allParameters.put("teamcity", this.teamcityProperties);
+			allParameters.put("webhook", this.extraParameters);
+			
+			return allParameters;
+			
+		}
 
 		public ExtraParametersMap getExtraParameters() {
 			if (this.extraParameters.size() > 0){
 				VariableMessageBuilder builder;
-				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties);
+				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, getAllParameters());
 				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
+
+//				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(this.teamcityProperties);
+//				resolvedParametersMap.putAll(extraParameters);
+
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
 				}
-				resolver = new WebHooksBeanUtilsVariableResolver(this, resolvedParametersMap);
+				resolver = new WebHooksBeanUtilsVariableResolver(this, getAllParameters());
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());

@@ -1,11 +1,12 @@
 package webhook.teamcity.extension;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jetbrains.annotations.Nullable;
+import org.springframework.web.servlet.ModelAndView;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
@@ -17,17 +18,16 @@ import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
-
-import org.jetbrains.annotations.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
-import webhook.teamcity.extension.bean.ProjectWebHooksBeanJsonSerialiser;
-import webhook.teamcity.extension.bean.WebhookBuildTypeEnabledStatusBean;
-import webhook.teamcity.extension.bean.WebhookConfigAndBuildTypeListHolder;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
+import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
+import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
+import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
+import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -40,10 +40,13 @@ public class WebHookIndexPageController extends BaseController {
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
+		private final WebHookTemplateResolver myTemplateResolver;
+		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 
 	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
 	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
-	    		WebHookMainSettings configSettings) {
+	    		WebHookTemplateResolver templateResolver,
+	    		WebHookMainSettings configSettings, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
 	        myServer = server;
@@ -51,6 +54,9 @@ public class WebHookIndexPageController extends BaseController {
 	        myPluginDescriptor = pluginDescriptor;
 	        myMainSettings = configSettings;
 	        myManager = manager;
+	        myTemplateResolver = templateResolver;
+	        myAuthenticatorProvider = authenticatorProvider;
+	        
 	    }
 
 	    public void register(){
@@ -64,6 +70,7 @@ public class WebHookIndexPageController extends BaseController {
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
         	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
         	params.put("rootContext", myServer.getServerRootPath());
+        	params.put("pluginVersion", myPluginDescriptor.getPluginVersion());
 	        
 	    	if (myMainSettings.getInfoUrl() != null && myMainSettings.getInfoUrl().length() > 0){
 	    		params.put("moreInfoText", "<li><a href=\"" + myMainSettings.getInfoUrl() + "\">" + myMainSettings.getInfoText() + "</a></li>");
@@ -101,19 +108,55 @@ public class WebHookIndexPageController extends BaseController {
 			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
-			    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
+			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+							myManager.getRegisteredFormats()).getTemplateList());
 			    	
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
 			    		params.put("webHooks", "false");
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, 
+																	project, 
+																	myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																),
+										ProjectHistoryResolver.getProjectHistory(project),
+										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
+									)
+								)
+							);
 			    	} else {
 			    		params.put("noWebHooks", "false");
 			    		params.put("webHooks", "true");
-			    		params.put("webHookList", projSettings.getWebHooksAsList());
+			    		
+			    		params.put("webHookList", ProjectWebHooksBean.buildWithoutNew(projSettings, 
+																			project, 
+																			myManager.getRegisteredFormatsAsCollection(),
+																			myTemplateResolver.findWebHookTemplatesForProject(project))
+							);
+			    		
+			    		//params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+			    		
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, 
+																	project, 
+																	myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																),
+										ProjectHistoryResolver.getProjectHistory(project),
+										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
+										)
+									)
+								);
 
 			    	}
 		    	} else {
@@ -132,9 +175,15 @@ public class WebHookIndexPageController extends BaseController {
 				    	SUser myUser = SessionUser.getUser(request);
 				        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
 				    	
-				    	List<WebHookConfig> configs = projSettings.getBuildWebHooksAsList(sBuildType);
-				    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
-				    	params.put("webHookList", configs);
+			    		ProjectWebHooksBean bean = ProjectWebHooksBean.buildWithoutNew(projSettings, sBuildType,
+								project, 
+								myManager.getRegisteredFormatsAsCollection(),
+								myTemplateResolver.findWebHookTemplatesForProject(project)
+			    				);
+				    	
+			    		params.put("webHookList", bean);
+				    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+								myManager.getRegisteredFormats()).getTemplateList());
 				    	params.put("webHooksDisabled", !projSettings.isEnabled());
 				    	params.put("projectId", project.getProjectId());
 				    	params.put("haveProject", "true");
@@ -144,10 +193,21 @@ public class WebHookIndexPageController extends BaseController {
 				    	params.put("buildName", sBuildType.getName());
 				    	params.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(sBuildType));
 				    	params.put("buildTypeList", project.getBuildTypes());
-			    		params.put("noWebHooks", configs.size() == 0);
-			    		params.put("webHooks", configs.size() != 0);
+			    		params.put("noWebHooks", bean.getWebHookList().size() == 0);
+			    		params.put("webHooks", bean.getWebHookList().size() != 0);
 				    	
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection())));
+			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
+								TemplatesAndProjectWebHooksBean.build(
+										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+																			myManager.getRegisteredFormats()), 
+										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
+																	myTemplateResolver.findWebHookTemplatesForProject(project)
+																	),
+										ProjectHistoryResolver.getBuildHistory(sBuildType),
+										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
+										)
+									)
+								);			    				
 		        	}
         		} else {
 		    		params.put("haveProject", "false");
