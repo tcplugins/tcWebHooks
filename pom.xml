@@ -4,13 +4,13 @@
 	<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
 	<artifactId>tcwebhooks</artifactId>
 	<properties>
-    	<majorVersion>1.1-alpha8</majorVersion>
+    	<majorVersion>1.1-alpha9</majorVersion>
     	<minorVersion>snapshot</minorVersion>
     	<gitHash>${GIT_HASH}</gitHash>
-    	<gitBranch>${GIT_BRANCH}</gitBranch>    	
+    	<gitBranch>${GIT_BRANCH}</gitBranch>
     	<currentVersion>${majorVersion}.${minorVersion}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
-    	<teamcityVersion>9.1</teamcityVersion>
+    	<teamcityVersion>10.0</teamcityVersion>
     </properties>
 	<version>${currentVersion}</version>
 	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
@@ -186,7 +186,12 @@
 	  </repository>
 	</repositories>
 	<dependencies>
-
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
   		 
 	</dependencies>
 	

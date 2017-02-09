@@ -150,12 +150,12 @@
 			<version>4.0.2</version> <scope>provided</scope> </dependency> -->
 
 		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
-		<!--dependency>
+		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>9.1.0</version>
+			<version>10.0</version>
 			<scope>provided</scope>
-		</dependency-->
+		</dependency>
 
 		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>openapi</artifactId> 
 			<version>7.1.0</version> <scope>provided</scope> </dependency> -->

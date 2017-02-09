@@ -1,45 +1,24 @@
 package webhook.teamcity;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import com.intellij.util.containers.HashMap;
 import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
-import jetbrains.buildServer.serverSide.BuildTypeIdentity;
-import jetbrains.buildServer.serverSide.BuildTypeTemplate;
-import jetbrains.buildServer.serverSide.ConfigAction;
-import jetbrains.buildServer.serverSide.CopyOptions;
-import jetbrains.buildServer.serverSide.CyclicDependencyException;
-import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
-import jetbrains.buildServer.serverSide.DuplicateProjectNameException;
-import jetbrains.buildServer.serverSide.DuplicateTemplateNameException;
-import jetbrains.buildServer.serverSide.InvalidIdentifierException;
-import jetbrains.buildServer.serverSide.InvalidNameException;
-import jetbrains.buildServer.serverSide.InvalidVcsRootScopeException;
-import jetbrains.buildServer.serverSide.MaxNumberOfBuildTypesReachedException;
-import jetbrains.buildServer.serverSide.Parameter;
-import jetbrains.buildServer.serverSide.PersistFailedException;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SPersistentEntity;
-import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.TemplateCannotBeRemovedException;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.vcs.DuplicateVcsRootNameException;
 import jetbrains.buildServer.vcs.SVcsRoot;
 import jetbrains.buildServer.vcs.UnknownVcsException;
 import jetbrains.buildServer.vcs.VcsRootInstance;
-
 import org.jdom.Element;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import com.intellij.util.containers.HashMap;
+import java.io.File;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class MockSProject implements SProject {
@@ -204,8 +183,20 @@ public class MockSProject implements SProject {
 		return null;
 	}
 
+	@Nullable
+	@Override
+	public String getParameterValue(@NotNull String s) {
+		return null;
+	}
+
 	public Collection<Parameter> getParametersCollection() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public Parameter getParameter(@NotNull String s) {
 		return null;
 	}
 
@@ -360,6 +351,12 @@ public class MockSProject implements SProject {
 		return null;
 	}
 
+	@Nullable
+	@Override
+	public Parameter getOwnParameter(@NotNull String s) {
+		return null;
+	}
+
 	@Override
 	public Collection<Parameter> getOwnParametersCollection() {
 		// TODO Auto-generated method stub
@@ -430,6 +427,63 @@ public class MockSProject implements SProject {
 			DuplicateProjectNameException, DuplicateExternalIdException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@NotNull
+	@Override
+	public SProjectFeatureDescriptor addFeature(@NotNull String s, @NotNull Map<String, String> map) {
+		return null;
+	}
+
+	@Override
+	public void addFeature(@NotNull SProjectFeatureDescriptor sProjectFeatureDescriptor) {
+
+	}
+
+	@NotNull
+	@Override
+	public Collection<SProjectFeatureDescriptor> getOwnFeatures() {
+		return null;
+	}
+
+	@NotNull
+	@Override
+	public Collection<SProjectFeatureDescriptor> getOwnFeaturesOfType(@NotNull String s) {
+		return null;
+	}
+
+	@NotNull
+	@Override
+	public Collection<SProjectFeatureDescriptor> getAvailableFeaturesOfType(@NotNull String s) {
+		return null;
+	}
+
+	@NotNull
+	@Override
+	public Collection<SProjectFeatureDescriptor> getAvailableFeatures() {
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public SProjectFeatureDescriptor removeFeature(@NotNull String s) {
+		return null;
+	}
+
+	@Override
+	public boolean updateFeature(@NotNull String s, @NotNull String s1, @NotNull Map<String, String> map) {
+		return false;
+	}
+
+	@Nullable
+	@Override
+	public SProjectFeatureDescriptor findFeatureById(@NotNull String s) {
+		return null;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return false;
 	}
 
 	@Override

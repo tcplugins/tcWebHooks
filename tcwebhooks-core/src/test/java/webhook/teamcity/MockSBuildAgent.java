@@ -1,19 +1,16 @@
 package webhook.teamcity;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import jetbrains.buildServer.BuildAgent;
 import jetbrains.buildServer.LicenseNotGrantedException;
-import jetbrains.buildServer.serverSide.RunType;
-import jetbrains.buildServer.serverSide.SBuildAgent;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 
@@ -177,6 +174,11 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 		return 0;
 	}
 
+	@Override
+	public int getAgentPoolId() {
+		return 0;
+	}
+
 	public int getId() {
 		return this.agentId;
 	}
@@ -261,6 +263,12 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	@NotNull
+	@Override
+	public String getCommunicationProtocolType() {
+		return null;
+	}
+
 
 }

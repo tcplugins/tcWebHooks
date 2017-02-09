@@ -1,42 +1,23 @@
 package webhook.teamcity;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.TreeMap;
-
 import jetbrains.buildServer.AgentRestrictor;
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.StatusDescriptor;
+import jetbrains.buildServer.groups.UserGroup;
 import jetbrains.buildServer.issueTracker.Issue;
 import jetbrains.buildServer.messages.BuildMessage1;
 import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.notification.DuplicateNotificationRuleException;
+import jetbrains.buildServer.notification.NotificationRule;
+import jetbrains.buildServer.notification.NotificationRulesHolder;
+import jetbrains.buildServer.notification.WatchedBuilds;
 import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
-import jetbrains.buildServer.serverSide.Branch;
-import jetbrains.buildServer.serverSide.BuildPromotion;
-import jetbrains.buildServer.serverSide.BuildRevision;
-import jetbrains.buildServer.serverSide.BuildStatistics;
-import jetbrains.buildServer.serverSide.BuildStatisticsOptions;
-import jetbrains.buildServer.serverSide.DownloadedArtifacts;
-import jetbrains.buildServer.serverSide.RepositoryVersion;
-import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildAgent;
-import jetbrains.buildServer.serverSide.SBuildFeatureDescriptor;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.ShortStatistics;
-import jetbrains.buildServer.serverSide.TriggeredBy;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.serverSide.artifacts.SArtifactDependency;
+import jetbrains.buildServer.serverSide.auth.*;
 import jetbrains.buildServer.serverSide.buildLog.BuildLog;
 import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.serverSide.impl.RunningBuildState;
@@ -44,22 +25,16 @@ import jetbrains.buildServer.serverSide.userChanges.CanceledInfo;
 import jetbrains.buildServer.serverSide.userChanges.PersonalChangeDescriptor;
 import jetbrains.buildServer.serverSide.vcs.VcsLabel;
 import jetbrains.buildServer.tests.TestInfo;
-import jetbrains.buildServer.users.SUser;
-import jetbrains.buildServer.users.User;
-import jetbrains.buildServer.users.UserSet;
-import jetbrains.buildServer.vcs.CheckoutRules;
-import jetbrains.buildServer.vcs.FilteredVcsChange;
-import jetbrains.buildServer.vcs.RelationType;
-import jetbrains.buildServer.vcs.SVcsModification;
-import jetbrains.buildServer.vcs.SVcsRoot;
-import jetbrains.buildServer.vcs.SelectPrevBuildPolicy;
-import jetbrains.buildServer.vcs.VcsException;
-import jetbrains.buildServer.vcs.VcsFileModification;
-import jetbrains.buildServer.vcs.VcsModification;
-import jetbrains.buildServer.vcs.VcsRootInstance;
-import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
-import jetbrains.buildServer.vcs.VcsRootNotFoundException;
+import jetbrains.buildServer.users.*;
+import jetbrains.buildServer.vcs.*;
 import jetbrains.vcs.api.VcsService;
+import org.intellij.lang.annotations.Flow;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class MockSRunningBuild implements SRunningBuild {
 
@@ -289,7 +264,13 @@ public class MockSRunningBuild implements SRunningBuild {
 						// TODO Auto-generated method stub
 						return null;
 					}
-					
+
+					@NotNull
+					@Override
+					public VcsRootStatus getStatus() {
+						return null;
+					}
+
 					@Override
 					public String getVcsDisplayName() {
 						// TODO Auto-generated method stub
@@ -354,7 +335,12 @@ public class MockSRunningBuild implements SRunningBuild {
 						// TODO Auto-generated method stub
 						return null;
 					}
-					
+
+					@Override
+					public int getEffectiveModificationCheckInterval() {
+						return 0;
+					}
+
 					@Override
 					public SVcsRoot getParent() {
 						// TODO Auto-generated method stub
@@ -457,7 +443,438 @@ public class MockSRunningBuild implements SRunningBuild {
 			@Override
 			public Collection<SUser> getCommitters() {
 				// TODO Auto-generated method stub
-				return null;
+				return new Collection<SUser>() {
+					@Override
+					public int size() {
+						return 0;
+					}
+
+					@Override
+					public boolean isEmpty() {
+						return false;
+					}
+
+					@Override
+					public boolean contains(Object o) {
+						return false;
+					}
+
+					@NotNull
+					@Override
+					public Iterator<SUser> iterator() {
+						return new Iterator<SUser>() {
+							@Override
+							public boolean hasNext() {
+								return false;
+							}
+							@Override
+							public void remove() {}
+
+							@Override
+							public SUser next() {
+								return new SUser() {
+									@NotNull
+									@Override
+									public List<SVcsModification> getVcsModifications(int i) {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<SVcsModification> getAllModifications() {
+										return null;
+									}
+
+									@Override
+									public void updateUserAccount(@NotNull String s, String s1, String s2) throws UserNotFoundException, DuplicateUserAccountException, EmptyUsernameException {
+
+									}
+
+									@Override
+									public void setUserProperties(@NotNull Map<? extends PropertyKey, String> map) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void setUserProperty(@NotNull PropertyKey propertyKey, String s) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void deleteUserProperty(@NotNull PropertyKey propertyKey) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void setPassword(String s) throws UserNotFoundException {
+
+									}
+
+									@NotNull
+									@Override
+									public List<String> getProjectsOrder() throws UserNotFoundException {
+										return null;
+									}
+
+									@Override
+									public void setProjectsOrder(@NotNull List<String> list) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void setVisibleProjects(@NotNull Collection<String> collection) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void hideProject(@NotNull String s) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void setLastLoginTimestamp(@NotNull Date date) throws UserNotFoundException {
+
+									}
+
+									@Override
+									public void setBlockState(String s, String s1) {
+
+									}
+
+									@Nullable
+									@Override
+									public String getBlockState(String s) {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<UserGroup> getUserGroups() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<UserGroup> getAllUserGroups() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<VcsUsernamePropertyKey> getVcsUsernameProperties() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<SBuildType> getOrderedBuildTypes(@Nullable SProject sProject) {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public Collection<SBuildType> getBuildTypesOrder(@NotNull SProject sProject) {
+										return null;
+									}
+
+									@Override
+									public void setBuildTypesOrder(@NotNull SProject sProject, @NotNull List<SBuildType> list, @NotNull List<SBuildType> list1) {
+
+									}
+
+									@Override
+									public boolean isHighlightRelatedDataInUI() {
+										return false;
+									}
+
+									@NotNull
+									@Override
+									public List<NotificationRule> getNotificationRules(@NotNull String s) {
+										return null;
+									}
+
+									@Override
+									public void setNotificationRules(@NotNull String s, @NotNull List<NotificationRule> list) {
+
+									}
+
+									@Override
+									public void removeRule(long l) {
+
+									}
+
+									@Override
+									public void applyOrder(@NotNull String s, @NotNull long[] longs) {
+
+									}
+
+									@Override
+									public long addNewRule(@NotNull String s, @NotNull NotificationRule notificationRule) throws DuplicateNotificationRuleException {
+										return 0;
+									}
+
+									@Nullable
+									@Override
+									public Collection<Long> findConflictingRules(@NotNull String s, @NotNull WatchedBuilds watchedBuilds) {
+										return null;
+									}
+
+									@Nullable
+									@Override
+									public NotificationRule findRuleById(long l) {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<NotificationRulesHolder> getParentRulesHolders() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public List<NotificationRulesHolder> getAllParentRulesHolders() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public Collection<Role> getRolesWithScope(@NotNull RoleScope roleScope) {
+										return null;
+									}
+
+									@Override
+									public boolean isSystemAdministratorRoleGrantedDirectly() {
+										return false;
+									}
+
+									@NotNull
+									@Override
+									public Collection<RolesHolder> getParentHolders() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public Collection<RolesHolder> getAllParentHolders() {
+										return null;
+									}
+
+									@Override
+									public long getId() {
+										return 0;
+									}
+
+									@Override
+									public String getRealm() {
+										return null;
+									}
+
+									@Override
+									public String getUsername() {
+										return null;
+									}
+
+									@Override
+									public String getName() {
+										return null;
+									}
+
+									@Override
+									public String getEmail() {
+										return null;
+									}
+
+									@Override
+									public String getDescriptiveName() {
+										return null;
+									}
+
+									@Override
+									public String getExtendedName() {
+										return null;
+									}
+
+									@Override
+									public Date getLastLoginTimestamp() {
+										return null;
+									}
+
+									@Override
+									public List<String> getVisibleProjects() {
+										return null;
+									}
+
+									@Override
+									public List<String> getAllProjects() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public String describe(boolean b) {
+										return null;
+									}
+
+									@Override
+									public boolean isPermissionGrantedGlobally(@NotNull Permission permission) {
+										return false;
+									}
+
+									@NotNull
+									@Override
+									public Permissions getGlobalPermissions() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public Map<String, Permissions> getProjectsPermissions() {
+										return null;
+									}
+
+									@Override
+									public boolean isPermissionGrantedForProject(@NotNull String s, @NotNull Permission permission) {
+										return false;
+									}
+
+									@Override
+									public boolean isPermissionGrantedForAllProjects(@NotNull Collection<String> collection, @NotNull Permission permission) {
+										return false;
+									}
+
+									@Override
+									public boolean isPermissionGrantedForAnyProject(@NotNull Permission permission) {
+										return false;
+									}
+
+									@NotNull
+									@Override
+									public Permissions getPermissionsGrantedForProject(@NotNull String s) {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public Permissions getPermissionsGrantedForAllProjects(@NotNull Collection<String> collection) {
+										return null;
+									}
+
+									@Nullable
+									@Override
+									public User getAssociatedUser() {
+										return null;
+									}
+
+									@Override
+									public Collection<RoleScope> getScopes() {
+										return null;
+									}
+
+									@NotNull
+									@Override
+									public Collection<RoleEntry> getRoles() {
+										return null;
+									}
+
+									@Override
+									public void addRole(@NotNull RoleScope roleScope, @NotNull Role role) {
+
+									}
+
+									@Override
+									public void removeRole(@NotNull RoleScope roleScope, @NotNull Role role) {
+
+									}
+
+									@Override
+									public void removeRole(@NotNull Role role) {
+
+									}
+
+									@Override
+									public void removeRoles(@NotNull RoleScope roleScope) {
+
+									}
+
+									@Override
+									public boolean isSystemAdministratorRoleGranted() {
+										return false;
+									}
+
+									@Override
+									public boolean isSystemAdministratorRoleInherited() {
+										return false;
+									}
+
+									@Nullable
+									@Override
+									public String getPropertyValue(PropertyKey propertyKey) {
+										return null;
+									}
+
+									@Override
+									public boolean getBooleanProperty(PropertyKey propertyKey) {
+										return false;
+									}
+
+									@NotNull
+									@Override
+									public Map<PropertyKey, String> getProperties() {
+										return null;
+									}
+								};
+							}
+						};
+					}
+
+					@NotNull
+					@Override
+					public Object[] toArray() {
+						return new Object[0];
+					}
+
+					@NotNull
+					@Override
+					public <T> T[] toArray(@NotNull T[] a) {
+						return null;
+					}
+
+					@Override
+					public boolean add(SUser sUser) {
+						return false;
+					}
+
+					@Override
+					public boolean remove(Object o) {
+						return false;
+					}
+
+					@Override
+					public boolean containsAll(@NotNull Collection<?> c) {
+						return false;
+					}
+
+					@Override
+					public boolean addAll(@NotNull @Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends SUser> c) {
+						return false;
+					}
+
+					@Override
+					public boolean removeAll(@NotNull Collection<?> c) {
+						return false;
+					}
+
+					@Override
+					public boolean retainAll(@NotNull Collection<?> c) {
+						return false;
+					}
+
+					@Override
+					public void clear() {
+
+					}
+				};
 			}
 			
 			@Override
@@ -476,6 +893,11 @@ public class MockSRunningBuild implements SRunningBuild {
 			public Map<String, String> getAttributes() {
 				// TODO Auto-generated method stub
 				return null;
+			}
+
+			@Override
+			public void setDescription(@NotNull String s) throws AccessDeniedException {
+
 			}
 		});
 	}
