@@ -1,10 +1,9 @@
 package webhook.teamcity.settings;
 
-import java.util.regex.Pattern;
-
 import lombok.Getter;
-
 import org.jdom.Element;
+
+import java.util.regex.Pattern;
 
 @Getter
 public class WebHookFilterConfig {
@@ -47,4 +46,19 @@ public class WebHookFilterConfig {
 		return e;
 	}
 
+	public Boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public Pattern getPattern() {
+		return this.pattern;
+	}
+
+	public String getValue() {
+		return this.value;
+	}
+
+	public String getRegex() {
+		return this.regex;
+	}
 }

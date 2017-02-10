@@ -1,22 +1,7 @@
 package webhook.teamcity.payload.content;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-
 import com.intellij.util.containers.hash.LinkedHashMap;
-
-import jetbrains.buildServer.serverSide.Branch;
-import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.vcs.SVcsModification;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
@@ -25,6 +10,10 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class WebHookPayloadContent {
 		String buildStatus,
@@ -50,7 +39,6 @@ public class WebHookPayloadContent {
 		agentName,
 		agentOs,
 		agentHostname,
-		triggeredBy,
 		comment,
 		message,
 		text,
@@ -66,6 +54,7 @@ public class WebHookPayloadContent {
 		WebHooksComment buildComment; 
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
+		WebHooksTriggeredBy triggeredBy;
 		private ExtraParametersMap teamcityProperties;
 		private List<WebHooksChanges> changes = new ArrayList<>();
 		
@@ -199,7 +188,8 @@ public class WebHookPayloadContent {
     		setAgentName(sRunningBuild.getAgentName());
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
-    		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
+//    		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
+    		setTriggeredBy(WebHooksTriggeredBy.build(sRunningBuild.getTriggeredBy()));
     		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
     		setTags(sRunningBuild.getTags());
     		setChanges(sRunningBuild.getContainingChanges());
@@ -500,11 +490,11 @@ public class WebHookPayloadContent {
 			this.agentHostname = agentHostname;
 		}
 
-		public String getTriggeredBy() {
+		public WebHooksTriggeredBy getTriggeredBy() {
 			return triggeredBy;
 		}
 
-		public void setTriggeredBy(String triggeredBy) {
+		public void setTriggeredBy(WebHooksTriggeredBy triggeredBy) {
 			this.triggeredBy = triggeredBy;
 		}
 
