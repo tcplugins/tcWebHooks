@@ -5,11 +5,12 @@ import com.google.gson.GsonBuilder;
 
 public class RegisteredWebHookTemplateBeanGsonSerialiser {
 
-	private RegisteredWebHookTemplateBeanGsonSerialiser(){}
-	
-	public static String serialise(RegisteredWebHookTemplateBean templates){
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		return gson.toJson(templates);
-	}
+    private RegisteredWebHookTemplateBeanGsonSerialiser() {
+    }
+
+    public static String serialise(RegisteredWebHookTemplateBean templates) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(templates);
+    }
 
 }
