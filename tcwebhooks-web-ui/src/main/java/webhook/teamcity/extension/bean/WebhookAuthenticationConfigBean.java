@@ -1,29 +1,29 @@
 package webhook.teamcity.extension.bean;
 
-import java.util.Map;
-
 import webhook.teamcity.auth.WebHookAuthConfig;
 
+import java.util.Map;
+
 public class WebhookAuthenticationConfigBean extends WebHookAuthConfig {
-	
-	public static WebhookAuthenticationConfigBean build(WebHookAuthConfig config){
-		WebhookAuthenticationConfigBean bean = new WebhookAuthenticationConfigBean();
-		bean.type = config.type;
-		bean.preemptive = config.preemptive;
-		bean.parameters.putAll(config.parameters);
-		return bean;
-	}
 
-	public String getType(){
-		return type;
-	}
+    public static WebhookAuthenticationConfigBean build(WebHookAuthConfig config) {
+        WebhookAuthenticationConfigBean bean = new WebhookAuthenticationConfigBean();
+        bean.type = config.type;
+        bean.preemptive = config.preemptive;
+        bean.parameters.putAll(config.parameters);
+        return bean;
+    }
 
-	public boolean isPreemptive() {
-		return preemptive.booleanValue();
-	}
+    public String getType() {
+        return type;
+    }
 
-	public Map<String, String> getParameters() {
-		return parameters;
-	}
+    public boolean isPreemptive() {
+        return preemptive.booleanValue();
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
 
 }

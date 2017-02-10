@@ -1,9 +1,13 @@
 package webhook.teamcity;
 
 public interface BuildStateInterface {
-	public boolean isEnabled();
-	public void enable();
-	public void disable();
-	public String getShortName();
-	public String getDescriptionSuffix();
+    public boolean isEnabled();
+
+    public void enable();
+
+    public void disable();
+
+    public String getShortName();
+
+    public String getDescriptionSuffix();
 }

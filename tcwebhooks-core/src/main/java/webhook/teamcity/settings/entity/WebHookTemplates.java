@@ -1,31 +1,30 @@
 package webhook.teamcity.settings.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlRootElement(name = "webhook-templates")
 public class WebHookTemplates {
-	@NotNull
-	private List<WebHookTemplate> templateList = new ArrayList<>();
+    @NotNull
+    private List<WebHookTemplate> templateList = new ArrayList<>();
 
-	@NotNull
-	@XmlElement(name = "webhook-template")
-	public List<WebHookTemplate> getWebHookTemplateList() {
-		return templateList;
-	}
+    @NotNull
+    @XmlElement(name = "webhook-template")
+    public List<WebHookTemplate> getWebHookTemplateList() {
+        return templateList;
+    }
 
-	public void setWebHookTemplateList(
-			@NotNull List<WebHookTemplate> templateList) {
-		this.templateList = templateList;
-	}
+    public void setWebHookTemplateList(
+            @NotNull List<WebHookTemplate> templateList) {
+        this.templateList = templateList;
+    }
 
-	public void addWebHookTemplate(WebHookTemplate template) {
-		this.templateList.add(template);
-	}
+    public void addWebHookTemplate(WebHookTemplate template) {
+        this.templateList.add(template);
+    }
 
 }

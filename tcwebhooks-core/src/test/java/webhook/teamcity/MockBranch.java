@@ -3,23 +3,23 @@ package webhook.teamcity;
 import jetbrains.buildServer.serverSide.Branch;
 
 public class MockBranch implements Branch {
-	
-	private String name = "refs/heads/master";
-	private String displayName = "master";
-	private boolean defaultBranch = false;
 
-	@Override
-	public String getDisplayName() {
-		return displayName;
-	}
+    private String name = "refs/heads/master";
+    private String displayName = "master";
+    private boolean defaultBranch = false;
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	@Override
-	public boolean isDefaultBranch() {
-		return defaultBranch;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean isDefaultBranch() {
+        return defaultBranch;
+    }
 }

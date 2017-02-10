@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-  <webhooks enabled="true">
-    <webhook url="http://localhost:58001/200" enabled="true" format="JSON">
-      <states>
-        <state type="buildStarted" enabled="true" />
-        <state type="changesLoaded" enabled="true" />
-        <state type="beforeBuildFinish" enabled="true" />
-        <state type="buildFinished" enabled="true" />
-        <state type="buildBroken" enabled="false" />
-        <state type="buildInterrupted" enabled="true" />
-        <state type="buildSuccessful" enabled="true" />
-        <state type="buildFixed" enabled="false" />
-        <state type="buildFailed" enabled="true" />
-        <state type="responsibilityChanged" enabled="true" />
-      </states>
-	  <trigger-filters>
-	  	<filter value="${branchDisplayName}" regex="^master$" enabled="true"/>
-	  	<filter value="${buildInternalTypeId}" regex="^bt\d$" enabled="true"/>
-	  </trigger-filters>
-       <parameters>
-	    <param name="color" value="red" />
-	    <param name="notify" value="1" />
-      </parameters>
-    </webhook>
-  </webhooks>
+    <webhooks enabled="true">
+        <webhook url="http://localhost:58001/200" enabled="true" format="JSON">
+            <states>
+                <state type="buildStarted" enabled="true"/>
+                <state type="changesLoaded" enabled="true"/>
+                <state type="beforeBuildFinish" enabled="true"/>
+                <state type="buildFinished" enabled="true"/>
+                <state type="buildBroken" enabled="false"/>
+                <state type="buildInterrupted" enabled="true"/>
+                <state type="buildSuccessful" enabled="true"/>
+                <state type="buildFixed" enabled="false"/>
+                <state type="buildFailed" enabled="true"/>
+                <state type="responsibilityChanged" enabled="true"/>
+            </states>
+            <trigger-filters>
+                <filter value="${branchDisplayName}" regex="^master$" enabled="true"/>
+                <filter value="${buildInternalTypeId}" regex="^bt\d$" enabled="true"/>
+            </trigger-filters>
+            <parameters>
+                <param name="color" value="red"/>
+                <param name="notify" value="1"/>
+            </parameters>
+        </webhook>
+    </webhooks>
 </settings>
 

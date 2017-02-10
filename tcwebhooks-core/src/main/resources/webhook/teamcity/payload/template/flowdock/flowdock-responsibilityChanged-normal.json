@@ -6,14 +6,28 @@
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}",
-  "tags": [ "#${buildExternalTypeId}", "#${projectExternalId}", "#${notifyType}", "#teamcity" ],
+  "tags": [
+    "#${buildExternalTypeId}",
+    "#${projectExternalId}",
+    "#${notifyType}",
+    "#teamcity"
+  ],
   "thread": {
     "title": "${buildName}",
     "fields": [
-                { "label": "Build", "value": "${buildFullName}" },
-                { "label": "Responsibility", "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})" },
-                { "label": "Comment", "value": "${comment}" }
-              ],
+      {
+        "label": "Build",
+        "value": "${buildFullName}"
+      },
+      {
+        "label": "Responsibility",
+        "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})"
+      },
+      {
+        "label": "Comment",
+        "value": "${comment}"
+      }
+    ],
     "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> has <strong>${buildStateDescription}</strong>",
     "external_url": "${buildStatusUrl}",
     "status": {

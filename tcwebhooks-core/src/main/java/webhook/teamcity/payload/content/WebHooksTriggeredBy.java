@@ -4,39 +4,39 @@ import jetbrains.buildServer.serverSide.TriggeredBy;
 import jetbrains.buildServer.users.SUser;
 
 public class WebHooksTriggeredBy {
-	
-	String name = "";
-	String username = "";
-	String email = "";
 
-	public static WebHooksTriggeredBy build (TriggeredBy triggeredBy){
-		if (triggeredBy != null){
-			WebHooksTriggeredBy buildTriggeredBy = new WebHooksTriggeredBy();
-			if (triggeredBy.getUser() != null){
-				SUser user = triggeredBy.getUser();
-				buildTriggeredBy.name = user.getName();
-				buildTriggeredBy.username = user.getUsername();
-				buildTriggeredBy.email = user.getEmail();
-				return buildTriggeredBy;
-			}
-		}
-		return null;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getUsername() {
-		return username;
-	}
+    String name = "";
+    String username = "";
+    String email = "";
 
-	public String getEmail() {
-		return email;
-	}
+    public static WebHooksTriggeredBy build(TriggeredBy triggeredBy) {
+        if (triggeredBy != null) {
+            WebHooksTriggeredBy buildTriggeredBy = new WebHooksTriggeredBy();
+            if (triggeredBy.getUser() != null) {
+                SUser user = triggeredBy.getUser();
+                buildTriggeredBy.name = user.getName();
+                buildTriggeredBy.username = user.getUsername();
+                buildTriggeredBy.email = user.getEmail();
+                return buildTriggeredBy;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

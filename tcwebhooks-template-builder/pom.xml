@@ -1,86 +1,87 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+        <artifactId>tcwebhooks</artifactId>
+        <version>${currentVersion}</version>
+    </parent>
     <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-    <artifactId>tcwebhooks</artifactId>
+    <artifactId>tcwebhooks-template-builder</artifactId>
     <version>${currentVersion}</version>
-  </parent>
-  <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-  <artifactId>tcwebhooks-template-builder</artifactId>
-  <version>${currentVersion}</version>
-  <name>tcwebhooks-template-builder</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <build>
-  	<plugins>
-  			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-	</plugins>			
-  </build>
-  <dependencies>
-  	  	<dependency>
-	  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-	  		<artifactId>tcwebhooks-core</artifactId>
-	  		<version>${currentVersion}</version>
-	  		<scope>compile</scope>
-	  	</dependency>
-  	
-	    <dependency>
-	      <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-	      <artifactId>tcwebhooks-core</artifactId>
-	      <version>${currentVersion}</version>
-	      <type>test-jar</type>
-	      <scope>test</scope>
-	    </dependency>
-	    
-	    <dependency>
-			<groupId>org.jetbrains.teamcity</groupId>
-			<artifactId>server-api</artifactId>
-			<version>${teamcityVersion}</version>
-			<scope>test</scope>
-		</dependency>
+    <name>tcwebhooks-template-builder</name>
+    <url>http://maven.apache.org</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+            <artifactId>tcwebhooks-core</artifactId>
+            <version>${currentVersion}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-  		</dependency>
-	    
-		<dependency>
-		  <groupId>com.squareup</groupId>
-		  <artifactId>javapoet</artifactId>
-		  <version>1.3.0</version>
-		</dependency>	    
-	    
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
-		</dependency>
-	    
-	    <dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.0</version>
-			<scope>test</scope>
-		</dependency>
-	    
-  </dependencies>
+        <dependency>
+            <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+            <artifactId>tcwebhooks-core</artifactId>
+            <version>${currentVersion}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.teamcity</groupId>
+            <artifactId>server-api</artifactId>
+            <version>${teamcityVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 </project>
