@@ -1,0 +1,12 @@
+
+description = 'tcwebhooks-template-builder'
+dependencies {
+  compile project(':tcwebhooks-core')
+    compile group: 'commons-io', name: 'commons-io', version:'2.4'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version:'3.4'
+    compile group: 'com.squareup', name: 'javapoet', version:'1.3.0'
+  testCompile project(':tcwebhooks-core')
+    testCompile group: 'org.jetbrains.teamcity', name: 'server-api', version:'10.0'
+    testCompile group: 'junit', name: 'junit', version:'4.7'
+    testCompile group: 'org.mockito', name: 'mockito-all', version:'1.8.0'
+}
