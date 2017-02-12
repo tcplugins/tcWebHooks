@@ -4,11 +4,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+        <groupId>makhov.teamcity.plugins.tcwebhooks</groupId>
         <artifactId>tcwebhooks</artifactId>
         <version>${currentVersion}</version>
     </parent>
-    <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+    <groupId>makhov.teamcity.plugins.tcwebhooks</groupId>
     <artifactId>tcwebhooks-template-builder</artifactId>
     <version>${currentVersion}</version>
     <name>tcwebhooks-template-builder</name>
@@ -30,14 +30,14 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+            <groupId>makhov.teamcity.plugins.tcwebhooks</groupId>
             <artifactId>tcwebhooks-core</artifactId>
             <version>${currentVersion}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+            <groupId>makhov.teamcity.plugins.tcwebhooks</groupId>
             <artifactId>tcwebhooks-core</artifactId>
             <version>${currentVersion}</version>
             <type>test-jar</type>

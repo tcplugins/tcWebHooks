@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>tcwebhooks</artifactId>
-        <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+        <groupId>makhov.teamcity.plugins.tcwebhooks</groupId>
         <version>${currentVersion}</version>
         <relativePath>..</relativePath>
     </parent>
@@ -176,8 +176,8 @@
 
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 

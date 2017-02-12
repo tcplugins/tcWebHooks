@@ -39,7 +39,7 @@ public class TestingServlet extends HttpServlet {
                 response.getWriter().println("<h1>Hello from defaultt</h1>");
                 break;
         }
-        System.out.println("Handling Web request for " + ((Request) request).getUri().toString());
+        System.out.println("Handling Web request for " + ((Request) request).getRequestURI());
     }
 
     private void printParams(HttpServletRequest request, HttpServletResponse response) {

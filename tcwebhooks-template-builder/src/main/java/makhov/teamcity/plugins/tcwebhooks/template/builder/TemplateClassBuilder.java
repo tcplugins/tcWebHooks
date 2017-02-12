@@ -1,4 +1,4 @@
-package netwolfuk.teamcity.plugins.tcwebhooks.template.builder;
+package makhov.teamcity.plugins.tcwebhooks.template.builder;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
