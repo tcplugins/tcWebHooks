@@ -2,12 +2,12 @@ package webhook;
 
 //Import required java libraries
 
+import org.eclipse.jetty.server.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Extracts the response code from the response and calls
@@ -24,8 +24,7 @@ public class ResponseCodeFilter implements Filter {
     Logger logger = LoggerFactory.getLogger(ResponseCodeFilter.class);
 
     @SuppressWarnings("unused")
-    private ResponseCodeFilter() {
-    }
+    private ResponseCodeFilter() {}
 
     public ResponseCodeFilter(ResponseEvent callback) {
         this.callback = callback;
@@ -41,9 +40,9 @@ public class ResponseCodeFilter implements Filter {
         chain.doFilter(request, response);
 
         if (callback != null) {
-            callback.updateRepsoneCode(((HttpServletResponse) response).getStatus());
+            callback.updateRepsoneCode(((Response) response).getStatus());
         }
-        logger.info("Response code is: " + ((HttpServletResponse) response).getStatus());
+        logger.info("Response code is: " + ((Response) response).getStatus());
     }
 
     public void destroy() {

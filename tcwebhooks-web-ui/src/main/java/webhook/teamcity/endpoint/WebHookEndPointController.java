@@ -5,6 +5,7 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import webhook.teamcity.Loggers;
@@ -41,7 +42,7 @@ public class WebHookEndPointController extends BaseController {
     }
 
     @Nullable
-    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
 
         if (request.getMethod().equalsIgnoreCase("post")) {
 

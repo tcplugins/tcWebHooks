@@ -15,6 +15,7 @@
         <vendor>
             <name>Net Wolf</name>
             <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
+            <name>Alexey Makhov</name>
         </vendor>
     </info>
     <deployment use-separate-classloader="true"/>

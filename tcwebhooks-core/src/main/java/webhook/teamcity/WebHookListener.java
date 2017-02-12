@@ -210,7 +210,7 @@ public class WebHookListener extends BuildServerAdapter {
     }
 
     @Override
-    public void responsibleChanged(SProject project, TestNameResponsibilityEntry oldTestNameResponsibilityEntry, TestNameResponsibilityEntry newTestNameResponsibilityEntry, boolean isUserAction) {
+    public void responsibleChanged(@NotNull SProject project, TestNameResponsibilityEntry oldTestNameResponsibilityEntry, TestNameResponsibilityEntry newTestNameResponsibilityEntry, boolean isUserAction) {
         Loggers.SERVER.debug("About to process WebHooks for " + project.getProjectId() + " at buildState responsibilityChanged");
         for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())) {
             WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));

@@ -1,4 +1,4 @@
-package netwolfuk.teamcity.plugins.tcwebhooks.template.builder;
+package makhov.teamcity.plugins.tcwebhooks.template.builder;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
 import org.junit.Test;

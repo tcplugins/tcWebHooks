@@ -1,11 +1,11 @@
 package webhook.teamcity.endpoint;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.junit.Assert.*;
 import webhook.teamcity.payload.WebHookPayloadManager;
 
 import java.util.Date;
@@ -48,9 +48,9 @@ public class WebHookEndPointContentStoreTest {
         store.put(payload1);
         store.put(payload2);
 
-        assertEquals(hash1, store.getAll().get(1).getHash());
+        Assert.assertEquals(hash1, store.getAll().get(1).getHash());
         System.out.println(store.getAll().get(1).getHash());
-        assertEquals(hash2, store.getAll().get(0).getHash());
+        Assert.assertEquals(hash2, store.getAll().get(0).getHash());
         System.out.println(store.getAll().get(0).getHash());
     }
 

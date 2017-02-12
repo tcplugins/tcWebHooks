@@ -1,4 +1,4 @@
-package netwolfuk.teamcity.plugins.tcwebhooks.template.builder;
+package makhov.teamcity.plugins.tcwebhooks.template.builder;
 
 import org.apache.commons.io.FileUtils;
 import webhook.teamcity.settings.entity.WebHookTemplate;
