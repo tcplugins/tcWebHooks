@@ -2,6 +2,14 @@ tr.onCompletionDisabled td {
 	color: #ccc;
 }
 
+tr.onCompletion td, tr.onDuring td {
+	padding-top: 1.5em;
+}
+
+td.buildStateDisabled {
+	color: #ccc;
+}
+
 input[type=checkbox], input[type=radio] {
 	vertical-align:middle;
 }
@@ -16,8 +24,24 @@ label {
 	border-top: 1px black;
 }
 
+label.webhookEnabled {
+	padding: 0em;
+}
+
 .webHookRowTemplate {
 	display:none;
+}
+
+#currentTemplateRaw, #currentTemplateRendered {
+	margin: 0.5em  0em 0.5em 0em;
+	width:auto;
+	height:15em;
+	border: solid 1px;
+	border-color: #999;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: scroll;
+	
 }
 
 .etabs { margin: 0; padding: 0 0 0 1em; }
@@ -27,4 +51,222 @@ label {
 .tab.active { background: #fff; padding-top: 6px; position: relative; top: 1px; border-color: #666; }
 .tab a.active { font-weight: bold; }
 .tab-container .panel-container { background: #fff; border-top: solid #ccc 1px; padding: 10px; -moz-border-radius: 0 4px 4px 4px; -webkit-border-radius: 0 4px 4px 4px; }
-    
+
+
+ul.commalist {
+  display: inline;
+  list-style: none;
+  padding:0;
+  
+}
+
+ul.commalist li {
+  display: inline;
+  white-space:nowrap;
+}
+
+ul.commalist li:after {
+  content: ", ";
+}
+
+ul.commalist li:last-child:after {
+    content: "";
+}
+
+table.settings td.nowrap {
+  white-space:nowrap;
+}
+
+table#webHookTemplateTable th {
+	text-align:left;
+	padding-left: 1em;
+	font-size: 90%;
+	font-weight: bold;
+}
+
+table#webHookTemplateTable td{
+	padding:1em;
+} 
+
+
+table#webHookTemplateTable tr:hover td {
+	background-color: #eeeeee !important;
+}
+
+#table.endpointRequestsTable {
+	/*max-width: 90%;*/
+}
+
+div.xxendpointPayload {
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    /*overflow-y: none;*/
+    background-color: #eeeeee;
+}
+
+div.endpointWrapper {
+	border: 1px solid #ccc;
+	margin-bottom: 1em;
+}
+
+div.endpointPayloadHeader {
+	background-color: rgb(245, 245, 245);
+	border-bottom: 1px solid #ccc;
+	padding: 0.5em;
+	
+}
+
+ul.payloadHeading {
+    padding: 0;
+}
+
+ul.payloadHeading li {
+    display: inline;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+li.payloadDate {
+	 font-weight: bold;
+}
+
+li.payloadContentType {
+	 font-style: italic;
+}
+
+div.endpointPayload pre {
+	margin:0px; 
+	border:none; 
+	border-right:none;
+    height: auto;
+    max-height: 500px;
+    width:auto;
+    max-width: 100%;
+    overflow: auto;
+    word-break: normal !important;
+    word-wrap: normal !important;
+    white-space: pre !important;
+    padding: 1em;
+}
+
+div.endpointPayloadHidden {
+	display: none;
+}
+
+div.endpointPayload div.tableWrapper table.settings {
+	margin-top:0px; 
+	border:none; 
+	border-right:none;
+}
+
+div.endpointPayload div.tableWrapper {
+	margin-top:0px; 
+	border:none; 
+	border-right:none;
+	height: auto;
+    max-height: 500px;
+    width:auto;
+    max-width: 100%;
+    overflow: auto;
+    word-break: normal !important;
+    word-wrap: normal !important;
+}
+
+div.endpointPayload div.tableWrapper table.settings thead tr {
+	background-color: rgb(245, 245, 245);
+}
+
+div.endpointPayload div.tableWrapper table.settings th :last-child, div.endpointPayload table.settings tr :last-child {
+	border-right:none;
+}
+
+div.endpointPayloadHeader {
+	cursor: pointer; 
+}
+
+div.endpointPayloadHeaders {
+	display:none;
+}
+
+div.endpointPayloadHeaders table {
+	margin-left:40px;
+}
+
+div.endpointPayloadHeaders table th {
+	text-align: left;
+	font-size:15px;
+}
+
+div.endpointPayloadHeaders table td {
+	padding:0.15em;
+}
+
+div.endpointPayloadHeaders table tr :first-child {
+	text-align:right;
+	font-weight: bold;	
+}
+
+
+#editWebHookDialog .dialogHeader {
+	padding:0.75em;
+}
+
+#editWebHookDialog .dialogHeader .closeWindow {
+	margin:1px 1px 0 0;
+}
+
+#buildSuccessful.buildState, #buildFailed.buildState {
+    margin-left: 2px;
+}
+
+/*
+span.templateRenderHeader {
+	display: table-cell;
+}
+
+div#templateLeftPanel {
+	display: table;
+}
+
+div#templateLeftPanel > div {
+	display: table-row;
+}*/
+
+div.popupSaveButtonsBlock {
+	padding-left: 0.75em;
+}
+
+select#currentTemplateBuildId, select#currentTemplateBuildEvent {
+	width: 100%;
+}
+
+.maxtoggle {
+	float:right;
+}
+
+a.restore {
+	display:none;
+}
+
+.authParameterName {
+	padding-right:1em;
+	text-align: right;
+}
+
+.authParameterName > label {
+	padding:0;
+}
+
+.authParameterValueWrapper {
+	width: 85%;
+}
+
+.authParameterValue {
+	width: 100%;
+}
+
+div.extraAuthParametersWrapper {
+	padding: 2em;
+	padding-top: 0.5em;
+} 

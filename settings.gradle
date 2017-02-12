@@ -1,0 +1,10 @@
+rootProject.name = 'tcwebhooks'
+include ':tcwebhooks-rest-api'
+include ':tcwebhooks-web-ui'
+include ':tcwebhooks-template-builder'
+include ':tcwebhooks-core'
+
+project(':tcwebhooks-rest-api').projectDir = "$rootDir/tcwebhooks-rest-api" as File
+project(':tcwebhooks-web-ui').projectDir = "$rootDir/tcwebhooks-web-ui" as File
+project(':tcwebhooks-template-builder').projectDir = "$rootDir/tcwebhooks-template-builder" as File
+project(':tcwebhooks-core').projectDir = "$rootDir/tcwebhooks-core" as File

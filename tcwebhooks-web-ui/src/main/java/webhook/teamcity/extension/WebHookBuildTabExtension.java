@@ -1,11 +1,5 @@
 package webhook.teamcity.extension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
@@ -16,57 +10,58 @@ import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
-
 import org.jetbrains.annotations.NotNull;
-
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class WebHookBuildTabExtension extends BuildTypeTab {
-	WebHookProjectSettings settings;
-	ProjectSettingsManager projSettings;
-	String myPluginPath;
+    WebHookProjectSettings settings;
+    ProjectSettingsManager projSettings;
+    String myPluginPath;
 
-	protected WebHookBuildTabExtension(
-			PagePlaces pagePlaces, ProjectManager projectManager, 
-			ProjectSettingsManager settings, WebControllerManager manager,
-			PluginDescriptor pluginDescriptor) {
-		//super(myTitle, myTitle, null, projectManager);
-		super("webHooks", "WebHooks", manager, projectManager);
-		this.projSettings = settings;
-		myPluginPath = pluginDescriptor.getPluginResourcesPath();
-	}
+    protected WebHookBuildTabExtension(
+            PagePlaces pagePlaces, ProjectManager projectManager,
+            ProjectSettingsManager settings, WebControllerManager manager,
+            PluginDescriptor pluginDescriptor) {
+        //super(myTitle, myTitle, null, projectManager);
+        super("webHooks", "WebHooks", manager, projectManager);
+        this.projSettings = settings;
+        myPluginPath = pluginDescriptor.getPluginResourcesPath();
+    }
 
-	public boolean isAvailable(@NotNull HttpServletRequest request) {
-		return true;
-	}
+    public boolean isAvailable(@NotNull HttpServletRequest request) {
+        return true;
+    }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	protected void fillModel(Map model, HttpServletRequest request,
-			 @NotNull SBuildType buildType, SUser user) {
-		this.settings = 
-			(WebHookProjectSettings)this.projSettings.getSettings(buildType.getProject().getProjectId(), "webhooks");
-		
-		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<ProjectAndBuildWebhooksBean>();  
-		List<SProject> parentProjects = buildType.getProject().getProjectPath();
-		if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
-			parentProjects.remove(0);
-		}
-		for (SProject projectParent : parentProjects){
-			projectAndParents.add(
-					ProjectAndBuildWebhooksBean.newInstance(
-							projectParent,
-							(WebHookProjectSettings) this.projSettings.getSettings(projectParent.getProjectId(), "webhooks"),
-							buildType
-							)
-					);
-		}
-		
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    protected void fillModel(Map model, HttpServletRequest request,
+                             @NotNull SBuildType buildType, SUser user) {
+        this.settings =
+                (WebHookProjectSettings) this.projSettings.getSettings(buildType.getProject().getProjectId(), "webhooks");
+
+        List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<ProjectAndBuildWebhooksBean>();
+        List<SProject> parentProjects = buildType.getProject().getProjectPath();
+        if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)) {
+            parentProjects.remove(0);
+        }
+        for (SProject projectParent : parentProjects) {
+            projectAndParents.add(
+                    ProjectAndBuildWebhooksBean.newInstance(
+                            projectParent,
+                            (WebHookProjectSettings) this.projSettings.getSettings(projectParent.getProjectId(), "webhooks"),
+                            buildType
+                    )
+            );
+        }
+
 //		projectAndParents.add(
 //				ProjectAndBuildWebhooksBean.newInstance(
 //						project,
@@ -75,8 +70,8 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 //						)
 //				);
 
-		model.put("projectAndParents", projectAndParents);
-    	
+        model.put("projectAndParents", projectAndParents);
+
 //    	List<WebHookConfig> projectWebhooks = this.settings.getProjectWebHooksAsList();
 //    	List<WebHookConfig> buildWebhooks = this.settings.getBuildWebHooksAsList(buildType);
 //    	
@@ -102,21 +97,19 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 //    	}
 //    	
 
-    	model.put("projectId", buildType.getProject().getProjectId());
-    	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
-    	model.put("projectName", buildType.getProject().getName());
-    	
-    	model.put("buildTypeId", buildType.getBuildTypeId());
-    	model.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(buildType));
-    	model.put("buildName", buildType.getName());
-	}
+        model.put("projectId", buildType.getProject().getProjectId());
+        model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
+        model.put("projectName", buildType.getProject().getName());
 
-	@Override
-	public String getIncludeUrl() {
-		//return myPluginPath + "WebHook/buildWebHookTab.jsp";
-		return myPluginPath + "WebHook/projectWebHookTab.jsp";
-	}
+        model.put("buildTypeId", buildType.getBuildTypeId());
+        model.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(buildType));
+        model.put("buildName", buildType.getName());
+    }
+
+    @Override
+    public String getIncludeUrl() {
+        return myPluginPath + "WebHook/webHookTab.jsp";
+    }
 
 
-	
 }
