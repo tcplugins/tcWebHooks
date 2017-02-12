@@ -8,7 +8,8 @@
         <description>Add the ability to configure tcWebHooks from the Teamcity REST API.</description>
         <vendor>
             <name>Net Wolf</name>
-            <url>http://makhov.wordpress.com/teamcity-plugins/</url>
+            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
+            <name>Alexey Makhov</name>
         </vendor>
     </info>
     <deployment use-separate-classloader="false"/>
