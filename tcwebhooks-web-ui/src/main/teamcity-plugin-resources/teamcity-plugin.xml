@@ -14,7 +14,7 @@
         </description>
         <vendor>
             <name>Net Wolf</name>
-            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
+            <url>http://makhov.wordpress.com/teamcity-plugins/</url>
         </vendor>
     </info>
     <deployment use-separate-classloader="true"/>
