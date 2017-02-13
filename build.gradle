@@ -27,3 +27,25 @@ subprojects {
     }
 
 }
+
+task zipPlugin(type: Zip) {
+    dependsOn 'pkg'
+    println project.buildDir.toString() + '/dist'
+    from (project.buildDir.toString() + '/dist')
+}
+
+task pkg {
+    dependsOn 'build'
+}
+pkg << {
+    File snapshot = file(project('tcwebhooks-web-ui').buildDir.toString() + '/libs').listFiles().find {it.name.endsWith('.jar')}
+    copy {
+        from(snapshot)
+        into(project.buildDir.toString() + '/dist/server')
+    }
+    copy {
+        from(project('tcwebhooks-web-ui').buildDir.toString() + '/../src/main/teamcity-plugin-resources/teamcity-plugin.xml')
+        into(project.buildDir.toString() + '/dist/')
+    }
+    tasks.zipPlugin.execute()
+}
