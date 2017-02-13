@@ -7,6 +7,7 @@ import jetbrains.buildServer.vcs.VcsFileModification;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class WebHooksChange {
@@ -16,8 +17,13 @@ public class WebHooksChange {
         change.setComment(modification.getDescription());
         change.setVcsRoot(modification.getVcsRoot().getName());
         Collection<SUser> committers = modification.getCommitters();
-        SUser committer = committers.iterator().next();
-        change.setUsername(committer.getUsername());
+        try {
+            SUser committer = committers.iterator().next();
+            change.setUsername(committer.getUsername());
+        } catch (NoSuchElementException e) {
+            change.setUsername("n/a");
+        }
+
         for (VcsFileModification fileModification : modification.getChanges()) {
             change.files.add(fileModification.getRelativeFileName());
         }

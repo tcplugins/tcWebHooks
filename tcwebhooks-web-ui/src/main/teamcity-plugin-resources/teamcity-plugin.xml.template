@@ -7,14 +7,14 @@
         <version>${version}</version>
         <description>Trigger webhook POST requests from build events. &lt;br/&gt;
             This plugin adds new tabs to the Project and Build pages for viewing and configuring WebHook events.
-            <ul>
-            <li>Branch: ${gitBranch}</li>
-            <li>Revision: ${gitCommit}</li>
-            </ul>
+            &lt;ul&gt;
+            &lt;li&gt;Branch: ${gitBranch}&lt;/li&gt;
+            &lt;li&gt;Revision: ${gitCommit}&lt;/li&gt;
+            &lt;/ul&gt;
         </description>
         <vendor>
-            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
             <name>Alexey Makhov</name>
+            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
         </vendor>
     </info>
     <deployment use-separate-classloader="true"/>
