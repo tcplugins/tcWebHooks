@@ -44,8 +44,11 @@ pkg << {
         into(project.buildDir.toString() + '/dist/server')
     }
     copy {
-        from(project('tcwebhooks-web-ui').buildDir.toString() + '/../src/main/teamcity-plugin-resources/teamcity-plugin.xml')
+        from(project('tcwebhooks-web-ui').buildDir.toString() + '/../src/main/teamcity-plugin-resources/')
         into(project.buildDir.toString() + '/dist/')
+        include 'teamcity-plugin.xml.template'
+        rename { file -> 'teamcity-plugin.xml' }
+        expand(version: version)
     }
     tasks.zipPlugin.execute()
 }
