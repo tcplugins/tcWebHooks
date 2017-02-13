@@ -1,3 +1,7 @@
+plugins {
+    id 'org.ajoberstar.grgit' version '1.6.0'
+}
+
 allprojects {
     apply plugin: 'maven'
 
@@ -37,6 +41,7 @@ task zipPlugin(type: Zip) {
 task pkg {
     dependsOn 'build'
 }
+
 pkg << {
     File snapshot = file(project('tcwebhooks-web-ui').buildDir.toString() + '/libs').listFiles().find {it.name.endsWith('.jar')}
     copy {
@@ -48,7 +53,7 @@ pkg << {
         into(project.buildDir.toString() + '/dist/')
         include 'teamcity-plugin.xml.template'
         rename { file -> 'teamcity-plugin.xml' }
-        expand(version: version)
+        expand(version: version, gitBranch: grgit.branch.current.name, gitCommit: grgit.head().abbreviatedId)
     }
     tasks.zipPlugin.execute()
 }
