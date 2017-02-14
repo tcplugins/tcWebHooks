@@ -18,6 +18,9 @@ public class WebHooksTriggeredBy {
                 buildTriggeredBy.username = user.getUsername();
                 buildTriggeredBy.email = user.getEmail();
                 return buildTriggeredBy;
+            } else {
+                buildTriggeredBy.name = triggeredBy.getAsString();
+                return buildTriggeredBy;
             }
         }
         return null;
