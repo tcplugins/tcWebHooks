@@ -13,8 +13,8 @@
             &lt;/ul&gt;
         </description>
         <vendor>
-            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
             <name>Alexey Makhov</name>
+            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
         </vendor>
     </info>
     <deployment use-separate-classloader="true"/>
