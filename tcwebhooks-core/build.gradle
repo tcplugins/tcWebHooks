@@ -13,64 +13,64 @@ dependencies {
     testCompile group: 'org.mortbay.jetty', name: 'jetty-sslengine', version:'6.1.16'
     testCompile group: 'log4j', name: 'log4j', version:'1.2.12'
     testCompile group: 'org.mockito', name: 'mockito-all', version:'1.8.0'
-    compile(group: 'commons-httpclient', name: 'commons-httpclient', version:'3.1') {
+    provided(group: 'commons-httpclient', name: 'commons-httpclient', version:'3.1') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'commons-io', name: 'commons-io', version:'1.4') {
+    provided(group: 'commons-io', name: 'commons-io', version:'1.4') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'org.jdom', name: 'jdom', version:'1.1') {
+    provided(group: 'org.jdom', name: 'jdom', version:'1.1') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'org.jetbrains.teamcity', name: 'server-api', version:'10.0') {
+    provided(group: 'org.jetbrains.teamcity', name: 'server-api', version:'10.0') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'org.jetbrains.teamcity', name: 'common-api', version:'10.0') {
+    provided(group: 'org.jetbrains.teamcity', name: 'common-api', version:'10.0') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'com.intellij', name: 'openapi', version:'7.0.3') {
+    provided(group: 'com.intellij', name: 'openapi', version:'7.0.3') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'org.jetbrains', name: 'annotations', version:'13.0') {
+    provided(group: 'org.jetbrains', name: 'annotations', version:'13.0') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'javax.servlet', name: 'javax.servlet-api', version:'3.1.0') {
+    provided(group: 'javax.servlet', name: 'javax.servlet-api', version:'3.1.0') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'org.springframework', name: 'spring', version:'2.0.1') {
+    provided(group: 'org.springframework', name: 'spring', version:'2.0.1') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'com.thoughtworks.xstream', name: 'xstream', version:'1.3.1') {
+    provided(group: 'com.thoughtworks.xstream', name: 'xstream', version:'1.3.1') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'org.codehaus.jettison', name: 'jettison', version:'1.1') {
+    provided(group: 'org.codehaus.jettison', name: 'jettison', version:'1.1') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
-    compile(group: 'commons-beanutils', name: 'commons-beanutils', version:'1.8.3') {
+    provided(group: 'commons-beanutils', name: 'commons-beanutils', version:'1.8.3') {
        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
-       This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+       This behavior is not yet supported by Gradle, so this dependency has been converted to a provided dependency.
        Please review and delete this closure when resolved. */
     }
 }
