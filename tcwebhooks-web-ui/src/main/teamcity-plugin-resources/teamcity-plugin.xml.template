@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
+    <info>
+        <name>tcWebHooks</name>
+        <display-name>Web Hooks plugin (tcWebHooks)</display-name>
+        <version>${version}</version>
+        <description>Trigger webhook POST requests from build events. &lt;br/&gt;
+            This plugin adds new tabs to the Project and Build pages for viewing and configuring WebHook events.
+            &lt;ul&gt;
+            &lt;li&gt;Branch: ${gitBranch}&lt;/li&gt;
+            &lt;li&gt;Revision: ${gitCommit}&lt;/li&gt;
+            &lt;/ul&gt;
+        </description>
+        <vendor>
+            <name>Alexey Makhov</name>
+            <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
+        </vendor>
+    </info>
+    <deployment use-separate-classloader="true"/>
+</teamcity-plugin>

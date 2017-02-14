@@ -1,0 +1,47 @@
+{
+  "event": "activity",
+  "author": {
+    "name": "TeamCity",
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+  },
+  "title": "updated build status to ${notifyType}",
+  "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
+  "tags": [
+    "#${buildExternalTypeId}",
+    "#${projectExternalId}",
+    "#${notifyType}",
+    "#${branchDisplayName}",
+    "#teamcity"
+  ],
+  "thread": {
+    "title": "${buildName} (${sanitize(branchDisplayName)})",
+    "fields": [
+      {
+        "label": "Build",
+        "value": "${buildFullName}"
+      },
+      {
+        "label": "Branch",
+        "value": "${branchDisplayName}"
+      },
+      {
+        "label": "Default Branch",
+        "value": "${branchIsDefault}"
+      },
+      {
+        "label": "Responsibility",
+        "value": "${responsibilityUserNew} (was: ${responsibilityUserOld})"
+      },
+      {
+        "label": "Comment",
+        "value": "${comment}"
+      }
+    ],
+    "body": "<a href=\"${rootUrl}/project.html?projectId=${projectId}\">${projectName}</a> :: <a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\">${buildName}</a> has <strong>${buildStateDescription}</strong>",
+    "external_url": "${buildStatusUrl}",
+    "status": {
+      "color": "grey",
+      "value": "${notifyType}"
+    }
+  }
+}

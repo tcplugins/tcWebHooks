@@ -1,0 +1,70 @@
+plugins {
+    id 'org.ajoberstar.grgit' version '1.6.0'
+}
+
+allprojects {
+    apply plugin: 'maven'
+
+    configurations {
+        provided
+    }
+
+    group = 'makhov.teamcity.plugins.tcwebhooks'
+    version = '1.1-alpha10.snapshot'
+}
+
+subprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenLocal()
+
+        maven { url "http://repository.jetbrains.com/all" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+    sourceSets {
+        main {
+            compileClasspath += configurations.provided
+            runtimeClasspath += configurations.provided
+        }
+        test {
+            compileClasspath += configurations.provided
+            runtimeClasspath += configurations.provided
+        }
+    }
+
+    dependencies {
+        provided(group: 'com.google.code.gson', name: 'gson', version: '2.1')
+    }
+
+}
+
+task zipPlugin(type: Zip) {
+    dependsOn 'pkg'
+    println project.buildDir.toString() + '/dist'
+    from (project.buildDir.toString() + '/dist')
+    baseName = "tcWebHooksPlugin"
+}
+
+task pkg {
+    dependsOn 'build'
+}
+
+pkg.doLast {
+    File snapshot = file(project('tcwebhooks-web-ui').buildDir.toString() + '/libs').listFiles().find {it.name.endsWith('.jar')}
+    copy {
+        from(snapshot)
+        into(project.buildDir.toString() + '/dist/server')
+    }
+    copy {
+        from(project('tcwebhooks-web-ui').buildDir.toString() + '/../src/main/teamcity-plugin-resources/')
+        into(project.buildDir.toString() + '/dist/')
+        include 'teamcity-plugin.xml.template'
+        rename { file -> 'teamcity-plugin.xml' }
+        expand(version: version, gitBranch: grgit.branch.current.name, gitCommit: grgit.head().abbreviatedId)
+    }
+    tasks.zipPlugin.execute()
+}

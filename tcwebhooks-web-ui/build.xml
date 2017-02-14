@@ -1,5 +1,6 @@
 <project name="JSP Copier" default="copy-jsps">
-	<target name="copy-jsps">
-		<copydir dest="/opt/TeamCity/Current/TeamCity/webapps/ROOT/plugins/tcWebHooks/WebHook/" src="src/main/resources/buildServerResources/WebHook/"/>
-	</target>
+    <target name="copy-jsps">
+        <copydir dest="/opt/TeamCity/webapps/ROOT/plugins/tcWebHooks/WebHook/"
+                 src="src/main/resources/buildServerResources/WebHook/"/>
+    </target>
 </project>

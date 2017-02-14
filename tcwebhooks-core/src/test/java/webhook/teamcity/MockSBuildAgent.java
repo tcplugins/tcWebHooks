@@ -1,266 +1,274 @@
 package webhook.teamcity;
 
+import jetbrains.buildServer.BuildAgent;
+import jetbrains.buildServer.LicenseNotGrantedException;
+import jetbrains.buildServer.serverSide.*;
+import jetbrains.buildServer.serverSide.comments.Comment;
+import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.users.User;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import jetbrains.buildServer.BuildAgent;
-import jetbrains.buildServer.LicenseNotGrantedException;
-import jetbrains.buildServer.serverSide.RunType;
-import jetbrains.buildServer.serverSide.SBuildAgent;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.comments.Comment;
-import jetbrains.buildServer.users.SUser;
-import jetbrains.buildServer.users.User;
-
 public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 
-	private String name;
-	private String hostame;
-	private String ipAddress;
-	private int agentId;
-	private String osVersion;
-	private SRunningBuild sRunningBuild;
+    private String name;
+    private String hostame;
+    private String ipAddress;
+    private int agentId;
+    private String osVersion;
+    private SRunningBuild sRunningBuild;
 
-	public MockSBuildAgent(String agentName, String hostname, String ipAddress,
-			int agentId, String osVersion) {
-		this.name = agentName;
-		this.hostame = hostname;
-		this.ipAddress = ipAddress;
-		this.agentId = agentId;
-		this.osVersion = osVersion;
-	}
+    public MockSBuildAgent(String agentName, String hostname, String ipAddress,
+                           int agentId, String osVersion) {
+        this.name = agentName;
+        this.hostame = hostname;
+        this.ipAddress = ipAddress;
+        this.agentId = agentId;
+        this.osVersion = osVersion;
+    }
 
-	public String getAuthorizationToken() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getAuthorizationToken() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Comment getAuthorizeComment() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Comment getAuthorizeComment() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Map<String, String> getAvailableParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Map<String, String> getAvailableParameters() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public List<RunType> getAvailableRunTypes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<RunType> getAvailableRunTypes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public List<SBuildType> getBuildConfigurationsBuilt() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<SBuildType> getBuildConfigurationsBuilt() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Map<String, String> getDefinedParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Map<String, String> getDefinedParameters() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public String getHostAddress() {
-		return this.ipAddress;
-	}
+    public String getHostAddress() {
+        return this.ipAddress;
+    }
 
-	public String getHostName() {
-		return this.hostame;
-	}
+    public String getHostName() {
+        return this.hostame;
+    }
 
-	public Date getLastCommunicationTimestamp() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Date getLastCommunicationTimestamp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public String getOperatingSystemName() {
-		return this.osVersion;
-	}
+    public String getOperatingSystemName() {
+        return this.osVersion;
+    }
 
-	public String getPluginsSignature() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getPluginsSignature() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public int getPort() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public int getPort() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	public Date getRegistrationTimestamp() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Date getRegistrationTimestamp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public void setRunningBuild(SRunningBuild sRunningBuild){
-		this.sRunningBuild = sRunningBuild;
-	}
-	
-	public SRunningBuild getRunningBuild() {
-		return this.sRunningBuild;
-	}
+    public void setRunningBuild(SRunningBuild sRunningBuild) {
+        this.sRunningBuild = sRunningBuild;
+    }
 
-	public Comment getStatusComment() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public SRunningBuild getRunningBuild() {
+        return this.sRunningBuild;
+    }
 
-	public String getUnregistrationComment() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Comment getStatusComment() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public String getVersion() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getUnregistrationComment() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public boolean isAuthorized() {
-		return true;
-	}
+    public String getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public boolean isEnabled() {
-		return true;
-	}
+    public boolean isAuthorized() {
+        return true;
+    }
 
-	public boolean isOutdated() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean isEnabled() {
+        return true;
+    }
 
-	public boolean isPluginsOutdated() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean isOutdated() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public boolean isRegistered() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean isPluginsOutdated() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public boolean ping() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean isRegistered() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public void releaseSources() {
-		// TODO Auto-generated method stub
+    public boolean ping() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	}
+    public void releaseSources() {
+        // TODO Auto-generated method stub
 
-	public void releaseSources(SBuildType arg0) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    public void releaseSources(SBuildType arg0) {
+        // TODO Auto-generated method stub
 
-	public void setAuthorized(boolean arg0, SUser arg1, String arg2)
-			throws LicenseNotGrantedException {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    public void setAuthorized(boolean arg0, SUser arg1, String arg2)
+            throws LicenseNotGrantedException {
+        // TODO Auto-generated method stub
 
-	public void setEnabled(boolean arg0, SUser arg1, String arg2) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    public void setEnabled(boolean arg0, SUser arg1, String arg2) {
+        // TODO Auto-generated method stub
 
-	public boolean stopBuild(User arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    }
 
-	public int getCpuBenchmarkIndex() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public boolean stopBuild(User arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public int getId() {
-		return this.agentId;
-	}
+    public int getCpuBenchmarkIndex() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    @Override
+    public int getAgentPoolId() {
+        return 0;
+    }
 
-	public boolean isUpgrading() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public int getId() {
+        return this.agentId;
+    }
 
-	public int compareTo(BuildAgent o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public List<String> getAvailableVcsPlugins() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public boolean isUpgrading() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public Map<String, String> getBuildParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public int compareTo(BuildAgent o) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	public Map<String, String> getConfigurationParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<String> getAvailableVcsPlugins() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public boolean isCaseInsensitiveEnvironment() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public Map<String, String> getBuildParameters() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public List<SFinishedBuild> getBuildHistory(User arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Map<String, String> getConfigurationParameters() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public Date getAgentStatusRestoringTimestamp() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public boolean isCaseInsensitiveEnvironment() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public Boolean getAgentStatusToRestore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<SFinishedBuild> getBuildHistory(User arg0, boolean arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public long getIdleTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public Date getAgentStatusRestoringTimestamp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public void setEnabled(boolean arg0, SUser arg1, String arg2, long arg3) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	// From tc 7.1
+    public Boolean getAgentStatusToRestore() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public int getAgentTypeId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	// From tc 9.1
+    public long getIdleTime() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	@Override
-	public String describe(boolean arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public void setEnabled(boolean arg0, SUser arg1, String arg2, long arg3) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public String getCommunicationProtocolDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+    }
+
+    // From tc 7.1
+
+    @Override
+    public int getAgentTypeId() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    // From tc 9.1
+
+    @Override
+    public String describe(boolean arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getCommunicationProtocolDescription() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public String getCommunicationProtocolType() {
+        return null;
+    }
+
 
 }
