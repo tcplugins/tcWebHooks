@@ -22,10 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.Loggers;
 
-/**
- * @author Yegor.Yarko
- *         Date: 20.06.2010
- */
 public class RESTControllerExtensionInitializer extends RESTControllerExtensionAdapter {
     @Override
     @NotNull

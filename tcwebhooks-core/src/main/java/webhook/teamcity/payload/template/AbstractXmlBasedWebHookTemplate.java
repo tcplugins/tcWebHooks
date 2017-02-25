@@ -39,7 +39,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 		
 		template = (WebHookTemplateFromXml) WebHookTemplateFromXml.build(loadFirstTemplateFromXmlFile(), payloadManager);
 		
-		// Is rank is set by spring initialisation then use that value
+		// If rank is set by spring initialisation then use that value
 		// rather than the one in the XML file.
 		
 		if (this.rank != null){
@@ -104,8 +104,21 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 	    return webhookEntity;
 	}
 
+	/**
+	 * Called by loadFirstTemplateFromXmlFile to get the path to the resource
+	 * file containing the template.
+	 * Should return a string like webhook/teamcity/payload/template/ElasticSearchWebHookTemplate.xml
+	 * which contains the full URI to the resource within the classpath.
+	 * @return A string representing the URI of the resource within the classpath.
+	 */
 	public abstract  String getXmlFileName();
 
+	/**
+	 * Used for getting a identifiable logging name for the template.
+	 * Log messages will be prefixed by this string when logging detail 
+	 * about the template loading and executing process.
+	 * @return A string to use when logging messages regarding this template.
+	 */
 	public abstract String getLoggingName();
 
 	@Override

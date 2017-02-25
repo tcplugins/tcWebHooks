@@ -164,6 +164,12 @@
 			<artifactId>server-api</artifactId>
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
@@ -172,6 +178,12 @@
 			<artifactId>common-api</artifactId>
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -304,6 +316,17 @@
 		    <artifactId>jersey-test-support</artifactId>
 		    <version>1.0</version>
 		    <scope>test</scope>
-	    </dependency>		
+	    </dependency>	
+	    <dependency>
+		  <groupId>io.swagger</groupId>
+		  <artifactId>swagger-jersey-jaxrs</artifactId>
+		  <version>1.5.0</version>
+		  <exclusions>
+		  	<exclusion>
+		  		<artifactId>slf4j-api</artifactId>
+		  		<groupId>org.slf4j</groupId>
+		  	</exclusion>
+		  </exclusions>
+	    </dependency>	
 	</dependencies>
 </project>

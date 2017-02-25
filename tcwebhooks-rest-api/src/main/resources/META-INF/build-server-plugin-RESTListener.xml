@@ -21,4 +21,8 @@
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
 	<bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/>
 	<bean id="webHookWebLinks" class="webhook.teamcity.server.rest.WebHookWebLinks"/>
+	
+	<!-- bean id="apiListingResource" class="io.swagger.jaxrs.listing.ApiListingResource"/-->
+    <!-- bean id="swaggerSerializers" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/-->
+    <!--bean id="swaggerInitialisationController" class="webhook.teamcity.server.rest.SwaggerInitialisationController" scope="singleton"/-->
 </beans>

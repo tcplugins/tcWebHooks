@@ -2,6 +2,8 @@ package webhook.teamcity.server.rest.request;
 
 import com.intellij.openapi.diagnostic.Logger;
 
+import io.swagger.annotations.Api;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateSta
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 @Path(TemplateRequest.API_TEMPLATES_URL)
+@Api("webhooks-Template")
 public class TemplateRequest {
   private static final Logger LOG = Logger.getInstance(TemplateRequest.class.getName());
   public static final boolean ID_GENERATION_FLAG = true;
