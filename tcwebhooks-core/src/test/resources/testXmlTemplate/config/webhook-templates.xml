@@ -2,6 +2,58 @@
 <webhook-templates>
 	<webhook-template enabled="true" name="testXMLtemplate" rank="10">
 		<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
+		<default-branch-template>{ "defaultBranchBuildStatus" : "${buildStatus}" }</default-branch-template>
+		<template-description>"Test XML Template"</template-description>
+		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+		<formats>
+			<format name="json" enabled="true" />
+			<format name="nvpairs" enabled="true" />
+			<format name="tailoredjson" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
+				<branch-template-text>{ "buildStatus" : "${buildStatus} - ${branchName}" }</branch-template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="true" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>
+	<webhook-template enabled="true" name="testXMLtemplateWithCombinedTemplate" rank="10">
+		<default-template use-for-branch-template="true">{ "mergedBuildStatus" : "${buildStatus}" }</default-template>
+		<template-description>Test XML Template where default template is used for branches too</template-description>
+		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+		<formats>
+			<format name="json" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<template-text use-for-branch-template="true">{ "anotherMergedbuildStatus" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="true" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>	
+	<webhook-template enabled="true" name="testXMLtemplate" rank="10">
+		<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
 		<default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template>
 		<template-description>"Test XML Template"</template-description>
 		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
@@ -28,4 +80,68 @@
 			</template>
 		</templates>
 	</webhook-template>
+	<webhook-template enabled="true" name="testTemplateWithoutToolTipAndDescription" rank="10">
+	
+		<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
+		<default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template>
+		
+		<!--    Exercise the test coverage by missing some config    -->
+		<!--template-description>"Test XML Template"</template-description-->
+		<!--template-tool-tip value="This is some tooltip text for the Test XML Template"/-->
+		
+		<formats>
+			<format name="json" enabled="true" />
+			<format name="nvpairs" enabled="true" />
+			<format name="tailoredjson" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
+				<branch-template-text>{ "buildStatus" : "${buildStatus} - ${branchName}" }</branch-template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="true" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>
+	<webhook-template enabled="true" name="testTemplateWithoutToolTipAndStuff" rank="10">
+	
+		<!--    Exercise the test coverage by missing some config    -->
+		<!--default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template-->
+		<!--default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template-->
+		<!--template-description>"Test XML Template"</template-description-->
+		
+		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+		
+		<formats>
+			<format name="json" enabled="true" />
+			<format name="nvpairs" enabled="true" />
+			<format name="tailoredjson" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
+				<branch-template-text>{ "buildStatus" : "${buildStatus} - ${branchName}" }</branch-template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="true" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>	
 </webhook-templates>

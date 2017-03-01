@@ -17,8 +17,8 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.FlowdockWebHookTemplate;
-import webhook.teamcity.payload.template.WebHookTemplateFromXml;
-import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
 
@@ -50,16 +50,16 @@ public class BuildFlowDockTemplateFiles extends TemplateGenerator {
 	public void CompareXmlAndSpringTemplates() throws FileNotFoundException, JAXBException{
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookPayloadManager webHookPayloadManager = new WebHookPayloadManager(sBuildServer);
-		WebHookTemplateManager springManager = new WebHookTemplateManager(webHookPayloadManager );
+		WebHookTemplateManager springManager = new WebHookTemplateManager(webHookPayloadManager, null );
 		FlowdockWebHookTemplate springTemplate =  new FlowdockWebHookTemplate(springManager);
 		springTemplate.register();
 		
-		WebHookTemplateManager xmlManager = new WebHookTemplateManager(webHookPayloadManager );
+		WebHookTemplateManager xmlManager = new WebHookTemplateManager(webHookPayloadManager, null );
 		
 		
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(XML_TEMPLATES_FILE);
-		for (webhook.teamcity.settings.entity.WebHookTemplate template : templatesList.getWebHookTemplateList()){
-			xmlManager.registerTemplateFormatFromXmlConfig(WebHookTemplateFromXml.build(template, webHookPayloadManager));
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read(XML_TEMPLATES_FILE);
+		for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
+			xmlManager.registerTemplateFormatFromXmlConfig(template);
 		}
 		
 		WebHookTemplate springFlowTemplate = springManager.getTemplate("flowdock");

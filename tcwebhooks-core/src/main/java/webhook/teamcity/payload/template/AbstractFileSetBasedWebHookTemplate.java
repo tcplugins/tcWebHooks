@@ -177,5 +177,6 @@ public abstract class AbstractFileSetBasedWebHookTemplate extends AbstractWebHoo
 	public Set<BuildStateEnum> getSupportedBranchBuildStates() {
 		return branchTemplateContent.keySet();
 	}
+
 	
 }

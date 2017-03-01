@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -12,11 +13,18 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWebHookTemplate {
 	
 	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<>();
 	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<>();
+	private WebHookTemplateText defaultTemplateText;
+	private WebHookTemplateBranchText defaultBranchTemplateText;
 
 	public abstract String getLoggingName();
 	public abstract String getPropertiesFileName();
@@ -83,6 +91,8 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 	    	// If the default template is set, initialise the list for all states first.
 	    	templatePropKey = "template.default";
     		if (props.containsKey(templatePropKey)){
+    			this.defaultTemplateText = new WebHookTemplateText(props.getProperty(templatePropKey));
+    			
     			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 	    			templateContent.put(state, WebHookTemplateContent.create(
 	    																state.getShortName(), 
@@ -97,6 +107,8 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 	    	// If the default branch template is set, initialise the branch list for all states first.
     		templatePropKey = "template.default.branch";
     		if (props.containsKey(templatePropKey)){
+    			this.defaultBranchTemplateText = new WebHookTemplateBranchText(props.getProperty(templatePropKey));
+    			
     			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
     				branchTemplateContent.put(state, WebHookTemplateContent.create(
     						state.getShortName(), 
@@ -191,6 +203,12 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 	@Override
 	public Set<BuildStateEnum> getSupportedBranchBuildStates() {
 		return branchTemplateContent.keySet();
+	}
+
+	@Override
+	public WebHookTemplateEntity getAsEntity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webhook-templates>
+	<webhook-template enabled="true" name="slack.com-compact" rank="20">
+		<template-description>Slack.com Compact Notifcation</template-description>
+		<template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip>
+		<formats>
+			<format name="jsonTemplate" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<!--  Additional Template is only for successful builds -->
+				<states>
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for successful builds -->
+				<template-text><![CDATA[
+{
+    "text" : "${buildName} SUCCESS",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} SUCCESS",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "color" : "good"
+        }
+    ]
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for successful builds -->
+				<branch-template-text><![CDATA[
+{
+    "text" : "${buildName} SUCCESS",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} SUCCESS",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "color" : "good"
+        }
+    ]
+}
+				]]></branch-template-text>
+			</template>
+			<template>
+				<!--  Additional Template is only for failed builds -->
+				<states>
+					<state type="buildFailed" enabled="true" />
+					<state type="buildBroken" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for failed builds -->
+				<template-text><![CDATA[
+{
+    "text" : "${buildName} FAILURE",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} SUCCESS",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "color" : "danger"
+        }
+    ]
+}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for failed builds -->
+				<branch-template-text><![CDATA[
+{
+    "text" : "${buildName} FAILURE",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} FAILED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "color" : "danger"
+        }
+    ]
+}
+				]]></branch-template-text>
+			</template>
+		</templates>
+	</webhook-template>
+</webhook-templates>

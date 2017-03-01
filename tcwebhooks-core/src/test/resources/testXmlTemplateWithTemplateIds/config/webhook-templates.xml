@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webhook-templates>
+	<webhook-template enabled="true" name="testXMLtemplateWithId" rank="10">
+		<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
+		<default-branch-template>{ "defaultBranchBuildStatus" : "${buildStatus}" }</default-branch-template>
+		<template-description>"Test XML Template"</template-description>
+		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+		<formats>
+			<format name="json" enabled="true" />
+			<format name="nvpairs" enabled="true" />
+			<format name="tailoredjson" enabled="true" />
+		</formats>
+		<templates max-id="10">
+			<template id="1">
+				<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
+				<branch-template-text>{ "buildStatus" : "${buildStatus} - ${branchName}" }</branch-template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="true" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="true" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>
+	<webhook-template enabled="true" name="testXMLtemplateWithCombinedTemplate" rank="10">
+		<default-template use-for-branch-template="true">{ "mergedBuildStatus" : "${buildStatus}" }</default-template>
+		<template-description>Test XML Template where default template is used for branches too</template-description>
+		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
+		<formats>
+			<format name="json" enabled="true" />
+		</formats>
+		<templates max-id="5">
+			<template id="1">
+				<template-text use-for-branch-template="true">{ "buildStarted" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="true" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="2">
+				<template-text use-for-branch-template="true">{ "beforeBuildFinish" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="true" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="2">
+				<template-text use-for-branch-template="true">{ "buildFinished" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="4">
+				<template-text use-for-branch-template="true">{ "buildInterrupted" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="true" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+			<template id="6">
+				<template-text use-for-branch-template="true">{ "responsibilityChanged" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="false" />
+					<state type="buildBroken" enabled="false" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="false" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="true" />
+				</states>
+			</template>
+			<template id="7">
+				<template-text use-for-branch-template="true">{ "buildBroken" : "${buildStatus}" }</template-text>
+				<states>
+					<state type="buildStarted" enabled="false" />
+					<state type="beforeBuildFinish" enabled="false" />
+					<state type="buildFinished" enabled="true" />
+					<state type="buildBroken" enabled="true" />
+					<state type="buildInterrupted" enabled="false" />
+					<state type="buildSuccessful" enabled="false" />
+					<state type="buildFixed" enabled="true" />
+					<state type="buildFailed" enabled="false" />
+					<state type="responsibilityChanged" enabled="false" />
+				</states>
+			</template>
+		</templates>
+	</webhook-template>	
+</webhook-templates>

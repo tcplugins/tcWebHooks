@@ -19,13 +19,13 @@ public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTempl
 	}
 
 	@Override
-	public String getTemplateToolTipText() {
+	public String getTemplateToolTip() {
 		return "Supports the slack.com JSON webhooks endpoint";
 	}
 
 	@Override
 	public String getTemplateShortName() {
-		return "slack.com";
+		return "slack.com-old";
 	}
 	
 	@Override
@@ -35,7 +35,7 @@ public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTempl
 
 	@Override
 	public String getLoggingName() {
-		return "SlackComWebHookTemplate";
+		return "OldSlackComWebHookTemplate";
 	}
 
 	@Override

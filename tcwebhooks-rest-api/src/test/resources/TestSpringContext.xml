@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+               http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+               http://www.springframework.org/schema/context
+               http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-autowire="constructor">
+
+	<context:component-scan base-package="jetbrains.buildServer.server.rest"/>
+	<context:component-scan base-package="webhook.teamcity.test.jerseyprovider"/>
+	
+<!--  	<bean id="securityContext" class="org.mockito.Mockito" factory-method="mock">
+    	<constructor-arg value="jetbrains.buildServer.serverSide.auth.SecurityContext" />
+	</bean> -->
+	
+	<bean id="securityContext" class="webhook.teamcity.test.springmock.MockSecurityContext"/>
+ 	<bean id="permissionChecker" class="jetbrains.buildServer.server.rest.data.PermissionChecker"/>
+ 	<bean id="requestPathTransformInfo" class="jetbrains.buildServer.server.rest.RequestPathTransformInfo"/>
+ 	<bean id="beanFactory" class="jetbrains.buildServer.server.rest.util.BeanFactory"/>
+ 	<bean id="sBuildServer" class="webhook.teamcity.test.springmock.MockSBuildServer"/>
+ 	<bean id="projectSettingsManager" class="webhook.teamcity.test.springmock.MockProjectSettingsManager"/>
+	
+	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
+
+	<bean id="mainConfigManager" class="webhook.teamcity.server.rest.util.mainconfig.MainConfigManager"/>
+	<bean id="mainConfigManagerProvider" class="webhook.teamcity.server.rest.jersey.MainConfigManagerProvider"/>
+	<bean id="dataProvider" class="webhook.teamcity.server.rest.data.DataProvider"/>
+	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.DataProviderProvider"/>
+	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
+	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
+	<!--bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/-->
+	
+	<bean id="webHookContentBuilder"
+     	class="webhook.teamcity.WebHookContentBuilder" 
+     	/>
+     			
+     <bean id="webHookFactory" 
+     	class="webhook.teamcity.WebHookFactoryImpl" 
+     	/>
+     			
+     <bean id="webHookProjectSettings" 
+     	class="webhook.teamcity.settings.WebHookProjectSettings" 
+     	/>
+
+     <bean id="webHookProjectSettingsFactory" 
+     	class="webhook.teamcity.settings.WebHookProjectSettingsFactory" 
+     	/>
+
+	<bean id="webHookMainSettings"
+		class="webhook.teamcity.settings.WebHookMainSettings"
+		init-method="register"
+		/>
+
+	<bean id="webHookPayloadManager"
+		class="webhook.teamcity.payload.WebHookPayloadManager"
+		/>
+	
+	<bean id="webHookAuthenticatorProvider"
+		class="webhook.teamcity.auth.WebHookAuthenticatorProvider"
+		/>
+			
+	<bean id="webHookTemplateManager"
+		class="webhook.teamcity.payload.WebHookTemplateManager"
+		/>
+		
+	<bean id="webHookTemplateResolver"
+		class="webhook.teamcity.payload.WebHookTemplateResolver"
+		/>
+		
+	<bean id="webHookTemplateJaxHelper"
+		class="webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper"
+		/>
+
+     <bean id="webHookHttpClientFactory"
+     	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
+     	/>  
+		
+	<bean id="dataProviderTestContextProvider" 
+		class="webhook.teamcity.test.jerseyprovider.DataProviderTestContextProvider"
+		/>
+		
+	<bean id="webHookTemplateManagerTestProvider" 
+		class="webhook.teamcity.test.jerseyprovider.WebHookTemplateManagerTestProvider"
+		/>
+		
+</beans>

@@ -35,26 +35,30 @@ import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class ElasticSearchWebHookTemplateTest {
 
 	private WebHookContentBuilder webHookContentBuilder;
 	private WebHookTemplateResolver templateResolver;
+	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 
 	@Test
 	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
+		WebHookTemplateJaxHelper webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager);
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, webHookTemplateJaxHelper);
 		WebHookHttpClientFactory clientFactory = new WebHookHttpClientFactoryImpl();
 		
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager);
 		webHookPayloadJsonTemplate.register();
 
-		ElasticSearchWebHookTemplate elasticTemplate = new ElasticSearchWebHookTemplate(templateManager);
+		ElasticSearchXmlWebHookTemplate elasticTemplate = new ElasticSearchXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		elasticTemplate.register();

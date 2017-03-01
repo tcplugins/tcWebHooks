@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
+import org.jetbrains.annotations.Nullable;
+import org.springframework.web.servlet.ModelAndView;
+
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -18,6 +21,7 @@ import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
@@ -105,7 +109,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 			    	params.put("projectName", getProjectName(TeamCityIdResolver.getExternalProjectId(project), project.getName()));
 			    	
-			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
+			    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
 			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),

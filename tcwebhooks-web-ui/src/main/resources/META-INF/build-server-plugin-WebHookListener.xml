@@ -151,6 +151,10 @@
 		</property>
 	</bean>
 
+	<bean id="webHookTemplateJaxHelper"
+		class="webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl"
+		/>
+
 	<bean id="webHookTemplateManager"
 		class="webhook.teamcity.payload.WebHookTemplateManager"
 		/>
@@ -172,24 +176,32 @@
 		</property>
 	</bean>
 	
-	<bean id="elasticSearchWebHookTemplate"
-		class="webhook.teamcity.payload.template.ElasticSearchWebHookTemplate"
+	<bean id="elasticSearchXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>14</value>
 		</property>
 	</bean>
 	
-	<bean id="slackComWebHookTemplate"
-		class="webhook.teamcity.payload.template.SlackComWebHookTemplate"
+	<bean id="slackComXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.SlackComXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>15</value>
 		</property>
 	</bean>
 	
-	<bean id="flowdockWebHookTemplate"
-		class="webhook.teamcity.payload.template.FlowdockWebHookTemplate"
+	<bean id="slackComCompactXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>16</value>
+		</property>
+	</bean>
+	
+	<bean id="flowdockXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.FlowdockXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>14</value>

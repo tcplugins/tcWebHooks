@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webhook-templates>
+	<webhook-template enabled="true" name="slack.com" rank="20">
+		<template-description>Slack.com JSON templates</template-description>
+		<template-tool-tip>Supports the slack.com JSON webhooks endpoint</template-tool-tip>
+		<formats>
+			<format name="jsonTemplate" enabled="true" />
+		</formats>
+		<templates>
+			<template>
+				<!--  Additional Template is only for failed builds -->
+				<states>
+					<state type="buildFailed" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for failed builds -->
+				<template-text><![CDATA[
+{ "text": "All your build failures are belong to us", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "color": "danger" }]}
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for failed builds -->
+				<branch-template-text><![CDATA[
+{ "text": "All your build failures are belong to us", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "color": "danger" }]}
+				]]></branch-template-text>
+			</template>
+			<template>
+				<!--  Additional Template is only for successful builds -->
+				<states>
+					<state type="buildSuccessful" enabled="true" />
+				</states>
+				<!--  Additional Template (non-branch) for successful builds -->
+				<template-text><![CDATA[
+{  "text": "All your build successes should to be celebrated", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "color": "good" } ] }
+				]]></template-text>
+				
+				<!--  Additional Template (branch) for successful builds -->
+				<branch-template-text><![CDATA[
+{  "text": "All your build successes should to be celebrated", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "color": "good" } ] }
+				]]></branch-template-text>
+			</template>
+		</templates>
+	</webhook-template>
+</webhook-templates>

@@ -8,10 +8,10 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FileUtils;
 
-import webhook.teamcity.settings.entity.WebHookTemplate;
-import webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateItem;
-import webhook.teamcity.settings.entity.WebHookTemplate.WebHookTemplateState;
-import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateState;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
 public class TemplateGenerator {
@@ -30,27 +30,27 @@ public class TemplateGenerator {
 	 * @throws IOException
 	 */
 	public void generate(String templateName, String templateFileLocation, String targetFileLocation) throws JAXBException, IOException{
-		WebHookTemplates templatesList =  WebHookTemplateJaxHelper.read(templateFileLocation);
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read(templateFileLocation);
 		
-		for (WebHookTemplate template : templatesList.getWebHookTemplateList()){
+		for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
 			if (template.isEnabled() && template.getName().equals(templateName)){
 				
 				File defaultTemplateFile = new File(targetFileLocation + "/" + templateName + "-default-normal.json");
 				File defaultBranchTemplateFile = new File(targetFileLocation + "/" + templateName + "-default-branch.json");
 				if (template.getDefaultTemplate() != null){
-					FileUtils.writeStringToFile(defaultTemplateFile, template.getDefaultTemplate().trim());
+					FileUtils.writeStringToFile(defaultTemplateFile, template.getDefaultTemplate().getTemplateContent().trim());
 				}
 				if (template.getDefaultBranchTemplate() != null){
-					FileUtils.writeStringToFile(defaultBranchTemplateFile, template.getDefaultBranchTemplate().trim());
+					FileUtils.writeStringToFile(defaultBranchTemplateFile, template.getDefaultBranchTemplate().getTemplateContent().trim());
 				}
 				
-				for (WebHookTemplateItem item : template.getTemplates()){
+				for (WebHookTemplateItem item : template.getTemplates().getTemplates()){
 					String templateFileName = buildFileName(item.getStates());
 					File templateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-normal.json");
 					File branchTemplateFile = new File(targetFileLocation + "/" + templateName + "-"+ templateFileName +"-branch.json");
 					
-					FileUtils.writeStringToFile(templateFile, item.getTemplateText().trim());
-					FileUtils.writeStringToFile(branchTemplateFile, item.getBranchTemplateText().trim());
+					FileUtils.writeStringToFile(templateFile, item.getTemplateText().getTemplateContent().trim());
+					FileUtils.writeStringToFile(branchTemplateFile, item.getBranchTemplateText().getTemplateContent().trim());
 				}
 			}
 		}
