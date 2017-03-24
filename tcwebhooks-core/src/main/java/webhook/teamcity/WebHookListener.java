@@ -5,12 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
+import jetbrains.buildServer.serverSide.ParametersSupport;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -24,12 +29,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import webhook.WebHook;
+import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
-
 import webhook.teamcity.Loggers;
 
 
@@ -45,17 +51,19 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookMainSettings myMainSettings;
     private final WebHookPayloadManager myManager;
     private final WebHookFactory webHookFactory;
+    private final WebHookAuthenticatorProvider webHookAuthenticatorProvider;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
-    						WebHookFactory factory) {
+    						WebHookFactory factory, WebHookAuthenticatorProvider webHookAuthenticationProvider) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
         myMainSettings = configSettings;
         myManager = manager;
         webHookFactory = factory;
+        webHookAuthenticatorProvider = webHookAuthenticationProvider;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -70,11 +78,29 @@ public class WebHookListener extends BuildServerAdapter {
 		webHook.setEnabled(webHookConfig.getEnabled());
 		//webHook.addParams(webHookConfig.getParams());
 		webHook.setBuildStates(webHookConfig.getBuildStates());
+		if (webHookConfig.getAuthenticationConfig() != null){
+			WebHookAuthenticator auth = webHookAuthenticatorProvider.getAuthenticator(webHookConfig.getAuthenticationConfig().type);
+			auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
+			webHook.setAuthentication(auth);
+		}
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
 		Loggers.ACTIVITIES.debug("WebHookListener :: Webhook proxy set to " 
 				+ webHook.getProxyHost() + " for " + webHookConfig.getUrl());
 	}
     
+	private SortedMap<String,String> mergeParameters(SortedMap<String,String> parametersFromConfig, ParametersSupport build){
+		SortedMap<String, String> newMap = new TreeMap<String,String>();
+		
+		Map<String,String> teamCityProperties = build.getParametersProvider().getAll(); 
+		for (String key : teamCityProperties.keySet()){
+			if (key.startsWith("webhook.")){
+				newMap.put(key.substring("webhook.".length()), teamCityProperties.get(key));
+			}
+		}
+		newMap.putAll(parametersFromConfig);
+		return newMap;
+	}
+	
 	private void processBuildEvent(SRunningBuild sRunningBuild, BuildStateEnum state) {
 
 			Loggers.SERVER.debug("About to process WebHooks for " + sRunningBuild.getProjectId() + " at buildState " + state.getShortName());
@@ -83,20 +109,20 @@ public class WebHookListener extends BuildServerAdapter {
 				whcw.wh.setContentType(payloadFormat.getContentType());
 				
 				if (state.equals(BuildStateEnum.BUILD_STARTED)){
-					whcw.wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
+					whcw.wh.setPayload(payloadFormat.buildStarted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates()));
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
 				} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
-					whcw.wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
+					whcw.wh.setPayload(payloadFormat.buildInterrupted(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates()));
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
 				} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
-					whcw.wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
+					whcw.wh.setPayload(payloadFormat.beforeBuildFinish(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates()));
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
 				} else if (state.equals(BuildStateEnum.BUILD_FINISHED)){
 					whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sRunningBuild.getBuildType()) && whcw.wh.getBuildStates().enabled(
 							BuildStateEnum.BUILD_FINISHED, 
 							sRunningBuild.getStatusDescriptor().isSuccessful(),
 							this.hasBuildChangedHistoricalState(sRunningBuild)));
-					whcw.wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));;
+					whcw.wh.setPayload(payloadFormat.buildFinished(sRunningBuild, getPreviousNonPersonalBuild(sRunningBuild), mergeParameters(whcw.whc.getParams(),sRunningBuild), whcw.whc.getEnabledTemplates()));;
 				}
 				
 				doPost(whcw.wh, whcw.whc.getPayloadFormat());
@@ -193,7 +219,7 @@ public class WebHookListener extends BuildServerAdapter {
 									responsibilityInfoOld, 
 									responsibilityInfoNew, 
 									isUserAction, 
-									whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
+									mergeParameters(whcw.whc.getParams(),sBuildType), whcw.whc.getEnabledTemplates()));
 						whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sBuildType) && whcw.wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(whcw.wh, whcw.whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whcw.whc.getPayloadFormat()).getFormatDescription());
@@ -258,7 +284,7 @@ public class WebHookListener extends BuildServerAdapter {
 						whcw.wh.setPayload(payloadFormat.responsibleChanged(sBuildType, 
 									responsibilityEntryOld, 
 									responsibilityEntryNew, 
-									whcw.whc.getParams(), whcw.whc.getEnabledTemplates()));
+									mergeParameters(whcw.whc.getParams(),sBuildType), whcw.whc.getEnabledTemplates()));
 						whcw.wh.setEnabled(whcw.whc.isEnabledForBuildType(sBuildType) && whcw.wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(whcw.wh, whcw.whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug("WebHookListener :: " + myManager.getFormat(whcw.whc.getPayloadFormat()).getFormatDescription());

@@ -1,8 +1,18 @@
 <%@ include file="/include.jsp" %>
 	<div>
 	
-	<c:forEach items="${projectAndParents}" var="project"> 
-		<h3 class="title">WebHooks configured for ${project.project.fullName}</h3>
+	<c:forEach items="${projectAndParents}" var="project">
+	
+		<c:choose>
+			<c:when test="${project.externalProjectId == '_Root'}">
+				<h3 class="title">WebHooks configured for every TeamCity build</h3>
+			</c:when>
+			<c:otherwise>	
+				<h3 class="title">WebHooks configured for ${project.project.fullName}</h3>
+			</c:otherwise>
+		</c:choose>
+	
+		
 		<c:if test="${project.projectWebhookCount == 0}" >
 				<div style='margin-left: 1em; margin-right:1em;'>
 				<p>There are no WebHooks configured for this project.</p> 
@@ -11,7 +21,7 @@
 		</c:if>
 		<c:if test="${project.projectWebhookCount > 0}" >
 				<div style='margin-left: 1em; margin-right:1em;'>
-				<c:if test="${not project.webHookProjectSettings.isEnabled()}" >
+				<c:if test="${not project.webHookProjectSettings.enabled}" >
 					<div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
 				</c:if>
 				<p>There are <strong>${project.projectWebhookCount}</strong> WebHooks configured for all builds in this project. 
@@ -31,14 +41,14 @@
 
 				<div style='margin-top: 2.5em;'><h3 class="title">WebHooks configured for ${projectName} &gt; ${config.buildName}</h3>
 				
-				<c:if test="${config.hasNoBuildWebHooks()}" >
+				<c:if test="${config.hasNoBuildWebHooks}" >
 						<div style='margin-left: 1em; margin-right:1em;'>
 						<p>There are no WebHooks configured for this specific build.</p> 
 						<a href="./webhooks/index.html?buildTypeId=${config.buildExternalId}">Add build WebHooks</a>.
 						</div>
 					</div>
 				</c:if>
-				<c:if test="${config.hasBuildWebHooks()}" >
+				<c:if test="${config.hasBuildWebHooks}" >
 						<div style='margin-left: 1em; margin-right:1em;'>
 						<p>There are <strong>${config.buildCount}</strong> WebHooks for this specific build. 
 							<a href="./webhooks/index.html?buildTypeId=${config.buildExternalId}">Edit build WebHooks</a>.</p>

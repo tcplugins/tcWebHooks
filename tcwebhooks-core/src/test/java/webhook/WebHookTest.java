@@ -13,12 +13,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpStatus;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.auth.UsernamePasswordAuthenticator;
+import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
+import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 
 
 public class WebHookTest{
@@ -95,6 +100,94 @@ public class WebHookTest{
 	public void test_200() throws FileNotFoundException, IOException, Exception {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/200");
+		w.addParam("buildID", "foobar");
+		w.addParam("notifiedFor", "someUser");
+		w.addParam("buildResult", "failed");
+		w.addParam("triggeredBy", "Subversion");
+		w.setEnabled(true);
+		w.post();
+		System.out.println(w.getUrl());
+		System.out.println(w.getContent());
+		stopWebServer(s);
+		assertTrue(w.getStatus() == HttpStatus.SC_OK);
+	}
+	
+	@Test
+	public void test_401WithoutAuth() throws FileNotFoundException, IOException, Exception {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/auth/200");
+		w.addParam("buildID", "foobar");
+		w.addParam("notifiedFor", "someUser");
+		w.addParam("buildResult", "failed");
+		w.addParam("triggeredBy", "Subversion");
+		w.setEnabled(true);
+		w.post();
+		System.out.println(w.getContent());
+		stopWebServer(s);
+		assertTrue(w.getStatus() == HttpStatus.SC_UNAUTHORIZED);
+	}
+	
+	@Test
+	public void test_200WithAuthButWrongRealm() throws FileNotFoundException, IOException, Exception {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/auth/200");
+		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		WebHookAuthConfig authConfig = new WebHookAuthConfig();
+		authConfig.type = "userPass";
+		authConfig.preemptive = false;
+		authConfig.parameters.put("username", "user1");
+		authConfig.parameters.put("password", "user1pass");
+		authConfig.parameters.put("realm", "realmywealmy");
+		authenticator.setWebHookAuthConfig(authConfig);
+		w.setAuthentication(authenticator);
+		
+		w.addParam("buildID", "foobar");
+		w.addParam("notifiedFor", "someUser");
+		w.addParam("buildResult", "failed");
+		w.addParam("triggeredBy", "Subversion");
+		w.setEnabled(true);
+		w.post();
+		System.out.println(w.getContent());
+		stopWebServer(s);
+		assertTrue(w.getStatus() == HttpStatus.SC_UNAUTHORIZED);
+	}
+	
+	@Test
+	public void test_200WithAuthPreemptionButWrongRealm() throws FileNotFoundException, IOException, Exception {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/auth/200");
+		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		WebHookAuthConfig authConfig = new WebHookAuthConfig();
+		authConfig.type = "userPass";
+		authConfig.parameters.put("username", "user1");
+		authConfig.parameters.put("password", "user1pass");
+		authConfig.parameters.put("realm", "realmywealmy");
+		authenticator.setWebHookAuthConfig(authConfig);
+		w.setAuthentication(authenticator);
+		
+		w.addParam("buildID", "foobar");
+		w.addParam("notifiedFor", "someUser");
+		w.addParam("buildResult", "failed");
+		w.addParam("triggeredBy", "Subversion");
+		w.setEnabled(true);
+		w.post();
+		System.out.println(w.getContent());
+		stopWebServer(s);
+		assertTrue(w.getStatus() == HttpStatus.SC_OK);
+	}
+	
+	@Test
+	public void test_200WithAuth() throws FileNotFoundException, IOException, Exception {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/auth/200");
+		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		WebHookAuthConfig authConfig = new WebHookAuthConfig();
+		authConfig.type = "userPass";
+		authConfig.parameters.put("username", "user1");
+		authConfig.parameters.put("password", "user1pass");
+		authenticator.setWebHookAuthConfig(authConfig);
+		w.setAuthentication(authenticator);
+		
 		w.addParam("buildID", "foobar");
 		w.addParam("notifiedFor", "someUser");
 		w.addParam("buildResult", "failed");
@@ -189,6 +282,26 @@ public class WebHookTest{
 
 	}
 	
+	@Test
+	public void test_302WithAuth() throws FileNotFoundException, IOException, Exception {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/auth/302");
+		
+		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		WebHookAuthConfig authConfig = new WebHookAuthConfig();
+		authConfig.type = "userPass";
+		authConfig.parameters.put("username", "user1");
+		authConfig.parameters.put("password", "user1pass");
+		authenticator.setWebHookAuthConfig(authConfig);
+		w.setAuthentication(authenticator);
+		
+		w.setEnabled(true);
+		w.post();
+		stopWebServer(s);
+		assertTrue("Expecting " + HttpStatus.SC_MOVED_TEMPORARILY + " but was " + w.getStatus(), w.getStatus() == HttpStatus.SC_MOVED_TEMPORARILY);
+		
+	}
+	
 	
 	@Test
 	public void test_302WithProxy() throws FileNotFoundException, IOException, InterruptedException {
@@ -230,6 +343,16 @@ public class WebHookTest{
 	}
 	
 	@Test
+	public void test_404WithAuth() throws FileNotFoundException, IOException, InterruptedException {
+		WebHookTestServer s = startWebServer();
+		WebHook w = factory.getWebHook(url + "/404");
+		w.setEnabled(true);
+		w.post();
+		stopWebServer(s);
+		assertTrue(w.getStatus() == HttpStatus.SC_NOT_FOUND);
+	}
+	
+	@Test
 	public void test_302WithFilename() throws FileNotFoundException, IOException, Exception {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/302");
@@ -254,7 +377,7 @@ public class WebHookTest{
 		assertTrue(w.getStatus() == HttpStatus.SC_MOVED_TEMPORARILY);
 
 	}
-
+	
 	@Ignore
 	public void test_WebHookCollection() throws WebHookParameterReferenceException {
 		Map <String, String> params = new HashMap<String, String>();

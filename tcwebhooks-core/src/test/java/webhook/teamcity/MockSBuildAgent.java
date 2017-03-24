@@ -248,5 +248,19 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 		return 0;
 	}
 	
+	// From tc 9.1
+
+	@Override
+	public String describe(boolean arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCommunicationProtocolDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 }

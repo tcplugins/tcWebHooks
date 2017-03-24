@@ -1,87 +1,48 @@
 package webhook;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 public class WebHookTestServer {
-	Server server;
 
-	public WebHookTestServer (String host, Integer port) {
-		server = new Server(port);
-		Context root = new Context(server,"/",Context.SESSIONS);
-		root.addServlet(new ServletHolder(new MyHttpServlet(HttpServletResponse.SC_OK)), "/200");
-		root.addServlet(new ServletHolder(new MyHttpServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/302");
-		root.addServlet(new ServletHolder(new MyHttpServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/500");
-	}
+		Server server;
+		
+		public Server getServer() {
+			return server;
+		}
+
+		public WebHookTestServer (String host, Integer port) {
+		
+			//1. Creating the server
+			server = new Server(port);
+			
+			//2. Creating the WebAppContext for the created content
+			WebAppContext ctx = new WebAppContext();
+			ctx.setResourceBase("src/test/webapp");
+			ctx.setContextPath("/");
+			
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK)), "/200");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/302");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/500");
+			
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK)), "/auth/200");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/auth/302");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/auth/500");
 	
-	public static class MyHttpServlet extends HttpServlet
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		Integer response; 
-		public MyHttpServlet(Integer response) {
-			this.response = response;
-		}
-		protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-		{
-			response.setContentType("text/plain");
-			response.setStatus(this.response);
-			switch (this.response) {
-				case  HttpServletResponse.SC_OK:
-					//response.getWriter().println("<h1>Hello SimpleServlet</h1>");
-					this.printParams(request, response);
-					break;
-				case HttpServletResponse.SC_MOVED_TEMPORARILY:
-					response.sendRedirect("/200");
-					break;
-				default:
-					response.getWriter().println("<h1>Hello from defaultt</h1>");
-					break;
-			}
-			System.out.println("Handling Web request for " + ((Request) request).getUri().toString());
-		}
-		@SuppressWarnings("unchecked")
-		private void printParams(HttpServletRequest request, HttpServletResponse response){
-			PrintWriter out = null;
-			try {
-				out = response.getWriter();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			Enumeration<String> paramNames = request.getParameterNames();
-
-		    while(paramNames.hasMoreElements()) {
-		      String paramName = paramNames.nextElement();
-		      out.print(paramName + " :: ");
-		      String[] paramValues = request.getParameterValues(paramName);
-		      if (paramValues.length == 1) {
-		        String paramValue = paramValues[0];
-		        if (paramValue.length() == 0)
-		          out.println("No Value");
-		        else
-		          out.println(paramValue);
-		      } else {
-		    	  out.println();
-		        for(int i=0; i<paramValues.length; i++) {
-		          out.println(" ->  " + paramValues[i]);
-		        }
-		      }
-		    }
+			//3. Creating the LoginService for the realm
+			HashLoginService loginService = new HashLoginService("TestRealm");
+			
+			//4. Setting the realm configuration there the users, passwords and roles reside
+			loginService.setConfig("src/test/resources/testrealm.txt");
+	
+			//5. Appending the loginService to the Server
+			server.addBean(loginService);
+			
+			//6. Setting the handler
+			server.setHandler(ctx);
 
 		}
-	}
-
 }

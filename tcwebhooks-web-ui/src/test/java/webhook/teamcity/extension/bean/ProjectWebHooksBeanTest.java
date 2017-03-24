@@ -19,11 +19,12 @@ public class ProjectWebHooksBeanTest {
 
 	SortedMap<String, String> map = new TreeMap<String, String>();
 	ExtraParametersMap  extraParameters  = new ExtraParametersMap(map); 
+	ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
 	WebHookMockingFramework framework;
 
 	@Test
 	public void JsonSerialisationTest() throws JDOMException, IOException {
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
 		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(webhooksConfig));
@@ -31,7 +32,7 @@ public class ProjectWebHooksBeanTest {
 	
 	@Test
 	public void JsonBuildSerialisationTest() throws JDOMException, IOException {
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getSBuildType() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection());
 		System.out.println(ProjectWebHooksBeanJsonSerialiser.serialise(webhooksConfig));

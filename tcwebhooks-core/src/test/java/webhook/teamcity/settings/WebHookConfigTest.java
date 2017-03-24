@@ -21,6 +21,7 @@ public class WebHookConfigTest {
 	WebHookConfig webhookAllDisabled;
 	WebHookConfig webhookDisabled;
 	WebHookConfig webhookMostEnabled;
+	WebHookConfig webhookWithAuth;
 	
 	
 	@Before
@@ -30,6 +31,7 @@ public class WebHookConfigTest {
 		webhookAllDisabled = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-disabled.xml")); 
 		webhookDisabled    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-webhook-disabled.xml"));
 		webhookMostEnabled = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-but-respchange-states-enabled.xml"));
+		webhookWithAuth    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
 	}
 	
 //	private WebHookConfig getFirstWebHookInConfig(File f) throws JDOMException, IOException{
@@ -188,7 +190,22 @@ public class WebHookConfigTest {
 		assertTrue(webhookAllEnabled.getPayloadFormat().equals("nvpairs"));
 		webhookAllEnabled.setPayloadFormat("XML");
 		assertTrue(webhookAllEnabled.getPayloadFormat().equals("XML"));
-		
+		assertFalse(webhookAllEnabled.getAuthEnabled());
+	}
+	
+	@Test
+	public void testAuthParametersAreLoaded(){
+		assertTrue(webhookWithAuth.getAuthEnabled());
+		assertNotNull(webhookWithAuth.getAuthenticationConfig());
+		assertTrue(webhookWithAuth.getAuthenticationConfig().parameters.containsKey("username"));
+		assertTrue(webhookWithAuth.getAuthenticationConfig().parameters.containsKey("password"));
+		assertTrue(webhookWithAuth.getAuthenticationConfig().parameters.containsKey("realm"));
 	}
 
+	@Test
+	public void testWebHookElementSerialisation(){
+		assertTrue(webhookWithAuth.getAuthEnabled());
+		WebHookConfig newTestAuthConfig = new WebHookConfig(webhookWithAuth.getAsElement());
+		assertEquals(webhookWithAuth.getAuthEnabled(), newTestAuthConfig.getAuthEnabled());
+	}
 }
