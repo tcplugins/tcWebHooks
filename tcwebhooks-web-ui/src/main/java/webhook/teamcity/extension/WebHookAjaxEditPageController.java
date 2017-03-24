@@ -97,12 +97,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        WebHookProjectSettings projSettings = null;
 	    	
 	    	if (request.getMethod().equalsIgnoreCase("post")){
-	    		if ((request.getParameter("projectId") != null)){
-	    			myProject = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
-		        	if (myProject == null){
-		        		params.put("messages", "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
-		        	} else {
+	    		if ((request.getParameter("projectId") != null)
+	    			&& request.getParameter("projectId").startsWith("project")){
 	    		    	projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+	    		    	myProject = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 
 			    		if ((projSettings != null) && (myProject != null)
 			    				&& (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT))){
@@ -195,44 +193,38 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		} else {
 			    			params.put("messages", "<errors><error id=\"messageArea\">You do not appear to have permission to edit WebHooks.</error></errors>");
 			    		}
-		        	}
 	    		}
 	    	}
 
 	    	params.put("formatList", myManager.getRegisteredFormatsAsCollection());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
-	        		&& request.getParameter("projectId") != null ){
-	        		        	
-	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
-	        	if (project != null){
+	        		&& request.getParameter("projectId") != null 
+	        		&& request.getParameter("projectId").startsWith("project")){
 	        	
-			    	WebHookProjectSettings projSettings1 = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
-			    	
-			    	String message = projSettings1.getWebHooksAsString();
-			    	
-			    	params.put("haveProject", "true");
-			    	params.put("messages", message);
-			    	params.put("projectId", project.getProjectId());
-			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
-			    	params.put("projectName", project.getName());
-			    	
-			    	params.put("webHookCount", projSettings1.getWebHooksCount());
-			    	if (projSettings1.getWebHooksCount() == 0){
-			    		params.put("noWebHooks", "true");
-			    		params.put("webHooks", "false");
-			    	} else {
-			    		params.put("noWebHooks", "false");
-			    		params.put("webHooks", "true");
-			    		params.put("webHookList", projSettings.getWebHooksAsList());
-			    		params.put("webHooksDisabled", !projSettings.isEnabled());
-			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
-			    	}
-			    	
-	        	} else {
-	        		params.put("haveProject", "false");
-	        	}
+		    	WebHookProjectSettings projSettings1 = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+		    	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
+		    	
+		    	String message = projSettings1.getWebHooksAsString();
+		    	
+		    	params.put("haveProject", "true");
+		    	params.put("messages", message);
+		    	params.put("projectId", project.getProjectId());
+		    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
+		    	params.put("projectName", project.getName());
+		    	
+		    	params.put("webHookCount", projSettings1.getWebHooksCount());
+		    	if (projSettings1.getWebHooksCount() == 0){
+		    		params.put("noWebHooks", "true");
+		    		params.put("webHooks", "false");
+		    	} else {
+		    		params.put("noWebHooks", "false");
+		    		params.put("webHooks", "true");
+		    		params.put("webHookList", projSettings.getWebHooksAsList());
+		    		params.put("webHooksDisabled", !projSettings.isEnabled());
+		    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
+		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
+		    	}
 	        } else {
 	        	params.put("haveProject", "false");
 	        }

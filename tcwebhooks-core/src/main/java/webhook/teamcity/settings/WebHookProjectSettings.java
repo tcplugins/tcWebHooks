@@ -179,7 +179,7 @@ public class WebHookProjectSettings implements ProjectSettings {
 		return this.webHooksConfigs.size();
 	}
 	
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return webHooksEnabled;
 	}
 

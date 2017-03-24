@@ -18,7 +18,6 @@ import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
 import jetbrains.buildServer.serverSide.BuildTypeIdentity;
 import jetbrains.buildServer.serverSide.BuildTypeTemplate;
-import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.CopyOptions;
 import jetbrains.buildServer.serverSide.CyclicDependencyException;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
@@ -576,54 +575,7 @@ public class MockSProject implements SProject {
 	public void addChildProjectToMock(SProject sProject) {
 		this.childProjects.add(sProject);
 	}
-	
-	// From TC 9.1
 
-	@Override
-	public String getConfigId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public File getConfigurationFile(File arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void persist(ConfigAction arg0) throws PersistFailedException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public SBuildType findBuildTypeByExternalId(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<SVcsRoot> getAvailableVcsRoots() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void moveToProject(ConfigAction arg0, SProject arg1)
-			throws CyclicDependencyException, InvalidVcsRootScopeException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setExternalId(ConfigAction arg0, String arg1)
-			throws InvalidIdentifierException, DuplicateExternalIdException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
 	
 	
 	

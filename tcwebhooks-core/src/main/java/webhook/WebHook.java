@@ -3,13 +3,10 @@ package webhook;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.httpclient.NameValuePair;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.auth.WebHookAuthConfig;
-import webhook.teamcity.auth.WebHookAuthenticator;
 
 public interface WebHook {
 
@@ -38,8 +35,6 @@ public interface WebHook {
 	public abstract void addParam(String key, String value);
 
 	public abstract void addParams(List<NameValuePair> paramsList);
-	
-	public abstract void addParams(Map<String, String> paramsList);
 
 	public abstract String getParam(String key);
 
@@ -85,9 +80,5 @@ public interface WebHook {
 	public abstract void setContentType(String contentType);
 
 	public abstract void setCharset(String charset);
-
-	public abstract void setAuthentication(WebHookAuthenticator authenticator);
-
-
 
 }

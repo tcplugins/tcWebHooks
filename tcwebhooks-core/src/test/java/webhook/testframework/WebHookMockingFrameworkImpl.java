@@ -23,7 +23,6 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.WebHook;
 import webhook.WebHookImpl;
@@ -34,8 +33,6 @@ import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookListener;
-import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
-import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -57,7 +54,6 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	ProjectManager projectManager = mock(ProjectManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
-	WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 	WebHookPayload payload = new WebHookPayloadJson(manager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
@@ -72,27 +68,23 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SBuildType sBuildType02 = new MockSBuildType("Test Build-2", "A Test Build 02", "bt2");
 	SBuildType sBuildType03 = new MockSBuildType("Test Build-2", "A Test Build 03", "bt3");
 	SRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, "SubVersion", Status.NORMAL, "Running", "TestBuild01");
-	SProject sProject = new MockSProject("Test Project", "A test project", "project01", "ATestProject", sBuildType);
+	SProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 	SProject sProject02 = new MockSProject("Test Project 02", "A test project 02", "project2", "TestProjectNumber02", sBuildType);
 	SProject sProject03 = new MockSProject("Test Project 03", "A test sub project 03", "project3", "TestProjectNumber02_TestProjectNumber03", sBuildType);
-	
-	UsernamePasswordAuthenticatorFactory authenticatorFactory = new UsernamePasswordAuthenticatorFactory(authenticatorProvider);
 	
 	SBuildType build2 = mock(SBuildType.class);
 	SBuildType build3 = mock(SBuildType.class);
 	
 	WebHookListener whl;
 	SortedMap<String, String> extraParameters;
-	SortedMap<String, String> teamcityProperties;
 	BuildStateEnum buildstateEnum;
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, authenticatorProvider);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory);
 		projSettings = new WebHookProjectSettings();
-		//when(factory.getWebHook()).thenReturn(spyWebHook);
-		when(factory.getWebHook()).thenReturn(webHookImpl);
+		when(factory.getWebHook()).thenReturn(spyWebHook);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payload);
 		when(manager.getServer()).thenReturn(sBuildServer);
@@ -122,15 +114,14 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		((MockSProject) sProject03).setParentProject(sProject02);
 		((MockSProject) sProject02).addChildProjectToMock(sProject03);
 		whl.register();
-		authenticatorFactory.register();
+		
 	}
 
-	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
+	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParametersMap extraParameters) {
 		WebHookMockingFrameworkImpl framework = new WebHookMockingFrameworkImpl();
 		framework.buildstateEnum = buildState;
 		framework.extraParameters = extraParameters;
-		framework.teamcityProperties = teamcityProperties;
-		framework.content = new WebHookPayloadContent(framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		framework.content = new WebHookPayloadContent(framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		return framework;
 	}
 
@@ -153,7 +144,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException {
 		//webHookConfig = new WebHookConfig(ConfigLoaderUtil.getFullConfigElement(xmlConfigFile));
 		webHookConfig = ConfigLoaderUtil.getFirstWebHookInConfig(xmlConfigFile);
-		this.content = new WebHookPayloadContent(this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, teamcityProperties, webHookConfig.getEnabledTemplates());
+		this.content = new WebHookPayloadContent(this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, webHookConfig.getEnabledTemplates());
 		
 	}
 	
@@ -185,11 +176,6 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public SBuildType getSBuildTypeFromSubProject() {
 		return sBuildType03;
-	}
-
-	@Override
-	public WebHookListener getWebHookListener() {
-		return whl;
 	}
 
 }

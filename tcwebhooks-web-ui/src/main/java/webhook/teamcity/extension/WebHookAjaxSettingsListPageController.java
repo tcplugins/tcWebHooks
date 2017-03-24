@@ -56,16 +56,14 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        HashMap<String,Object> params = new HashMap<String,Object>();
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
 	        
-	        
-	        if(request.getParameter("projectId") != null){ 
+	        if(request.getParameter("projectId") != null 
+	        		&& request.getParameter("projectId").startsWith("project")){
+	        	
 	        	SProject project = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
-	        	if (project == null){
-	        		params.put("haveProject", "false");
-	        	} else {
-			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-			    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+		    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
+		    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+		    	
 		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
-	        	}
 	        } else if (request.getParameter("buildTypeId") != null){
         		SBuildType sBuildType = TeamCityIdResolver.findBuildTypeById(this.myServer.getProjectManager(), request.getParameter("buildTypeId"));
         		if (sBuildType != null){
@@ -84,5 +82,4 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/settingsList.jsp", params);
 	        //return new ModelAndView("/WebHook/settingsList.jsp", params);
 	    }
-	    
 }

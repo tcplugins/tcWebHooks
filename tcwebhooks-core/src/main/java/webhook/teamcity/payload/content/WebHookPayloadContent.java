@@ -12,7 +12,6 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.vcs.SVcsModification;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
@@ -53,11 +52,7 @@ public class WebHookPayloadContent {
 		
 		Branch branch;
 		List<String> buildRunners;
-		WebHooksComment buildComment; 
-		List<String> buildTags;
 		ExtraParametersMap extraParameters;
-		private ExtraParametersMap teamcityProperties;
-		private List<WebHooksChanges> changes = new ArrayList<WebHooksChanges>();
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -69,7 +64,6 @@ public class WebHookPayloadContent {
 		public WebHookPayloadContent(SBuildServer server, SBuildType buildType, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
 			populateCommonContent(server, buildType, buildState, templates);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
-			this.teamcityProperties =  new ExtraParametersMap(buildType.getParametersProvider().getAll());
 		}
 
 		/**
@@ -83,14 +77,12 @@ public class WebHookPayloadContent {
 		public WebHookPayloadContent(SBuildServer server, SRunningBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
 				Map<String, String> extraParameters, 
-				Map<String, String> teamcityProperties,
 				Map<String, String> templates) {
 			
-			this.extraParameters =  new ExtraParametersMap(extraParameters);
-			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
     		populateCommonContent(server, sRunningBuild, previousBuild, buildState, templates);
     		populateMessageAndText(sRunningBuild, buildState, templates);
     		populateArtifacts(sRunningBuild);
+    		this.extraParameters =  new ExtraParametersMap(extraParameters);
 		}
 
 		private void populateArtifacts(SRunningBuild runningBuild) {
@@ -162,9 +154,6 @@ public class WebHookPayloadContent {
     		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
     		setAgentHostname(sRunningBuild.getAgent().getHostName());
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
-    		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
-    		setTags(sRunningBuild.getTags());
-    		setChanges(sRunningBuild.getContainingChanges());
     		try {
     			if (sRunningBuild.getBranch() != null){
 	    			setBranch(sRunningBuild.getBranch());
@@ -184,34 +173,7 @@ public class WebHookPayloadContent {
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 		}
 		
-		public List<String> getBuildTags() {
-			return buildTags;
-		}
 		
-		private void setTags(List<String> tags) {
-			this.buildTags = new ArrayList<String>();
-			this.buildTags.addAll(tags);
-		}
-
-		public WebHooksComment getBuildComment() {
-			return buildComment;
-		}
-		
-		private void setComment(WebHooksComment webHooksComment) {
-			this.buildComment = webHooksComment;
-			if (webHooksComment != null){
-				this.comment = webHooksComment.getComment();
-			}
-		}
-		
-		private void setChanges(List<SVcsModification> modifications){
-			this.changes = WebHooksChangeBuilder.build(modifications);
-		}
-		
-		public List<WebHooksChanges> getChanges(){
-			return changes;
-		}
-
 		public String getBuildInternalTypeId() {
 			return this.buildInternalTypeId;
 		}
@@ -241,7 +203,7 @@ public class WebHookPayloadContent {
 		}
 		
 		public void setBranch(Branch branch) {
-			this.branch = new WebHooksBranchImpl(branch);
+			this.branch = branch;
 		}
 		
 		public String getBranchName() {
@@ -505,7 +467,7 @@ public class WebHookPayloadContent {
 		
 		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
 			
-			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties));
+			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this));
 			this.buildStatusHtml = builder.build();
 		}		
 		
@@ -539,13 +501,8 @@ public class WebHookPayloadContent {
 		public ExtraParametersMap getExtraParameters() {
 			if (this.extraParameters.size() > 0){
 				VariableMessageBuilder builder;
-				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, this.teamcityProperties);
+				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this);
 				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
-				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
-					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
-					resolvedParametersMap.put(entry.getKey(), builder.build());
-				}
-				resolver = new WebHooksBeanUtilsVariableResolver(this, resolvedParametersMap);
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());

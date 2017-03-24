@@ -7,8 +7,6 @@
     	<majorVersion>0.9</majorVersion>
     	<minorVersion>snapshot</minorVersion>
     	<currentVersion>${majorVersion}.${minorVersion}</currentVersion>
-    	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
-    	<teamcityVersion>9.1</teamcityVersion>
     </properties>
 	<version>${currentVersion}</version>
 	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
@@ -148,14 +146,14 @@
 	</reporting>
 	
 	<repositories>
-	  <!-- repository>
+	  <repository>
         <id>tcwebhooks.sourceforge</id>
         <url>http://svn.code.sf.net/p/tcplugins/code/maven2-repo</url>
-      </repository-->
- 	  <repository>
+      </repository>
+<!-- 	  <repository>
 	    <id>jetbrains-all</id>
 	    <url>http://repository.jetbrains.com/all</url>
-	  </repository>
+	  </repository> -->
 	</repositories>
 	<dependencies>
 
