@@ -44,13 +44,11 @@ import webhook.testframework.WebHookMockingFrameworkImpl;
 public class BeanUtilsTest {
 	
 	private ExtraParametersMap extraParameters;
-	private ExtraParametersMap teamcityProperties;
 
 	@Test
 	public void testBeanUtils() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		extraParameters = new ExtraParametersMap(new TreeMap<String, String>());
-		teamcityProperties = new ExtraParametersMap(new TreeMap<String, String>());
-		WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties);
+		WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters);
 		WebHookPayloadContent content = framework.getWebHookContent();
 		String buildFullName = (String) PropertyUtils.getProperty(content, "buildFullName");
 		assertTrue(buildFullName.equals("Test Project :: Test Build"));

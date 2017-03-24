@@ -87,14 +87,12 @@
 
 
 	<repositories>
-		<!-- <repository>
+		<repository>
 			<id>tcwebhooks.sourceforge</id>
 			<url>http://svn.code.sf.net/p/tcplugins/code/maven2-repo</url>
-		</repository>-->
-		<!--repository>
-			<id>jetbrains-all</id>
-			<url>http://repository.jetbrains.com/all</url> 
-		</repository-->
+		</repository>
+		<!-- <repository> <id>jetbrains-all</id> <url>http://repository.jetbrains.com/all</url> 
+			</repository> -->
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -124,31 +122,31 @@
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
 		<dependency>
-			<groupId>org.jetbrains.teamcity</groupId>
+			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
-			<version>${teamcityVersion}</version>
+			<version>8.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/runtime-util.jar -->
-		<!--dependency>
+		<dependency>
 			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>runtime-util</artifactId>
 			<version>7.1.0</version>
 			<scope>provided</scope>
-		</dependency-->
+		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server-model.jar -->
 		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>model</artifactId> 
 			<version>4.0.2</version> <scope>provided</scope> </dependency> -->
 
 		<!-- TeamCity/webapps/WEB-INF/lib/common-api.jar -->
-		<!--dependency>
-			<groupId>org.jetbrains.teamcity</groupId>
+		<dependency>
+			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>9.1.0</version>
+			<version>8.0.0</version>
 			<scope>provided</scope>
-		</dependency-->
+		</dependency>
 
 		<!-- <dependency> <groupId>com.jetbrains.teamcity</groupId> <artifactId>openapi</artifactId> 
 			<version>7.1.0</version> <scope>provided</scope> </dependency> -->
@@ -161,9 +159,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jetbrains</groupId>
+			<groupId>com.jetbrains.teamcity</groupId>
 			<artifactId>annotations</artifactId>
-			<version>13.0</version>
+			<version>7.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -194,22 +192,6 @@
 			<version>1.1</version>
 			<scope>provided</scope>
 		</dependency>
-
-     	<!--Jetty dependencies start here -->
-     	<dependency>
-	         <groupId>org.eclipse.jetty</groupId>
-	         <artifactId>jetty-server</artifactId>
-	         <version>9.2.11.v20150529</version>
-			<scope>test</scope>
-     	</dependency>
-
-     	<dependency>
-	         <groupId>org.eclipse.jetty</groupId>
-	         <artifactId>jetty-webapp</artifactId>
-	         <version>9.2.11.v20150529</version>
-			<scope>test</scope>
-	     </dependency>
-    	 <!--Jetty dependencies end here -->
 
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
@@ -253,7 +235,6 @@
 			<version>1.8.3</version>
 			<scope>provided</scope>
 		</dependency>
-
 
 
 	</dependencies>

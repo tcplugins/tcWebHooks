@@ -96,7 +96,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("projectId", project.getProjectId());
 			    	params.put("buildTypeList", project.getBuildTypes());
 			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
-			    	params.put("projectName", getProjectName(TeamCityIdResolver.getExternalProjectId(project), project.getName()));
+			    	params.put("projectName", project.getName());
 			    	
 			    	logger.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 			    	
@@ -138,7 +138,7 @@ public class WebHookIndexPageController extends BaseController {
 				    	params.put("webHooksDisabled", !projSettings.isEnabled());
 				    	params.put("projectId", project.getProjectId());
 				    	params.put("haveProject", "true");
-				    	params.put("projectName", getProjectName(TeamCityIdResolver.getExternalProjectId(project), project.getName()));
+				    	params.put("projectName", project.getName());
 				    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 				    	params.put("haveBuild", "true");
 				    	params.put("buildName", sBuildType.getName());
@@ -160,11 +160,4 @@ public class WebHookIndexPageController extends BaseController {
 
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/index.jsp", params);
 	    }
-
-		private String getProjectName(String externalProjectId, String name) {
-			if (externalProjectId.equalsIgnoreCase("_Root")){
-				return externalProjectId;
-			}
-			return name;
-		}
 }

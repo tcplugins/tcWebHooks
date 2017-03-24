@@ -36,24 +36,12 @@ public class BuildWebhooksBean{
 		return this.buildConfigs.size() > 0;
 	}
 	
-	public boolean isHasBuilds(){
-		return hasBuilds();
-	}
-	
 	public boolean hasNoBuildWebHooks(){
 		return this.buildConfigs.size() == 0;
 	}
 	
-	public boolean isHasNoBuildWebHooks(){
-		return hasNoBuildWebHooks();
-	}
-	
 	public boolean hasBuildWebHooks(){
 		return this.buildConfigs.size() > 0;
-	}
-	
-	public boolean isHasBuildWebHooks(){
-		return hasBuildWebHooks();
 	}
 	
 	public int getBuildCount(){

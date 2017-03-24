@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -18,8 +17,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.auth.WebHookAuthConfig;
-import webhook.teamcity.auth.WebHookAuthenticator;
 
 
 public class WebHookImpl implements WebHook {
@@ -40,7 +37,13 @@ public class WebHookImpl implements WebHook {
 	private String errorReason = "";
 	private List<NameValuePair> params;
 	private BuildState states;
-	private WebHookAuthenticator authenticator;
+	
+/*	This is a bit mask of states that should trigger a WebHook.
+ *  All ones (11111111) means that all states will trigger the webhook
+ *  We'll set that as the default, and then override if we get a more specific bit mask. */ 
+	//private Integer EventListBitMask = BuildState.ALL_ENABLED;
+	//private Integer EventListBitMask = Integer.parseInt("0",2);
+	
 	
 	public WebHookImpl(){
 		this.client = new HttpClient();
@@ -81,7 +84,6 @@ public class WebHookImpl implements WebHook {
 		setProxy(proxyConfig);
 	}
 
-	@Override
 	public void setProxy(WebHookProxyConfig proxyConfig) {
 		if ((proxyConfig != null) && (proxyConfig.getProxyHost() != null) && (proxyConfig.getProxyPort() != null)){
 			this.setProxy(proxyConfig.getProxyHost(), proxyConfig.getProxyPort());
@@ -91,7 +93,6 @@ public class WebHookImpl implements WebHook {
 		}
 	}
 	
-	@Override
 	public void setProxy(String proxyHost, Integer proxyPort) {
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
@@ -100,7 +101,6 @@ public class WebHookImpl implements WebHook {
 		}
 	}
 
-	@Override
 	public void setProxyUserAndPass(String username, String password){
 		this.proxyUsername = username;
 		this.proxyPassword = password;
@@ -109,7 +109,6 @@ public class WebHookImpl implements WebHook {
 		}
 	}
 	
-	@Override
 	public void post() throws FileNotFoundException, IOException{
 		if ((this.enabled) && (!this.errored)){
 			PostMethod httppost = new PostMethod(this.url);
@@ -125,10 +124,6 @@ public class WebHookImpl implements WebHook {
 				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
 				httppost.setRequestBody(paramsArray);
 			}
-			if(authenticator != null){
-				authenticator.addAuthentication(httppost, client, url);
-			}
-				
 		    try {
 		        client.executeMethod(httppost);
 		        this.resultCode = httppost.getStatusCode();
@@ -139,40 +134,34 @@ public class WebHookImpl implements WebHook {
 		}
 	}
 
-	@Override
 	public Integer getStatus(){
 		return this.resultCode;
 	}
 	
-	@Override
 	public String getProxyHost() {
 		return proxyHost;
 	}
 
-	@Override
 	public int getProxyPort() {
 		return proxyPort;
 	}
 
-	@Override
 	public String getUrl() {
 		return url;
 	}
 
-	@Override
 	public void setUrl(String url) {
 		this.url = url;
 	}
 	
-	@Override
 	public String getParameterisedUrl(){
 		return this.url +  this.parametersAsQueryString();
 	}
 
-	@Override
 	public String parametersAsQueryString(){
 		String s = "";
-		for (NameValuePair nv : this.params){
+		for (Iterator<NameValuePair> i = this.params.iterator(); i.hasNext();){
+			NameValuePair nv = i.next();
 			s += "&" + nv.getName() + "=" + nv.getValue(); 
 		}
 		if (s.length() > 0 ){
@@ -181,29 +170,19 @@ public class WebHookImpl implements WebHook {
 		return s;
 	}
 	
-	@Override
 	public void addParam(String key, String value){
 		this.params.add(new NameValuePair(key, value));
 	}
 
-	@Override
 	public void addParams(List<NameValuePair> paramsList){
-		for (NameValuePair i : paramsList){
-			this.params.add(i); 
+		for (Iterator<NameValuePair> i = paramsList.iterator(); i.hasNext();){
+			this.params.add(i.next()); 
 		}		
 	}
 	
-	@Override
-	public void addParams(Map<String,String> paramsList){
-		for (String key : paramsList.keySet()){
-			addParam(key, paramsList.get(key)); 
-		}		
-	}
-	
-	
-	@Override
 	public String getParam(String key){
-		for (NameValuePair nv :this.params){
+		for (Iterator<NameValuePair> i = this.params.iterator(); i.hasNext();){
+			NameValuePair nv = i.next();
 			if (nv.getName().equals(key)){
 				return nv.getValue();
 			}
@@ -211,32 +190,26 @@ public class WebHookImpl implements WebHook {
 		return "";
 	}
 	
-	@Override
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
 
-	@Override
 	public String getFilename() {
 		return filename;
 	}
 
-	@Override
 	public String getContent() {
 		return content;
 	}
 
-	@Override
 	public Boolean isEnabled() {
 		return enabled;
 	}
 
-	@Override
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	@Override
 	public void setEnabled(String enabled){
 		if (enabled.toLowerCase().equals("true")){
 			this.enabled = true;
@@ -245,63 +218,59 @@ public class WebHookImpl implements WebHook {
 		}
 	}
 
-	@Override
 	public Boolean isErrored() {
 		return errored;
 	}
 
-	@Override
 	public void setErrored(Boolean errored) {
 		this.errored = errored;
 	}
 
-	@Override
 	public String getErrorReason() {
 		return errorReason;
 	}
 
-	@Override
 	public void setErrorReason(String errorReason) {
 		this.errorReason = errorReason;
 	}
 
-	@Override
+//	public Integer getEventListBitMask() {
+//		return EventListBitMask;
+//	}
+//
+//	public void setTriggerStateBitMask(Integer triggerStateBitMask) {
+//		EventListBitMask = triggerStateBitMask;
+//	}
+
 	public String getProxyUsername() {
 		return proxyUsername;
 	}
 
-	@Override
 	public void setProxyUsername(String proxyUsername) {
 		this.proxyUsername = proxyUsername;
 	}
 
-	@Override
 	public String getProxyPassword() {
 		return proxyPassword;
 	}
 
-	@Override
 	public void setProxyPassword(String proxyPassword) {
 		this.proxyPassword = proxyPassword;
 	}
 
-	@Override
 	public String getPayload() {
 		return payload;
 	}
 
-	@Override
 	public void setPayload(String payloadContent) {
 		this.payload = payloadContent;
 	}
 
-	@Override
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
 
 	}
 
-	@Override
 	public void setCharset(String charset) {
 		this.charset = charset;
 	}
@@ -314,10 +283,5 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setBuildStates(BuildState states) {
 		this.states = states;
-	}
-
-	@Override
-	public void setAuthentication(WebHookAuthenticator authenticator) {
-		this.authenticator = authenticator;
 	}
 }
