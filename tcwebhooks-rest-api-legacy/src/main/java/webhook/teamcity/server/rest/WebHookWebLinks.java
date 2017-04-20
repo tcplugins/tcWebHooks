@@ -4,8 +4,8 @@ import jetbrains.buildServer.RootUrlHolder;
 
 import org.jetbrains.annotations.NotNull;
 
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
 public class WebHookWebLinks {
 	
@@ -20,12 +20,12 @@ public class WebHookWebLinks {
 	 * @return URL to view results page of the specified build
 	 */
 	@NotNull
-	public String getWebHookTemplateUrl(@NotNull WebHookTemplateEntity webHookTemplateEntity) {
+	public String getWebHookTemplateUrl(@NotNull WebHookTemplateConfig webHookTemplateEntity) {
 		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 	
 	@NotNull
-	private String makeWebHookTemplateUrl(@NotNull WebHookTemplateEntity entity) {
+	private String makeWebHookTemplateUrl(@NotNull WebHookTemplateConfig entity) {
 	    return makeUrl("webhooks/templates.html?template=" + entity.getName());
 	}
 	
@@ -37,17 +37,17 @@ public class WebHookWebLinks {
 	}
 
 	@NotNull
-	public String getWebHookDefaultTemplateTextUrl(@NotNull WebHookTemplateEntity webHookTemplateEntity) {
+	public String getWebHookDefaultTemplateTextUrl(@NotNull WebHookTemplateConfig webHookTemplateEntity) {
 		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 
 	@NotNull
-	public String getWebHookDefaultBranchTemplateTextUrl(WebHookTemplateEntity webHookTemplateEntity) {
+	public String getWebHookDefaultBranchTemplateTextUrl(WebHookTemplateConfig webHookTemplateEntity) {
 		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 
 	@NotNull
-	public String getWebHookBranchTemplateTextUrl(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
+	public String getWebHookBranchTemplateTextUrl(WebHookTemplateConfig webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
 		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 

@@ -1,21 +1,16 @@
 package webhook.teamcity.server.rest.data;
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
+
+import com.intellij.openapi.diagnostic.Logger;
 
 import jetbrains.buildServer.server.rest.data.Locator;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
-import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.util.StringUtil;
-
-import org.jetbrains.annotations.NotNull;
-
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
-import webhook.teamcity.settings.entity.builder.WebHookTemplateEntityBuilder;
-
-import com.intellij.openapi.diagnostic.Logger;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
 public class TemplateFinder {
 
@@ -27,7 +22,7 @@ public class TemplateFinder {
 		myTemplateManager = templateManager;
 	}
 	
-	public static String getLocator(final WebHookTemplateEntity template) {
+	public static String getLocator(final WebHookTemplateConfig template) {
 	    return Locator.createEmptyLocator().setDimension("id", template.getName()).getStringRepresentation();
 	}
 
@@ -36,7 +31,7 @@ public class TemplateFinder {
 	}
 	
 	
-	public WebHookTemplateEntityWrapper findTemplateById(String templateLocator) {
+	public WebHookTemplateConfigWrapper findTemplateById(String templateLocator) {
 
 		if (StringUtil.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");
@@ -48,36 +43,36 @@ public class TemplateFinder {
 		if (locator.isSingleValue()) {
 			// no dimensions found, assume it's a name or internal id or
 			// external id
-			WebHookTemplateEntity template = null;
+			WebHookTemplateConfig template = null;
 			@NotNull
 			final String singleValue = locator.getSingleValue();
-			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(singleValue);
+			template = myTemplateManager.getTemplateConfig(singleValue);
 			if (template != null) {
-				return new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(template.getName()));
+				return new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(template.getName()));
 			}
 			throw new NotFoundException(
 					"No template found by name '"
 							+ singleValue + "'.");
 			
 		} else if (locator.getSingleDimensionValue("id") != null){
-			WebHookTemplateEntity template = null;
+			WebHookTemplateConfig template = null;
 			@NotNull
 			final String templateId = locator.getSingleDimensionValue("id");
-			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(templateId);
+			template = myTemplateManager.getTemplateConfig(templateId);
 			if (template != null) {
-				return new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(template.getName()));
+				return new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(template.getName()));
 			}
 			throw new NotFoundException(
 					"No template found by id '"
 							+ templateId + "'.");
 			
 		} else if (locator.getSingleDimensionValue("name") != null){
-			WebHookTemplateEntity template = null;
+			WebHookTemplateConfig template = null;
 			@NotNull
 			final String templateName = locator.getSingleDimensionValue("name");
-			template = (WebHookTemplateEntity) myTemplateManager.getTemplateEntity(templateName);
+			template = myTemplateManager.getTemplateConfig(templateName);
 			if (template != null) {
-				return new WebHookTemplateEntityWrapper(template, myTemplateManager.getTemplateState(template.getName()));
+				return new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(template.getName()));
 			}
 			throw new NotFoundException(
 					"No template found by name '"
@@ -108,7 +103,7 @@ public class TemplateFinder {
 	
 	public WebHookTemplateItem findTemplateByIdAndTemplateContentById(String templateLocator, String templateContentLocator) {
 		
-		WebHookTemplateEntity entity =  findTemplateById(templateLocator).getEntity();
+		WebHookTemplateConfig entity =  findTemplateById(templateLocator).getEntity();
 		
 		if (StringUtil.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");

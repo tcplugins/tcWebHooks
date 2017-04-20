@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.server.rest.request.TemplateRequest;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItem;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
 /**
  * Adds the WebHooks urls into the resolver.
@@ -23,35 +23,35 @@ public class WebHookApiUrlBuilder {
 		myPathTransformer = pathTransformer;
 	}
 	
-	public String getHref(final WebHookTemplateEntity template) {
+	public String getHref(final WebHookTemplateConfig template) {
 	    return myPathTransformer.transform(TemplateRequest.getTemplateHref(template));
 	}
 	
-	public String getTemplateItemHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
-		return myPathTransformer.transform(TemplateRequest.getTemplateItemHref(webHookTemplateEntity, webHookTemplateItem));
+	public String getTemplateItemHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItem webHookTemplateItem) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemHref(WebHookTemplateConfig, webHookTemplateItem));
 	}	
 	
-	public String getDefaultTemplateTextHref(final WebHookTemplateEntity template) {
+	public String getDefaultTemplateTextHref(final WebHookTemplateConfig template) {
 		return myPathTransformer.transform(TemplateRequest.getDefaultTemplateTextHref(template));
 	}
 
-	public String getDefaultBranchTemplateTextHref(final WebHookTemplateEntity template) {
+	public String getDefaultBranchTemplateTextHref(final WebHookTemplateConfig template) {
 		return myPathTransformer.transform(TemplateRequest.getDefaultBranchTemplateTextHref(template));
 	}
 
-	public String getTemplateItemTextHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
-		return myPathTransformer.transform(TemplateRequest.getTemplateItemTextHref(webHookTemplateEntity, webHookTemplateItem));
+	public String getTemplateItemTextHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItem webHookTemplateItem) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemTextHref(WebHookTemplateConfig, webHookTemplateItem));
 	}
 	
-	public String getTemplateItemBranchTextHref(WebHookTemplateEntity webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
-		return myPathTransformer.transform(TemplateRequest.getTemplateItemBranchTextHref(webHookTemplateEntity, webHookTemplateItem));
+	public String getTemplateItemBranchTextHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItem webHookTemplateItem) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateItemBranchTextHref(WebHookTemplateConfig, webHookTemplateItem));
 	}
 	
 	public String transformRelativePath(final String internalRelativePath) {
 		return myPathTransformer.transform(internalRelativePath);
 	}
 
-	public String getWebHookTemplateItemStateUrl(WebHookTemplateEntity template, WebHookTemplateItem templateItem, String state) {
+	public String getWebHookTemplateItemStateUrl(WebHookTemplateConfig template, WebHookTemplateItem templateItem, String state) {
 		return myPathTransformer.transform(TemplateRequest.getTemplateItemStateHref(template, templateItem, state));
 	}
 
