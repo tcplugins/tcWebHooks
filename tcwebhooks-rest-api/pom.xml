@@ -89,7 +89,7 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-	         <plugin>
+<!-- 	         <plugin>
 	            <groupId>com.qmino</groupId>
 	            <artifactId>miredot-plugin</artifactId>
 	            <version>1.5.1</version>
@@ -102,10 +102,10 @@
 	            </executions>
 	            <configuration>
 	               <licence>UHJvamVjdHxuZXR3b2xmdWsudGVhbWNpdHkucGx1Z2lucy50Y3dlYmhvb2tzLnRjd2ViaG9va3MtcmVzdC1hcGl8MjAxNy0wMS0yNHxmYWxzZSNNQ3dDRkgwdXNwbWxtVEhoQVJVYlFSR1ZZSWZTL2FwYUFoUWNxcEk5MlRMR3RSZkxXUnVjL3lxTWk5Z3VVdz09</licence>
-	               <!-- insert other configuration here (optional) -->
+	               insert other configuration here (optional)
 	            </configuration>
 	         </plugin>
-	        
+ -->	        
 			<plugin>
 		        <artifactId>maven-antrun-plugin</artifactId>
 		        <executions>

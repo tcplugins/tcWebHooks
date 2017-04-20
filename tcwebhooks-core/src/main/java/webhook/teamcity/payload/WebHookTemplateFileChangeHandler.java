@@ -63,7 +63,7 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 			this.webHookTemplateManager.unregisterAllXmlConfigTemplates();
 			for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
 				template.fixTemplateIds();
-				this.webHookTemplateManager.registerTemplateFormatFromXmlConfig(template);
+				this.webHookTemplateManager.registerTemplateFormatFromXmlEntity(template);
 			}
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. File not found: " + this.configFile.getPath());

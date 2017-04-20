@@ -3,9 +3,10 @@ package webhook.teamcity.payload;
 import java.util.Set;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
-public interface WebHookTemplate {
+public interface WebHookPayloadTemplate {
 
 	/** 
 	 * Sets the TemplateManager so that register() can register this template with that webHookTemplateManager.
@@ -134,4 +135,6 @@ public interface WebHookTemplate {
 	String getPreferredDateTimeFormat();
 	
 	WebHookTemplateEntity getAsEntity();
+	
+	WebHookTemplateConfig getAsConfig();
 }

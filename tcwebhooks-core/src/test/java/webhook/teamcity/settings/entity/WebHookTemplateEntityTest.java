@@ -27,11 +27,11 @@ public class WebHookTemplateEntityTest {
 		WebHookTemplateItem hookTemplateItem = new WebHookTemplateItem();
 		hookTemplateItem.id = 8;
 		hookTemplateItem.templateText = new WebHookTemplateText();
-		hookTemplateItem.templateText.templateContent = "some template text";
+		hookTemplateItem.templateText.setTemplateContent("some template text");
 		items.add(hookTemplateItem);
 
 		e.templates = new WebHookTemplateItems();
-		e.templates.maxId = 9;
+		e.templates.setMaxId(9);
 		e.templates.setTemplates(items);
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplateEntity.class);

@@ -10,13 +10,15 @@ import javax.xml.bind.JAXBException;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
-public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate {
+public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
 
 	protected WebHookPayloadManager payloadManager;
 	protected WebHookTemplateJaxHelper webHookTemplateJaxHelper;
@@ -176,6 +178,11 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookTemplate
 	@Override
 	public WebHookTemplateEntity getAsEntity() {
 		return template.getAsEntity();
+	}
+	
+	@Override
+	public WebHookTemplateConfig getAsConfig() {
+		return WebHookTemplateConfigBuilder.buildConfig(template.getAsEntity());
 	}
 
 }

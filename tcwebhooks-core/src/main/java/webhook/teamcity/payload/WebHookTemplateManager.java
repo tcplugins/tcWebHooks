@@ -10,16 +10,18 @@ import javax.xml.bind.JAXBException;
 
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
 public class WebHookTemplateManager {
 	
-	HashMap<String, WebHookTemplate> springTemplates = new HashMap<>();
-	HashMap<String, WebHookTemplate> xmlConfigTemplates = new HashMap<>();
-	Comparator<WebHookTemplate> rankComparator = new WebHookTemplateRankingComparator();
-	List<WebHookTemplate> orderedTemplateCollection = new ArrayList<>();
+	HashMap<String, WebHookPayloadTemplate> springTemplates = new HashMap<>();
+	HashMap<String, WebHookPayloadTemplate> xmlConfigTemplates = new HashMap<>();
+	Comparator<WebHookPayloadTemplate> rankComparator = new WebHookTemplateRankingComparator();
+	List<WebHookPayloadTemplate> orderedTemplateCollection = new ArrayList<>();
 	WebHookPayloadManager webHookPayloadManager;
 	WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 	private String configFilePath;
@@ -30,7 +32,7 @@ public class WebHookTemplateManager {
 		Loggers.SERVER.info("WebHookTemplateManager :: Starting (" + toString() + ")");
 	}
 	
-	public void registerTemplateFormatFromSpring(WebHookTemplate payloadTemplate){
+	public void registerTemplateFormatFromSpring(WebHookPayloadTemplate payloadTemplate){
 		synchronized (orderedTemplateCollection) {
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering Spring template " 
 					+ payloadTemplate.getTemplateDescription() + " (" + payloadTemplate.getTemplateShortName() + ")"
@@ -38,13 +40,13 @@ public class WebHookTemplateManager {
 			springTemplates.put(payloadTemplate.getTemplateShortName(),payloadTemplate);
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
-			for (WebHookTemplate pl : this.orderedTemplateCollection){
+			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
 				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateDescription() + " (" + pl.getTemplateShortName() + ")" + " Rank: " + pl.getRank());
 			}
 		}
 	}
 	
-	public void registerTemplateFormatFromXmlConfig(WebHookTemplateEntity payloadTemplate){
+	public void registerTemplateFormatFromXmlEntity(WebHookTemplateEntity payloadTemplate){
 		synchronized (orderedTemplateCollection) {
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
 					+ payloadTemplate.getName() 
@@ -53,10 +55,15 @@ public class WebHookTemplateManager {
 			xmlConfigTemplates.put(payloadTemplate.getName(),WebHookTemplateFromXml.build(payloadTemplate, webHookPayloadManager));
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
-			for (WebHookTemplate pl : this.orderedTemplateCollection){
+			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
 				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
 			}
 		}
+	}
+	
+	public void registerTemplateFormatFromXmlConfig(WebHookTemplateConfig payloadTemplateConfig){
+		WebHookTemplateEntity payloadTemplate = WebHookTemplateConfigBuilder.buildEntity(payloadTemplateConfig);
+		registerTemplateFormatFromXmlEntity(payloadTemplate);	
 	}
 	
 	public void unregisterAllXmlConfigTemplates(){
@@ -65,7 +72,7 @@ public class WebHookTemplateManager {
 			xmlConfigTemplates.clear();
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
-			for (WebHookTemplate pl : this.orderedTemplateCollection){
+			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
 				Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
 			}
 		}
@@ -74,7 +81,7 @@ public class WebHookTemplateManager {
 	public boolean persistAllXmlConfigTemplates(){
 		synchronized (orderedTemplateCollection) {
 			WebHookTemplates templates = new WebHookTemplates();
-			for (WebHookTemplate xmlConfig : xmlConfigTemplates.values()){
+			for (WebHookPayloadTemplate xmlConfig : xmlConfigTemplates.values()){
 				templates.addWebHookTemplate(xmlConfig.getAsEntity());
 			}
 			try {
@@ -96,18 +103,18 @@ public class WebHookTemplateManager {
 	private void rebuildOrderedListOfTemplates() {
 		this.orderedTemplateCollection.clear();
 		
-		HashMap<String, WebHookTemplate> combinedTemplates = new HashMap<>();
+		HashMap<String, WebHookPayloadTemplate> combinedTemplates = new HashMap<>();
 		
 		// Rebuild the list of configured templates.
 		// Add all the spring ones.
-		for (WebHookTemplate payloadTemplate : springTemplates.values()){
+		for (WebHookPayloadTemplate payloadTemplate : springTemplates.values()){
 			combinedTemplates.put(payloadTemplate.getTemplateShortName(), payloadTemplate);
 		}
 		
 		// Now add the XML ones. If any have the same name
 		// as a spring one, it should overwrite it. 
 		// If we've just cleared the XML ones, the list will be empty of course.
-		for (WebHookTemplate payloadTemplate : xmlConfigTemplates.values()){
+		for (WebHookPayloadTemplate payloadTemplate : xmlConfigTemplates.values()){
 			combinedTemplates.put(payloadTemplate.getTemplateShortName(), payloadTemplate);
 		}
 		
@@ -115,7 +122,7 @@ public class WebHookTemplateManager {
 		Collections.sort(this.orderedTemplateCollection, rankComparator);
 	}
 
-	public WebHookTemplate getTemplate(String formatShortname){
+	public WebHookPayloadTemplate getTemplate(String formatShortname){
 		synchronized (orderedTemplateCollection) {
 			if (xmlConfigTemplates.containsKey(formatShortname)){
 				return xmlConfigTemplates.get(formatShortname);
@@ -127,13 +134,13 @@ public class WebHookTemplateManager {
 		}
 	}
 	
-	public WebHookTemplateEntity getTemplateEntity(String formatShortname){
+	public WebHookTemplateConfig getTemplateConfig(String formatShortname){
 		synchronized (orderedTemplateCollection) {
 			if (xmlConfigTemplates.containsKey(formatShortname)){
-				return xmlConfigTemplates.get(formatShortname).getAsEntity();
+				return WebHookTemplateConfigBuilder.buildConfig(xmlConfigTemplates.get(formatShortname).getAsEntity());
 			}
 			if (springTemplates.containsKey(formatShortname)){
-				return springTemplates.get(formatShortname).getAsEntity();
+				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(formatShortname).getAsEntity());
 			}
 			return null;
 		}
@@ -143,23 +150,23 @@ public class WebHookTemplateManager {
 		return xmlConfigTemplates.containsKey(template) || springTemplates.containsKey(template);
 	}
 	
-	public List<WebHookTemplate> getRegisteredTemplates(){
+	public List<WebHookPayloadTemplate> getRegisteredTemplates(){
 		return orderedTemplateCollection;
 	}
 	
-	public List<WebHookTemplateEntity> getRegisteredTemplatesAsEntities(){
-		List<WebHookTemplateEntity> orderedEntities = new ArrayList<>();
-		for (WebHookTemplate xmlConfig : orderedTemplateCollection){
+	public List<WebHookTemplateConfig> getRegisteredTemplateConfigs(){
+		List<WebHookTemplateConfig> orderedEntities = new ArrayList<>();
+		for (WebHookPayloadTemplate xmlConfig : orderedTemplateCollection){
 			if (xmlConfig.getAsEntity()!=null){
-				orderedEntities.add(xmlConfig.getAsEntity());
+				orderedEntities.add(WebHookTemplateConfigBuilder.buildConfig(xmlConfig.getAsEntity()));
 			}
 		}
 		return orderedEntities;
 	}
 
-	public List<WebHookTemplate> findAllTemplatesForFormat(String formatShortName){
-		List<WebHookTemplate> matchingTemplates = new ArrayList<>();
-		for (WebHookTemplate template : orderedTemplateCollection){
+	public List<WebHookPayloadTemplate> findAllTemplatesForFormat(String formatShortName){
+		List<WebHookPayloadTemplate> matchingTemplates = new ArrayList<>();
+		for (WebHookPayloadTemplate template : orderedTemplateCollection){
 			if (template.supportsPayloadFormat(formatShortName)){
 				matchingTemplates.add(template);
 			}

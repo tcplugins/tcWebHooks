@@ -12,7 +12,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -24,7 +24,7 @@ public class ProjectWebHooksBean {
 		return webHookList.values();
 	}
 	
-	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList){
+	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
 		ProjectWebHooksBean bean = new ProjectWebHooksBean();
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		
@@ -40,7 +40,7 @@ public class ProjectWebHooksBean {
 		
 	}
 	
-	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList){
+	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
 		ProjectWebHooksBean bean = new ProjectWebHooksBean();
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		
@@ -62,7 +62,7 @@ public class ProjectWebHooksBean {
 		
 	}
 	
-	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList){
+	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
 		ProjectWebHooksBean bean = new ProjectWebHooksBean();
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		Set<String> enabledBuildTypes = new HashSet<String>();
@@ -86,7 +86,7 @@ public class ProjectWebHooksBean {
 		
 	}
 	
-	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList){
+	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
 		ProjectWebHooksBean bean = new ProjectWebHooksBean();
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		Set<String> enabledBuildTypes = new HashSet<String>();
@@ -106,7 +106,7 @@ public class ProjectWebHooksBean {
 
 
 	private static void addWebHookConfigHolder(ProjectWebHooksBean bean,
-			List<SBuildType> projectBuildTypes, WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList) {
+			List<SBuildType> projectBuildTypes, WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList) {
 		WebhookConfigAndBuildTypeListHolder holder = new WebhookConfigAndBuildTypeListHolder(config, registeredPayloads, templateList);
 		for (SBuildType sBuildType : projectBuildTypes){
 			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(

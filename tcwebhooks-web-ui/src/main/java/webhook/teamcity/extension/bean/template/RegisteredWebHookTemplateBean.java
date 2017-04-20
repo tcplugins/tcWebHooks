@@ -8,7 +8,7 @@ import java.util.Map;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 
@@ -16,9 +16,9 @@ public class RegisteredWebHookTemplateBean {
 	
 	Map<String,SimpleTemplate> templateList = new LinkedHashMap<String,SimpleTemplate>();
 
-	public static RegisteredWebHookTemplateBean build(List<WebHookTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
+	public static RegisteredWebHookTemplateBean build(List<WebHookPayloadTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
 		RegisteredWebHookTemplateBean bean = new RegisteredWebHookTemplateBean();
-		for (WebHookTemplate t : registeredTemplates){
+		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
 					SimpleTemplate template = SimpleTemplate.build(t, f);
@@ -29,9 +29,9 @@ public class RegisteredWebHookTemplateBean {
 		return bean;
 	}
 	
-	public static RegisteredWebHookTemplateBean build(WebHookTemplateManager templateManager, List<WebHookTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
+	public static RegisteredWebHookTemplateBean build(WebHookTemplateManager templateManager, List<WebHookPayloadTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
 		RegisteredWebHookTemplateBean bean = new RegisteredWebHookTemplateBean();
-		for (WebHookTemplate t : registeredTemplates){
+		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
 					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateShortName()));
@@ -62,7 +62,7 @@ public class RegisteredWebHookTemplateBean {
 		private List<String> supportedBranchStates = new ArrayList<String>();
 		private TemplateState templateState;
 
-		public static SimpleTemplate build(WebHookTemplate webHookTemplate, WebHookPayload format) {
+		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format) {
 			SimpleTemplate temp = new SimpleTemplate();
 			
 			temp.description = webHookTemplate.getTemplateDescription() + " (" + format.getFormatDescription() + ")";
@@ -81,7 +81,7 @@ public class RegisteredWebHookTemplateBean {
 			return temp;
 		}
 		
-		public static SimpleTemplate build(WebHookTemplate webHookTemplate, WebHookPayload format, TemplateState templateState ) {
+		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format, TemplateState templateState ) {
 			SimpleTemplate temp = build(webHookTemplate, format);
 			temp.templateState = templateState;
 			return temp;

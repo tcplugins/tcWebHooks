@@ -14,7 +14,7 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 import org.junit.Test;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
@@ -37,8 +37,8 @@ public class XMLTemplateWithIdsLoadingTest {
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		
-		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
-		WebHookTemplate template = wtm.getTemplate("testXMLtemplateWithId");
+		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		WebHookPayloadTemplate template = wtm.getTemplate("testXMLtemplateWithId");
 		assertTrue(template != null);
 		assertEquals(2, regsiteredTemplates.size());
 	}

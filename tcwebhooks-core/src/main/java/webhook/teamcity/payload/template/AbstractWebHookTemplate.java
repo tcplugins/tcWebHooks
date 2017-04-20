@@ -1,9 +1,9 @@
 package webhook.teamcity.payload.template;
 
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 
-public abstract class AbstractWebHookTemplate implements WebHookTemplate {
+public abstract class AbstractWebHookTemplate implements WebHookPayloadTemplate {
 	
 	protected WebHookTemplateManager manager;
 	int rank = 10; // Default to 10.
@@ -23,7 +23,7 @@ public abstract class AbstractWebHookTemplate implements WebHookTemplate {
 		this.rank = rank;
 	}
 	
-	public void register(WebHookTemplate template){
+	public void register(WebHookPayloadTemplate template){
 		this.manager.registerTemplateFormatFromSpring(template);
 	}
 

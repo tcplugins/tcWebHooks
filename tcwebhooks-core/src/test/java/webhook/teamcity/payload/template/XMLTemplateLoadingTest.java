@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
@@ -37,8 +37,8 @@ public class XMLTemplateLoadingTest {
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		
-		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
-		WebHookTemplate template = wtm.getTemplate("testXMLtemplateWithCombinedTemplate");
+		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		WebHookPayloadTemplate template = wtm.getTemplate("testXMLtemplateWithCombinedTemplate");
 		assertTrue(template != null);
 		assertEquals("{ \"anotherMergedbuildStatus\" : \"${buildStatus}\" }", template.getTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText());
 		assertEquals("{ \"anotherMergedbuildStatus\" : \"${buildStatus}\" }", template.getBranchTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText());

@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Set;
 
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
-public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookTemplate {
+public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookPayloadTemplate {
 	
 	Set<BuildStateEnum> states = new HashSet<>();
 	
@@ -87,6 +88,11 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 
 	@Override
 	public WebHookTemplateEntity getAsEntity() {
+		return null;
+	}
+
+	@Override
+	public WebHookTemplateConfig getAsConfig() {
 		return null;
 	}
 

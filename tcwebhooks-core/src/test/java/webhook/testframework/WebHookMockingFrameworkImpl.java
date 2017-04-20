@@ -40,7 +40,7 @@ import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -53,6 +53,7 @@ import webhook.teamcity.payload.format.WebHookPayloadXml;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
@@ -74,7 +75,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
 	//WebHookContentBuilder contentBuilder = mock(WebHookContentBuilder.class);
 	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(getServer(), manager, resolver);
-	WebHookTemplate template;
+	WebHookPayloadTemplate template;
 	WebHookPayload payloadJson = new WebHookPayloadJson(manager);
 	WebHookPayload payloadXml = new WebHookPayloadXml(manager);
 	WebHookPayload payloadNvpairs = new WebHookPayloadNameValuePairs(manager);
@@ -110,7 +111,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SortedMap<String, String> extraParameters;
 	SortedMap<String, String> teamcityProperties;
 	BuildStateEnum buildstateEnum;
-	List<WebHookTemplate> templateList = new ArrayList<>();
+	List<WebHookPayloadTemplate> templateList = new ArrayList<>();
 	List<WebHookPayload> formatList = new ArrayList<>();
 	
 	private WebHookMockingFrameworkImpl() {
@@ -182,8 +183,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return finishedBuildsHistory;
 	}
 
-	private WebHookTemplate getTestingTemplate() {
-		return new WebHookTemplate() {
+	private WebHookPayloadTemplate getTestingTemplate() {
+		return new WebHookPayloadTemplate() {
 			@SuppressWarnings("unused")
 			WebHookTemplateManager manager = null;
 			BuildStateEnum[] supportedStates = {BuildStateEnum.BUILD_SUCCESSFUL, BuildStateEnum.BUILD_FAILED, BuildStateEnum.BUILD_BROKEN, BuildStateEnum.BUILD_FIXED};
@@ -262,6 +263,12 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 
 			@Override
 			public WebHookTemplateEntity getAsEntity() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public WebHookTemplateConfig getAsConfig() {
 				// TODO Auto-generated method stub
 				return null;
 			}

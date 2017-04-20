@@ -1,11 +1,11 @@
 package webhook.teamcity.payload.template;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
-public class SlackComXmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookTemplate {
+public class SlackComXmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
 	
 	
 	public SlackComXmlWebHookTemplate(

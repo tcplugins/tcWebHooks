@@ -13,6 +13,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
@@ -207,6 +208,12 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 
 	@Override
 	public WebHookTemplateEntity getAsEntity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public WebHookTemplateConfig getAsConfig() {
 		// TODO Auto-generated method stub
 		return null;
 	}

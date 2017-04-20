@@ -1,6 +1,7 @@
 package webhook.teamcity.settings.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,7 +14,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,6 +64,7 @@ import org.jetbrains.annotations.Nullable;
 @XmlAccessorType(XmlAccessType.FIELD)
 
 @Data  // Let Lombok generate the getters and setters.
+@NoArgsConstructor // Empty constructor for JAXB
 
 @XmlRootElement(name = "webhook-template")
 public class WebHookTemplateEntity {
@@ -91,28 +96,59 @@ public class WebHookTemplateEntity {
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
 	
-//	@XmlElement(name="template") @XmlElementWrapper(name="templates")
-//	private List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
 	@XmlElement(name="templates")
 	WebHookTemplateItems templates;
 	
-	WebHookTemplateEntity() {
-		// empty constructor for JAXB
-	}
-
 	public WebHookTemplateEntity(String name, boolean enabled) {
 		this.name = name;
 		this.enabled = enabled;
 	}
 	
-
+	public static WebHookTemplateEntity build (WebHookTemplateConfig config) {
+		WebHookTemplateEntity entity = new WebHookTemplateEntity(config.getName(), config.isEnabled());
+		entity.rank = config.getRank();
+		
+		if (config.getDefaultTemplate() != null) {
+			entity.defaultTemplate = new WebHookTemplateText(
+														config.getDefaultTemplate().isUseTemplateTextForBranch(),
+														config.getDefaultTemplate().getTemplateContent()
+														);
+		}
+		if (config.getDefaultBranchTemplate() != null) {
+			entity.defaultBranchTemplate = new WebHookTemplateBranchText(config.getDefaultBranchTemplate().getTemplateContent());
+		}
+		
+		if (config.getTemplateDescription() != null) {
+			entity.setTemplateDescription(config.getTemplateDescription());
+		}
+		
+		if (config.getTemplateToolTip() != null) {
+			entity.setTemplateToolTip(config.getTemplateToolTip());
+		}
+		
+		if (config.getPreferredDateTimeFormat() != null) {
+			entity.setPreferredDateTimeFormat(config.getPreferredDateTimeFormat());
+		}
+		
+		List<WebHookTemplateEntity.WebHookTemplateFormat> formats = new ArrayList<>();
+		for (WebHookTemplateConfig.WebHookTemplateFormat format : config.getFormats()) {
+			formats.add(new WebHookTemplateEntity.WebHookTemplateFormat(format.getName(), format.isEnabled()));
+		}
+		entity.setFormats(formats);
+		
+		entity.templates = new WebHookTemplateItems();
+		entity.templates.maxId = config.getTemplates().getMaxId();
+		entity.templates.getTemplates().addAll(WebHookTemplateItem.buildAll(config.getTemplates().getTemplates()));
+		return entity;
+	}
+	
 	public void fixTemplateIds() {
 		if (templates != null){
 			templates.fixTemplateIds();
 		}
 	}
 	
-	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD) @NoArgsConstructor
 	public static class WebHookTemplateItems {
 
 		@XmlAttribute(name="max-id")
@@ -121,12 +157,6 @@ public class WebHookTemplateEntity {
 		@XmlElements(@XmlElement(name="template", type=WebHookTemplateItem.class))
 	    List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
 
-
-	    public WebHookTemplateItems() {
-	        // TODO Auto-generated constructor stub
-	    }
-	    
-		
 		public void fixTemplateIds() {
 			List<Integer> usedIds = new ArrayList<>();
 			for (WebHookTemplateItem item : templates){
@@ -140,7 +170,9 @@ public class WebHookTemplateEntity {
 	    
 	}
 	
-	@XmlType(name = "format") @Data  @XmlAccessorType(XmlAccessType.FIELD)
+	@NoArgsConstructor // Empty constructor for JAXB
+	@AllArgsConstructor
+	@XmlType(name = "format") @Data  @XmlAccessorType(XmlAccessType.FIELD) 
 	public static class WebHookTemplateFormat {
 		@XmlAttribute
 		String name;
@@ -148,11 +180,10 @@ public class WebHookTemplateEntity {
 		@XmlAttribute
 		boolean enabled = true;
 		
-		WebHookTemplateFormat() {
-			// empty constructor for JAXB
-		}
 	}
 	
+	@NoArgsConstructor // Empty constructor for JAXB
+	@AllArgsConstructor
 	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateText {
 		@XmlAttribute (name="use-for-branch-template")
@@ -161,24 +192,18 @@ public class WebHookTemplateEntity {
 		@NotNull @XmlValue
 		String templateContent;
 		
-		WebHookTemplateText() {
-			// empty constructor for JAXB
-		}
-		
 		public WebHookTemplateText(String templateContent){
 			this.templateContent = templateContent;
 		
 		}
 	}
+	
+	@NoArgsConstructor // Empty constructor for JAXB
 	@XmlType @Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateBranchText {
 	
 		@NotNull @XmlValue
 		String templateContent;
-		
-		WebHookTemplateBranchText() {
-			// empty constructor for JAXB
-		}
 		
 		public WebHookTemplateBranchText(String templateContent){
 			this.templateContent = templateContent;
@@ -186,8 +211,10 @@ public class WebHookTemplateEntity {
 	}
 	
 	@XmlRootElement
+	@NoArgsConstructor // Empty constructor for JAXB
 	@XmlType(name = "template") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateItem {
+
 		@NotNull @XmlElement(name="template-text")
 		WebHookTemplateText templateText;
 		
@@ -202,12 +229,30 @@ public class WebHookTemplateEntity {
 		
 		@XmlElement(name="state") @XmlElementWrapper(name="states")
 		private List<WebHookTemplateState> states = new ArrayList<WebHookTemplateState>();
-		
-		WebHookTemplateItem() {
-			// empty constructor for JAXB
+
+		public static Collection<? extends WebHookTemplateItem> buildAll(
+				Collection<WebHookTemplateConfig.WebHookTemplateItem> templateItems) {
+			List<WebHookTemplateItem> items = new ArrayList<>();
+			for (WebHookTemplateConfig.WebHookTemplateItem item : templateItems) {
+				WebHookTemplateItem i = new WebHookTemplateItem();
+				i.templateText = new WebHookTemplateText(
+											item.getTemplateText().isUseTemplateTextForBranch(),
+											item.getTemplateText().getTemplateContent()
+										);
+				i.branchTemplateText = new WebHookTemplateBranchText(
+											item.getBranchTemplateText().getTemplateContent()
+										);
+				i.enabled = item.isEnabled();
+				i.id = item.getId();
+				for (WebHookTemplateConfig.WebHookTemplateState state : item.getStates()) {
+					i.states.add(new WebHookTemplateState(state.getType(), state.isEnabled()));
+				}
+			}
+			return items;
 		}
 	}
 	
+	@NoArgsConstructor // Empty constructor for JAXB
 	@XmlType(name = "state") @Data  @XmlAccessorType(XmlAccessType.FIELD)
 	public static class WebHookTemplateState {
 		@XmlAttribute(name="type")
@@ -215,16 +260,11 @@ public class WebHookTemplateEntity {
 		
 		@XmlAttribute
 		boolean enabled;
-		
-		WebHookTemplateState() {
-			// empty constructor for JAXB
-		}
 
 		public WebHookTemplateState(String shortName, boolean b) {
 			this.type = shortName;
 			this.enabled = b;
 		}
-		
 		
 	}
 	

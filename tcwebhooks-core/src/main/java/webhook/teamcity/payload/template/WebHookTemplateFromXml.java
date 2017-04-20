@@ -8,16 +8,18 @@ import java.util.Set;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
-public class WebHookTemplateFromXml implements WebHookTemplate {
+public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	
 	List<String> supportedFormats = new ArrayList<>();
 	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<>();
@@ -119,7 +121,7 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 		this.branchTemplateContent.put(state, content);
 	}
 
-	public static WebHookTemplate build(
+	public static WebHookPayloadTemplate build(
 			WebHookTemplateEntity entityTemplate,
 			WebHookPayloadManager payloadManager
 			) {
@@ -254,6 +256,11 @@ public class WebHookTemplateFromXml implements WebHookTemplate {
 	@Override
 	public WebHookTemplateEntity getAsEntity() {
 		return entity;
+	}
+
+	@Override
+	public WebHookTemplateConfig getAsConfig() {
+		return WebHookTemplateConfigBuilder.buildConfig(getAsEntity());
 	}
 
 

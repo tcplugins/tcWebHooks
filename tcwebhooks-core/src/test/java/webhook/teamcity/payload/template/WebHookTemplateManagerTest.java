@@ -19,11 +19,12 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
@@ -71,7 +72,7 @@ public class WebHookTemplateManagerTest {
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 
-		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertEquals(4, regsiteredTemplates.size());
 		assertEquals("testXMLtemplate", wtm.getTemplate("testXMLtemplate").getTemplateShortName());
 	}
@@ -88,7 +89,7 @@ public class WebHookTemplateManagerTest {
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		
-		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertEquals(2, regsiteredTemplates.size());
 		assertEquals("testXMLtemplateWithId", wtm.getTemplate("testXMLtemplateWithId").getTemplateShortName());
 	}
@@ -105,7 +106,7 @@ public class WebHookTemplateManagerTest {
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		
-		List<WebHookTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
+		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertTrue(regsiteredTemplates.size() == 1);
 		assertTrue(regsiteredTemplates.get(0).getTemplateShortName().equals("testXMLtemplate"));
 		System.out.println("###########################");
@@ -192,6 +193,12 @@ public class WebHookTemplateManagerTest {
 
 		@Override
 		public WebHookTemplateEntity getAsEntity() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public WebHookTemplateConfig getAsConfig() {
 			// TODO Auto-generated method stub
 			return null;
 		}

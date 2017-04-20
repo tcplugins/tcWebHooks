@@ -6,7 +6,7 @@ import java.util.List;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
-import webhook.teamcity.payload.WebHookTemplate;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class WebhookConfigAndBuildTypeListHolder {
@@ -24,7 +24,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private String enabledBuildsListForWeb;
 	private WebhookAuthenticationConfigBean authConfig = null;
 	
-	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookTemplate> templateList) {
+	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList) {
 		url = config.getUrl();
 		uniqueKey = config.getUniqueKey();
 		enabled = config.getEnabled();
@@ -40,10 +40,10 @@ public class WebhookConfigAndBuildTypeListHolder {
 		if (config.getAuthenticationConfig() != null){
 			this.authConfig = WebhookAuthenticationConfigBean.build(config.getAuthenticationConfig());
 		}
-		WebHookTemplate t = null;
+		WebHookPayloadTemplate t = null;
 		
 		if (payloadFormat != null){
-			for (WebHookTemplate template : templateList){
+			for (WebHookPayloadTemplate template : templateList){
 				if (template.supportsPayloadFormat(payloadFormat) && template.getTemplateShortName().equals(payloadTemplate)){
 					t = template;
 				}

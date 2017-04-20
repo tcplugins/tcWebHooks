@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -41,10 +41,10 @@ public class DataProvider {
 
 	}
 	
-	public List<WebHookTemplateEntityWrapper> getWebHookTemplates(){
-		List<WebHookTemplateEntityWrapper> templates = new ArrayList<>();
-		for (WebHookTemplateEntity template : this.myTemplateManager.getRegisteredTemplatesAsEntities()){
-			templates.add(new WebHookTemplateEntityWrapper(template, 
+	public List<WebHookTemplateConfigWrapper> getWebHookTemplates(){
+		List<WebHookTemplateConfigWrapper> templates = new ArrayList<>();
+		for (WebHookTemplateConfig template : this.myTemplateManager.getRegisteredTemplateConfigs()){
+			templates.add(new WebHookTemplateConfigWrapper(template, 
 														   this.myTemplateManager.getTemplateState(template.getName())
 														  )
 						 );
@@ -52,8 +52,8 @@ public class DataProvider {
 		return templates;
 	}
 	
-	public WebHookTemplateEntity getWebHookTemplate(String id){
-		return this.myTemplateManager.getTemplate(id).getAsEntity();
+	public WebHookTemplateConfig getWebHookTemplate(String id){
+		return this.myTemplateManager.getTemplate(id).getAsConfig();
 	}
 
 	public WebHookPayloadManager getPayloadManager() {
