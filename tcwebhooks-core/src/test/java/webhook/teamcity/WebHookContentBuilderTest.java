@@ -1,14 +1,19 @@
 package webhook.teamcity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
@@ -66,6 +71,84 @@ public class WebHookContentBuilderTest {
 		wh = builder.buildWebHookContent(wh, whc, sRunningBuild, BuildStateEnum.BUILD_FINISHED, true);
 		System.out.println(wh.getContent());
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsPersonal() {
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, null);
+		WebHook wh = new WebHookImpl();
+		
+		SBuild runningBuild = mock(SBuild.class);
+		SFinishedBuild personalPreviousBuild = mock(SFinishedBuild.class);
+		SFinishedBuild nonPersonalPreviousBuild = mock(SFinishedBuild.class);
+		
+		when(runningBuild.getPreviousFinished()).thenReturn(personalPreviousBuild);
+		when(runningBuild.getBuildId()).thenReturn(100L);
+		when(personalPreviousBuild.isPersonal()).thenReturn(true);
+		when(personalPreviousBuild.getBuildId()).thenReturn(99L);
+		when(personalPreviousBuild.getPreviousFinished()).thenReturn(nonPersonalPreviousBuild);
+		when(nonPersonalPreviousBuild.getBuildId()).thenReturn(98L);
+		
+		SBuild previousBuild = builder.getPreviousNonPersonalBuild(wh, runningBuild);
+		assertEquals(nonPersonalPreviousBuild, previousBuild);
+		assertEquals(nonPersonalPreviousBuild, wh.getPreviousNonPersonalBuild());
+		assertEquals(98L, previousBuild.getBuildId());
+		
+	}
+	
+	@Test
+	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsNonPersonal() {
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, null);
+		WebHook wh = new WebHookImpl();
+		
+		SBuild runningBuild = mock(SBuild.class);
+		SFinishedBuild nonPersonalPreviousBuild = mock(SFinishedBuild.class);
+		
+		when(runningBuild.getPreviousFinished()).thenReturn(nonPersonalPreviousBuild);
+		when(runningBuild.getBuildId()).thenReturn(100L);
+		when(nonPersonalPreviousBuild.getBuildId()).thenReturn(98L);
+		
+		SBuild previousBuild = builder.getPreviousNonPersonalBuild(wh, runningBuild);
+		assertEquals(nonPersonalPreviousBuild, previousBuild);
+		assertEquals(nonPersonalPreviousBuild, wh.getPreviousNonPersonalBuild());
+		assertEquals(98L, previousBuild.getBuildId());
+		
+	}
+	
+	@Test
+	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPersonalPreviousReturnsNull() {
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, null);
+		WebHook wh = new WebHookImpl();
+		
+		SBuild runningBuild = mock(SBuild.class);
+		SFinishedBuild personalPreviousBuild = mock(SFinishedBuild.class);
+		
+		when(runningBuild.getPreviousFinished()).thenReturn(personalPreviousBuild);
+		when(runningBuild.getBuildId()).thenReturn(100L);
+		when(personalPreviousBuild.isPersonal()).thenReturn(true);
+		when(personalPreviousBuild.getBuildId()).thenReturn(99L);
+		when(personalPreviousBuild.getPreviousFinished()).thenReturn(null);
+		
+		SBuild previousBuild = builder.getPreviousNonPersonalBuild(wh, runningBuild);
+		assertNull(previousBuild);
+		assertNull(wh.getPreviousNonPersonalBuild());
+		
+	}
+	
+	@Test
+	public void testGetPreviousNonPreviousNonPersonalBuild_WhenNonPersonalPreviousReturnsNull() {
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, null);
+		WebHook wh = new WebHookImpl();
+		
+		SBuild runningBuild = mock(SBuild.class);
+		
+		when(runningBuild.getPreviousFinished()).thenReturn(null);
+		when(runningBuild.getBuildId()).thenReturn(100L);
+		
+		SBuild previousBuild = builder.getPreviousNonPersonalBuild(wh, runningBuild);
+		assertNull(previousBuild);
+		assertNull(wh.getPreviousNonPersonalBuild());
+		
 	}
 
 }

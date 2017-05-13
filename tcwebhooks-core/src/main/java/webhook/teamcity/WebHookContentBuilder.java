@@ -153,26 +153,27 @@ public class WebHookContentBuilder {
 	}
 	
 	@Nullable
-	private SFinishedBuild getPreviousNonPersonalBuild(WebHook wh, SBuild paramSRunningBuild)
+	protected SFinishedBuild getPreviousNonPersonalBuild(WebHook wh, SBuild paramSBuild)
 	  {
 		if (wh.getPreviousNonPersonalBuild() != null) {
-			Loggers.SERVER.debug("WebHookContentBuilder::getPreviousNonPersonalBuild ** ShortCircuit :-) ** ID: " + paramSRunningBuild.getBuildId());
 			return wh.getPreviousNonPersonalBuild();
 		}
-		Loggers.SERVER.debug("WebHookContentBuilder::getPreviousNonPersonalBuild ** 01 ** ID: " + paramSRunningBuild.getBuildId());
-	    List<SFinishedBuild> localList = this.buildServer.getHistory().getEntriesBefore(paramSRunningBuild, false);
-	    Loggers.SERVER.debug("WebHookContentBuilder::getPreviousNonPersonalBuild ** 02 ** ID: " + paramSRunningBuild.getBuildId());
-	    Loggers.SERVER.debug("WebHookContentBuilder::getPreviousNonPersonalBuild ** size ** ID: " + localList.size()); 
-
-	    for (SFinishedBuild localSFinishedBuild : localList) {
-	      if (!(localSFinishedBuild.isPersonal())) {
-	    	  wh.setPreviousNonPersonalBuild(localSFinishedBuild);
-	    	  Loggers.SERVER.debug("WebHookContentBuilder::getPreviousNonPersonalBuild ** 03 ** ID: " + paramSRunningBuild.getBuildId());
-	    	  return localSFinishedBuild;
-	      }
-	    }
-	    return null;
+		wh.setPreviousNonPersonalBuild(getRecursivePreviousNonPersonalBuild(paramSBuild));
+		return wh.getPreviousNonPersonalBuild();
 	}
+	
+	@Nullable 
+	private SFinishedBuild getRecursivePreviousNonPersonalBuild(SBuild paramSBuild) {
+		SFinishedBuild localSFinishedBuild = paramSBuild.getPreviousFinished();
+		if (localSFinishedBuild == null) { // There was not a previous build.
+			return localSFinishedBuild;
+		} else if (localSFinishedBuild.isPersonal()){
+			localSFinishedBuild = getRecursivePreviousNonPersonalBuild(localSFinishedBuild);
+		}
+		return localSFinishedBuild;
+	}
+	
+	
 	
 	private boolean hasBuildChangedHistoricalState(SBuild sRunningBuild, SFinishedBuild previous){
 		if (previous != null){
