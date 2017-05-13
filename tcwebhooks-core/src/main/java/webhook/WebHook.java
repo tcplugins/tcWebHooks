@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.NameValuePair;
 
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
@@ -95,6 +96,9 @@ public interface WebHook {
 
 	public abstract String getDisabledReason();
 
+	public abstract SFinishedBuild getPreviousNonPersonalBuild();
+
+	public abstract void setPreviousNonPersonalBuild(SFinishedBuild localSFinishedBuild);
 
 
 }

@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import jetbrains.buildServer.log.Loggers;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -19,6 +17,8 @@ import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
@@ -47,6 +47,7 @@ public class WebHookImpl implements WebHook {
 	private BuildState states;
 	private WebHookAuthenticator authenticator;
 	private List<WebHookFilterConfig> filters;
+	private SFinishedBuild previousSFinishedBuild;
 	
 	
 	public WebHookImpl(){
@@ -374,4 +375,14 @@ public class WebHookImpl implements WebHook {
 		return disabledReason;
 	}
 
+	@Override
+	public SFinishedBuild getPreviousNonPersonalBuild() {
+		return this.previousSFinishedBuild;
+	}
+
+	@Override
+	public void setPreviousNonPersonalBuild(SFinishedBuild localSFinishedBuild) {
+		this.previousSFinishedBuild = localSFinishedBuild;
+		
+	}
 }
