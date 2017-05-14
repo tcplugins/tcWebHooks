@@ -12,6 +12,10 @@ import webhook.WebHookProxyConfig;
 
 
 public class WebHookMainConfig {
+	
+	final static int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
+	final static int HTTP_RESPONSE_TIMEOUT_DEFAULT = 120;
+	
 	private String webhookInfoUrl = null;
 	private String webhookInfoText = null;
 	private Boolean webhookShowFurtherReading = true;
@@ -22,6 +26,8 @@ public class WebHookMainConfig {
 	private Boolean proxyShortNames = false;
 	private List<String> noProxyUrls;
 	private List<Pattern> noProxyPatterns;
+	private Integer httpConnectionTimeout;
+	private Integer httpResponseTimeout;
 	
 	public final String SINGLE_HOST_REGEX = "^[^./~`'\"]+(?:/.*)?$";
 	public final String HOSTNAME_ONLY_REGEX = "^([^/]+)(?:/.*)?$";
@@ -176,6 +182,15 @@ public class WebHookMainConfig {
 		return el;
 	}
 	
+	public Element getTimeoutsAsElement () {
+		if (this.httpConnectionTimeout == null && this.httpResponseTimeout == null) {
+			return null;
+		}
+		Element el = new Element("http-timeout")
+				.setAttribute("connect", String.valueOf(getHttpConnectionTimeout()))
+				.setAttribute("response", String.valueOf(this.getHttpResponseTimeout()));
+		return el;
+	}
 	
 	public Integer getProxyPort() {
 		return proxyPort;
@@ -248,6 +263,27 @@ public class WebHookMainConfig {
 	public Boolean getWebhookShowFurtherReading() {
 		return webhookShowFurtherReading;
 	}
-
+	
+	public Integer getHttpConnectionTimeout() {
+		if (this.httpConnectionTimeout != null) {
+			return httpConnectionTimeout;
+		}
+		return HTTP_CONNECT_TIMEOUT_DEFAULT;
+	}
+	
+	public void setHttpConnectionTimeout(Integer httpConnectionTimeout) {
+		this.httpConnectionTimeout = httpConnectionTimeout;
+	}
+	
+	public Integer getHttpResponseTimeout() {
+		if (this.httpResponseTimeout != null) {
+			return httpResponseTimeout;
+		}
+		return HTTP_RESPONSE_TIMEOUT_DEFAULT;
+	}
+	
+	public void setHttpResponseTimeout(Integer httpResponseimeout) {
+		this.httpResponseTimeout = httpResponseimeout;
+	}
 
 }

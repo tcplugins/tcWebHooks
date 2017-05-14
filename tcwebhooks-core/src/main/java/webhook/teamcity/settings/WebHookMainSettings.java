@@ -57,6 +57,17 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	        		Loggers.SERVER.debug(NAME + ":readFrom :: show reading " + tempConfig.getWebhookShowFurtherReading().toString());
 	        	}
 	        }
+	        
+	        Element timeoutsElement = webhooksElement.getChild("http-timeout");
+	        if (timeoutsElement != null) {
+	        	if (timeoutsElement.getAttribute("connect") != null) {
+	        		tempConfig.setHttpConnectionTimeout(Integer.valueOf(timeoutsElement.getAttributeValue("connect")));
+	        	}
+	        	if (timeoutsElement.getAttribute("response") != null) {
+	        		tempConfig.setHttpResponseTimeout(Integer.valueOf(timeoutsElement.getAttributeValue("response")));
+	        	}
+	        }
+	        
     		Element proxyElement = webhooksElement.getChild("proxy");
 	        if(proxyElement != null)
 	        {
@@ -112,6 +123,9 @@ public class WebHookMainSettings implements MainConfigProcessor {
 			Loggers.SERVER.debug(NAME + "writeTo :: proxyPort " + webHookMainConfig.getProxyPort().toString());
         }
         
+        if(webHookMainConfig != null && webHookMainConfig.getTimeoutsAsElement() != null) {
+        	el.addContent(webHookMainConfig.getTimeoutsAsElement());
+        }
         
         if(webHookMainConfig != null && webHookMainConfig.getInfoUrlAsElement() != null){
         	el.addContent(webHookMainConfig.getInfoUrlAsElement());
@@ -144,5 +158,14 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	}
 
 	public WebHookProxyConfig getProxyConfigForUrl(String url) {
-		return this.webHookMainConfig.getProxyConfigForUrl(url);	}
+		return this.webHookMainConfig.getProxyConfigForUrl(url);	
+	}
+	
+	public int getHttpConnectionTimeout() {
+		return this.webHookMainConfig.getHttpConnectionTimeout();
+	}
+	
+	public int getHttpResponseTimeout() {
+		return this.webHookMainConfig.getHttpResponseTimeout();
+	}
 }
