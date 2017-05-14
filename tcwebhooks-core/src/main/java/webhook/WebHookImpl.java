@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -21,6 +20,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
@@ -154,6 +154,8 @@ public class WebHookImpl implements WebHook {
 			
 		    try {
 		    	this.webhookStats.setRequestStarting();
+		    	Loggers.SERVER.debug("WebHookImpl::  Connect timeout(millis): " + this.client.getHttpConnectionManager().getParams().getConnectionTimeout());
+		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.client.getHttpConnectionManager().getParams().getSoTimeout());
 		        client.executeMethod(httppost);
 		        this.webhookStats.setRequestCompleted(httppost.getStatusCode());
 		        this.resultCode = httppost.getStatusCode();
@@ -405,4 +407,14 @@ public class WebHookImpl implements WebHook {
 		
 	}
 
+	@Override
+	public void setConnectionTimeOut(int httpConnectionTimeout) {
+		this.client.getHttpConnectionManager().getParams().setConnectionTimeout(httpConnectionTimeout * 1000); 
+	}
+
+	@Override
+	public void setResponseTimeOut(int httpResponseTimeout) {
+		this.client.getHttpConnectionManager().getParams().setSoTimeout(httpResponseTimeout * 1000); 
+	}
+	
 }
