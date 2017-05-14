@@ -88,6 +88,10 @@ public interface WebHook {
 
 	public abstract void setAuthentication(WebHookAuthenticator authenticator);
 
+	public abstract void setConnectionTimeOut(int httpConnectionTimeout);
+
+	public abstract void setResponseTimeOut(int httpResponseTimeout);
+
 
 
 }

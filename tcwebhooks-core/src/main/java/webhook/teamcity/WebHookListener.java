@@ -84,6 +84,9 @@ public class WebHookListener extends BuildServerAdapter {
 			webHook.setAuthentication(auth);
 		}
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
+		webHook.setConnectionTimeOut(myMainSettings.getHttpConnectionTimeout());
+		webHook.setResponseTimeOut(myMainSettings.getHttpResponseTimeout());
+		
 		Loggers.ACTIVITIES.debug("WebHookListener :: Webhook proxy set to " 
 				+ webHook.getProxyHost() + " for " + webHookConfig.getUrl());
 	}
@@ -330,15 +333,16 @@ public class WebHookListener extends BuildServerAdapter {
 		}
 	}
 
-	@Nullable
-	private SFinishedBuild getPreviousNonPersonalBuild(SRunningBuild paramSRunningBuild)
-	  {
-	    List<SFinishedBuild> localList = this.myBuildServer.getHistory().getEntriesBefore(paramSRunningBuild, false);
-
-	    for (SFinishedBuild localSFinishedBuild : localList)
-	      if (!(localSFinishedBuild.isPersonal())) return localSFinishedBuild;
-	    return null;
-	}
+    @Nullable
+    private SFinishedBuild getPreviousNonPersonalBuild(SBuild paramSBuild) {
+            SFinishedBuild localSFinishedBuild = paramSBuild.getPreviousFinished();
+            if (localSFinishedBuild == null) { // There was not a previous build.
+                    return localSFinishedBuild;
+            } else if (localSFinishedBuild.isPersonal()){
+                    localSFinishedBuild = getPreviousNonPersonalBuild(localSFinishedBuild);
+            }
+            return localSFinishedBuild;
+    }
 	
 	private boolean hasBuildChangedHistoricalState(SRunningBuild sRunningBuild){
 		SFinishedBuild previous = getPreviousNonPersonalBuild(sRunningBuild);

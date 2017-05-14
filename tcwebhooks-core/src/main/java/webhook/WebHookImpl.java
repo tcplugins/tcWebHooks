@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import webhook.teamcity.BuildState;
-import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthenticator;
 
 
@@ -130,6 +129,8 @@ public class WebHookImpl implements WebHook {
 			}
 				
 		    try {
+		    	Loggers.SERVER.debug("WebHookImpl::  Connect timeout(millis): " + this.client.getHttpConnectionManager().getParams().getConnectionTimeout());
+		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.client.getHttpConnectionManager().getParams().getSoTimeout());
 		        client.executeMethod(httppost);
 		        this.resultCode = httppost.getStatusCode();
 		        this.content = httppost.getResponseBodyAsString();
@@ -319,5 +320,15 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setAuthentication(WebHookAuthenticator authenticator) {
 		this.authenticator = authenticator;
+	}
+
+	@Override
+	public void setConnectionTimeOut(int httpConnectionTimeout) {
+		this.client.getHttpConnectionManager().getParams().setConnectionTimeout(httpConnectionTimeout * 1000); 
+	}
+
+	@Override
+	public void setResponseTimeOut(int httpResponseTimeout) {
+		this.client.getHttpConnectionManager().getParams().setSoTimeout(httpResponseTimeout * 1000); 
 	}
 }
