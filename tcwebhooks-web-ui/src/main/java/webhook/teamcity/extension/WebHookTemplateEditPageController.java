@@ -13,16 +13,19 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookMainSettings;
+import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 
 public class WebHookTemplateEditPageController extends BaseController {
 
-	    private static final String POST_VARIABLE_NAME_ACTION = "action";
+	    private static final String GET_VARIABLE_NAME_ACTION = "action";
+	    private static final String GET_VARIABLE_NAME_TEMPLATE = "template";
 		private final WebControllerManager myWebManager;
 	    private final WebHookMainSettings myMainSettings;
 	    private SBuildServer myServer;
@@ -59,28 +62,36 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
 	    	params.put("rootContext", myServer.getServerRootPath());
 	    	
-	    	if (request.getAttribute(POST_VARIABLE_NAME_ACTION) != null){
+	    	
+	    	
+	    	if (request.getParameter(GET_VARIABLE_NAME_ACTION) != null){
 	    		
 	    		
-	    		if (request.getAttribute(POST_VARIABLE_NAME_ACTION).equals("edit")){
+	    		if (request.getParameter(GET_VARIABLE_NAME_ACTION).equals("edit")){
+	    			
+	    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE).toString();
+	    			if (templateName != null) {
+	    				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
+	    				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig));
+	    			}
 	    			
 	    			
+	    		} else if (request.getParameter(GET_VARIABLE_NAME_ACTION).equals("override")){
 	    			
-	    		} else if (request.getAttribute(POST_VARIABLE_NAME_ACTION).equals("override")){
+	    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE).toString();
+	    			if (templateName != null) {
+	    				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
+	    				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig));
+	    			}
 	    			
-	    		} else if (request.getAttribute(POST_VARIABLE_NAME_ACTION).equals("clone")){
+	    		} else if (request.getParameter(GET_VARIABLE_NAME_ACTION).equals("clone")){
 	    			
 	    		}
 	    		
 	    		
 	    	}
 	    	
-	    	
-	        
-        	params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, myTemplateManager.getRegisteredTemplates(),
-					myManager.getRegisteredFormats()).getTemplateList());
-
-	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateList.jsp", params);
+	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
 	    }
 
 		private String getProjectName(String externalProjectId, String name) {

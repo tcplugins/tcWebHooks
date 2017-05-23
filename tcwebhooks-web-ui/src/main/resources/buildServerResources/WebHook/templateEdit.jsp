@@ -16,7 +16,6 @@
 <%@ include file="/include.jsp" %>
 
 <c:set var="pageTitle" value="Edit WebHook Payload Template" scope="request"/>
-<c:set var="projectExternalId" value="${webhookTemplateBean.project.externalId}" scope="request"/>
 
 <bs:page>
   <jsp:attribute name="head_include">
@@ -31,64 +30,44 @@
       BS.Navigation.items = [
         {title: "Administration", url: '<c:url value="/admin/admin.html"/>'},
         {title: "Webhook Payload Templates", url: '<c:url value="/webhooks/templates.html"/>'},
-        {title: '<c:out value="${webhookTemplateBean.name}"/>', selected: true}
+        {title: '<c:out value="${webhookTemplateBean.templateName}"/>', selected: true}
       ];
     </script>
   </jsp:attribute>
 
-  <jsp:attribute name="quickLinks_include">
-    <div class="toolbarItem">
-	    <c:set var="menuItems">
-		    <authz:authorize allPermissions="EDIT_PROJECT" projectId="${webhookTemplateBean.project.projectId}">
-		      <jsp:body>
-		        <l:li>
-			      <a href="#" title="Edit Respository Name and Project affilliation" onclick="return DebRepoPlugin.editDebRepo('${repoConfig.uuid}'); return false">Edit repository...</a>
-		        </l:li>
-		        <l:li>
-			      <a href="#" title="Delete Repository Configuration and Index" onclick="DebRepoPlugin.removeDebRepo('${repoConfig.uuid}'); return false">Delete repository...</a>
-		        </l:li>
-		      </jsp:body>
-		    </authz:authorize>
-		</c:set>
-		<c:if test="${not empty fn:trim(menuItems)}">
-		  <bs:actionsPopup controlId="prjActions${projectExternalId}"
-		                   popup_options="shift: {x: -150, y: 20}, className: 'quickLinksMenuPopup'">
-		    <jsp:attribute name="content">
-		      <div>
-		        <ul class="menuList">
-		          ${menuItems}
-		        </ul>
-		      </div>
-		    </jsp:attribute>
-		    <jsp:body>Actions</jsp:body>
-		  </bs:actionsPopup>
-		</c:if>
-    </div>
-  </jsp:attribute>
-
   <jsp:attribute name="body_include">
     <bs:refreshable containerId="repoRepoInfoContainer" pageUrl="${pageUrl}">
-  	  <h2>Debian Repository : ${repoConfig.repoName}</h2>
 
 	<bs:messages key="repoInfoUpdateResult"/>
 	
       <table class="settings parameterTable" id="webhookTemplateHeader">
         
         <tr>
-          <th style="width:15%;">Template Id:</th><td style="width:35%;">${webhookTemplateBean.name}</td>
-          <th style="width:15%;">Builds Types:</th><td style="width:35%; border:none;">${fn:length(repoConfig.buildTypes)}</td>
+          <th style="width:15%;">Template Id:</th><td style="width:35%;">${webhookTemplateBean.templateId}</td>
+          <th style="width:10%;">Rank:</th><td style="width:10%; border:none;">${webhookTemplateBean.rank}</td>
+          <c:choose>
+		  	<c:when test="${not empty webhookTemplateBean.dateFormat}">
+          	<th style="width:15%;">Date Format:</th><td style="border:none;">${webhookTemplateBean.dateFormat}</td>
+          	</c:when>
+          	<c:otherwise>
+          	<th style="width:15%;">Date Format:</th><td style="border:none;"><i>none</i></td>
+          	</c:otherwise>
+          </c:choose>
         </tr>
         <tr>
-          <th style="width:15%;">Project:</th> <td style="width:35%;"><c:out value="${webhookTemplateBean.project.fullName}"/></td>
-          <th style="width:15%;">Artifact Filters:</th><td style="width:35%; border:none;">${repoStats.totalFilterCount}</td>
+          <th style="width:15%;">Template Name:</th><td style="width:35%;">${webhookTemplateBean.templateName}</td>
+          <th style="width:15%;">Payload Format:</th><td style="width:35%;" colspan=3>webhookTemplateBean.payloadFormat</td>
         </tr>
         <tr>
-          <th style="width:15%;">URL:</th><td style="width:35%;"><a href="<c:out value="${repoStats.repositoryUrl}"/>"><c:out value="${repoStats.repositoryUrl}"/></a></td>
-          <th style="width:15%;">Package Listings:</th><td style="width:35%;">${repoStats.totalPackageCount}</td>
-        </tr>
-        <tr>
-          <th style="width:15%;">&quot;All&quot; Architectures:</th>
-          <td style="width:85%;" colspan="3">${webhookTemplateBean.allArchsAsCSL}</td>
+          <th style="width:15%;">Tooltip Text:</th>
+          <c:choose>
+		  	<c:when test="${not empty webhookTemplateBean.toolTipText}">
+	          <td style="width:85%;" colspan="5">${webhookTemplateBean.toolTipText}</td>
+          	</c:when>
+          	<c:otherwise>
+	          <td style="width:85%;" colspan="5"><i>none</i></td>
+          	</c:otherwise>
+          </c:choose>          
         </tr>
       </table>
       
@@ -105,52 +84,13 @@
                  <tr>
                     <th>Repository Name<l:star/></th>
                     <td>
-                    	<div><input type="text" id="debrepo.name" name="debrepo.name" value="${webhookTemplateBean.name}"/></div>
+                    	<div><input type="text" id="webhookTemplate.templateId" name="webhookTemplate.templateId" value="${webhookTemplateBean.templateId}"/></div>
                     	The Repository name forms part of the URL used to access it. Renaming a repository will change its URL and all Debian servers which use this repository will need their /etc/apt/sources.list file updated.<br>
                         Names MUST be unique across a TeamCity instance and must only contain A-Za-z0-9_- characters.
                         
                     </td>
                  </tr>
-                 <tr>    
-                 	<th>Project<l:star/></th>                
-                    <td>
-                        <div>
-                        	<select id="debrepo.project.id" name="debrepo.project.id">
-                        	<c:forEach items="${sortedProjects}" var="project">
-                        	            <c:choose>
-                							<c:when test="${project.projectId == webhookTemplateBean.project.projectId}">
-                        						<option selected value="${project.projectId}"><c:out value="${project.fullName}"/></option>
-                        					</c:when>
-                        					<c:otherwise>
-                        						<option value="${project.projectId}"><c:out value="${project.fullName}"/></option>
-                        					</c:otherwise>
-                        				</c:choose>
-                        	</c:forEach>
-                        	</select>
-                        </div>
-                        The project this repository belongs to. Users with the Project Administrator Role for this project can edit this repository configuration. 
-                        When adding/editing Artifact Filters, only builds from this project or sub-projects are available to choose from.</p>
-                    </td>
-                </tr>
-                 <tr>    
-                 	<th>&quot;All&quot; Architectures</th>                
-                    <td>
-                        <div>
-                        	<ul class="editArchitectures">
-                        	<c:forEach items="${webhookTemplateBean.allArchitectureList}" var="arch">
-                        		<li>
-                        			<label><input class="architectureCheckbox" type="checkbox" name="debrepo.arch.${arch.arch}" value="${arch.arch}" <c:if test="${arch.enabled}">checked</c:if>>&nbsp;${arch.arch}</label>
-                        		</li>
-                        	</c:forEach>
-                        	</ul>
-                        </div>
-                        When a package's meta-data has an <em>Architecture</em> value of &quot;all&quot;, it will be 
-                        indexed into all of the selected architectures above. A package's Architecture is defined 
-                        inside the DEBIAN/control file inside the package.  
-                    </td>
-                </tr>
             </table>
-            <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
             <input type="hidden" name="action" id="DebRepoaction" value="editRepo"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="editRepoDialogSubmit" label="Edit Repository"/>
@@ -163,41 +103,7 @@
 
 	<br>
  <div class="filterTableContainer">	
-    <%@ include file="editDebianRepositoryViewDetails.jsp" %>
-</div>
-
-<div class="filterDocsContainer">
-	<h2>Artifact Filter Configuration</h2>
-	<div class="filterDocsItem">
-		<h3>Artifact Filename Match (regex)</h3>
-		<p>This is the regular expression used to find matching artifacts to publish. 
-		   The filter will be run against the list of artifacts copied to the TeamCity server when a build completes.</p>
-		<p>If the filter matches, the artifact will be indexed by the Debian Repository using the <code>dist</code>, 
-			<code>component</code> and meta-data extracted from the package file (name, version, architecture)</p>
-		<dl class="regexExample"><dt>Example regex: <code>build/package-name-.+\.deb$</code></dt>
-		   <dd>This will match a file in the build directory with a name beginning with <i>package-name</i> and ending with <i>.deb</i>.</dd>
-		</dl>
-	</div>
-	
-	<div class="filterDocsItem">
-		<h3>Distribution (dist)</h3>
-		<p>This is the <i>dist</i> value under which the matching package will be indexed. This represents a Debian (or Ubuntu and variants) 
-		     distribution. Typical values for <i>dist</i> are the distribution name: eg, <code>jessie</code>, <code>wheezy</code>, <code>squeeze</code> for Debian, or <code>xenial</code>, <code>yakkety</code>, <code>zesty</code> for Ubuntu. Alternatively, a symbolic name can be used: eg, <code>devel</code></p>
-		<p>This can be any name you choose. It forms part of the configuration line added to a machine's <code>/etc/apt/sources.list</code></p>
-		<dl class="regexExample"><dt>Example dist: <code>jessie</code></dt>
-		   <dd>If the filename matches the regex (above), the package will be indexed into the <i>jessie</i> distribution's package list.</dd>
-		</dl>
-	</div>
-	
-	<div class="filterDocsItem">
-		<h3>Component</h3>
-		<p>This is the <i>component</i> value under which the matching package will be indexed. This represents a Debian (or Ubuntu and variants) 
-		     component name. Typical values for <i>component</i> are: main, stable, unstable, testing, experimental</p>
-		<p>This can be any name you choose. It forms part of the configuration line added to a machine's <code>/etc/apt/sources.list</code></p>
-		<dl class="regexExample"><dt>Example component: <code>main</code></dt>
-		   <dd>If the filename matches the regex (above), the package will be indexed into the <i>main</i> component list.</dd>
-		</dl>
-	</div>
+    <%@ include file="templateEditListBuildEventTemplates.jsp" %>
 </div>
 
     <bs:dialog dialogId="repoEditFilterDialog"
@@ -245,7 +151,6 @@
             <input type="hidden" id="debrepofilter.id" name="debrepofilter.id"/>
             <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
             <input type="hidden" name="action" id="DebRepoaction" value="editFilter"/>
-            <input type="hidden" name="projectId" id="projectId" value="${webhookTemplateBean.project.projectId}"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="repoEditFilterDialogSubmit" label="Save"/>
                 <forms:cancel onclick="DebRepoFilterPlugin.RepoEditFilterDialog.close()"/>

@@ -1,0 +1,69 @@
+<%@ include file="/include.jsp" %>
+
+
+<bs:refreshable containerId="defaultTemplateContainer" pageUrl="${pageUrl}">
+  
+	  <table class="settings templateTable">
+        <tr class="templateHeading"><td colspan=6 class="templateTableTemplateTitle">Default Template (optional)</td></tr>
+        <c:set var="defaultTemplateEventNum" value="${fn:length(webhookTemplateBean.defaultTemplateStates)}"/>
+      	<c:choose>
+		  <c:when test="${empty webhookTemplateBean.defaultTemplateItem}">
+	      	<tr><td colspan="4">
+	      		There is no default template defined. This template will only support build events for which there is a Build Event Template defined below.
+	      	</td>
+      			<td class="buildTemplateAction"><a id="addDefaultTempalte" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">create</a></td>
+	      	</tr>     
+		  </c:when>
+		  <c:when test="${defaultTemplateEventNum == 0}">
+	      	<tr><td>
+	      		The default template is defined, but no build events will use it. All events are associated with a Build Event Template defined below.
+	      	</td>
+		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
+		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+		      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
+		      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
+	      	</tr>     
+		  </c:when>
+		  <c:otherwise>
+	      	<tr><td><ul class="templateBuildStates">
+		      	<c:forEach items="${webhookTemplateBean.defaultTemplateStates}" var="buildState">
+		      		<li>${buildState.shortDescription}</li>
+		      	</c:forEach>
+		      	</ul></td>
+		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
+		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+		      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
+		      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
+	      	</tr>   		  
+	      </c:otherwise>
+		</c:choose>
+      	<tr class="blankline"><td colspan=6>
+ 
+	  <p>The default template is used for all build events, unless a more specific Build Event Template is specified below.</p> 
+	  <p>If no Default Template is defined above, then only the build events with a Build Event Template are selectable in the WebHook UI.</p> 
+	  </div>   
+     
+      <bs:messages key="defaultTemplateUpdateResult"/>
+      
+      <bs:messages key="buildEventTemplateUpdateResult"/>
+      
+      </td></tr>
+      <tr class="templateHeading"><td colspan=6 class="templateTableTemplateTitle">Build Event Templates</td></tr>
+      <c:set var="buildEventTemplateNum" value="${fn:length(webhookTemplateBean.buildEventTemplates)}"/>
+      <c:forEach items="${webhookTemplateBean.buildEventTemplates}" var="buildEventTemplate">
+      	<tr><td><ul class="templateBuildStates">
+	      	<c:forEach items="${buildEventTemplate.buildStates}" var="buildState">
+	      		<li>${buildState.shortDescription}</li>
+	      	</c:forEach>
+	      	</ul></td>
+	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
+	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+	      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
+	      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
+      	</tr>     
+      </c:forEach>
+      	<tr><td colspan=6><a href="#" onclick="DebRepoFilterPlugin.addFilter({ uuid: '${repoConfig.uuid}', name: '${debRepoBean.name}', id: '_new', build: '${buildTypeId}', regex: '', dist:'', component:'' }); return false">Add Build Event Template</a></td></tr>
+      	<tr class="blankline"><td colspan=5>&nbsp;</td></tr>
+      
+      </table>
+</bs:refreshable>

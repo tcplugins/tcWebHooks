@@ -3,15 +3,15 @@ package webhook.teamcity;
 public enum BuildStateEnum {
     BUILD_STARTED 			("buildStarted",			"started",					"Build Started"),                
     CHANGES_LOADED 			("changesLoaded",			"loaded changes",			"Changes Loaded"),                
-    BUILD_FINISHED 			("buildFinished", 			"finished",					"Build Finished"),
     //BUILD_CHANGED_STATUS	("statusChanged", 			"changed status"),
+    BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted"),
     BEFORE_BUILD_FINISHED	("beforeBuildFinish", 		"nearly finished",			"Build Almost Completed"),
-	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",	"Build Responsibility Changed"),
-	BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted"),
+	BUILD_FINISHED 			("buildFinished", 			"finished",					"Build Finished"),
 	BUILD_SUCCESSFUL		("buildSuccessful", 		"completed successfully",   "Build Successful"),
 	BUILD_FAILED			("buildFailed", 			"failed", 					"Build Failed"),
 	BUILD_FIXED				("buildFixed", 				"been fixed",				"Build Fixed"),
-	BUILD_BROKEN			("buildBroken", 			"broken",					"Build Broken");
+	BUILD_BROKEN			("buildBroken", 			"broken",					"Build Broken"),
+	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",	"Build Responsibility Changed");
     
     private final String shortName;
     private final String descriptionSuffix;
@@ -63,8 +63,12 @@ public enum BuildStateEnum {
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @return an array of just the build states that are notifiable
+	 */
 	public static BuildStateEnum[] getNotifyStates(){
-		final BuildStateEnum[] notifyStates = {BUILD_STARTED, CHANGES_LOADED, BEFORE_BUILD_FINISHED, BUILD_INTERRUPTED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED };
+		final BuildStateEnum[] notifyStates = {BUILD_STARTED, CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED };
 		return notifyStates;
 	}
 }
