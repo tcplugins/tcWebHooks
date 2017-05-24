@@ -19,7 +19,7 @@
 	      		The default template is defined, but no build events will use it. All events are associated with a Build Event Template defined below.
 	      	</td>
 		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
-		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 		      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 		      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
 	      	</tr>     
@@ -31,7 +31,7 @@
 		      	</c:forEach>
 		      	</ul></td>
 		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
-		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+		      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 		      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 		      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
 	      	</tr>   		  
@@ -57,7 +57,7 @@
 	      	</c:forEach>
 	      	</ul></td>
 	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
-	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'templateItem/id:${buildEventTemplate.webHookTemplateItem.id}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 	      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 	      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
       	</tr>     

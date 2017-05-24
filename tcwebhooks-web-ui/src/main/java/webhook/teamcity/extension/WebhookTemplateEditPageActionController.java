@@ -24,7 +24,7 @@ public class WebhookTemplateEditPageActionController extends BaseAjaxActionContr
   public WebhookTemplateEditPageActionController(@NotNull final PluginDescriptor pluginDescriptor,
                                         	   @NotNull final WebControllerManager controllerManager) {
     super(controllerManager);
-    controllerManager.registerController("/admin/manageWebhookTemplate.html", this);
+    controllerManager.registerController("/admin/webhookTemplateAction.html", this);
   }
     
 }

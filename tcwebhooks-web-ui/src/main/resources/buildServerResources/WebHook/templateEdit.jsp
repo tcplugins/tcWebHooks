@@ -24,7 +24,9 @@
       ${teamcityPluginResourcesPath}WebHook/css/styles.css
     </bs:linkCSS>
     <bs:linkScript>
-      ${teamcityPluginResourcesPath}WebHook/editWebhookTemplate.js
+      ${teamcityPluginResourcesPath}WebHook/js/editWebhookTemplate.js
+      ${teamcityPluginResourcesPath}WebHook/js/ace-editor/src-min-noconflict/ace.js
+      ${teamcityPluginResourcesPath}WebHook/js/ace-editor/src-min-noconflict/ext-language_tools.js
     </bs:linkScript>
     <script type="text/javascript">
       BS.Navigation.items = [
@@ -71,30 +73,26 @@
         </tr>
       </table>
       
-          <bs:dialog dialogId="editRepoDialog"
-               dialogClass="editRepoDialog"
-               title="Edit Debian Repository"
-               closeCommand="DebRepoPlugin.EditRepoDialog.close()">
-        <forms:multipartForm id="editRepoForm"
-                             action="/admin/debianRepositoryAction.html"
+          <bs:dialog dialogId="editTemplateDialog"
+               dialogClass="editTemplateDialog"
+               title="Edit Build Event Template"
+               closeCommand="WebHooksPlugin.TemplateEditBuildEventDialog.close()">
+        <forms:multipartForm id="editTemplateForm"
+                             action="/admin/manageWebhookTemplate.html"
                              targetIframe="hidden-iframe"
-                             onsubmit="return DebRepoPlugin.EditRepoDialog.doPost();">
+                             onsubmit="return WebHooksPlugin.TemplateEditBuildEventDialog.doPost();">
 			<div id="ajaxRepoEditResult"></div>
-            <table class="runnerFormTable">
+            <table class="templateDialogFormTable">
                  <tr>
-                    <th>Repository Name<l:star/></th>
-                    <td>
-                    	<div><input type="text" id="webhookTemplate.templateId" name="webhookTemplate.templateId" value="${webhookTemplateBean.templateId}"/></div>
-                    	The Repository name forms part of the URL used to access it. Renaming a repository will change its URL and all Debian servers which use this repository will need their /etc/apt/sources.list file updated.<br>
-                        Names MUST be unique across a TeamCity instance and must only contain A-Za-z0-9_- characters.
-                        
+ 					<td>
+						<pre id="editor"></pre>                        
                     </td>
                  </tr>
             </table>
-            <input type="hidden" name="action" id="DebRepoaction" value="editRepo"/>
+            <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplate"/>
             <div class="popupSaveButtonsBlock">
-                <forms:submit id="editRepoDialogSubmit" label="Edit Repository"/>
-                <forms:cancel onclick="DebRepoPlugin.EditRepoDialog.close()"/>
+                <forms:submit id="editTemplateDialogSubmit" label="Save Template"/>
+                <forms:cancel onclick="WebHooksPlugin.TemplateEditBuildEventDialog.close()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>
@@ -105,6 +103,20 @@
  <div class="filterTableContainer">	
     <%@ include file="templateEditListBuildEventTemplates.jsp" %>
 </div>
+
+<script>
+    // trigger extension
+    ace.require("ace/ext/language_tools");
+    var editor = ace.edit("editor");
+    editor.session.setMode("ace/mode/json");
+    editor.setTheme("ace/theme/tomorrow");
+    // enable autocompletion and snippets
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: false
+    });
+</script>
 
     <bs:dialog dialogId="repoEditFilterDialog"
                dialogClass="repoEditFilterDialog"

@@ -360,3 +360,31 @@ ul.templateBuildStates li:after {
 ul.templateBuildStates li:last-child:after {
     content: "";
 }
+
+/*
+#editor { 
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}*/
+
+#editor {
+	width: 40em;
+	height: 24em;
+}
+
+div#editTemplateDialog {
+	width: 80%;
+	min-width: 80em;
+	max-width: 1000px;
+}
+
+table.templateDialogFormTable {
+	width: 100%;
+    min-width: 48em;
+    margin-bottom: 6px;
+    table-layout: fixed;
+}
