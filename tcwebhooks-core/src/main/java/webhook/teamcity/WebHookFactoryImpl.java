@@ -44,6 +44,9 @@ public class WebHookFactoryImpl implements WebHookFactory {
 		}
 		
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));
+		webHook.setConnectionTimeOut(myMainSettings.getHttpConnectionTimeout());
+		webHook.setResponseTimeOut(myMainSettings.getHttpResponseTimeout());
+
 		return webHook;
 	}
 
