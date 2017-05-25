@@ -149,7 +149,36 @@ public class TemplateRequest {
   @GET
   @Path("/{templateLocator}/fullConfig")
   @Produces({"application/xml", "application/json"})
-  public WebHookTemplateConfig serveFullConfigTemplateFor(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
+  public WebHookTemplateConfig serveFullConfigTemplate(@PathParam("templateLocator") String templateLocator) {
+	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+  }
+  
+  @PUT
+  @Path("/{templateLocator}/fullConfig")
+  @Produces({"application/xml", "application/json"})
+  @Consumes({"application/xml", "application/json"})
+  public WebHookTemplateConfig updateFullConfigTemplate(@PathParam("templateLocator") String templateLocator,  WebHookTemplateConfig rawConfig) {
+	  WebHookTemplateConfig webHookTemplateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+	  if (webHookTemplateConfig == null){
+		  throw new NotFoundException("No template found by that name/id");
+	  }
+	  // The above will throw errors if the template is not found, so let's attempt to update it.
+	  if (webHookTemplateConfig.getName().equals(rawConfig.getName())) {
+		  myTemplateManager.registerTemplateFormatFromXmlConfig(rawConfig);
+		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  	return myTemplateManager.getTemplateConfig(rawConfig.getName());
+		  } else {
+		   	throw new OperationException("There was an error saving your template. Sorry.");
+		  }
+	  }
+	  throw new OperationException("The template name in the payload did not match the template name in the URL.");
+  }
+  
+  @PUT
+  @Path("/{templateLocator}/fullConfig")
+  @Produces({"text/plain"})
+  @Consumes({"text/plain"})
+  public WebHookTemplateConfig updateFullConfigTemplateInPlainText(@PathParam("templateLocator") String templateLocator,  String rawConfig) {
 	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
   }
 
