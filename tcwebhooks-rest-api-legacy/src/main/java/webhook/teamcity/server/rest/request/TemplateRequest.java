@@ -42,6 +42,7 @@ import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
+import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
@@ -252,14 +253,15 @@ public class TemplateRequest {
   @GET
   @Path("/{templateLocator}/templateItem/{templateItemId}")
   @Produces({"application/xml", "application/json"})
-  public WebHookTemplateItem serveTemplateItem(@PathParam("templateLocator") String templateLocator,
+  public TemplateItem serveTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  											 @PathParam("templateItemId") String templateItemId,
 		  											 @QueryParam("fields") String fields) {
+	  WebHookTemplateConfigWrapper templateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template == null){
 		  throw new NotFoundException("No template item found by that name/id");
 	  }
-	  return template;
+	  return new TemplateItem(templateConfig.getEntity(), template, template.getId().toString(), new Fields(fields), myBeanContext);
   }
 
   /**
