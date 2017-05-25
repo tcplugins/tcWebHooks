@@ -69,7 +69,7 @@ public class Template {
 	
 	@XmlType @Getter @Setter @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateText extends BranchTemplateText {
-		@XmlAttribute(name = "use-for-branch-template")
+		@XmlAttribute
 		public Boolean useTemplateTextForBranch = false;
 		
 		TemplateText(){
@@ -81,6 +81,7 @@ public class Template {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultTemplateTextHref(webHookTemplateEntity));
 			if (webHookTemplateEntity.getDefaultTemplate() != null){
 				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateEntity.getDefaultTemplate().isUseTemplateTextForBranch());
+				this.content = ValueWithDefault.decideDefault(fields.isIncluded("content", false, false), webHookTemplateEntity.getDefaultTemplate().getTemplateContent());
 			}
 		}
 		
@@ -89,6 +90,7 @@ public class Template {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateItemTextHref(webHookTemplateEntity, webHookTemplateItem));
 			if (webHookTemplateItem.getTemplateText() != null){
 				useTemplateTextForBranch = ValueWithDefault.decideDefault(fields.isIncluded("useTemplateTextForBranch"), webHookTemplateItem.getTemplateText().isUseTemplateTextForBranch());
+				this.content = ValueWithDefault.decideDefault(fields.isIncluded("content", false, false), webHookTemplateItem.getTemplateText().getTemplateContent());
 			}
 		}
 		
@@ -104,7 +106,11 @@ public class Template {
 		
 		@XmlAttribute
 		public String webUrl;
+		
+		@XmlAttribute
+		public String content;
 
+		
 		public BranchTemplateText() {
 			// empty constructor for JAXB
 		}
@@ -112,15 +118,18 @@ public class Template {
 		BranchTemplateText(WebHookTemplateConfig webHookTemplateEntity, String id, Fields fields, BeanContext beanContext) {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultBranchTemplateTextHref(webHookTemplateEntity));
 			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookDefaultBranchTemplateTextUrl(webHookTemplateEntity));
+			this.content = ValueWithDefault.decideDefault(fields.isIncluded("content",false, false), webHookTemplateEntity.getDefaultBranchTemplate().getTemplateContent());
 		}
 		
 		BranchTemplateText(WebHookTemplateConfig webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem, String id, Fields fields, BeanContext beanContext) {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateItemBranchTextHref(webHookTemplateEntity, webHookTemplateItem));
 			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl"), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookBranchTemplateTextUrl(webHookTemplateEntity, webHookTemplateItem));
+			this.content = ValueWithDefault.decideDefault(fields.isIncluded("content",false, false), webHookTemplateItem.getBranchTemplateText().getTemplateContent());
 		}
 		
 	}
 
+	@XmlRootElement(name = "templateItem")
 	@XmlType(name = "templateItem", propOrder = { "id", "enabled", "href", "templateText", "branchTemplateText", "states"})
 	@Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateItem {

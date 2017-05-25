@@ -149,10 +149,10 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	
-    	WebHookTemplateConfig.WebHookTemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).get(WebHookTemplateConfig.WebHookTemplateItem.class);
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1").queryParam("fields","id,content").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	for (WebHookTemplateItem templateItem : elastic.getAsEntity().getTemplates().getTemplates()) {
-    		if (responseMsg.getId() == templateItem.getId()){
-    			assertEquals(responseMsg.getTemplateText().getTemplateContent(), templateItem.getTemplateText().getTemplateContent());
+    		if (Integer.valueOf(responseMsg.id) == templateItem.getId()){
+    			assertEquals(templateItem.getTemplateText().getTemplateContent(), responseMsg.getTemplateText().content);
     		}
     	}
     	prettyPrint(responseMsg);
