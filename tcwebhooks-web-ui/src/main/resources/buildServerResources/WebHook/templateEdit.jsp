@@ -37,6 +37,42 @@
     </script>
   </jsp:attribute>
 
+  <jsp:attribute name="quickLinks_include">
+    <div class="toolbarItem">
+	    <c:set var="menuItems">
+		    <authz:authorize allPermissions="CHANGE_SERVER_SETTINGS">
+		      <jsp:body>
+		        <l:li>
+			      <a href="#" title="Edit Template Details" onclick="return WebHooksPlugin.editTemplateDetails('${webhookTemplateBean.templateId}'); return false">Edit template details...</a>
+		        </l:li>
+		        <l:li>
+			      <a href="#" title="Make a copy of this Template" onclick="return WebHooksPlugin.copyTemplate('${webhookTemplateBean.templateId}'); return false">Copy template...</a>
+		        </l:li>
+		        <l:li>
+			      <a href="#" title="Disable Template" onclick="WebHooksPlugin.disableTemplate('${webhookTemplateBean.templateId}'); return false">Disable template...</a>
+		        </l:li>
+		        <l:li>
+			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate('${webhookTemplateBean.templateId}'); return false">Delete template...</a>
+		        </l:li>
+		      </jsp:body>
+		    </authz:authorize>
+		</c:set>
+		<c:if test="${not empty fn:trim(menuItems)}">
+		  <bs:actionsPopup controlId="prjActions${projectExternalId}"
+		                   popup_options="shift: {x: -150, y: 20}, className: 'quickLinksMenuPopup'">
+		    <jsp:attribute name="content">
+		      <div>
+		        <ul class="menuList">
+		          ${menuItems}
+		        </ul>
+		      </div>
+		    </jsp:attribute>
+		    <jsp:body>Actions</jsp:body>
+		  </bs:actionsPopup>
+		</c:if>
+    </div>
+  </jsp:attribute>
+
   <jsp:attribute name="body_include">
     <bs:refreshable containerId="repoRepoInfoContainer" pageUrl="${pageUrl}">
 
@@ -82,13 +118,39 @@
                              targetIframe="hidden-iframe"
                              onsubmit="return WebHooksPlugin.TemplateEditBuildEventDialog.doPost();">
 			<div id="ajaxRepoEditResult"></div>
+			<div id="templateVariables"><h2>Available Variables</h2>
+				Click on a variable to insert it into your template.
+			</div>
+			<div id="templateEditor">
+			<h2 id="templateHeading"></h2>
             <table class="templateDialogFormTable">
+            	<tr><td>Build Events:</td>
+            		<td class="buildStarted" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildStarted" name="BuildStarted" type=checkbox /> Build Started</label></td>
+            		<td class="changesLoaded" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="changesLoaded" name="ChangesLoaded" type=checkbox /> Changes Loaded</label></td>
+            	</tr>
+            	<tr><td></td>
+            		<td class="buildInterrupted" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildInterrupted" name="BuildInterrupted" type=checkbox /> Build Interrupted</label></td>
+            		<td class="responsibilityChanged" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox /> Responsibility Changed</label></td>
+            	</tr>
+            	<tr><td></td>
+            		<td class="buildSuccessful" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildSuccessful" name="BuildSuccessful" type=checkbox /> Build Successful</label></td>
+            		<td class="buildFixed" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildFixed" name="BuildFixed" type=checkbox /> Build Fixed</label></td>
+            	</tr>
+            	<tr><td></td>
+            		<td class="buildFailed" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildFailed" name="BuildFailed" type=checkbox /> Build Failed</label></td>
+            		<td class="buildBroken" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildBroken" name="BuildBroken" type=checkbox /> Build Broken</label></td>
+            	</tr>
                  <tr>
- 					<td>
+ 					<td colspan="3">
+					  <ul class='etabs'>
+						   <li class='tab' id="nonBranchPaneTab"><a href="#nonBranchPane" class="active">Non-Branch Template</a></li>
+						   <li class='tab' id="branchPaneTab"><a href="#branchPane">Branch Template</a></li>
+					  </ul>
 						<pre id="editor"></pre>                        
                     </td>
                  </tr>
             </table>
+            </div>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplate"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="editTemplateDialogSubmit" label="Save Template"/>

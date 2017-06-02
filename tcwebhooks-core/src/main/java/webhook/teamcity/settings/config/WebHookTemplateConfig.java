@@ -3,12 +3,16 @@ package webhook.teamcity.settings.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@XmlRootElement 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Data @NoArgsConstructor
 public class WebHookTemplateConfig {
 
@@ -29,6 +33,8 @@ public class WebHookTemplateConfig {
 		this.enabled = templateEnabled;
 	}
 
+	@XmlRootElement 
+	@XmlAccessorType(XmlAccessType.FIELD)
 	@Data @AllArgsConstructor @NoArgsConstructor
 	public static class WebHookTemplateText {
 		boolean useTemplateTextForBranch;
@@ -39,24 +45,32 @@ public class WebHookTemplateConfig {
 		}
 	}
 	
+	@XmlRootElement 
+	@XmlAccessorType(XmlAccessType.FIELD)
 	@Data @AllArgsConstructor @NoArgsConstructor
 	public static class WebHookTemplateBranchText {
 		String templateContent;
 	}
 
+	@XmlRootElement 
+	@XmlAccessorType(XmlAccessType.FIELD)
 	@Data @AllArgsConstructor @NoArgsConstructor
 	public static class WebHookTemplateItems {
 		Integer maxId;
 		List<WebHookTemplateItem> templates = new ArrayList<>();
 	}
 	
+	@XmlRootElement 
+	@XmlAccessorType(XmlAccessType.FIELD)
 	@Data @AllArgsConstructor @NoArgsConstructor
 	public static class WebHookTemplateFormat {
 		String name;
 		boolean enabled;
 	}
 	
-	@Data @AllArgsConstructor @NoArgsConstructor @XmlRootElement
+	@XmlRootElement 
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@Data @AllArgsConstructor @NoArgsConstructor
 	public static class WebHookTemplateItem {
 		WebHookTemplateText templateText;
 		WebHookTemplateBranchText branchTemplateText;
@@ -65,6 +79,8 @@ public class WebHookTemplateConfig {
 		List<WebHookTemplateState> states = new ArrayList<>();
 	}
 	
+	@XmlRootElement 
+	@XmlAccessorType(XmlAccessType.FIELD)
 	@Data @AllArgsConstructor @NoArgsConstructor
 	public static class WebHookTemplateState {
 		String type;

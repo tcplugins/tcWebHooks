@@ -372,8 +372,11 @@ ul.templateBuildStates li:last-child:after {
 }*/
 
 #editor {
-	width: 40em;
-	height: 24em;
+	width: 98%;
+	height: 28em;
+	margin:0px;
+	border-top: none;
+	border: 1px #ccc solid;
 }
 
 div#editTemplateDialog {
@@ -388,3 +391,34 @@ table.templateDialogFormTable {
     margin-bottom: 6px;
     table-layout: fixed;
 }
+
+table.templateDialogFormTable label {
+	cursor: pointer;
+}
+
+table.templateDialogFormTable label.checkboxLooksDisabled {
+	color: #999;
+	cursor: not-allowed;
+}
+
+div#templateVariables {
+	float: right;
+	width: 30%;
+}
+
+div#templateEditor {
+	width: 70%;
+}
+
+div#templateEditor ul.etabs {
+	pading: 0px;
+	margin-left: 3em;
+	margin-top: 1.25em;
+}
+
+div#templateEditor ul.etabs li {
+	border-bottom: solid 1px #999;
+}
+
+div#templateEditor .etabs .tab.active {
+	border-bottom: none;

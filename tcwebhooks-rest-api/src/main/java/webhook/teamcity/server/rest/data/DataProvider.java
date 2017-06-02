@@ -45,7 +45,8 @@ public class DataProvider {
 		List<WebHookTemplateConfigWrapper> templates = new ArrayList<>();
 		for (WebHookTemplateConfig template : this.myTemplateManager.getRegisteredTemplateConfigs()){
 			templates.add(new WebHookTemplateConfigWrapper(template, 
-														   this.myTemplateManager.getTemplateState(template.getName())
+														   this.myTemplateManager.getTemplateState(template.getName()),
+														   WebHookTemplateStates.build(template)
 														  )
 						 );
 		}

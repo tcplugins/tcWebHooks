@@ -4,6 +4,7 @@ import jetbrains.buildServer.RootUrlHolder;
 
 import org.jetbrains.annotations.NotNull;
 
+import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
@@ -47,7 +48,7 @@ public class WebHookWebLinks {
 	}
 
 	@NotNull
-	public String getWebHookBranchTemplateTextUrl(WebHookTemplateConfig webHookTemplateEntity, WebHookTemplateItem webHookTemplateItem) {
+	public String getWebHookBranchTemplateTextUrl(WebHookTemplateConfig webHookTemplateEntity, WebHookTemplateItemRest webHookTemplateItem) {
 		return makeWebHookTemplateUrl(webHookTemplateEntity);
 	}
 

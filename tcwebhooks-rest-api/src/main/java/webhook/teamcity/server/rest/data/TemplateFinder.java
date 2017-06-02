@@ -9,6 +9,7 @@ import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
@@ -48,7 +49,9 @@ public class TemplateFinder {
 			final String singleValue = locator.getSingleValue();
 			template = myTemplateManager.getTemplateConfig(singleValue);
 			if (template != null) {
-				return new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(template.getName()));
+				return new WebHookTemplateConfigWrapper(template, 
+														myTemplateManager.getTemplateState(template.getName()), 
+														WebHookTemplateStates.build(template));
 			}
 			throw new NotFoundException(
 					"No template found by name '"
@@ -60,7 +63,10 @@ public class TemplateFinder {
 			final String templateId = locator.getSingleDimensionValue("id");
 			template = myTemplateManager.getTemplateConfig(templateId);
 			if (template != null) {
-				return new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(template.getName()));
+				return new WebHookTemplateConfigWrapper(template, 
+														myTemplateManager.getTemplateState(template.getName()),
+														WebHookTemplateStates.build(template)
+														);
 			}
 			throw new NotFoundException(
 					"No template found by id '"
@@ -72,38 +78,24 @@ public class TemplateFinder {
 			final String templateName = locator.getSingleDimensionValue("name");
 			template = myTemplateManager.getTemplateConfig(templateName);
 			if (template != null) {
-				return new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(template.getName()));
+				return new WebHookTemplateConfigWrapper(template, 
+														myTemplateManager.getTemplateState(template.getName()),
+														WebHookTemplateStates.build(template)
+														);
 			}
 			throw new NotFoundException(
 					"No template found by name '"
-							+ templateName + "'.");			
+							+ templateName + "'.");	
 			
-			//TODO: Add support for returning more than one template.
-			
-/*			final List<WebHookTemplate> projectsByName = findProjectsByName(null,
-					singleValue);
-			if (projectsByName.size() == 1) {
-				project = projectsByName.get(0);
-				if (project != null) {
-					return project;
-				}
-			}
-			project = myProjectManager.findProjectById(singleValue);
-			if (project != null) {
-				return project;
-			}*/
-/*			throw new NotFoundException(
-					"No template found by name id '"
-							+ singleValue + "'.");
-*/		}
+		}
 		
 		throw new BadRequestException("Sorry: Searching for multiple template is not supported.");
 
 	}
 	
-	public WebHookTemplateItem findTemplateByIdAndTemplateContentById(String templateLocator, String templateContentLocator) {
+	public WebHookTemplateItemConfigWrapper findTemplateByIdAndTemplateContentById(String templateLocator, String templateContentLocator) {
 		
-		WebHookTemplateConfig entity =  findTemplateById(templateLocator).getEntity();
+		WebHookTemplateConfigWrapper templateConfigWrapper =  findTemplateById(templateLocator);
 		
 		if (StringUtil.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");
@@ -113,34 +105,48 @@ public class TemplateFinder {
 				Locator.LOCATOR_SINGLE_VALUE_UNUSED_NAME);
 
 		if (locator.isSingleValue()) {
-			// no dimensions found, assume it's a name or internal id or
-			// external id
-			
+			// no dimensions found, assume it's a name or id without "id:"
 			@NotNull
-			final String singleValue = locator.getSingleValue();
-			for (WebHookTemplateItem template : entity.getTemplates().getTemplates()){
-				if (template.getId().intValue() == Integer.valueOf(singleValue)){
-					return template;
-				}
-			}
-			throw new NotFoundException(
-					"No template found by id '"
-							+ singleValue + "'.");
-			
+			final String templateId = locator.getSingleValue();
+			return buildWebHookTemplateItemConfigWrapper(templateConfigWrapper, templateId);
 		} else if (locator.getSingleDimensionValue("id") != null){
 			@NotNull
 			final String templateId = locator.getSingleDimensionValue("id");
-			for (WebHookTemplateItem template : entity.getTemplates().getTemplates()){
-				if (template.getId().intValue() == Integer.valueOf(templateId)){
-					return template;
-				}
-			}
-			throw new NotFoundException(
-					"No template found by id '"
-							+ templateId + "'.");
+			return buildWebHookTemplateItemConfigWrapper(templateConfigWrapper, templateId);
 		} else {
 			throw new BadRequestException("Sorry: Searching for multiple template is not supported.");
 		}
 		
+	}
+
+	private WebHookTemplateItemConfigWrapper buildWebHookTemplateItemConfigWrapper(
+			WebHookTemplateConfigWrapper templateConfigWrapper, final String templateId) {
+		if ("defaultTemplate".equals(templateId)){
+			if (templateConfigWrapper.getTemplateConfig().getDefaultTemplate() != null) {
+				WebHookTemplateConfig config = templateConfigWrapper.getTemplateConfig();
+				WebHookTemplateItemRest defaultTemplateItem = new WebHookTemplateItemRest(
+																	config.getDefaultTemplate(), 
+																	config.getDefaultBranchTemplate(), 
+																	config.isEnabled(), 
+																	templateId, 
+																	null
+																);
+				return new WebHookTemplateItemConfigWrapper(defaultTemplateItem, templateConfigWrapper.getBuildStatesWithTemplate());
+			} else {
+				throw new NotFoundException(
+						"This template does not have a default template '"
+								+ templateId + "'.");
+			}
+		}
+		
+		
+		for (WebHookTemplateItem template : templateConfigWrapper.getTemplateConfig().getTemplates().getTemplates()){
+			if (template.getId().intValue() == Integer.valueOf(templateId)){
+				return new WebHookTemplateItemConfigWrapper(template, templateConfigWrapper.getBuildStatesWithTemplate());
+			}
+		}
+		throw new NotFoundException(
+				"No templateItem found by id '"
+						+ templateId + "'.");
 	}
 }

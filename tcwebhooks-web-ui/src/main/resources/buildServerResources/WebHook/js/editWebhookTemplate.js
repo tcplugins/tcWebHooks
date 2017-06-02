@@ -217,6 +217,61 @@ DebRepoPlugin = {
     }))
 };
 
+var myJson;
+
+WebHooksData = {
+		getWebHookTemplateData: function (templateName, buildTemplateId) {
+			this.disableCheckboxes();
+			this.clearEditor();
+			this.retrieveTemplateData(templateName, buildTemplateId);
+		},
+		disableCheckboxes: function () {
+			$j("#editTemplateForm input.buildState").prop("disabled", true);
+			$j("#editTemplateForm label").addClass("checkboxLooksDisabled");
+		},
+		enableCheckboxes: function () {
+			$j("#editTemplateForm input.buildState").prop("disabled", false);
+		},
+		clearEditor: function () {
+			var editor = ace.edit("editor");
+			editor.setValue("Loading...");
+		},
+		retrieveTemplateData: function (templateName, buildTemplateId) {
+    		$j.ajax ({
+    		    //url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + data.templateName + '/' + data.templateNumber +'/templateContent',
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName,content',
+    		    //http://192.168.1.72:8111/app/rest/webhooks/templates/id:flowdock/templateItem/id:3?fields=useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName
+    		    type: "GET",
+    		    headers : {
+    		        'Accept' : 'application/json'
+    		    },
+    		    success: function (response) {
+    				myJson = response;
+    				WebHooksData.handleSuccess();
+    		    }
+    		});
+		}, 
+		handleSuccess: function () {
+			$j("#templateHeading").html(myJson.parentTemplateDescription);
+			this.updateCheckboxes();
+			this.updateEditor();
+			//this.enableCheckboxes();
+		},
+		updateCheckboxes: function () {
+    		$j(myJson.state).each(function() {
+    			console.log(this.type + " :: "+ this.enabled);
+    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
+    			if (this.editable) {
+    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+    			}
+    		});
+		},
+		updateEditor: function () {
+	    	console.log(myJson.templateText.content);
+			var editor = ace.edit("editor");
+			editor.setValue(myJson.templateText.content);
+		}
+};
 
 WebHooksPlugin = {
     editBuildEventTemplate: function(data) {
@@ -248,9 +303,10 @@ WebHooksPlugin = {
     				editor.setValue(transport);
     			}
     		});*/
-    		
+    		/*
     		$j.ajax ({
     		    url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + data.templateName + '/' + data.templateNumber +'/templateContent',
+    		    //http://192.168.1.72:8111/app/rest/webhooks/templates/id:flowdock/templateItem/id:3?fields=useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName
     		    type: "GET",
     		    headers : {
     		        'accepts' : 'application/json'
@@ -260,7 +316,9 @@ WebHooksPlugin = {
     				var editor = ace.edit("editor");
     				editor.setValue(response);
     		    }
-    		});
+    		});*/
+        	
+        	WebHooksData.getWebHookTemplateData(data.templateName, data.templateNumber);
     		
             $j("input[id='DebRepoaction']").val(action);
             $j(".dialogTitle").html(title);
