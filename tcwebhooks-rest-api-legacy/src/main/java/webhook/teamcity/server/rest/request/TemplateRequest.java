@@ -23,6 +23,7 @@ import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.server.rest.model.Properties;
 import jetbrains.buildServer.server.rest.model.Property;
 import jetbrains.buildServer.server.rest.util.BuildTypeOrTemplate;
+import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
@@ -39,6 +40,9 @@ import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
+import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper;
+import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
+import webhook.teamcity.server.rest.data.WebHookTemplateStates;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
@@ -82,35 +86,45 @@ public class TemplateRequest {
   public static String getTemplateHref(WebHookTemplateConfig template) {
     return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template);
   }
-
+  
   @NotNull
   public static String getDefaultTemplateTextHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/defaultTemplate/templateContent" ;
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/defaultTemplate/templateContent" ;
   }
   
   @NotNull
   public static String getDefaultBranchTemplateTextHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/defaultBranchTemplate/templateContent" ;
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/defaultTemplate/branchTemplateContent" ;
   }
   
   @NotNull
-  public static String getTemplateItemHref(WebHookTemplateConfig template, WebHookTemplateItem webHookTemplateItem) {
+  public static String getTemplateDefaultItemHref(WebHookTemplateConfig template) {
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/defaultTemplate";
+  }
+  
+  @NotNull
+  public static String getTemplateItemHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
 	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString());
   }
   
   @NotNull
-  public static String getTemplateItemTextHref(WebHookTemplateConfig template, WebHookTemplateItem webHookTemplateItem) {
+  public static String getTemplateItemTextHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
 	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) + "/templateContent" ;
   }
   
   @NotNull
-  public static String getTemplateItemBranchTextHref(WebHookTemplateConfig template, WebHookTemplateItem webHookTemplateItem) {
+  public static String getTemplateItemBranchTextHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
 	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId().toString()) +  "/branchTemplateContent" ;
   }
  
   @NotNull  
-  public static String getTemplateItemStateHref(WebHookTemplateConfig template,	WebHookTemplateItem templateItem, String state) {
-		return getTemplateItemHref(template, templateItem) + "/buildState/" + state;
+  public static String getTemplateStateHref(WebHookTemplateConfig template,	String state) {
+		return getTemplateDefaultItemHref(template) + "/buildState/" + state;
+  }
+  
+  @NotNull  
+  public static String getTemplateItemStateHref(WebHookTemplateConfig template,	WebHookTemplateItemRest templateItem, String state) {
+	  return getTemplateItemHref(template, templateItem) + "/buildState/" + state;
   }
   
   @GET
@@ -140,7 +154,7 @@ public class TemplateRequest {
     }
     myTemplateManager.registerTemplateFormatFromXmlConfig(template);
     if (myTemplateManager.persistAllXmlConfigTemplates()){
-    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(templateDescription.getName())), Fields.LONG, myBeanContext);
+    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(templateDescription.getName()), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
     } else {
     	throw new OperationException("There was an error saving your template. Sorry.");
     }
@@ -150,7 +164,7 @@ public class TemplateRequest {
   @Path("/{templateLocator}/fullConfig")
   @Produces({"application/xml", "application/json"})
   public WebHookTemplateConfig serveFullConfigTemplate(@PathParam("templateLocator") String templateLocator) {
-	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
   }
   
   @PUT
@@ -158,7 +172,7 @@ public class TemplateRequest {
   @Produces({"application/xml", "application/json"})
   @Consumes({"application/xml", "application/json"})
   public WebHookTemplateConfig updateFullConfigTemplate(@PathParam("templateLocator") String templateLocator,  WebHookTemplateConfig rawConfig) {
-	  WebHookTemplateConfig webHookTemplateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+	  WebHookTemplateConfig webHookTemplateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (webHookTemplateConfig == null){
 		  throw new NotFoundException("No template found by that name/id");
 	  }
@@ -179,14 +193,14 @@ public class TemplateRequest {
   @Produces({"text/plain"})
   @Consumes({"text/plain"})
   public WebHookTemplateConfig updateFullConfigTemplateInPlainText(@PathParam("templateLocator") String templateLocator,  String rawConfig) {
-	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
   }
 
   @GET
   @Path("/{templateLocator}/{templateType}/templateContent")
   @Produces({"text/plain"})
   public String serveTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType) {
-	  WebHookTemplateConfig template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+	  WebHookTemplateConfig template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
 	  }
@@ -209,7 +223,7 @@ public class TemplateRequest {
   @Consumes({"text/plain"})
   @Produces({"text/plain"})
   public String updateTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType, String templateText) {
-	  WebHookTemplateConfig template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getEntity();
+	  WebHookTemplateConfig template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
 	  }
@@ -258,26 +272,28 @@ public class TemplateRequest {
   public String serveSpecificTemplateContent(@PathParam("templateLocator") String templateLocator, 
 		  									 @PathParam("templateItemId") String templateItemId, 
 		  									 @PathParam("templateContentType") String templateContentType) {
-	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template == null){
 		  throw new NotFoundException("No template item found by that name/id");
 	  }
 	  if(templateContentType.equals("templateContent")){
-		  if (template.getTemplateText() == null){
+		  if (template.getTemplateItem().getTemplateText() == null){
 			  throw new NotFoundException("This template does not have a non-branch template configured.");
 		  }
-		  return template.getTemplateText().getTemplateContent();
+		  return template.getTemplateItem().getTemplateText().getTemplateContent();
 	  } else if(templateContentType.equals("branchTemplateContent")){
-		  if (template.getBranchTemplateText() == null){
+		  if (template.getTemplateItem().getBranchTemplateText() == null){
 			  throw new NotFoundException("This template does not have a  branch template configured.");
 		  }
-		  return template.getBranchTemplateText().getTemplateContent();
+		  return template.getTemplateItem().getBranchTemplateText().getTemplateContent();
 	  }
 	  throw new BadRequestException("Sorry. It was not possible to process your request for template content.");
   }
-
+  
   /**
    * /webhooks/templates/id:elasticsearch/templateItem/id:1
+   * /webhooks/templates/id:elasticsearch/templateItem/defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItem/id:defaultTemplate
    */
   @GET
   @Path("/{templateLocator}/templateItem/{templateItemId}")
@@ -286,16 +302,20 @@ public class TemplateRequest {
 		  											 @PathParam("templateItemId") String templateItemId,
 		  											 @QueryParam("fields") String fields) {
 	  WebHookTemplateConfigWrapper templateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
-	  if (template == null){
+	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  if (template.getTemplateItem() == null){
 		  throw new NotFoundException("No template item found by that name/id");
 	  }
-	  return new TemplateItem(templateConfig.getEntity(), template, template.getId().toString(), new Fields(fields), myBeanContext);
+	  if("defaultTemplate".equals(template.getTemplateItem().getId())) {
+		  return new TemplateItem(templateConfig, template.getTemplateItem().getTemplateText(), template.getTemplateItem().getBranchTemplateText(), template.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+	  }
+	  return new TemplateItem(templateConfig, template.getTemplateItem(), template.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext);
   }
 
   /**
    *  /app/rest/webhooks/templates/id:flowdock/templateItem/id:2/buildState/buildStarted
    *  							  /id:elasticsearch/templateItem/id:1/buildState/buildStarted
+   *  							  /id:elasticsearch/templateItem/defaultTemplate/buildState/buildStarted
    */
   @GET
   @Path("/{templateLocator}/templateItem/{templateItemId}/buildState/{buildState}")
@@ -304,11 +324,22 @@ public class TemplateRequest {
 		  											 @PathParam("templateItemId") String templateItemId,
 		  											 @PathParam("buildState") String buildState,
 		  											 @QueryParam("fields") String fields) {
-	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
-	  if (template == null){
+	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  if (template.getTemplateItem() == null){
 		  throw new NotFoundException("No template item found by that name/id");
 	  }
-	  return new WebHookTemplateStateRest(template, buildState, new Fields(fields), myBeanContext);
+	  if ("defaultTemplate".equals(template.getTemplateItem().getId())){
+			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()) {
+				if (state.getShortName().equals(buildState))
+						return new WebHookTemplateStateRest(
+													state.getShortName(), 
+													template.getBuildStatesWithTemplate().isAvailable(state), 
+													ValueWithDefault.decideDefault(new Fields(fields).isIncluded("editable",false, true), false), 
+													null
+												);
+			}
+	  }
+	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(fields), myBeanContext);
 	  
   }
   
@@ -319,12 +350,11 @@ public class TemplateRequest {
 		  @PathParam("templateItemId") String templateItemId,
 		  @PathParam("buildState") String buildState,
 		  WebHookTemplateStateRest updatedBuildState) {
-	  WebHookTemplateItem template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
-	  if (template == null){
+	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  if (template.getTemplateItem() == null){
 		  throw new NotFoundException("No template item found by that name/id");
 	  }
-	  //for (template.get)
-	  return new WebHookTemplateStateRest(template, buildState, new Fields(null), myBeanContext);
+	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(null), myBeanContext);
 	  
   }
   

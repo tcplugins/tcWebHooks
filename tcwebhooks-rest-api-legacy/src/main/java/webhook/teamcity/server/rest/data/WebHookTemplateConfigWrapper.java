@@ -8,8 +8,10 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 @Getter @AllArgsConstructor
 public class WebHookTemplateConfigWrapper {
 	
-	private WebHookTemplateConfig entity;
+	private WebHookTemplateConfig templateConfig;
 	
 	private WebHookTemplateManager.TemplateState status;
+	
+	private WebHookTemplateStates buildStatesWithTemplate; 
 
 }

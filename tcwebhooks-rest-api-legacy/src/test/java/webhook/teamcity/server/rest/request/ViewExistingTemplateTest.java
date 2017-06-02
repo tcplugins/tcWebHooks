@@ -1,6 +1,8 @@
 package webhook.teamcity.server.rest.request;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertTrue;
 import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES_URL;
 
@@ -108,7 +110,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		webHookTemplateManager.registerTemplateFormatFromXmlEntity(templateEntity);
     	}
     	
-    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:testXMLtemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:testXMLtemplate").queryParam("fields","$long").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals(1, responseMsg.getTemplates().size());
     	assertEquals("testXMLtemplate", responseMsg.id);
     	
@@ -141,6 +143,21 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
     	assertEquals(elastic.getBranchTemplateForState(BuildStateEnum.BUILD_FIXED).getTemplateText(), responseMsg);
     	prettyPrint(responseMsg);
+    }
+    
+    @Test
+    public void testJsonTemplatesRequestDefaultTemplateContentUsingElasticTemplate() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	assertEquals(elastic.getTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText(), responseMsg);
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	assertEquals(elastic.getBranchTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText(), responseMsg);
+    	prettyPrint(responseMsg);
     }  
     
     @Test
@@ -155,6 +172,63 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     			assertEquals(templateItem.getTemplateText().getTemplateContent(), responseMsg.getTemplateText().content);
     		}
     	}
+    	prettyPrint(responseMsg);
+    	
+    }
+    
+    @Test
+    public void testJsonTemplatesRequestTemplateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").queryParam("fields","$long").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals(1, responseMsg.getTemplates().size());
+    	assertEquals("elasticsearch", responseMsg.id);
+    	prettyPrint(responseMsg);
+    }
+    
+    @Test
+    public void testJsonTemplatesRequestTemplateUsingElasticTemplateShort() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").queryParam("fields","$short,templateItem").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals(1, responseMsg.getTemplates().size());
+    	assertEquals("elasticsearch", responseMsg.id);
+    	prettyPrint(responseMsg);
+    }  
+    
+    @Test
+    public void testJsonTemplatesRequestTemplateItemForDefaultTemplateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class); //.queryParam("fields","id,content,parentTemplateDescription,parentTemplateName")
+    	assertEquals("defaultTemplate", responseMsg.getId());
+    	prettyPrint(responseMsg);
+    	
+    }
+    
+    @Test
+    public void testJsonTemplatesRequestTemplateItemWithParentNameAndDescriptionUsingElasticTemplate() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	boolean itemFound=false;
+    	for (WebHookTemplateItem templateItem : elastic.getAsEntity().getTemplates().getTemplates()) {
+    		if (Integer.valueOf(responseMsg.id) == templateItem.getId()){
+    			assertEquals(templateItem.getTemplateText().getTemplateContent(), responseMsg.getTemplateText().content);
+    			assertEquals(elastic.getTemplateDescription(), responseMsg.parentTemplateDescription);
+    			assertEquals(elastic.getTemplateShortName(), responseMsg.parentTemplateName);
+    			itemFound = true;
+    		}
+    	}
+    	assertTrue(itemFound);
     	prettyPrint(responseMsg);
     	
     }  
@@ -182,6 +256,34 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	    			assertEquals(templateState.getType(), responseMsg.getType());
     	    		}
     	    	}
+    		}
+    	}
+    }
+    
+    @Test
+    public void testJsonTemplatesRequestDefaultBuildStateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	
+    	for (WebHookTemplateItem item : elastic.getAsEntity().getTemplates().getTemplates()){
+    		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
+    			WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
+    					"/id:" + elastic.getTemplateShortName() + 
+    					"/templateItem/id:defaultTemplate" + 
+    					"/buildState/" + state.getShortName()
+    					)
+    					.accept(MediaType.APPLICATION_JSON_TYPE)
+    					.get(WebHookTemplateStateRest.class);
+    			prettyPrint(responseMsg);
+    			for (WebHookTemplateState templateState: item.getStates()){
+    				if (templateState.getType().equals(state.getShortName())){
+    					assertThat(templateState.isEnabled(), not(equalTo(responseMsg.isEnabled())));
+    					assertEquals(templateState.getType(), responseMsg.getType());
+    					assertEquals(false, responseMsg.getEditable());
+    				}
+    			}
     		}
     	}
     }
@@ -225,6 +327,32 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	assertEquals(2, responseMsg.getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.id);
     	prettyPrint(responseMsg);
+    }
+    
+    @Test
+    public void testJsonTemplatesRequestUsingSlackCompactTemplateAndRequestAsXml() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_XML_TYPE).get(Template.class);
+    	
+    	assertEquals(2, responseMsg.getTemplates().size());
+    	assertEquals("slack.com-compact", responseMsg.id);
+    	//prettyPrint(responseMsg);
+    }
+    
+    @Test
+    public void testFullJsonTemplatesRequestUsingSlackCompactTemplateAndRequestAsXml() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	WebHookTemplateConfig responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/fullConfig").accept(MediaType.APPLICATION_XML_TYPE).get(WebHookTemplateConfig.class);
+    	
+    	assertEquals(2, responseMsg.getTemplates().getTemplates().size());
+    	assertEquals("slack.com-compact", responseMsg.getName());
+    	//prettyPrint(responseMsg);
     }  
     
 

@@ -5,6 +5,7 @@ import jetbrains.buildServer.server.rest.PathTransformer;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.request.TemplateRequest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
@@ -27,7 +28,11 @@ public class WebHookApiUrlBuilder {
 	    return myPathTransformer.transform(TemplateRequest.getTemplateHref(template));
 	}
 	
-	public String getTemplateItemHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItem webHookTemplateItem) {
+	public String getTemplateDefaultItemHref(WebHookTemplateConfig WebHookTemplateConfig) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateDefaultItemHref(WebHookTemplateConfig));
+	}
+	
+	public String getTemplateItemHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItemRest webHookTemplateItem) {
 		return myPathTransformer.transform(TemplateRequest.getTemplateItemHref(WebHookTemplateConfig, webHookTemplateItem));
 	}	
 	
@@ -39,11 +44,11 @@ public class WebHookApiUrlBuilder {
 		return myPathTransformer.transform(TemplateRequest.getDefaultBranchTemplateTextHref(template));
 	}
 
-	public String getTemplateItemTextHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItem webHookTemplateItem) {
+	public String getTemplateItemTextHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItemRest webHookTemplateItem) {
 		return myPathTransformer.transform(TemplateRequest.getTemplateItemTextHref(WebHookTemplateConfig, webHookTemplateItem));
 	}
 	
-	public String getTemplateItemBranchTextHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItem webHookTemplateItem) {
+	public String getTemplateItemBranchTextHref(WebHookTemplateConfig WebHookTemplateConfig, WebHookTemplateItemRest webHookTemplateItem) {
 		return myPathTransformer.transform(TemplateRequest.getTemplateItemBranchTextHref(WebHookTemplateConfig, webHookTemplateItem));
 	}
 	
@@ -51,7 +56,11 @@ public class WebHookApiUrlBuilder {
 		return myPathTransformer.transform(internalRelativePath);
 	}
 
-	public String getWebHookTemplateItemStateUrl(WebHookTemplateConfig template, WebHookTemplateItem templateItem, String state) {
+	public String getWebHookTemplateStateUrl(WebHookTemplateConfig template, String state) {
+		return myPathTransformer.transform(TemplateRequest.getTemplateStateHref(template, state));
+	}
+	
+	public String getWebHookTemplateItemStateUrl(WebHookTemplateConfig template, WebHookTemplateItemRest templateItem, String state) {
 		return myPathTransformer.transform(TemplateRequest.getTemplateItemStateHref(template, templateItem, state));
 	}
 
