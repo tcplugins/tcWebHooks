@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,7 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.ElasticSearchWebHookTemplate;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
+import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Templates;
@@ -25,7 +27,9 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 
 public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
 	
@@ -38,6 +42,14 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
 	@Autowired
 	WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 
+	WebResource webResource;
+	
+	@Before 
+	public void setup(){
+    	webResource = resource();
+    	webResource.addFilter(new LoggingFilter(System.out));
+	}
+	
     @Test
     public void testJsonRequestAndUpdate() {
     	WebResource webResource = resource();
@@ -54,4 +66,45 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	assertTrue(updatedResponse.count == 1);
 
     }
+    
+    @Test
+    public void testUpdateJsonTemplatesRequestUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	
+    	assertEquals("slack.com-compact", responseMsg.parentTemplateName);
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg.findConfigForBuildState("beforeBuildFinish").setEnabled(true);
+		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
+		prettyPrint(responseMsg2);
+		
+    	Template.TemplateItem responseMsg3 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	assertEquals(true, responseMsg3.findConfigForBuildState("beforeBuildFinish").isEnabled());
+    	prettyPrint(responseMsg3);
+    }
+    
+    @Test(expected=UniformInterfaceException.class)
+    public void testUpdateJsonTemplateTemplateItemByEnablingInvalidBuildStateRequestUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	
+    	assertEquals("slack.com-compact", responseMsg.parentTemplateName);
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg.findConfigForBuildState("buildFailed").setEnabled(true);
+    	try {
+    		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
+    	} catch (UniformInterfaceException e) {
+    		assertEquals("Client response status: 422", e.getMessage());
+    		throw e;
+		}
+    }
+    
 }
