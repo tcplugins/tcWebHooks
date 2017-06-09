@@ -50,8 +50,8 @@ public enum BuildStateEnum {
 	}
 	
 	/**
-	 * Takes a string and tries to find a BuildStateEnum that that matches it.
-	 * @param stateString
+	 * Takes a string and tries to find a BuildStateEnum with a shortName that matches it.
+	 * @param stateString as a shortname. eg "buildStarted"
 	 * @return BuildStateEnum or null.
 	 */
 	public static BuildStateEnum findBuildState(String stateString){

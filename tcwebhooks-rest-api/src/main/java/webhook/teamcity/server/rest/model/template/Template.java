@@ -171,7 +171,6 @@ public class Template {
 		 * @param beanContext
 		 */
 		public TemplateItem(WebHookTemplateConfigWrapper template, WebHookTemplateText templateText, WebHookTemplateBranchText branchTemplateText, String id, Fields fields, BeanContext beanContext) {
-			this.enabled = ValueWithDefault.decideDefault(fields.isIncluded("enabled"), Boolean.valueOf(template.getTemplateConfig().isEnabled()));
 			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateDefaultItemHref(template.getTemplateConfig())));
 			this.templateText = ValueWithDefault.decideDefault(fields.isIncluded("templateText", false, true), new TemplateText(template.getTemplateConfig(), id, fields, beanContext));
@@ -230,6 +229,14 @@ public class Template {
 			}
 		}
 		
+		public WebHookTemplateStateRest findConfigForBuildState(String buildStateShortName) {
+			for (WebHookTemplateStateRest itemState: this.getStates()){
+				if (buildStateShortName.equals(itemState.getType())){
+					return itemState;
+				}
+			}
+			return null;
+		}
 		
 	}
 	

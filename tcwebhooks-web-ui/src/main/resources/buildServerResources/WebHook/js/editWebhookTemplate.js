@@ -1,282 +1,7 @@
-DebRepoPlugin = {
-    removeDebRepo: function(uuid) {
-    	DebRepoPlugin.DeleteRepoDialog.showDialog("Delete Debian Repository", 'deleteDebRepo', uuid);
-    },
-    DeleteRepoDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
-    	getContainer: function () {
-    		return $('deleteRepoDialog');
-    	},
-    	
-    	formElement: function () {
-    		return $('deleteRepoForm');
-    	},
-    	
-    	showDialog: function (title, action, uuid) {
-    		$j("#deleteRepoForm input[id='DebRepoaction']").val(action);
-    		$j("#deleteRepoDialog .dialogTitle").html(title);
-    		this.cleanFields(uuid);
-    		this.cleanErrors();
-    		this.showCentered();
-    	},
-    	
-    	cleanFields: function (uuid) {
-    		$j("#deleteRepoForm input[id='debrepo.uuid']").val(uuid);
-    		
-    		this.cleanErrors();
-    	},
-    	
-    	cleanErrors: function () {
-    		$j("#deleteRepoForm .error").remove();
-    	},
-    	
-    	error: function($element, message) {
-    		var next = $element.next();
-    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
-    			next.text(message);
-    		} else {
-    			$element.after("<p class='error'>" + message + "</p>");
-    		}
-    	},
-    	
-    	ajaxError: function(message) {
-    		var next = $j("#ajaxRepoDeleteResult").next();
-    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
-    			next.text(message);
-    		} else {
-    			$j("#ajaxRepoDeleteResult").after("<p class='error'>" + message + "</p>");
-    		}
-    	},
-    	
-    	doValidate: function() {
-    		var errorFound = false;
-    		return !errorFound;
-    	},
-    	
-    	doPost: function() {
-    		this.cleanErrors();
-    		
-    		if (!this.doValidate()) {
-    			return false;
-    		}
-    		
-    		var parameters = {
-    				action: $j("#deleteRepoForm #DebRepoaction").val(),
-    				"debrepo.uuid": $j("#deleteRepoForm input[id='debrepo.uuid']").val()
-    		};
-    		
-    		var dialog = this;
-    		
-    		BS.ajaxRequest(window['base_uri'] + '/admin/debianRepositoryAction.html', {
-    			parameters: parameters,
-    			onComplete: function(transport) {
-    				var shouldClose = true;
-    				if (transport != null && transport.responseXML != null) {
-    					var response = transport.responseXML.getElementsByTagName("response");
-    					if (response != null && response.length > 0) {
-    						var responseTag = response[0];
-    						var error = responseTag.getAttribute("error");
-    						if (error != null) {
-    							shouldClose = false;
-    							dialog.ajaxError(error);
-    						} else if (responseTag.getAttribute("status") == "OK") {
-    							shouldClose = true;
-    						} else if (responseTag.firstChild == null) {
-    							shouldClose = false;
-    							alert("Error: empty response");
-    						}
-    					}
-    				}
-    				if (shouldClose) {
-    					dialog.close();
-    					window.location = window['base_uri'] + '/admin/debianRepositories.html'
-    					//$("repoBuildTypesContainer").refresh();
-    				}
-    			}
-    		});
-    		
-    		return false;
-    	}
-    })),
-    editDebRepo: function(uuid) {
-    	DebRepoPlugin.EditRepoDialog.showDialog("Edit Debian Repository", 'editDebRepo', uuid);
-    },
-    EditRepoDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
-    	getContainer: function () {
-    		return $('editRepoDialog');
-    	},
-    	
-    	formElement: function () {
-    		return $('editRepoForm');
-    	},
-    	
-    	showDialog: function (title, action, uuid) {
-    		BS.ajaxRequest(window['base_uri'] + '/app/rest/webhooks/templates/id:mushymushy/defaultTemplate/templateContent', {
-    			onComplete: function(transport) {
-    				var editor = ace.edit("editor");
-    				editor.setValue(transport);
-    			}
-    		});
-    		$j("#editRepoForm input[id='DebRepoaction']").val(action);
-    		$j("#editRepoDialog .dialogTitle").html(title);
-    		this.cleanFields(uuid);
-    		this.cleanErrors();
-    		this.showCentered();
-    	},
-    	
-    	cleanFields: function (uuid) {
-    		$j("#editRepoForm input[id='debrepo.uuid']").val(uuid);
-    		$j("#editRepoForm input[id='debrepo.uuid']").val(uuid);
-    		
-    		this.cleanErrors();
-    	},
-    	
-    	cleanErrors: function () {
-    		$j("#editRepoForm .error").remove();
-    	},
-    	
-    	error: function($element, message) {
-    		var next = $element.next();
-    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
-    			next.text(message);
-    		} else {
-    			$element.after("<p class='error'>" + message + "</p>");
-    		}
-    	},
-    	
-    	ajaxError: function(message) {
-    		var next = $j("#ajaxRepoEditResult").next();
-    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
-    			next.text(message);
-    		} else {
-    			$j("#ajaxRepoEditResult").after("<p class='error'>" + message + "</p>");
-    		}
-    	},
-    	
-    	doValidate: function() {
-    		var errorFound = false;
-    		return !errorFound;
-    	},
-    	
-    	doPost: function() {
-    		this.cleanErrors();
-    		
-    		if (!this.doValidate()) {
-    			return false;
-    		}
-    		
-    		var parameters = {
-    				action: $j("#editRepoForm #DebRepoaction").val(),
-    				"debrepo.uuid": $j("#editRepoForm input[id='debrepo.uuid']").val(),
-    				"debrepo.name": $j("#editRepoForm input[id='debrepo.name']").val(),
-    				"debrepo.project.id": $j("#editRepoForm select[id='debrepo.project.id']").val()
-    		};
-    		
-    		$j(".architectureCheckbox:checked").each(function() {
-    			parameters[this.name] = this.value;
-    		});
-    		
-    		var dialog = this;
-    		
-    		BS.ajaxRequest(window['base_uri'] + '/admin/debianRepositoryAction.html', {
-    			parameters: parameters,
-    			onComplete: function(transport) {
-    				var shouldClose = true;
-    				var shouldRedirect = false;
-    				if (transport != null && transport.responseXML != null) {
-    					var response = transport.responseXML.getElementsByTagName("response");
-    					if (response != null && response.length > 0) {
-    						var responseTag = response[0];
-    						var error = responseTag.getAttribute("error");
-    						if (error != null) {
-    							shouldClose = false;
-    							dialog.ajaxError(error);
-    						} else if (responseTag.getAttribute("status") == "OK") {
-    							shouldClose = true;
-    							if (responseTag.getAttribute("redirect") == "true") {
-    								shouldRedirect = true;
-    							}
-    						} else if (responseTag.firstChild == null) {
-    							shouldClose = false;
-    							alert("Error: empty response");
-    						}
-    					}
-    				}
-    				if (shouldRedirect) {
-    					dialog.close();
-    					window.location = window['base_uri'] + '/admin/editDebianRepository.html?repo=' + $j("#editRepoForm input[id='debrepo.name']").val()
-    				} else if (shouldClose) {
-    					dialog.close();
-    					$("repoRepoInfoContainer").refresh();
-    				}
-
-    			}
-    		});
-    		
-    		return false;
-    	}
-    }))
-};
-
-var myJson;
-
-WebHooksData = {
-		getWebHookTemplateData: function (templateName, buildTemplateId) {
-			this.disableCheckboxes();
-			this.clearEditor();
-			this.retrieveTemplateData(templateName, buildTemplateId);
-		},
-		disableCheckboxes: function () {
-			$j("#editTemplateForm input.buildState").prop("disabled", true);
-			$j("#editTemplateForm label").addClass("checkboxLooksDisabled");
-		},
-		enableCheckboxes: function () {
-			$j("#editTemplateForm input.buildState").prop("disabled", false);
-		},
-		clearEditor: function () {
-			var editor = ace.edit("editor");
-			editor.setValue("Loading...");
-		},
-		retrieveTemplateData: function (templateName, buildTemplateId) {
-    		$j.ajax ({
-    		    //url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + data.templateName + '/' + data.templateNumber +'/templateContent',
-    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName,content',
-    		    //http://192.168.1.72:8111/app/rest/webhooks/templates/id:flowdock/templateItem/id:3?fields=useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName
-    		    type: "GET",
-    		    headers : {
-    		        'Accept' : 'application/json'
-    		    },
-    		    success: function (response) {
-    				myJson = response;
-    				WebHooksData.handleSuccess();
-    		    }
-    		});
-		}, 
-		handleSuccess: function () {
-			$j("#templateHeading").html(myJson.parentTemplateDescription);
-			this.updateCheckboxes();
-			this.updateEditor();
-			//this.enableCheckboxes();
-		},
-		updateCheckboxes: function () {
-    		$j(myJson.state).each(function() {
-    			console.log(this.type + " :: "+ this.enabled);
-    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
-    			if (this.editable) {
-    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
-    			}
-    		});
-		},
-		updateEditor: function () {
-	    	console.log(myJson.templateText.content);
-			var editor = ace.edit("editor");
-			editor.setValue(myJson.templateText.content);
-		}
-};
-
 WebHooksPlugin = {
+		
     editBuildEventTemplate: function(data) {
     	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Edit Artfact Filter", 'editArtifactFilter', data);
-        //$j(".runnerFormTable input[id='filter.id']").prop("disabled", true);
     },
     addFilter: function(data) {
     	DebRepoFilterPlugin.RepoEditFilterDialog.showDialog("Add Artifact Filter", 'addArtifactFilter', data);
@@ -297,28 +22,8 @@ WebHooksPlugin = {
         },
 
         showDialog: function (title, action, data) {
-    		/*BS.ajaxRequest(window['base_uri'] + '/app/rest/webhooks/templates/id:mushymushy/defaultTemplate/templateContent', {
-    			onComplete: function(transport) {
-    				var editor = ace.edit("editor");
-    				editor.setValue(transport);
-    			}
-    		});*/
-    		/*
-    		$j.ajax ({
-    		    url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + data.templateName + '/' + data.templateNumber +'/templateContent',
-    		    //http://192.168.1.72:8111/app/rest/webhooks/templates/id:flowdock/templateItem/id:3?fields=useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName
-    		    type: "GET",
-    		    headers : {
-    		        'accepts' : 'application/json'
-    		    },
-    		    success: function  (response) {
-    		    	console.log(response);
-    				var editor = ace.edit("editor");
-    				editor.setValue(response);
-    		    }
-    		});*/
         	
-        	WebHooksData.getWebHookTemplateData(data.templateName, data.templateNumber);
+        	this.getWebHookTemplateData(data.templateName, data.templateNumber);
     		
             $j("input[id='DebRepoaction']").val(action);
             $j(".dialogTitle").html(title);
@@ -372,8 +77,110 @@ WebHooksPlugin = {
 
             return !errorFound;
         },
+        
+		getWebHookTemplateData: function (templateName, buildTemplateId) {
+			this.disableCheckboxes();
+			this.clearEditor();
+			this.getTemplateData(templateName, buildTemplateId);
+		},
+		putWebHookTemplateData: function () {
+			this.disableCheckboxes();
+			this.updateJsonDataFromForm();
+			this.putTemplateData();
+		},
+		disableCheckboxes: function () {
+			$j("#editTemplateForm input.buildState").prop("disabled", true);
+			$j("#editTemplateForm label").addClass("checkboxLooksDisabled");
+		},
+		enableCheckboxes: function () {
+			$j("#editTemplateForm input.buildState").prop("disabled", false);
+		},
+		updateJsonDataFromForm: function () {
+			myJson.templateText.content = editor.getValue();
+			myJson.templateText.useTemplateTextForBranch = $j("#editTemplateForm input#useTemplateTextForBranch").is(':checked');
+			myJson.branchTemplateText.content = editorBranch.getValue();
+			
+    		$j(myJson.state).each(function() {
+    			//console.log(this.type + " :: "+ this.enabled);
+    			this.enabled = $j("#editTemplateForm input[id='" + this.type + "']").prop( "checked");
+    		});
 
-        doPost: function() {
+		},
+		clearEditor: function () {
+			editor.setValue("Loading...");
+			editorBranch.setValue("Loading...");
+		},
+		getTemplateData: function (templateName, buildTemplateId) {
+			var dialog = this;
+    		$j.ajax ({
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName,content',
+    		    type: "GET",
+    		    headers : {
+    		        'Accept' : 'application/json'
+    		    },
+    		    success: function (response) {
+    				myJson = response;
+    				dialog.handleGetSuccess();
+    		    }
+    		});
+		}, 
+		handleGetSuccess: function () {
+			$j("#templateHeading").html(myJson.parentTemplateDescription);
+			this.updateCheckboxes();
+			this.updateEditor();
+		},
+		putTemplateData: function () {
+			var dialog = this;
+			$j.ajax ({
+				url: myJson.href,
+				type: "PUT",
+				data: JSON.stringify(myJson),
+				dataType: 'json',
+				headers : {
+					'Content-Type' : 'application/json',
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					//console.log(response);
+					dialog.close();
+					$("buildEventTemplatesContainer").refresh();
+				},
+				error: function (response) {
+					console.log(response);
+					alert(response);
+				}
+			});
+		}, 
+		handlePutSuccess: function () {
+			$j("#templateHeading").html(myJson.parentTemplateDescription);
+			this.updateCheckboxes();
+			this.updateEditor();
+		},
+		updateCheckboxes: function () {
+    		$j(myJson.state).each(function() {
+    			console.log(this.type + " :: "+ this.enabled);
+    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
+    			if (this.editable) {
+    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+    			}
+    		});
+    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", myJson.templateText.useTemplateTextForBranch).prop( "disabled", false);
+			$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
+		},
+		updateEditor: function () {
+	    	console.log(myJson.templateText.content);
+			editor.setValue(myJson.templateText.content);
+			editorBranch.setValue(myJson.branchTemplateText.content);
+			editorBranch.setReadOnly(myJson.templateText.useTemplateTextForBranch);
+		},
+		
+		doPost: function() {
+			console.log(myJson);
+			this.putWebHookTemplateData();
+			return false;
+		},
+
+        xxdoPost: function() {
             this.cleanErrors();
 
             if (!this.doValidate()) {

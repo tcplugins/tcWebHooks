@@ -1,7 +1,7 @@
 <%@ include file="/include.jsp" %>
 
 
-<bs:refreshable containerId="defaultTemplateContainer" pageUrl="${pageUrl}">
+<bs:refreshable containerId="buildEventTemplatesContainer" pageUrl="${pageUrl}">
   
 	  <table class="settings templateTable">
         <tr class="templateHeading"><td colspan=6 class="templateTableTemplateTitle">Default Template (optional)</td></tr>
@@ -57,7 +57,7 @@
 	      	</c:forEach>
 	      	</ul></td>
 	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="WebHooksData.getWebHookTemplateData('${webhookTemplateBean.templateId}', '${buildEventTemplate.webHookTemplateItem.id}'); return false">view</a></td>
-	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'templateItem/id:${buildEventTemplate.webHookTemplateItem.id}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
+	      			<td class="buildTemplateAction"><a id="editDebFilter" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'id:${buildEventTemplate.webHookTemplateItem.id}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 	      			<td class="buildTemplateAction"><a id="copyDebFilter" href="#" onclick="DebRepoFilterPlugin.copyFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 	      			<td class="buildTemplateAction"><a id="deleteDebFilter" href="#" onclick="DebRepoFilterPlugin.deleteFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}' }); return false">delete</a></td>
       	</tr>     

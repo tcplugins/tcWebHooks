@@ -247,6 +247,7 @@ public class WebHookTemplateEntity {
 				for (WebHookTemplateConfig.WebHookTemplateState state : item.getStates()) {
 					i.states.add(new WebHookTemplateState(state.getType(), state.isEnabled()));
 				}
+				items.add(i);
 			}
 			return items;
 		}

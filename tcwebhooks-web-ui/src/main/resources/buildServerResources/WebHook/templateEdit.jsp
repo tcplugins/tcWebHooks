@@ -74,6 +74,20 @@
   </jsp:attribute>
 
   <jsp:attribute name="body_include">
+    <script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
+	    <script type=text/javascript>
+		var jQueryWebhook = jQuery.noConflict();
+		var webhookDialogWidth = -1;
+		var webhookDialogHeight = -1;
+		var templatePaneOuterHeight = -1;
+		jQueryWebhook(document).ready( function() {
+				jQueryWebhook('#tab-container').easytabs({
+					  animate: false,
+					  updateHash: false
+				});
+		});
+		</script>		
     <bs:refreshable containerId="repoRepoInfoContainer" pageUrl="${pageUrl}">
 
 	<bs:messages key="repoInfoUpdateResult"/>
@@ -142,11 +156,22 @@
             	</tr>
                  <tr>
  					<td colspan="3">
+ 					<div id="tab-container" class="tab-container">
 					  <ul class='etabs'>
 						   <li class='tab' id="nonBranchPaneTab"><a href="#nonBranchPane" class="active">Non-Branch Template</a></li>
 						   <li class='tab' id="branchPaneTab"><a href="#branchPane">Branch Template</a></li>
 					  </ul>
-						<pre id="editor"></pre>                        
+					  <div class='panel-container'>
+						<div id='nonBranchPane'>
+							&nbsp;
+							<pre id="editor" class="editor"></pre>
+						</div>
+						<div id='branchPane'>
+							<label style='white-space:nowrap;' class="useTemplateTextForBranch"><input id="useTemplateTextForBranch" name="UseTemplateTextForBranch" type=checkbox /> Use Non-branch template text for Branch template text</label>
+							<pre id="editorBranch" class="editor"></pre>
+						</div>
+					  </div>
+					</div>                        
                     </td>
                  </tr>
             </table>
@@ -171,9 +196,19 @@
     ace.require("ace/ext/language_tools");
     var editor = ace.edit("editor");
     editor.session.setMode("ace/mode/json");
-    editor.setTheme("ace/theme/tomorrow");
+    editor.setTheme("ace/theme/xcode");
     // enable autocompletion and snippets
     editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: false
+    });
+    
+    var editorBranch = ace.edit("editorBranch");
+    editorBranch.session.setMode("ace/mode/json");
+    editorBranch.setTheme("ace/theme/xcode");
+    // enable autocompletion and snippets
+    editorBranch.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
         enableLiveAutocompletion: false

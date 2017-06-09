@@ -58,6 +58,15 @@ public class WebHookTemplateConfig {
 	public static class WebHookTemplateItems {
 		Integer maxId;
 		List<WebHookTemplateItem> templates = new ArrayList<>();
+		
+		public WebHookTemplateItem getTemplateItem(int id) {
+			for (WebHookTemplateItem item : this.templates) {
+				if (item.getId().equals(id)){
+					return item;
+				}
+			}
+			return null;
+		}
 	}
 	
 	@XmlRootElement 

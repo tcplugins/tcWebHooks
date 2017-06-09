@@ -371,7 +371,7 @@ ul.templateBuildStates li:last-child:after {
     right: 0;
 }*/
 
-#editor {
+.editor {
 	width: 98%;
 	height: 28em;
 	margin:0px;
@@ -410,15 +410,18 @@ div#templateEditor {
 	width: 70%;
 }
 
+
 div#templateEditor ul.etabs {
-	pading: 0px;
+	padding: 0px;
 	margin-left: 3em;
 	margin-top: 1.25em;
 }
 
+/*
 div#templateEditor ul.etabs li {
 	border-bottom: solid 1px #999;
 }
 
 div#templateEditor .etabs .tab.active {
 	border-bottom: none;
+}*/
