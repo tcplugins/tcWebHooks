@@ -358,4 +358,14 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return authenticatorProvider;
 	}
 
+	@Override
+	public SFinishedBuild getPreviousFailedBuild() {
+		return this.previousFailedBuild;
+	}
+
+	@Override
+	public SFinishedBuild getPreviousSuccessfulBuild() {
+		return this.previousSuccessfulBuild;
+	}
+
 }

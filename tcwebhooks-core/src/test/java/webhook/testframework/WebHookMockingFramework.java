@@ -37,5 +37,7 @@ public interface WebHookMockingFramework {
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException;
 	public void loadWebHookProjectSettingsFromConfigXml(File xmlConfigFile) throws IOException, JDOMException;
 	public List<SFinishedBuild> getMockedBuildHistory();
+	public SFinishedBuild getPreviousFailedBuild();
+	public SFinishedBuild getPreviousSuccessfulBuild();
 
 }

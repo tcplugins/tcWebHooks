@@ -86,6 +86,11 @@
 					  animate: false,
 					  updateHash: false
 				});
+				jQueryWebhook('#tab-container').bind('easytabs:after', function() {
+					// one should call editor.resize() after changing size or visibility of the div 
+					editor.resize();
+					editorBranch.resize();
+				});
 		});
 		</script>		
     <bs:refreshable containerId="repoRepoInfoContainer" pageUrl="${pageUrl}">
@@ -144,7 +149,11 @@
             	</tr>
             	<tr><td></td>
             		<td class="buildInterrupted" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildInterrupted" name="BuildInterrupted" type=checkbox /> Build Interrupted</label></td>
-            		<td class="responsibilityChanged" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox /> Responsibility Changed</label></td>
+            		<td class="beforeBuildFinish" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="beforeBuildFinish" name="BeforeBuildFinish" type=checkbox /> Build Almost Completed</label></td>
+            	</tr>
+            	<tr><td></td>
+	            	<td class="responsibilityChanged" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox /> Responsibility Changed</label></td>
+            		<td></td>
             	</tr>
             	<tr><td></td>
             		<td class="buildSuccessful" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildSuccessful" name="BuildSuccessful" type=checkbox /> Build Successful</label></td>
@@ -193,7 +202,7 @@
 
 <script>
     // trigger extension
-    ace.require("ace/ext/language_tools");
+    var langTools = ace.require("ace/ext/language_tools");
     var editor = ace.edit("editor");
     editor.session.setMode("ace/mode/json");
     editor.setTheme("ace/theme/xcode");
@@ -201,7 +210,7 @@
     editor.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
-        enableLiveAutocompletion: false
+        enableLiveAutocompletion: true
     });
     
     var editorBranch = ace.edit("editorBranch");
@@ -211,8 +220,31 @@
     editorBranch.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
-        enableLiveAutocompletion: false
+        enableLiveAutocompletion: true
     });
+    
+    /* your custom completer */
+    var customCompleter = {
+          getCompletions: function(editor, session, pos, prefix, callback) {
+	   	        var wordList = ["buildFullName", "buildComment", "changes", "agentOs", 
+	   	        				"buildNumber", "branchIsDefault", "buildResultPrevious", "buildStatus", 
+	   	        				"projectInternalId", "buildStatusUrl", "buildTypeId", "responsibilityUserNew", 
+	   	        				"buildRunners", "buildStartTime", "buildTags", "responsibilityUserOld", 
+	   	        				"buildFinishTime", "buildStateDescription", "text", "buildName", 
+	   	        				"buildResult", "agentName", "branchName", "buildResultDelta", "buildId", 
+	   	        				"message", "buildExternalTypeId", "rootUrl", "currentTime", "notifyType", 
+	   	        				"buildInternalTypeId", "comment", "projectExternalId", "branchDisplayName", 
+	   	        				"projectName", "projectId", "agentHostname", "buildStatusHtml", "triggeredBy", ];
+	   	        callback(null, wordList.map(function(word) {
+	   	            return {
+	   	                caption: "\$\{" + word + "\}",
+	   	                value: "\$\{" + word + "\}",
+	   	                meta: "webhook variable"
+	   	            };
+	   	        }));
+          }
+     }
+    langTools.addCompleter(customCompleter);
 </script>
 
     <bs:dialog dialogId="repoEditFilterDialog"

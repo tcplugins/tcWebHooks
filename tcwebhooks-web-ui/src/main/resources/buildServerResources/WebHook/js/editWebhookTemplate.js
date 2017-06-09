@@ -107,8 +107,8 @@ WebHooksPlugin = {
 
 		},
 		clearEditor: function () {
-			editor.setValue("Loading...");
-			editorBranch.setValue("Loading...");
+			editor.session.setValue("Loading...");
+			editorBranch.session.setValue("Loading...");
 		},
 		getTemplateData: function (templateName, buildTemplateId) {
 			var dialog = this;
@@ -169,8 +169,8 @@ WebHooksPlugin = {
 		},
 		updateEditor: function () {
 	    	console.log(myJson.templateText.content);
-			editor.setValue(myJson.templateText.content);
-			editorBranch.setValue(myJson.branchTemplateText.content);
+	    	editor.session.setValue(myJson.templateText.content);
+			editorBranch.session.setValue(myJson.branchTemplateText.content);
 			editorBranch.setReadOnly(myJson.templateText.useTemplateTextForBranch);
 		},
 		
