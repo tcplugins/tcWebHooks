@@ -11,7 +11,9 @@ import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
+import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 
 public class TemplateFinder {
 
@@ -137,6 +139,14 @@ public class TemplateFinder {
 						"This template does not have a default template '"
 								+ templateId + "'.");
 			}
+		}
+		
+		if ("_new".equals(templateId)){
+			WebHookTemplateItem template = new WebHookTemplateItem();
+			template.setTemplateText(new WebHookTemplateText(""));
+			template.setBranchTemplateText(new WebHookTemplateBranchText(""));
+			template.setId(templateConfigWrapper.getTemplateConfig().getTemplates().getMaxId());
+			return new WebHookTemplateItemConfigWrapper(template, templateConfigWrapper.getBuildStatesWithTemplate());
 		}
 		
 		

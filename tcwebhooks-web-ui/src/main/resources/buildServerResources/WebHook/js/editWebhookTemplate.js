@@ -1,10 +1,13 @@
 WebHooksPlugin = {
 		
     editBuildEventTemplate: function(data) {
-    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Edit Artfact Filter", 'editArtifactFilter', data);
+    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Edit Build Event Template", 'editBuildEventTemplate', data);
     },
-    addFilter: function(data) {
-    	DebRepoFilterPlugin.RepoEditFilterDialog.showDialog("Add Artifact Filter", 'addArtifactFilter', data);
+    copyBuildEventTemplate: function(data) {
+    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Copy Build Event Template", 'copyBuildEventTemplate', data);
+    },
+    addBuildEventTemplate: function(data) {
+    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Add Build Event Template", 'addBuildEventTemplate', data);
     },
     copyFilter: function(data) {
     	DebRepoFilterPlugin.RepoEditFilterDialog.showDialog("Copy Artifact Filter", 'copyArtifactFilter', data);
@@ -23,8 +26,8 @@ WebHooksPlugin = {
 
         showDialog: function (title, action, data) {
         	
-        	this.getWebHookTemplateData(data.templateName, data.templateNumber);
-    		
+        	this.getWebHookTemplateData(data.templateName, data.templateNumber, action);
+        	
             $j("input[id='DebRepoaction']").val(action);
             $j(".dialogTitle").html(title);
             this.cleanFields(data);
@@ -78,15 +81,20 @@ WebHooksPlugin = {
             return !errorFound;
         },
         
-		getWebHookTemplateData: function (templateName, buildTemplateId) {
+		getWebHookTemplateData: function (templateName, buildTemplateId, action) {
 			this.disableCheckboxes();
 			this.clearEditor();
-			this.getTemplateData(templateName, buildTemplateId);
+			this.getTemplateData(templateName, buildTemplateId, action);
 		},
 		putWebHookTemplateData: function () {
 			this.disableCheckboxes();
 			this.updateJsonDataFromForm();
 			this.putTemplateData();
+		},
+		postWebHookTemplateData: function () {
+			this.disableCheckboxes();
+			this.updateJsonDataFromForm();
+			this.postTemplateData();
 		},
 		disableCheckboxes: function () {
 			$j("#editTemplateForm input.buildState").prop("disabled", true);
@@ -110,24 +118,24 @@ WebHooksPlugin = {
 			editor.session.setValue("Loading...");
 			editorBranch.session.setValue("Loading...");
 		},
-		getTemplateData: function (templateName, buildTemplateId) {
+		getTemplateData: function (templateName, buildTemplateId, action) {
 			var dialog = this;
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplateDescription,parentTemplateName,content',
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
     		    type: "GET",
     		    headers : {
     		        'Accept' : 'application/json'
     		    },
     		    success: function (response) {
     				myJson = response;
-    				dialog.handleGetSuccess();
+    				dialog.handleGetSuccess(action);
     		    }
     		});
 		}, 
-		handleGetSuccess: function () {
-			$j("#templateHeading").html(myJson.parentTemplateDescription);
-			this.updateCheckboxes();
-			this.updateEditor();
+		handleGetSuccess: function (action) {
+			$j("#templateHeading").html(myJson.parentTemplate.description);
+			this.updateCheckboxes(action);
+			this.updateEditor(action);
 		},
 		putTemplateData: function () {
 			var dialog = this;
@@ -151,32 +159,91 @@ WebHooksPlugin = {
 				}
 			});
 		}, 
+		postTemplateData: function () {
+			var dialog = this;
+			$j.ajax ({
+				url: myJson.parentTemplate.href + "/templateItem",
+				type: "POST",
+				data: JSON.stringify(myJson),
+				dataType: 'json',
+				headers : {
+					'Content-Type' : 'application/json',
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					dialog.close();
+					$("buildEventTemplatesContainer").refresh();
+				},
+				error: function (response) {
+					console.log(response);
+					alert(response);
+				}
+			});
+		}, 
 		handlePutSuccess: function () {
 			$j("#templateHeading").html(myJson.parentTemplateDescription);
 			this.updateCheckboxes();
 			this.updateEditor();
 		},
-		updateCheckboxes: function () {
-    		$j(myJson.state).each(function() {
-    			console.log(this.type + " :: "+ this.enabled);
-    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
-    			if (this.editable) {
-    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
-    			}
-    		});
-    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", myJson.templateText.useTemplateTextForBranch).prop( "disabled", false);
-			$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
+		updateCheckboxes: function (action) {
+			
+        	if (action === 'copyBuildEventTemplate' || action === 'addBuildEventTemplate') {
+        		if (myJson.id == 'defaultTemplate') {
+            		$j(myJson.state).each(function() {
+            			console.log(this.type + " :: "+ this.enabled);
+            			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.enabled);
+            			if (this.enabled) {
+            				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+            			}
+            		});
+        		} else {
+            		$j(myJson.state).each(function() {
+            			console.log(this.type + " :: "+ this.enabled);
+            			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.editable && ! this.enabled);
+            			if (this.editable && ! this.enabled) {
+            				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+            			}
+            		});
+        		}
+        		myJson.id = '_new';
+        	} else {
+	    		$j(myJson.state).each(function() {
+	    			console.log(this.type + " :: "+ this.enabled);
+	    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
+	    			if (this.editable) {
+	    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+	    			}
+	    		});
+        	}
+        	
+        	if (action === 'addBuildEventTemplate') {
+	    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", false).prop( "disabled", false);
+				$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
+
+        	} else {
+	    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", myJson.templateText.useTemplateTextForBranch).prop( "disabled", false);
+				$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
+			}
 		},
-		updateEditor: function () {
-	    	console.log(myJson.templateText.content);
-	    	editor.session.setValue(myJson.templateText.content);
-			editorBranch.session.setValue(myJson.branchTemplateText.content);
-			editorBranch.setReadOnly(myJson.templateText.useTemplateTextForBranch);
+		updateEditor: function (action) {
+			if (action === 'addBuildEventTemplate') {
+				editor.session.setValue("");
+				editorBranch.session.setValue("");				
+			} else {
+				console.log(myJson.templateText.content);
+				editor.session.setValue(myJson.templateText.content);
+				editorBranch.session.setValue(myJson.branchTemplateText.content);
+				//editorBranch.setReadOnly(myJson.templateText.useTemplateTextForBranch);
+			}
 		},
 		
 		doPost: function() {
 			console.log(myJson);
-			this.putWebHookTemplateData();
+			if (myJson.id == '_new' || myJson.id == '_copy') {
+				this.postWebHookTemplateData();
+			} else {
+				this.putWebHookTemplateData();
+			}
 			return false;
 		},
 

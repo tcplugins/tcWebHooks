@@ -15,11 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.testFramework.fixtures.impl.IdeaTestFixtureFactoryImpl.MyJavaModuleFixtureBuilderImpl;
 
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -130,7 +132,7 @@ public class Template {
 	}
 
 	@XmlRootElement(name = "templateItem")
-	@XmlType(name = "templateItem", propOrder = { "id", "enabled", "href", "templateText", "branchTemplateText", "parentTemplateName", "parentTemplateDescription", "states"})
+	@XmlType(name = "templateItem", propOrder = { "id", "enabled", "href", "templateText", "branchTemplateText", "parentTemplate", "states"})
 	@Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateItem {
 		@XmlElement
@@ -148,12 +150,9 @@ public class Template {
 		@XmlAttribute
 		public String href;
 		
-		@XmlAttribute
-		public String parentTemplateName;
+		@XmlElement
+		public TemplateItemParent parentTemplate;
 		
-		@XmlAttribute
-		public String parentTemplateDescription;
-
 		@XmlElement(name = "state")	@XmlElementWrapper(name = "states")
 		private List<WebHookTemplateStateRest> states = new ArrayList<WebHookTemplateStateRest>();
 
@@ -175,8 +174,7 @@ public class Template {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateDefaultItemHref(template.getTemplateConfig())));
 			this.templateText = ValueWithDefault.decideDefault(fields.isIncluded("templateText", false, true), new TemplateText(template.getTemplateConfig(), id, fields, beanContext));
 			this.branchTemplateText = ValueWithDefault.decideDefault(fields.isIncluded("branchTemplateText", false, true), new BranchTemplateText(template.getTemplateConfig(), id, fields, beanContext));
-			this.parentTemplateName = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplateName", false, false), template.getTemplateConfig().getName());
-			this.parentTemplateDescription = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplateDescription", false, false), template.getTemplateConfig().getTemplateDescription());
+			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getName(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
 
 			if (fields.isIncluded("states", false, true)) {
 				states = new ArrayList<>();
@@ -208,8 +206,7 @@ public class Template {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateItemHref(template.getTemplateConfig(), templateItem)));
 			this.templateText = new TemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
 			this.branchTemplateText = new BranchTemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
-			this.parentTemplateName = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplateName", false, false), template.getTemplateConfig().getName());
-			this.parentTemplateDescription = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplateDescription", false, false), template.getTemplateConfig().getTemplateDescription());
+			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getName(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
 			this.states.clear();
 			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 				WebHookTemplateStateRest myState = new WebHookTemplateStateRest(state.getShortName(), 
@@ -238,6 +235,17 @@ public class Template {
 			return null;
 		}
 		
+	}
+	
+	@XmlRootElement
+	@XmlType (name = "parentTemplate", propOrder = { "name", "description", "href" }) 
+	@Getter @Setter @XmlAccessorType(XmlAccessType.FIELD)
+	@NoArgsConstructor // empty constructor for JAXB
+	@AllArgsConstructor
+	public static class TemplateItemParent {
+		String name;
+		String description;
+		String href;
 	}
 	
 	@XmlRootElement
