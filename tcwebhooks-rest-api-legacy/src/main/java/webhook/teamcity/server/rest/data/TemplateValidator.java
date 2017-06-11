@@ -9,7 +9,7 @@ public class TemplateValidator {
 	
 	public TemplateValidationResult validateTemplateItem(TemplateItem templateItem, TemplateItem requestTemplateItem) {
 		TemplateValidationResult result = new TemplateValidationResult();
-		if (!templateItem.getId().equals(requestTemplateItem.getId())) {
+		if (!"_new".equals(requestTemplateItem.getId()) && !templateItem.getId().equals(requestTemplateItem.getId())) {
 			result.setErrored(true);
 			result.addError("id", "The id field must match the existing one.");
 		}
