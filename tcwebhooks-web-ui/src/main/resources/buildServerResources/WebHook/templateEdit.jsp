@@ -25,8 +25,6 @@
     </bs:linkCSS>
     <bs:linkScript>
       ${teamcityPluginResourcesPath}WebHook/js/editWebhookTemplate.js
-      ${teamcityPluginResourcesPath}WebHook/js/ace-editor/src-min-noconflict/ace.js
-      ${teamcityPluginResourcesPath}WebHook/js/ace-editor/src-min-noconflict/ext-language_tools.js
     </bs:linkScript>
     <script type="text/javascript">
       BS.Navigation.items = [
@@ -74,6 +72,12 @@
   </jsp:attribute>
 
   <jsp:attribute name="body_include">
+  	<!--  
+  		We load the ACE editor here because it loads extra resources, and if they were bundled in with the
+  		TeamCity scripts in the linkscript tag, the base URL changes and ACE can't load its dependencies.  
+  	 -->
+    <script type=text/javascript src="..${jspHome}WebHook/js/ace-editor/src-min-noconflict/ace.js"></script>
+    <script type=text/javascript src="..${jspHome}WebHook/js/ace-editor/src-min-noconflict/ext-language_tools.js"></script>
     <script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
 	    <script type=text/javascript>

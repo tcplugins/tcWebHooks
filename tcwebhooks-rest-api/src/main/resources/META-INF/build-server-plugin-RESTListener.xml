@@ -10,6 +10,11 @@
        default-autowire="constructor">
 
 	<context:component-scan base-package="jetbrains.buildServer.server.rest"/>
+	
+	<bean id="webHookTeamCityRestApiZipPluginFixer"
+        class="webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer"
+        init-method="fixRestApiZipPlugin" 
+        />
 
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
 
