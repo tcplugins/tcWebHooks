@@ -96,6 +96,9 @@ public class WebHookTemplateEntity {
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
 	
+	@XmlAttribute
+	String format;
+	
 	@XmlElement(name="templates")
 	WebHookTemplateItems templates;
 	
@@ -130,11 +133,9 @@ public class WebHookTemplateEntity {
 			entity.setPreferredDateTimeFormat(config.getPreferredDateTimeFormat());
 		}
 		
-		List<WebHookTemplateEntity.WebHookTemplateFormat> formats = new ArrayList<>();
-		for (WebHookTemplateConfig.WebHookTemplateFormat format : config.getFormats()) {
-			formats.add(new WebHookTemplateEntity.WebHookTemplateFormat(format.getName(), format.isEnabled()));
+		if (config.getFormat() != null) {
+			entity.setFormat(config.getFormat());
 		}
-		entity.setFormats(formats);
 		
 		entity.templates = new WebHookTemplateItems();
 		entity.templates.maxId = config.getTemplates().getMaxId();
@@ -146,6 +147,34 @@ public class WebHookTemplateEntity {
 		if (templates != null){
 			templates.fixTemplateIds();
 		}
+	}
+	
+	/**
+	 * This was added to migrate from 
+	 * <pre>
+	 * &lt;template&gt;
+	 * &nbsp;&lt;formats&gt;
+	 * &nbsp;&nbsp;&lt;format name="jsonTemplate" enabled="true"&gt;
+	 * &nbsp;&lt;/formats&gt;
+	 * &lt;/template&gt;
+	 * </pre> to <pre> 
+	 * &nbsp;&lt;template format="jsonTemplate"&gt;
+	 * &nbsp;&nbsp;...
+	 * &nbsp;&lt;/template&gt;
+	 * </pre>
+	 * @return
+	 */
+	public String getFormat() {
+		if (this.format == null && this.getFormats() != null) {
+			for (WebHookTemplateFormat format : getFormats()) {
+				if (format.enabled) {
+					this.format = format.getName();
+					break;
+				}
+			}
+			this.formats = null;
+		}
+		return format;
 	}
 	
 	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD) @NoArgsConstructor

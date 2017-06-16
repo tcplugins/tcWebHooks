@@ -221,10 +221,8 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 			}
 		} // End if entityTemplate.getTemplates() != null
 		
-		for (webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat format : entityTemplate.getFormats()){
-			if (format.isEnabled() && payloadManager.isRegisteredFormat(format.getName())){
-				template.supportedFormats.add(format.getName());
-			}
+		if (entityTemplate.getFormat() != null && payloadManager.isRegisteredFormat(entityTemplate.getFormat())){
+			template.supportedFormats.add(entityTemplate.getFormat());
 		}
 		return template;
 	}

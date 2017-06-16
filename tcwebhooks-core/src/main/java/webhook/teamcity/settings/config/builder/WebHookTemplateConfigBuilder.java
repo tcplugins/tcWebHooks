@@ -6,6 +6,7 @@ import java.util.List;
 
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
 
 public class WebHookTemplateConfigBuilder {
 	
@@ -48,16 +49,18 @@ public class WebHookTemplateConfigBuilder {
 			config.setPreferredDateTimeFormat(entity.getPreferredDateTimeFormat());
 		}
 		
-		List<WebHookTemplateConfig.WebHookTemplateFormat> formats = new ArrayList<>();
-		for (WebHookTemplateEntity.WebHookTemplateFormat format : entity.getFormats()) {
-			formats.add(new WebHookTemplateConfig.WebHookTemplateFormat(format.getName(), format.isEnabled()));
+		if (entity.getFormat() != null) {
+			config.setFormat(entity.getFormat());
 		}
-		config.setFormats(formats);
 		
 		WebHookTemplateConfig.WebHookTemplateItems templates = new WebHookTemplateConfig.WebHookTemplateItems();
 		List<WebHookTemplateConfig.WebHookTemplateItem> templateItems = new ArrayList<>();
-		templates.setMaxId(entity.getTemplates().getMaxId());
-		templateItems.addAll(buildAll(entity.getTemplates().getTemplates()));
+		if (entity.getTemplates() == null) {
+			templates.setMaxId(0);
+		} else {
+			templates.setMaxId(entity.getTemplates().getMaxId());
+			templateItems.addAll(buildAll(entity.getTemplates().getTemplates()));
+		}
 		templates.setTemplates(templateItems);
 		config.setTemplates(templates);
 		return config;

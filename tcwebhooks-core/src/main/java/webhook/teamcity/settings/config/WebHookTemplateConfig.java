@@ -24,7 +24,7 @@ public class WebHookTemplateConfig {
 	String templateDescription;
 	String templateToolTip;
 	String preferredDateTimeFormat;
-	List<WebHookTemplateFormat> formats = new ArrayList<>();
+	String format;
 	WebHookTemplateItems templates = new WebHookTemplateItems();
 	
 
@@ -67,14 +67,6 @@ public class WebHookTemplateConfig {
 			}
 			return null;
 		}
-	}
-	
-	@XmlRootElement 
-	@XmlAccessorType(XmlAccessType.FIELD)
-	@Data @AllArgsConstructor @NoArgsConstructor
-	public static class WebHookTemplateFormat {
-		String name;
-		boolean enabled;
 	}
 	
 	@XmlRootElement 
