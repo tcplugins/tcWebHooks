@@ -51,7 +51,7 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    }
 
 	    public void register(){
-	      myWebManager.registerController("/webhooks/templateModify.html", this);
+	      myWebManager.registerController("/webhooks/template.html", this);
 	    }
 
 	    @Nullable
@@ -64,30 +64,13 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    	
 	    	
 	    	
-	    	if (request.getParameter(GET_VARIABLE_NAME_ACTION) != null){
+	    	if (request.getParameter(GET_VARIABLE_NAME_TEMPLATE) != null){
 	    		
-	    		
-	    		if (request.getParameter(GET_VARIABLE_NAME_ACTION).equals("edit")){
-	    			
-	    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE).toString();
-	    			if (templateName != null) {
-	    				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
-	    				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig));
-	    			}
-	    			
-	    			
-	    		} else if (request.getParameter(GET_VARIABLE_NAME_ACTION).equals("override")){
-	    			
-	    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE).toString();
-	    			if (templateName != null) {
-	    				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
-	    				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig));
-	    			}
-	    			
-	    		} else if (request.getParameter(GET_VARIABLE_NAME_ACTION).equals("clone")){
-	    			
-	    		}
-	    		
+    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE).toString();
+    			if (templateName != null) {
+    				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
+    				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig));
+    			}
 	    		
 	    	}
 	    	
