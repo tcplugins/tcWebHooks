@@ -43,7 +43,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateSta
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 
 @XmlRootElement(name = "template")
-@XmlType(name = "template", propOrder = { "id", "name", "description", "status", "rank", "href", "webUrl", "defaultTemplate", "templates" })
+@XmlType(name = "template", propOrder = { "id", "name", "description", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "templates" })
 
 public class Template {
 	@XmlAttribute
@@ -57,6 +57,9 @@ public class Template {
 	
 	@XmlAttribute
 	public Integer rank;
+	
+	@XmlAttribute
+	public String format;
 	
 	@XmlAttribute
 	public String href;
@@ -305,6 +308,9 @@ public class Template {
 		
 		status = ValueWithDefault.decideDefault(fields.isIncluded("status"),
 				templateWrapper.getStatus().toString());
+		
+		format = ValueWithDefault.decideDefault(fields.isIncluded("format"),
+				template.getFormat());
 		
 		rank = ValueWithDefault.decideDefault(fields.isIncluded("rank"),
 				Integer.valueOf(template.getRank()));
