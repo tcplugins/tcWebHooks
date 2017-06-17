@@ -6,7 +6,6 @@ import java.util.List;
 
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
 
 public class WebHookTemplateConfigBuilder {
 	
