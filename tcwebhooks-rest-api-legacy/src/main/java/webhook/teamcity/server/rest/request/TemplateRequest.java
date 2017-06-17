@@ -46,6 +46,8 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBra
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateState;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
+import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
+import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 @Path(TemplateRequest.API_TEMPLATES_URL)
 public class TemplateRequest {
@@ -151,6 +153,13 @@ public class TemplateRequest {
     } else {
     	throw new OperationException("There was an error saving your template. Sorry.");
     }
+  }
+  
+  @GET
+  @Path("/{templateLocator}/rawConfig")
+  @Produces({"application/xml"})
+  public WebHookTemplateEntity serveRawConfigTemplate(@PathParam("templateLocator") String templateLocator) {
+	  return WebHookTemplateConfigBuilder.buildEntity(myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig());
   }
   
   @GET
