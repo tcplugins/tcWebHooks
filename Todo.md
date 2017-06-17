@@ -9,4 +9,4 @@
 - Add support for specifying templating engine (eg, velocity).
 - Find some way to be able to specify parts of complex objects.  eg buildRunners.
 - move useNonBranchTemplate checkbox so that it's visible from both templates.
-- fix fullConfig link as it looks weird
+- fix fullConfig link as it looks weird - done
