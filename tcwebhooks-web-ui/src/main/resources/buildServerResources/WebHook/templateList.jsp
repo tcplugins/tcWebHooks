@@ -64,28 +64,14 @@
 				</td>
 				<td class="nowrap">${template.templateState.description}</td>
 				
-				<td>0 instances</td>
+				<td><i>not implemented yet</i></td>
 
 		<c:choose>  
     		<c:when test="${template.templateShortName == 'none'}"> 		
-				<td colspan="2">No template available</td>
+				<td>No template available</td>
 			</c:when>
 			<c:otherwise>  		
-						<c:choose>  
-				    		<c:when test="${template.templateState.isStateProvided()}"> 
-								<td><a href="templateModify.html?action=override&template=${template.templateShortName}&format=${template.formatShortName}">Customise</a></td>
-				         	</c:when>  
-				    		<c:when test="${template.templateState.isStateUserDefined()}"> 
-								<td><a href="templateModify.html?action=edit&template=${template.templateShortName}&format=${template.formatShortName}">Edit</a></td>
-				         	</c:when>  
-				    		<c:when test="${template.templateState.isStateUserOverridden()}"> 
-								<td><a href="templateModify.html?action=edit&template=${template.templateShortName}&format=${template.formatShortName}">Edit</a></td>
-				         	</c:when>  
-				        	<c:otherwise>  
-								<td>Edit</td>
-				         	</c:otherwise>  
-						</c:choose> 				
-								<td><a href="templateModify.html?action=clone&template=${template.templateShortName}&format=${template.formatShortName}">Clone</a></td>
+				<td><a href="template.html?template=${template.templateShortName}">View</a></td>
 			</c:otherwise>  
 		</c:choose>
 		
