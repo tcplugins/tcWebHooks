@@ -13,8 +13,10 @@
 	
 	<bean id="webHookTeamCityRestApiZipPluginFixer"
         class="webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer"
-        init-method="fixRestApiZipPlugin" 
+        init-method="findRestApiZipPlugins" 
         />
+
+	<bean id="restApiJarHealthReport" class="webhook.teamcity.server.RestApiJarHealthReport"/>
 
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
 

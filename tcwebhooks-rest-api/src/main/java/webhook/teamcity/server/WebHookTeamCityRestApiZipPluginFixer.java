@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.Getter;
 import webhook.teamcity.Loggers;
 
 public class WebHookTeamCityRestApiZipPluginFixer {
@@ -26,46 +27,95 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	final static String[] filenames = { "server/jaxb-api-2.2.5.jar", "server/jaxb-impl-2.2.5.jar"};
 	final static String unpackedLocation = File.separator + ".unpacked" + File.separator + "rest-api";
 	
+	@Getter
+	private List<Path> foundApiZipFiles = new ArrayList<>();
 	
-	public void fixRestApiZipPlugin() {
+	@Getter
+	private List<Path> foundApiZipFilesContainingJaxbJars = new ArrayList<>();
+	
+	@Getter
+	private List<Path> foundApiZipFilesNotContainingJaxbJars = new ArrayList<>();
+	
+	@Getter
+	private List<Path> foundUnpackedApiZipFilesContainingJaxbJars = new ArrayList<>();
+	
+	@Getter
+	private List<Path> foundUnpackedApiZipFilesNotContainingJaxbJars = new ArrayList<>();
+	
+	public boolean foundApiZipFilesContainingJaxbJars() {
+		return foundApiZipFilesContainingJaxbJars.size() > 0 || foundUnpackedApiZipFilesContainingJaxbJars.size() > 0;
+	}
+	
+	public void findRestApiZipPlugins() {
 		Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Starting to check if rest-api.zip has jaxb jars");
 		File possibleLocation = findTeamCityBaseLocation();
+		this.foundApiZipFiles = new ArrayList<>();
+		this.foundApiZipFilesContainingJaxbJars = new ArrayList<>();
+		this.foundApiZipFilesNotContainingJaxbJars = new ArrayList<>();
+		this.foundUnpackedApiZipFilesContainingJaxbJars  = new ArrayList<>();
+		this.foundUnpackedApiZipFilesNotContainingJaxbJars = new ArrayList<>();
+		
 		if (possibleLocation != null) {
 			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for teamcity in: " + possibleLocation.getAbsolutePath());
 			try {
-				for (Path p : findRestApiZipFileInTomcatDir(possibleLocation, "rest-api.zip")){
+				foundApiZipFiles.addAll(findRestApiZipFileInTomcatDir(possibleLocation, "rest-api.zip")); 
+				
+				for (Path p : foundApiZipFiles){
 					if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames)) {
-						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. Attempting to remove them from: " + p.toFile().getAbsolutePath());
-						deleteFilesFromRestApiZipFile(p.toFile(), filenames);
-						if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames)) {
-							Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. It was not possible to remove them from: " + p.toFile().getAbsolutePath());
-						} else {
-							Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from: " + p.toFile().getAbsolutePath());
-							Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
-						}
+						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars: " + p.toFile().getAbsolutePath());
+						foundApiZipFilesContainingJaxbJars.add(p);
 					} else {
 						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
+						foundApiZipFilesNotContainingJaxbJars.add(p);
 					}
 					String restApiUnpackedDir = p.toFile().getParent() + unpackedLocation;
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
 					if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames)) {
-						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars. Attempting to remove them from: " + restApiUnpackedDir);
-						deleteFilesFromPluginsUnpackedDir(p.toFile().getParent(), filenames);
-						if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames)) {
-							Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir still contains jars. It was not possible to remove them from: " + restApiUnpackedDir);
-						} else {
-							Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from unpacked dir : " + restApiUnpackedDir);
-							Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
-						}
+						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars: " + restApiUnpackedDir);
+						foundUnpackedApiZipFilesContainingJaxbJars.add(p);
 					} else {
 						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);
+						foundUnpackedApiZipFilesNotContainingJaxbJars.add(p);
 					}
 				}
 			} catch (IOException e) {
-				Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not remove files from rest-api.zip", e);
+				Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not open zip file rest-api.zip", e);
 			}
 		} else {
 			Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Unable to determine teamcity install location. No attempt will be made to fix rest-api.zip");
+		}
+	}
+	
+	public void fixRestApiZipPlugin(Path p) {
+		try {
+				if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames)) {
+					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. Attempting to remove them from: " + p.toFile().getAbsolutePath());
+					deleteFilesFromRestApiZipFile(p.toFile(), filenames);
+					if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames)) {
+						Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. It was not possible to remove them from: " + p.toFile().getAbsolutePath());
+					} else {
+						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from: " + p.toFile().getAbsolutePath());
+						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
+					}
+				} else {
+					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
+				}
+				String restApiUnpackedDir = p.toFile().getParent() + unpackedLocation;
+				Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
+				if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames)) {
+					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars. Attempting to remove them from: " + restApiUnpackedDir);
+					deleteFilesFromPluginsUnpackedDir(p.toFile().getParent(), filenames);
+					if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames)) {
+						Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir still contains jars. It was not possible to remove them from: " + restApiUnpackedDir);
+					} else {
+						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from unpacked dir : " + restApiUnpackedDir);
+						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
+					}
+				} else {
+					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);
+				}
+		} catch (IOException e) {
+			Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not remove files from rest-api.zip", e);
 		}
 	}
 	
