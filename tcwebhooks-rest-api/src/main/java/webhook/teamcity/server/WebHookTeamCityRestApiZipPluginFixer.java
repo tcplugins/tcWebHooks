@@ -28,6 +28,9 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	final static String unpackedLocation = File.separator + ".unpacked" + File.separator + "rest-api";
 	
 	@Getter
+	private boolean haveFilesBeenCleanedSinceBoot = false;
+	
+	@Getter
 	private List<Path> foundApiZipFiles = new ArrayList<>();
 	
 	@Getter
@@ -46,7 +49,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		return foundApiZipFilesContainingJaxbJars.size() > 0 || foundUnpackedApiZipFilesContainingJaxbJars.size() > 0;
 	}
 	
-	public void findRestApiZipPlugins() {
+	public synchronized void findRestApiZipPlugins() {
 		Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Starting to check if rest-api.zip has jaxb jars");
 		File possibleLocation = findTeamCityBaseLocation();
 		this.foundApiZipFiles = new ArrayList<>();
@@ -86,7 +89,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		}
 	}
 	
-	public void fixRestApiZipPlugin(Path p) {
+	public synchronized void fixRestApiZipPlugin(Path p) {
 		try {
 				if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames)) {
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. Attempting to remove them from: " + p.toFile().getAbsolutePath());
@@ -96,6 +99,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 					} else {
 						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from: " + p.toFile().getAbsolutePath());
 						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
+						this.haveFilesBeenCleanedSinceBoot = true;
 					}
 				} else {
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
@@ -110,6 +114,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 					} else {
 						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from unpacked dir : " + restApiUnpackedDir);
 						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
+						this.haveFilesBeenCleanedSinceBoot = true;
 					}
 				} else {
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);

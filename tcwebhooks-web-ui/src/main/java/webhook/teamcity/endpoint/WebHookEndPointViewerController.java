@@ -1,20 +1,21 @@
 package webhook.teamcity.endpoint;
 
+import static webhook.teamcity.payload.util.StringUtils.stripTrailingSlash;
+
 import java.io.PrintWriter;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.Nullable;
+import org.springframework.web.servlet.ModelAndView;
+
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
-
-import org.jetbrains.annotations.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-
 import webhook.teamcity.Loggers;
 
 public class WebHookEndPointViewerController extends BaseController {
@@ -71,11 +72,4 @@ public class WebHookEndPointViewerController extends BaseController {
     	return null;
     }
     
-    protected static String stripTrailingSlash(String stringWithPossibleTrailingSlash){
-    	if (stringWithPossibleTrailingSlash.endsWith("/")){
-    		return stringWithPossibleTrailingSlash.substring(0, stringWithPossibleTrailingSlash.length()-1);
-    	}
-    	return stringWithPossibleTrailingSlash;
-    	
-    }
 }

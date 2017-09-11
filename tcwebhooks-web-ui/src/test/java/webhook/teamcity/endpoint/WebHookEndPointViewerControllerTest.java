@@ -1,7 +1,7 @@
 package webhook.teamcity.endpoint;
 
 import static org.junit.Assert.*;
-import static webhook.teamcity.endpoint.WebHookEndPointViewerController.stripTrailingSlash;
+import static webhook.teamcity.payload.util.StringUtils.stripTrailingSlash;
 import org.junit.Test;
 
 
