@@ -23,10 +23,10 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.healthStatus.HealthStatusItemPageExtension;
 import webhook.teamcity.server.rest.web.WebHookRestApiAdminPage;
 
-public class RestApiJarHealthReport extends HealthStatusReport {
+public class RestApiCleanupRestartRequiredHealthReport extends HealthStatusReport {
 	
-	private static final String CATEGORY_ID = "webhookRestApiConflictingJars"; 
-	private static final String CATEGORY_NAME = "WebHook REST API Jar Conflict";
+	private static final String CATEGORY_ID = "webhookRestApiRestartRequired"; 
+	private static final String CATEGORY_NAME = "WebHook REST API Restart Required";
 	
 	@NotNull 
 	private final SBuildServer mySBuildServer;
@@ -37,7 +37,7 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 	@NotNull 
 	private final WebHookTeamCityRestApiZipPluginFixer myWebHookTeamCityRestApiZipPluginFixer; 
 	
-	public RestApiJarHealthReport(
+	public RestApiCleanupRestartRequiredHealthReport(
 								  @NotNull final SBuildServer buildServer,
 								  @NotNull final PagePlaces pagePlaces,
 								  @NotNull final PluginDescriptor pluginDescriptor,
@@ -49,8 +49,7 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 			@Override 
 			public boolean isAvailable(@NotNull final HttpServletRequest request) { 
 				String pageUrl = (String)request.getAttribute("pageUrl");
-				return myWebHookTeamCityRestApiZipPluginFixer.foundApiZipFilesContainingJaxbJars()
-					  && myWebHookTeamCityRestApiZipPluginFixer.getFoundApiZipFiles().size() > 0
+				return myWebHookTeamCityRestApiZipPluginFixer.isHaveFilesBeenCleanedSinceBoot()
 					  && isAdminPageOrTemplateEditPage(pageUrl)
 					  && super.isAvailable(request); 
 			}
@@ -60,7 +59,7 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 				
 			} 
 	    }; 
-	    myPEx.setIncludeUrl(pluginDescriptor.getPluginResourcesPath("WebHookRestApi/restApiHealthStatus.jsp")); 
+	    myPEx.setIncludeUrl(pluginDescriptor.getPluginResourcesPath("WebHookRestApi/restApiHealthRestartStatus.jsp")); 
 	    //myPEx.addJsFile(pluginDescriptor.getPluginResourcesPath("/js/QueueStateActions.js")); 
 	    myPEx.setVisibleOutsideAdminArea(true); 
 	    myPEx.register(); 
@@ -73,7 +72,7 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 
 	@Override
 	public String getDisplayName() {
-		return "WebHook REST API Jar Conflict Report";
+		return "WebHook REST API Jar Restart Report";
 	}
 
 	@Override
@@ -89,9 +88,9 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 	@Override
 	public void report(HealthStatusScope scope, HealthStatusItemConsumer resultConsumer) {
 		Map<String,Object> params = new HashMap<>();
-		params.put("possibleProblemFilesCount", myWebHookTeamCityRestApiZipPluginFixer.getFoundApiZipFilesContainingJaxbJars().size() + myWebHookTeamCityRestApiZipPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars().size());
+		params.put("webhookRestApiRestartRequired", myWebHookTeamCityRestApiZipPluginFixer.isHaveFilesBeenCleanedSinceBoot());
 		params.put("adminUrl", stripTrailingSlash(mySBuildServer.getRootUrl()) + "/admin/admin.html?item=" + WebHookRestApiAdminPage.TC_WEB_HOOK_REST_API_ADMIN_ID);
-	    final HealthStatusItem item = new HealthStatusItem("webhook-api-jar-conflict", myCategory, params);
+	    final HealthStatusItem item = new HealthStatusItem("webhook-api-restart-required", myCategory, params);
 	    resultConsumer.consumeGlobal(item);
 	}
 

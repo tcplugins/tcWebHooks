@@ -17,6 +17,9 @@
         />
 
 	<bean id="restApiJarHealthReport" class="webhook.teamcity.server.RestApiJarHealthReport"/>
+	<bean id="webHookRestApiAdminPage" class="webhook.teamcity.server.rest.web.WebHookRestApiAdminPage"/>
+	<bean id="webHookRestApiActionController" class="webhook.teamcity.server.rest.web.WebHookRestApiActionController"/>
+	<bean id="fixPluginZipFileAction" class="webhook.teamcity.server.rest.web.action.FixPluginZipFileAction"/>
 
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
 
