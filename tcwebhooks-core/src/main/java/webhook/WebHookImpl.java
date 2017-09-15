@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -19,6 +17,7 @@ import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthenticator;

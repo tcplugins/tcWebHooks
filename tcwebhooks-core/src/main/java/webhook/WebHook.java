@@ -101,12 +101,10 @@ public interface WebHook {
 	public abstract SFinishedBuild getPreviousNonPersonalBuild();
 
 	public abstract void setPreviousNonPersonalBuild(SFinishedBuild localSFinishedBuild);
-	
+
 	public abstract void setConnectionTimeOut(int httpConnectionTimeout);
 
 	public abstract void setResponseTimeOut(int httpResponseTimeout);
-
-	
 
 
 }
