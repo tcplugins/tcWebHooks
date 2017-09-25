@@ -89,7 +89,7 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 		
 		myPluginFixer.findRestApiZipPlugins();
 		
-		String errorMsg = "The file you asked to clean does not appear to have been successfully cleaned.";
+		String errorMsg = "The file you asked to clean does not appear to have been successfully cleaned. Please see the GitHub issue linked on this page for more information.";
 		for (Path p : myPluginFixer.getFoundApiZipFilesContainingJaxbJars()) {
 			if (p.toString().equals(path)) {
 				ajaxResponse.setAttribute("error", errorMsg);

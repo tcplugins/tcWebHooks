@@ -45,6 +45,8 @@ public class WebHookRestApiAdminPage extends AdminPage {
 		myPluginFixer = webHookTeamCityRestApiZipPluginFixer;
 		setPluginName(TC_WEB_HOOK_REST_API_ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHookRestApi/adminTab.jsp"));
+        addCssFile(descriptor.getPluginResourcesPath("WebHookRestApi/css/tcWebHooksApi.css"));
+        addJsFile(descriptor.getPluginResourcesPath("WebHookRestApi/restApiHealthStatus.js"));
 		setTabTitle("WebHooks REST API");
 		setPosition(PositionConstraint.after("clouds", "email", "jabber"));
 		register();
