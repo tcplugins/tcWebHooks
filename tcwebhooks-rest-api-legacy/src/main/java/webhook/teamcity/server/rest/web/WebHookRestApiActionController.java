@@ -31,7 +31,6 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 public class WebHookRestApiActionController extends BaseAjaxActionController {
 	
 	public static final String ACTION_TYPE = "action";
-    public static final String REST_API_ZIP_FILE = "rest.api.zip.file";
     
   public WebHookRestApiActionController(@NotNull final PluginDescriptor pluginDescriptor,
                                         	   @NotNull final WebControllerManager controllerManager) {

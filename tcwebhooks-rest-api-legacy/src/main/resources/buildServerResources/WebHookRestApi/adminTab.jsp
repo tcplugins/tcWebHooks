@@ -3,11 +3,13 @@
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
 <%@ include file="/include-internal.jsp" %>
 
+<bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
 
 	        <div class="repoList">
 	        <h2 class="noBorder">WebHook REST API</h2>
-	        
 	        <h3>Health Report</h3>
+	        
+	        <bs:messages key="apiFixResult"/>
 	        
 	        <div>
 	       	<c:choose>  
@@ -36,7 +38,8 @@
 	        			</td>
 	        	<c:choose>
 	        		<c:when test="${foundJar.jarInZip}">
-						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td><td>fix</td>
+						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td>
+						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${foundJar.path.toString()}')">Fix</a></td>
 					</c:when>
 					<c:otherwise>
 						<td colspan="2" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
@@ -44,7 +47,8 @@
 				</c:choose>
 				<c:choose>
 	        		<c:when test="${foundJar.jarInUnpacked}">
-						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td><td>fix</td>
+						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td>
+						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${foundJar.path.toString()}')">Fix</a></td>
 					</c:when>
 					<c:otherwise>
 						<td colspan="2" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
@@ -55,5 +59,30 @@
 	        
 		    </table>
 	        
+</bs:refreshable>	        
 	        </div>
+
+    <bs:dialog dialogId="fixPluginDialog"
+               dialogClass="fixPluginDialog"
+               title="Fix REST API Plugin"
+               closeCommand="WebHookRestApiHealthStatus.FixPluginDialog.close()">
+        <forms:multipartForm id="fixPluginForm"
+                             action="/admin/debianRepositoryAction.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHookRestApiHealthStatus.FixPluginDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td>The API ZIP file will be modified and the conflicting jars will be removed from both the ZIP file and the unpacked directory.
+                 		This will make changes to the files on your TeamCity server.
+                        <div id="apiFixResult"></div>
+                </td></tr>
+            </table>
+            <input type="hidden" id="filePath" name="filePath"/>
+            <input type="hidden" name="action" id="FixPluginaction" value="fixPluginFile"/>
+            <div class="popupSaveButtonsBlock">
+                <forms:submit id="fixPluginDialogSubmit" label="Fix Plugin File"/>
+                <forms:cancel onclick="WebHookRestApiHealthStatus.FixPluginDialog.close()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>	        
 	        
