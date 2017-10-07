@@ -13,7 +13,7 @@ public class TemplateValidator {
 			result.setErrored(true);
 			result.addError("id", "The id field must match the existing one.");
 		}
-		
+
 		for (WebHookTemplateStateRest requestItemState : requestTemplateItem.getStates()) {
 			if (BuildStateEnum.findBuildState(requestItemState.getType()) == null){ 
 				result.setErrored(true);
@@ -32,4 +32,23 @@ public class TemplateValidator {
 		return result;
 	}
 
+	public TemplateValidationResult validateDefaultTemplateItem(TemplateItem requestTemplateItem) {
+		TemplateValidationResult result = new TemplateValidationResult();
+		if (requestTemplateItem.getTemplateText().getContent() == null 
+				|| requestTemplateItem.getTemplateText().getContent().trim().isEmpty()) {
+			result.setErrored(true);
+			result.addError("id", "The template text content must not be null or empty.");
+		}
+		
+		if (! requestTemplateItem.getTemplateText().getUseTemplateTextForBranch()
+				&& (
+						requestTemplateItem.getBranchTemplateText().getContent() == null 
+					||  requestTemplateItem.getBranchTemplateText().getContent().trim().isEmpty()
+					)
+			) {
+			result.setErrored(true);
+			result.addError("id", "The branch template text content must not be null or empty if 'useTemplateTextForBranch' is false.");
+		}
+		return result;
+	}
 }

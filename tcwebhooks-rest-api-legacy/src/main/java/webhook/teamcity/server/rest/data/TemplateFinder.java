@@ -116,7 +116,7 @@ public class TemplateFinder {
 			final String templateId = locator.getSingleDimensionValue("id");
 			return buildWebHookTemplateItemConfigWrapper(templateConfigWrapper, templateId);
 		} else {
-			throw new BadRequestException("Sorry: Searching for multiple template is not supported.");
+			throw new BadRequestException("Sorry: Searching for multiple templates is not supported.");
 		}
 		
 	}

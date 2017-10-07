@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.testFramework.fixtures.impl.IdeaTestFixtureFactoryImpl.MyJavaModuleFixtureBuilderImpl;
 
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;

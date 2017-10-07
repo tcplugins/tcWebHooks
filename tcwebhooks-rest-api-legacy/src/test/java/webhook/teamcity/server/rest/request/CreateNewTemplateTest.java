@@ -28,6 +28,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.server.rest.model.template.Templates;
 
 import com.riffpie.common.testing.AbstractSpringAwareJerseyTest;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -147,6 +148,32 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	
     	Template updatedResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertTrue(updatedResponse.getTemplates().size() == 2);
+    	
+    	prettyPrint(updatedResponse);
+    	
+    }
+    
+    @Test(expected=UniformInterfaceException.class)
+    public void testCreateDefaultTemplateItemFailsWhenDefaultTemplateAlreadyExists() {
+    	
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	elastic.register();
+    	
+    	WebResource webResource = resource();
+    	
+    	Template templateResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertTrue(templateResponse.getTemplates().size() == 1);
+    	
+    	
+    	TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(TemplateItem.class);
+    	
+    	responseMsg.id= "_new";
+    	prettyPrint(responseMsg);
+    	
+    	webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).post(responseMsg);
+    	
+    	Template updatedResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertTrue(updatedResponse.getTemplates().size() == 1);
     	
     	prettyPrint(updatedResponse);
     	
