@@ -15,8 +15,8 @@ WebHooksPlugin = {
     copyFilter: function(data) {
     	DebRepoFilterPlugin.RepoEditFilterDialog.showDialog("Copy Artifact Filter", 'copyArtifactFilter', data);
     },
-    deleteFilter: function(data) {
-    	DebRepoFilterPlugin.RepoDeleteFilterDialog.showDialog("Delete Artifact Filter", 'deleteArtifactFilter', data);
+    deleteBuildEventTemplate: function(data) {
+    	WebHooksPlugin.DeleteTemplateItemDialog.showDialog("Delete Build Event Template", 'deleteBuildEventTemplate', data);
     },
     TemplateEditBuildEventDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
@@ -34,7 +34,7 @@ WebHooksPlugin = {
 			this.disableCheckboxes();
 			this.clearEditor();
 
-            $j("input[id='DebRepoaction']").val(action);
+            $j("input[id='WebhookTemplateaction']").val(action);
             $j(".dialogTitle").html(title);
             this.cleanFields(data);
             this.cleanErrors();
@@ -45,7 +45,7 @@ WebHooksPlugin = {
         	
         	this.getTemplateDataOrGetParentOnFailure(data.templateName, data.templateNumber, action)
         	
-        	$j("input[id='DebRepoaction']").val(action);
+        	$j("input[id='WebhookTemplateaction']").val(action);
         	$j(".dialogTitle").html(title);
         	this.cleanFields(data);
         	this.cleanErrors();
@@ -56,7 +56,7 @@ WebHooksPlugin = {
         	
         	this.getWebHookTemplateData(data.templateName, data.templateNumber, action);
         	
-            $j("input[id='DebRepoaction']").val(action);
+            $j("input[id='WebhookTemplateaction']").val(action);
             $j(".dialogTitle").html(title);
             this.cleanFields(data);
             this.cleanErrors();
@@ -185,14 +185,14 @@ WebHooksPlugin = {
 						&& myJson.parentTemplate.templateItem.length > 0) 
 					{
 						$j(myJson.parentTemplate.templateItem).each(function(thing, templateItem) {
-							console.log(templateItem);
-							console.log(templateItem.enabled);
+							//console.log(templateItem);
+							//console.log(templateItem.enabled);
 							$j(templateItem.state).each(function(index, itemState){
 								if (itemState.enabled) {
 									$j(myJson.state).each(function(thang, state) {
-										console.log(state);
+										//console.log(state);
 										if (state.type == itemState.type) {
-											console.log("they match " + state + templateItem);
+											//console.log("they match " + state + templateItem);
 											state.editable = false;
 										}
 									});
@@ -201,7 +201,7 @@ WebHooksPlugin = {
 						});
 					}
 
-					console.log(myJson);
+					//console.log(myJson);
 					dialog.handleGetSuccess(action);
 				}
 			});
@@ -216,7 +216,7 @@ WebHooksPlugin = {
     		    },
     		    success: function (response) {
     				myJson = response;
-    				console.log(myJson);
+    				//console.log(myJson);
     				dialog.handleGetSuccess(action);
     		    }
     		});
@@ -231,7 +231,7 @@ WebHooksPlugin = {
 				},
 				success: function (response) {
 					myJson = response;
-					console.log(myJson);
+					//console.log(myJson);
 					dialog.handleGetSuccess(action);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
@@ -273,9 +273,9 @@ WebHooksPlugin = {
 		}, 
 		postTemplateData: function () {
 			var dialog = this;
-			console.log($j("input[id='DebRepoaction']").val());
+			//console.log($j("input[id='WebhookTemplateaction']").val());
 			var templateSubUri = "/templateItem";
-			if ($j("input[id='DebRepoaction']").val() === "addDefaultTemplate") {
+			if ($j("input[id='WebhookTemplateaction']").val() === "addDefaultTemplate") {
 				templateSubUri = "/defaultTemplate";
 			}
 			$j.ajax ({
@@ -307,7 +307,7 @@ WebHooksPlugin = {
         	if (action === 'copyBuildEventTemplate' || action === 'addBuildEventTemplate') {
         		if (myJson.id == 'defaultTemplate') {
             		$j(myJson.state).each(function() {
-            			console.log(this.type + " :: "+ this.enabled);
+            			//console.log(this.type + " :: "+ this.enabled);
             			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.enabled);
             			if (this.enabled) {
             				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
@@ -315,7 +315,7 @@ WebHooksPlugin = {
             		});
         		} else {
             		$j(myJson.state).each(function() {
-            			console.log(this.type + " :: "+ this.enabled);
+            			//console.log(this.type + " :: "+ this.enabled);
             			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.editable && ! this.enabled);
             			if (this.editable && ! this.enabled) {
             				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
@@ -325,7 +325,7 @@ WebHooksPlugin = {
         		myJson.id = '_new';
         	} else {
 	    		$j(myJson.state).each(function() {
-	    			console.log(this.type + " :: "+ this.enabled);
+	    			//console.log(this.type + " :: "+ this.enabled);
 	    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
 	    			if (this.editable) {
 	    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
@@ -347,89 +347,34 @@ WebHooksPlugin = {
 				editor.session.setValue("");
 				editorBranch.session.setValue("");				
 			} else {
-				console.log(myJson.templateText.content);
+				//console.log(myJson.templateText.content);
 				editor.session.setValue(myJson.templateText.content);
 				editorBranch.session.setValue(myJson.branchTemplateText.content);
-				//editorBranch.setReadOnly(myJson.templateText.useTemplateTextForBranch);
 			}
 		},
 		
 		doPost: function() {
-			console.log(myJson);
+			//console.log(myJson);
 			if (myJson.id == '_new' || myJson.id == '_copy') {
 				this.postWebHookTemplateData();
 			} else {
 				this.putWebHookTemplateData();
 			}
 			return false;
-		},
-
-        xxdoPost: function() {
-            this.cleanErrors();
-
-            if (!this.doValidate()) {
-                return false;
-            }
-            var thing = $j(".runnerFormTable input[id='debrepofilter.regex']").val();
-            console.log(thing);
-            thing = JSON.stringify($j(".runnerFormTable input[id='debrepofilter.regex']").val()).slice(1, -1);
-            console.log(thing);
-
-            var parameters = {
-                action: $j("#repoEditFilterForm #DebRepoaction").val(),
-                "debrepo.filter.id": $j("#repoEditFilterForm input[id='debrepofilter.id']").val(),
-                "debrepo.filter.regex": $j(".runnerFormTable input[id='debrepofilter.regex']").val(),
-                "debrepo.filter.dist": $j(".runnerFormTable input[id='debrepofilter.dist']").val(),
-                "debrepo.filter.component": $j(".runnerFormTable input[id='debrepofilter.component']").val(),
-            	"debrepo.filter.buildtypeid": $j(".runnerFormTable select[id='debrepofilter.buildtypeid']").val(),
-                "debrepo.uuid": $j("#repoEditFilterForm input[id='debrepo.uuid']").val()
-            };
-
-             var dialog = this;
-
-            BS.ajaxRequest(window['base_uri'] + '/admin/webhookTemplateAction.html', {
-                parameters: parameters,
-                onComplete: function(transport) {
-                    var shouldClose = true;
-                    if (transport != null && transport.responseXML != null) {
-                        var response = transport.responseXML.getElementsByTagName("response");
-                        if (response != null && response.length > 0) {
-                            var responseTag = response[0];
-                            var error = responseTag.getAttribute("error");
-                            if (error != null) {
-                                shouldClose = false;
-                                dialog.ajaxError(error);
-                            } else if (responseTag.getAttribute("status") == "OK") {
-                                shouldClose = true;
-                            } else if (responseTag.firstChild == null) {
-                                shouldClose = false;
-                                alert("Error: empty response");
-                            }
-                        }
-                    }
-                    if (shouldClose) {
-                        $("repoBuildTypesContainer").refresh();
-                        dialog.close();
-                        $("repoRepoInfoContainer").refresh();
-                    }
-                }
-            });
-
-            return false;
-        }
+		}
     })),
     
-    RepoDeleteFilterDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    DeleteTemplateItemDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {
-    		return $('repoDeleteFilterDialog');
+    		return $('deleteTemplateItemDialog');
     	},
     	
     	formElement: function () {
-    		return $('repoDeleteFilterForm');
+    		return $('deleteTemplateItemForm');
     	},
     	
     	showDialog: function (title, action, data) {
-    		$j("input[id='DebRepoaction']").val(action);
+    		$j("input[id='WebhookTemplateaction']").val(action);
     		$j(".dialogTitle").html(title);
     		this.cleanFields(data);
     		this.cleanErrors();
@@ -437,15 +382,13 @@ WebHooksPlugin = {
     	},
     	
     	cleanFields: function (data) {
-    		$j("#repoDeleteFilterForm input[id='debrepo.uuid']").val(data.uuid);
-    		$j("#repoDeleteFilterForm input[id='debrepofilter.id']").val(data.id);
-    		$j("#repoDeleteFilterForm input[id='debrepofilter.buildtypeid']").val(data.build);
-    		
+    		$j("#deleteTemplateItemForm input[id='templateName']").val(data.templateName);
+    		$j("#deleteTemplateItemForm input[id='templateNumber']").val(data.templateNumber);
     		this.cleanErrors();
     	},
     	
     	cleanErrors: function () {
-    		$j("#repoDeleteFilterForm .error").remove();
+    		$j("#deleteTemplateItemForm .error").remove();
     	},
     	
     	error: function($element, message) {
@@ -466,54 +409,31 @@ WebHooksPlugin = {
     		}
     	},
     	
-    	doValidate: function() {
-    		var errorFound = false;
-    		return !errorFound;
-    	},
-    	
     	doPost: function() {
     		this.cleanErrors();
     		
-    		if (!this.doValidate()) {
-    			return false;
-    		}
-    		
-    		var parameters = {
-    				action: $j("#repoDeleteFilterForm #DebRepoaction").val(),
-    				"debrepo.filter.id": $j("#repoDeleteFilterForm input[id='debrepofilter.id']").val(),
-    				"debrepo.filter.buildtypeid": $j("#repoDeleteFilterForm input[id='debrepofilter.buildtypeid']").val(),
-    				"debrepo.uuid": $j("#repoDeleteFilterForm input[id='debrepo.uuid']").val()
-    		};
-    		
-    		var dialog = this;
-    		
-    		BS.ajaxRequest(window['base_uri'] + '/admin/debianRepositoryAction.html', {
-    			parameters: parameters,
-    			onComplete: function(transport) {
-    				var shouldClose = true;
-    				if (transport != null && transport.responseXML != null) {
-    					var response = transport.responseXML.getElementsByTagName("response");
-    					if (response != null && response.length > 0) {
-    						var responseTag = response[0];
-    						var error = responseTag.getAttribute("error");
-    						if (error != null) {
-    							shouldClose = false;
-    							dialog.ajaxError(error);
-    						} else if (responseTag.getAttribute("status") == "OK") {
-    							shouldClose = true;
-    						} else if (responseTag.firstChild == null) {
-    							shouldClose = false;
-    							alert("Error: empty response");
-    						}
-    					}
-    				}
-    				if (shouldClose) {
-    					$("repoBuildTypesContainer").refresh();
-    					dialog.close();
-    					$("repoRepoInfoContainer").refresh();
-    				}
-    			}
-    		});
+			var dialog = this;
+			//console.log($j("input[id='WebhookTemplateaction']").val());
+			
+			var templateName = $j("#deleteTemplateItemForm input[id='templateName']").val()
+			var templateNumber = $j("#deleteTemplateItemForm input[id='templateNumber']").val()
+			
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + templateNumber,
+				type: "DELETE",
+				headers : {
+					'Content-Type' : 'application/json',
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					dialog.close();
+					$("buildEventTemplatesContainer").refresh();
+				},
+				error: function (response) {
+					console.log(response);
+					alert(response);
+				}
+			});
     		
     		return false;
     	}

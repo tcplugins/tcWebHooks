@@ -295,7 +295,7 @@
             </table>
             <input type="hidden" id="debrepofilter.id" name="debrepofilter.id"/>
             <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
-            <input type="hidden" name="action" id="DebRepoaction" value="editFilter"/>
+            <input type="hidden" name="action" id="WebhookTemplateaction" value="editFilter"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="repoEditFilterDialogSubmit" label="Save"/>
                 <forms:cancel onclick="DebRepoFilterPlugin.RepoEditFilterDialog.close()"/>
@@ -303,27 +303,26 @@
         </forms:multipartForm>
     </bs:dialog>
 
-    <bs:dialog dialogId="repoDeleteFilterDialog"
-               dialogClass="repoDeleteFilterDialog"
-               title="Confirm Artifact Filter deletion"
-               closeCommand="DebRepoFilterPlugin.RepoDeleteFilterDialog.close()">
-        <forms:multipartForm id="repoDeleteFilterForm"
-                             action="/admin/debianRepositoryAction.html"
+    <bs:dialog dialogId="deleteTemplateItemDialog"
+               dialogClass="deleteTemplateItemDialog"
+               title="Confirm Build Event Template deletion"
+               closeCommand="WebHooksPlugin.DeleteTemplateItemDialog.close()">
+        <forms:multipartForm id="deleteTemplateItemForm"
+                             action="/admin/manageWebhookTemplate.html"
                              targetIframe="hidden-iframe"
-                             onsubmit="return DebRepoFilterPlugin.RepoDeleteFilterDialog.doPost();">
+                             onsubmit="return WebHooksPlugin.DeleteTemplateItemDialog.doPost();">
 
             <table class="runnerFormTable">
-                <tr><td>Deleting an Artifact Filter does not remove previously added artifacts from the repository.
+                <tr><td>Are you sure you want to delete this Build Event Template? There is no undo.
                         <div id="ajaxDeleteResult"></div>
                 </td></tr>
             </table>
-            <input type="hidden" id="debrepofilter.id" name="debrepofilter.id"/>
-            <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
-            <input type="hidden" id="debrepofilter.buildtypeid" name="debrepofilter.buildtypeid"/>
-            <input type="hidden" name="action" id="DebRepoaction" value="deleteFilter"/>
+            <input type="hidden" id="templateName" name="templateName"/>
+            <input type="hidden" id="templateNumber" name="templateName"/>
+            <input type="hidden" name="action" id="WebHookTemplateAction" value="deleteTemplateItem"/>
             <div class="popupSaveButtonsBlock">
-                <forms:submit id="repoDeleteFilterDialogSubmit" label="Delete Filter"/>
-                <forms:cancel onclick="DebRepoFilterPlugin.RepoDeleteFilterDialog.close()"/>
+                <forms:submit id="deleteTemplateItemDialogSubmit" label="Delete Build Event Template"/>
+                <forms:cancel onclick="WebHooksPlugin.DeleteTemplateItemDialog.close()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>
@@ -344,7 +343,7 @@
                 </td></tr>
             </table>
             <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
-            <input type="hidden" name="action" id="DebRepoaction" value="deleteRepo"/>
+            <input type="hidden" name="action" id="WebhookTemplateaction" value="deleteRepo"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="deleteRepoDialogSubmit" label="Delete Repository"/>
                 <forms:cancel onclick="DebRepoPlugin.DeleteRepoDialog.close()"/>
