@@ -67,6 +67,14 @@ public class WebHookTemplateConfig {
 			}
 			return null;
 		}
+		public void deleteTemplateItem(int id) {
+			for (WebHookTemplateItem item : new ArrayList<>(this.templates)) {
+				if (item.getId().equals(id)){
+					this.templates.remove(item);
+					break;
+				}
+			}
+		}
 	}
 	
 	@XmlRootElement 

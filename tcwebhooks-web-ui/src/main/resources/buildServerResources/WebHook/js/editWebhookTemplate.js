@@ -7,7 +7,10 @@ WebHooksPlugin = {
     	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Copy Build Event Template", 'copyBuildEventTemplate', data);
     },
     addBuildEventTemplate: function(data) {
-    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Add Build Event Template", 'addBuildEventTemplate', data);
+    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialogAddEventTemplate("Add Build Event Template", 'addBuildEventTemplate', data);
+    },
+    createDefaultTemplate: function(data) {
+    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialogCreateDefaultTemplate("Add Default Template", 'addDefaultTemplate', data);
     },
     copyFilter: function(data) {
     	DebRepoFilterPlugin.RepoEditFilterDialog.showDialog("Copy Artifact Filter", 'copyArtifactFilter', data);
@@ -24,6 +27,31 @@ WebHooksPlugin = {
             return $('editTemplateForm');
         },
 
+        showDialogCreateDefaultTemplate: function (title, action, data) {
+        	
+        	//this.getWebHookTemplateData(data.templateName, data.templateNumber, action);
+        	this.getParentTemplateData(data.templateName, data.templateNumber, action)
+			this.disableCheckboxes();
+			this.clearEditor();
+
+            $j("input[id='DebRepoaction']").val(action);
+            $j(".dialogTitle").html(title);
+            this.cleanFields(data);
+            this.cleanErrors();
+            this.showCentered();
+        },
+        
+        showDialogAddEventTemplate: function (title, action, data) {
+        	
+        	this.getTemplateDataOrGetParentOnFailure(data.templateName, data.templateNumber, action)
+        	
+        	$j("input[id='DebRepoaction']").val(action);
+        	$j(".dialogTitle").html(title);
+        	this.cleanFields(data);
+        	this.cleanErrors();
+        	this.showCentered();
+        },
+        
         showDialog: function (title, action, data) {
         	
         	this.getWebHookTemplateData(data.templateName, data.templateNumber, action);
@@ -118,6 +146,66 @@ WebHooksPlugin = {
 			editor.session.setValue("Loading...");
 			editorBranch.session.setValue("Loading...");
 		},
+		getParentTemplateData: function (templateName, buildTemplateId, action) {
+			/* This method is used if the payload template does not have a default template.
+			 * In that case, we don't have info about the parent template, so we request it here
+			 * and graft it into the json request. 
+			 * 
+			 * Next we initialise the states as all editable and then iterate over any
+			 * Build Event Templates  in the templateItem[] and set editable:false for any states 
+			 * which already have a template defined. 
+			 */
+			var dialog = this;
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName,
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					myJson = { 
+							parentTemplate : response,
+							templateText : { content: "" },
+							branchTemplateText :  { content: "" },
+							state : [ 
+										{ type: "buildStarted", 		 enabled : false, editable: true },
+										{ type: "changesLoaded", 		 enabled : false, editable: true },
+										{ type: "buildInterrupted", 	 enabled : false, editable: true },
+										{ type: "beforeBuildFinish", 	 enabled : false, editable: true },
+										{ type: "buildSuccessful", 		 enabled : false, editable: true },
+										{ type: "buildFailed", 			 enabled : false, editable: true },
+										{ type: "buildFixed", 			 enabled : false, editable: true },
+										{ type: "buildBroken", 			 enabled : false, editable: true },
+										{ type: "responsibilityChanged", enabled : false, editable: true }
+									]					
+					};
+					
+					if (typeof myJson.parentTemplate.templateItem !== 'undefined' 
+						&& myJson.parentTemplate.templateItem != null 
+						&& myJson.parentTemplate.templateItem.length > 0) 
+					{
+						$j(myJson.parentTemplate.templateItem).each(function(thing, templateItem) {
+							console.log(templateItem);
+							console.log(templateItem.enabled);
+							$j(templateItem.state).each(function(index, itemState){
+								if (itemState.enabled) {
+									$j(myJson.state).each(function(thang, state) {
+										console.log(state);
+										if (state.type == itemState.type) {
+											console.log("they match " + state + templateItem);
+											state.editable = false;
+										}
+									});
+								}
+							});
+						});
+					}
+
+					console.log(myJson);
+					dialog.handleGetSuccess(action);
+				}
+			});
+		}, 
 		getTemplateData: function (templateName, buildTemplateId, action) {
 			var dialog = this;
     		$j.ajax ({
@@ -128,9 +216,33 @@ WebHooksPlugin = {
     		    },
     		    success: function (response) {
     				myJson = response;
+    				console.log(myJson);
     				dialog.handleGetSuccess(action);
     		    }
     		});
+		}, 
+		getTemplateDataOrGetParentOnFailure: function (templateName, buildTemplateId, action) {
+			var dialog = this;
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					myJson = response;
+					console.log(myJson);
+					dialog.handleGetSuccess(action);
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr);
+					console.log(ajaxOptions);
+					console.log(thrownError);
+					if (xhr.status == 404) {
+						dialog.getParentTemplateData(templateName, buildTemplateId, action);
+					}
+				}
+			});
 		}, 
 		handleGetSuccess: function (action) {
 			$j("#templateHeading").html(myJson.parentTemplate.description);
@@ -161,8 +273,13 @@ WebHooksPlugin = {
 		}, 
 		postTemplateData: function () {
 			var dialog = this;
+			console.log($j("input[id='DebRepoaction']").val());
+			var templateSubUri = "/templateItem";
+			if ($j("input[id='DebRepoaction']").val() === "addDefaultTemplate") {
+				templateSubUri = "/defaultTemplate";
+			}
 			$j.ajax ({
-				url: myJson.parentTemplate.href + "/templateItem",
+				url: myJson.parentTemplate.href + templateSubUri,
 				type: "POST",
 				data: JSON.stringify(myJson),
 				dataType: 'json',
@@ -216,17 +333,17 @@ WebHooksPlugin = {
 	    		});
         	}
         	
-        	if (action === 'addBuildEventTemplate') {
+        	if (action === 'addDefaultTemplate' || action === 'addBuildEventTemplate') {
 	    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", false).prop( "disabled", false);
 				$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
-
+				myJson.id = '_new';
         	} else {
 	    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", myJson.templateText.useTemplateTextForBranch).prop( "disabled", false);
 				$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
 			}
 		},
 		updateEditor: function (action) {
-			if (action === 'addBuildEventTemplate') {
+			if (action === 'addDefaultTemplate' || action === 'addBuildEventTemplate') {
 				editor.session.setValue("");
 				editorBranch.session.setValue("");				
 			} else {

@@ -11,7 +11,7 @@
 	      	<tr><td colspan="4">
 	      		There is no default template defined. This template will only support build events for which there is a Build Event Template defined below.
 	      	</td>
-      			<td class="buildTemplateAction"><a id="addDefaultTempalte" href="#" onclick="DebRepoFilterPlugin.editFilter({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">create</a></td>
+      			<td class="buildTemplateAction"><a id="addDefaultTempalte" href="#" onclick="WebHooksPlugin.createDefaultTemplate({ templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate' }); return false">create default template</a></td>
 	      	</tr>     
 		  </c:when>
 		  <c:when test="${defaultTemplateEventNum == 0}">

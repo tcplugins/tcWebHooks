@@ -1,7 +1,5 @@
 package webhook.teamcity.server.rest.request;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.springframework.web.context.ContextLoaderListener;
 
 import com.google.gson.Gson;

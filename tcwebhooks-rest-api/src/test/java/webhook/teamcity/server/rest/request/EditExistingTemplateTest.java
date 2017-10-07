@@ -6,6 +6,7 @@ import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
@@ -22,6 +23,7 @@ import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
+import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
@@ -105,6 +107,25 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		assertEquals("Client response status: 422", e.getMessage());
     		throw e;
 		}
+    }
+    
+    @Test
+    public void testCreateDefaultTemplateUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	
+    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getName());
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg.id= "_new";
+    	responseMsg.setStates(new ArrayList<WebHookTemplateStateRest>());
+    	
+		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).post(Template.TemplateItem.class, responseMsg);
+		prettyPrint(responseMsg2);
+		
     }
     
 }
