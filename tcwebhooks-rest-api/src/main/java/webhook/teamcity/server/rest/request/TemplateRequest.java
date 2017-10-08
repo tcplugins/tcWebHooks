@@ -401,7 +401,10 @@ public class TemplateRequest {
 	  WebHookTemplateConfig templateConfig = templateConfigWrapper.getTemplateConfig();
 	  
 	  WebHookTemplateItem templateItemConfig = templateConfig.getTemplates().getTemplateItem(Integer.valueOf(templateItemConfigWrapper.getTemplateItem().getId()));
-	  	  
+	  
+	  if (templateItem.getEnabled() != null) {
+		  templateItemConfig.setEnabled(templateItem.getEnabled());
+	  }
 	  if (templateItem.getTemplateText() != null) {
 		  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
 			  templateItemConfig.getTemplateText().setUseTemplateTextForBranch(templateItem.getTemplateText().getUseTemplateTextForBranch());
@@ -465,6 +468,9 @@ public class TemplateRequest {
 	  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
 	  templateItemConfig.setId(templateConfig.getTemplates().getMaxId());
 	  
+	  if (templateItem.getEnabled() != null) {
+		  templateItemConfig.setEnabled(templateItem.getEnabled());
+	  }
 	  if (templateItem.getTemplateText() != null) {
 		  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
 			  templateItemConfig.getTemplateText().setUseTemplateTextForBranch(templateItem.getTemplateText().getUseTemplateTextForBranch());
