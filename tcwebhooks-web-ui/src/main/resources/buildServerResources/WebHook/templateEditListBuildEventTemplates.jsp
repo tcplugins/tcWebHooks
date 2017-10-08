@@ -8,7 +8,7 @@
         <c:set var="defaultTemplateEventNum" value="${fn:length(webhookTemplateBean.defaultTemplateStates)}"/>
       	<c:choose>
 		  <c:when test="${empty webhookTemplateBean.defaultTemplateItem}">
-	      	<tr><td colspan="4">
+	      	<tr><td colspan="3">
 	      		There is no default template defined. This template will only support build events for which there is a Build Event Template defined below.
 	      	</td>
       			<td class="buildTemplateAction"><a id="addDefaultTempalte" href="#" onclick="WebHooksPlugin.createDefaultTemplate({ templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate' }); return false">create default template</a></td>
@@ -18,7 +18,7 @@
 	      	<tr><td>
 	      		The default template is defined, but no build events will use it. All events are associated with a Build Event Template defined below.
 	      	</td>
-		      			<td class="buildTemplateAction"><a class="viewBuildEventTemplate" href="#" onclick="WebHooksData.getWebHookTemplateData({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
+		      			<%-- <td class="buildTemplateAction"><a class="viewBuildEventTemplate" href="#" onclick="WebHooksData.getWebHookTemplateData({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td> --%>
 		      			<td class="buildTemplateAction"><a class="editBuildEventTemplate" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 		      			<td class="buildTemplateAction"><a class="copyBuildEventTemplate" href="#" onclick="WebHooksPlugin.copyBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 		      			<td class="buildTemplateAction"><a class="deleteBuildEventTemplate" href="#" onclick="WebHooksPlugin.deleteBuildEventTemplate({ templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate' }); return false">delete</a></td>
@@ -30,7 +30,7 @@
 		      		<li>${buildState.shortDescription}</li>
 		      	</c:forEach>
 		      	</ul></td>
-		      			<td class="buildTemplateAction"><a class="viewBuildEventTemplate" href="#" onclick="WebHooksData.getWebHookTemplateData({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td>
+		      			<%-- <td class="buildTemplateAction"><a class="viewBuildEventTemplate" href="#" onclick="WebHooksData.getWebHookTemplateData({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', build: '${buildTypeId}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">view</a></td> --%>
 		      			<td class="buildTemplateAction"><a class="editBuildEventTemplate" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 		      			<td class="buildTemplateAction"><a class="copyDBuildEventTemplate" href="#" onclick="WebHooksPlugin.copyBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 		      			<td class="buildTemplateAction"><a class="deleteBuildEventTemplate" href="#" onclick="WebHooksPlugin.deleteBuildEventTemplate({ templateName: '${webhookTemplateBean.templateId}', templateNumber: 'defaultTemplate' }); return false">delete</a></td>
@@ -56,7 +56,7 @@
 	      		<li>${buildState.shortDescription}</li>
 	      	</c:forEach>
 	      	</ul></td>
-	      			<td class="buildTemplateAction"><a class="viewBuildEventTemplate" href="#" onclick="WebHooksData.getWebHookTemplateData('${webhookTemplateBean.templateId}', '${buildEventTemplate.webHookTemplateItem.id}'); return false">view</a></td>
+	      			<%-- <td class="buildTemplateAction"><a class="viewBuildEventTemplate" href="#" onclick="WebHooksData.getWebHookTemplateData('${webhookTemplateBean.templateId}', '${buildEventTemplate.webHookTemplateItem.id}'); return false">view</a></td> --%>
 	      			<td class="buildTemplateAction"><a class="editBuildEventTemplate" href="#" onclick="WebHooksPlugin.editBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '${filter.id}', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'id:${buildEventTemplate.webHookTemplateItem.id}', regex: '${filter.regex}', dist:'${filter.dist}', component:'${filter.component}' }); return false">edit</a></td>
 	      			<td class="buildTemplateAction"><a class="copyBuildEventTemplate" href="#" onclick="WebHooksPlugin.copyBuildEventTemplate({ uuid: '${debRepoBean.uuid}', name: '${debRepoBean.name}', id: '_copy', templateName: '${webhookTemplateBean.templateId}', templateNumber: 'id:${buildEventTemplate.webHookTemplateItem.id}', dist:'${filter.dist}', component:'${filter.component}' }); return false">copy</a></td>
 	      			<td class="buildTemplateAction"><a class="deleteBuildEventTemplate" href="#" onclick="WebHooksPlugin.deleteBuildEventTemplate({ templateName: '${webhookTemplateBean.templateId}', templateNumber: 'id:${buildEventTemplate.webHookTemplateItem.id}' }); return false">delete</a></td>
