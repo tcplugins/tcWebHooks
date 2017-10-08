@@ -129,7 +129,6 @@ public class TemplateFinder {
 				WebHookTemplateItemRest defaultTemplateItem = new WebHookTemplateItemRest(
 																	config.getDefaultTemplate(), 
 																	config.getDefaultBranchTemplate(), 
-																	config.isEnabled(), 
 																	templateId, 
 																	null
 																);

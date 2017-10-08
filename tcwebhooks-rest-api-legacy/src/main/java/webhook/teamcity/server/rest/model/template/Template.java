@@ -203,7 +203,6 @@ public class Template {
 		 * @param beanContext
 		 */
 		public TemplateItem(WebHookTemplateConfigWrapper template, WebHookTemplateItemRest templateItem, String id, Fields fields, BeanContext beanContext) {
-			this.enabled = ValueWithDefault.decideDefault(fields.isIncluded("enabled"), Boolean.valueOf(templateItem.isEnabled()));
 			this.id = ValueWithDefault.decideDefault(fields.isIncluded("id"), String.valueOf(id));
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateItemHref(template.getTemplateConfig(), templateItem)));
 			this.templateText = new TemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
@@ -274,7 +273,7 @@ public class Template {
 		public WebHookTemplateStateRest(WebHookTemplateItemRest templateItem, String type, WebHookTemplateStates states, Fields fields, BeanContext beanContext){
 			for (WebHookTemplateState itemState: templateItem.getStates()){
 				if (type.equals(itemState.getType())){
-					this.enabled = templateItem.isEnabled();
+					this.enabled = itemState.isEnabled();
 				}
 			}
 			this.editable = ValueWithDefault.decideDefault(fields.isIncluded("editable",false, true), states.isAvailable(type));

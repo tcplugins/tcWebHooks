@@ -26,14 +26,12 @@ public class WebHookTemplateItemConfigWrapper {
 	
 		WebHookTemplateText templateText;
 		WebHookTemplateBranchText branchTemplateText;
-		boolean enabled;
 		String id;
 		List<WebHookTemplateState> states = new ArrayList<>();
 		
 		public WebHookTemplateItemRest(WebHookTemplateItem webHookTemplateItem) {
 			this.templateText = webHookTemplateItem.getTemplateText();
 			this.branchTemplateText = webHookTemplateItem.getBranchTemplateText();
-			this.enabled = webHookTemplateItem.isEnabled();
 			this.id = webHookTemplateItem.getId().toString();
 			this.states.addAll(webHookTemplateItem.getStates());
 		}
