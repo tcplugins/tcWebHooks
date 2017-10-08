@@ -250,9 +250,6 @@ public class WebHookTemplateEntity {
 		@XmlElement(name="branch-template-text")
 		WebHookTemplateBranchText branchTemplateText;
 		
-		@XmlAttribute
-		boolean enabled = true;
-		
 		@XmlAttribute @Nullable
 		Integer id;
 		
@@ -271,7 +268,6 @@ public class WebHookTemplateEntity {
 				i.branchTemplateText = new WebHookTemplateBranchText(
 											item.getBranchTemplateText().getTemplateContent()
 										);
-				i.enabled = item.isEnabled();
 				i.id = item.getId();
 				for (WebHookTemplateConfig.WebHookTemplateState state : item.getStates()) {
 					i.states.add(new WebHookTemplateState(state.getType(), state.isEnabled()));

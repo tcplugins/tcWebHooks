@@ -41,11 +41,18 @@ public interface WebHookPayloadTemplate {
 	String getTemplateToolTip();
 	
 	/**
-	 * Returns a short name for the template type. This string is used in the HTML form when 
+	 * Returns a short name (aka ID) for the template type. This string is used in the HTML form when 
 	 * referring to the template, and used in the plugin-settings.xml file for specifying the
-	 * template of the payload.
+	 * template of the payload. 
+	 * <br>
+	 * It is possible to override a tcWebHooks built-in template (aka spring template) with a version 
+	 * defined in XML by using the same short name as an existing spring template.
+	 * <br>
+	 * For example: Defining a template in XML with the short name "elasticsearch" would override the 
+	 * built-in Elastic Search template. Any webhooks referring to this template would then use the 
+	 * overriden version instead.
 	 * 
-	 * @return	Text for referring to the template type. eg, JSON.
+	 * @return	Text for uniquely referring to the template type. eg, "elasticsearch".
 	 */
 	String getTemplateShortName();
 	
@@ -57,28 +64,28 @@ public interface WebHookPayloadTemplate {
     boolean supportsPayloadFormat(String payloadFormat);
     
     /**
-     * Gets in Integer for order. The Higher the number, the more likely 
+     * Gets an Integer for order. The lower the number, the more likely 
      * it is to appear higher in the list of options.
-     * The highest number will be the default when showing the list of webhooks
+     * The lowest number will be the default when showing the list of webhooks
      * in the web UI.
      *  
      * Suggestion : When registering your plugin with Spring, you could set with a bean property
      * in the spring XML file. That way it can be edited by the end user if required.
      * 
-     * @return rank (higher numbers are ranked first)
+     * @return rank (lower numbers are ranked first)
      */
     int getRank();
     
     /**
-     * Set in Integer for order. The Higher the number, the more likely 
+     * Set an Integer for order. The lower the number, the more likely 
      * it is to appear higher in the list of options.
-     * The highest number will be the default when showing the list of webhooks
+     * The lowest number will be the default when showing the list of webhooks
      * in the web UI.
      *  
      * Suggestion : When registering your plugin with Spring, you could set with a bean property
      * in the spring XML file. That way it can be edited by the end user if required.
      * 
-     * @param rank (higher numbers are ranked first)
+     * @return rank (lower numbers are ranked first)
      */
     void setRank(Integer rank);	
     

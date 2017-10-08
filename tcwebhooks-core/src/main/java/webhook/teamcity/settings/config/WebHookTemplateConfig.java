@@ -83,7 +83,6 @@ public class WebHookTemplateConfig {
 	public static class WebHookTemplateItem {
 		WebHookTemplateText templateText;
 		WebHookTemplateBranchText branchTemplateText;
-		boolean enabled;
 		Integer id;
 		List<WebHookTemplateState> states = new ArrayList<>();
 	}

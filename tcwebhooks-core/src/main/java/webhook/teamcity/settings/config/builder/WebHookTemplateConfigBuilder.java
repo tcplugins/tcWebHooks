@@ -77,7 +77,6 @@ public class WebHookTemplateConfigBuilder {
 			i.setBranchTemplateText(new WebHookTemplateConfig.WebHookTemplateBranchText(
 										item.getBranchTemplateText().getTemplateContent()
 									));
-			i.setEnabled(item.isEnabled());
 			i.setId(item.getId());
 			
 			List<WebHookTemplateConfig.WebHookTemplateState> states = new ArrayList<>();
