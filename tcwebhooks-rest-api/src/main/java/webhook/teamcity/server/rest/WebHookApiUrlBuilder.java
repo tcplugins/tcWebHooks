@@ -1,14 +1,11 @@
 package webhook.teamcity.server.rest;
 
-import jetbrains.buildServer.server.rest.PathTransformer;
-
 import org.jetbrains.annotations.NotNull;
 
-import webhook.teamcity.BuildStateEnum;
+import jetbrains.buildServer.server.rest.PathTransformer;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.request.TemplateRequest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
-import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
 /**
  * Adds the WebHooks urls into the resolver.
@@ -20,7 +17,6 @@ public class WebHookApiUrlBuilder {
 	private PathTransformer myPathTransformer;
 
 	public WebHookApiUrlBuilder(@NotNull final PathTransformer pathTransformer) {
-		//super(pathTransformer);
 		myPathTransformer = pathTransformer;
 	}
 	
