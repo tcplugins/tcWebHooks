@@ -1,12 +1,10 @@
 package webhook.teamcity.server.rest;
 
-import jetbrains.buildServer.RootUrlHolder;
-
 import org.jetbrains.annotations.NotNull;
 
+import jetbrains.buildServer.RootUrlHolder;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
-import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
 
 public class WebHookWebLinks {
 	
@@ -18,7 +16,7 @@ public class WebHookWebLinks {
 	
 	/**
 	 * @param build specified build
-	 * @return URL to view results page of the specified build
+	 * @return URL to view template for specific template. 
 	 */
 	@NotNull
 	public String getWebHookTemplateUrl(@NotNull WebHookTemplateConfig webHookTemplateEntity) {
@@ -27,7 +25,7 @@ public class WebHookWebLinks {
 	
 	@NotNull
 	private String makeWebHookTemplateUrl(@NotNull WebHookTemplateConfig entity) {
-	    return makeUrl("webhooks/templates.html?template=" + entity.getName());
+	    return makeUrl("webhooks/template.html?template=" + entity.getName());
 	}
 	
 	@NotNull
