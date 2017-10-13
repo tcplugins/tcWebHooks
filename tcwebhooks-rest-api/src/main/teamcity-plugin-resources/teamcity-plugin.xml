@@ -5,7 +5,15 @@
     <name>tcWebHooks-rest-api</name>
     <display-name>Web Hooks REST API plugin</display-name>
     <version>${version}</version>
-    <description>REST API for configuring tcWebhooks plugin</description>
+    <description>REST API for configuring tcWebhooks plugin. &lt;br/&gt;
+           This plugin adds support for configuring the tcWebHook Templates feature, with plans to support configuring Webhooks in future.
+        &lt;ul&gt;
+    	   &lt;li&gt;Branch: ${gitBranch}&lt;/li&gt;
+    	   &lt;li&gt;Revision: ${gitHash}&lt;/li&gt;
+    	&lt;/ul&gt; 
+    </description>
+    
+    <description></description>
     <vendor>
       <name>Net Wolf</name>
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
