@@ -12,8 +12,6 @@
     	   &lt;li&gt;Revision: ${gitHash}&lt;/li&gt;
     	&lt;/ul&gt; 
     </description>
-    
-    <description></description>
     <vendor>
       <name>Net Wolf</name>
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
