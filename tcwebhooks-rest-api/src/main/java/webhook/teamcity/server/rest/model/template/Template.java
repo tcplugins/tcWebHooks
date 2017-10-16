@@ -42,7 +42,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateSta
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 
 @XmlRootElement(name = "template")
-@XmlType(name = "template", propOrder = { "id", "name", "description", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "templates" })
+@XmlType(name = "template", propOrder = { "id", "name", "description", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "preferredDateFormat", "toolTip", "templates" })
 
 public class Template {
 	@XmlAttribute
@@ -68,6 +68,12 @@ public class Template {
 
 	@XmlAttribute
 	public String webUrl;
+	
+	@XmlElement
+	public String preferredDateFormat;
+	
+	@XmlElement
+	public String toolTip; 
 	
 	@XmlElement(required=false)
 	public TemplateItem defaultTemplate;
@@ -158,7 +164,7 @@ public class Template {
 		@XmlElement(name = "state")	@XmlElementWrapper(name = "states")
 		private List<WebHookTemplateStateRest> states = new ArrayList<WebHookTemplateStateRest>();
 
-		TemplateItem() {
+		public TemplateItem() {
 			// empty constructor for JAXB
 		}
 

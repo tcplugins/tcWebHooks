@@ -24,7 +24,7 @@ public abstract class WebHookTestServerTestBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			Thread.sleep(1000);
+			Thread.sleep(100);
 		}
 	}
 

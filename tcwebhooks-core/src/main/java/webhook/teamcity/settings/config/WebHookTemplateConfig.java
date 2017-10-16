@@ -59,6 +59,12 @@ public class WebHookTemplateConfig {
 		Integer maxId;
 		List<WebHookTemplateItem> templates = new ArrayList<>();
 		
+		public int addTemplateItem(WebHookTemplateItem templateItem) {
+			templateItem.id = maxId++;
+			this.templates.add(templateItem);
+			return templateItem.id;
+		}
+		
 		public WebHookTemplateItem getTemplateItem(int id) {
 			for (WebHookTemplateItem item : this.templates) {
 				if (item.getId().equals(id)){

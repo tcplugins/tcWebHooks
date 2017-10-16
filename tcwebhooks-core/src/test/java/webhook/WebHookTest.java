@@ -387,7 +387,7 @@ public class WebHookTest{
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			Thread.sleep(1000);
+			Thread.sleep(100);
 		}
 	}
 
@@ -418,7 +418,7 @@ public class WebHookTest{
 		try {
 			p.server.stop();
 			// Sleep to let the server shutdown cleanly.
-			Thread.sleep(1000);
+			Thread.sleep(100);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
