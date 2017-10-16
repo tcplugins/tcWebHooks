@@ -318,6 +318,12 @@ public class Template {
 		
 		rank = ValueWithDefault.decideDefault(fields.isIncluded("rank"),
 				Integer.valueOf(template.getRank()));
+		
+		preferredDateFormat = ValueWithDefault.decideDefault(fields.isIncluded("preferredDateFormat"),
+				template.getPreferredDateTimeFormat());
+		
+		toolTip = ValueWithDefault.decideDefault(fields.isIncluded("toolTip"),
+				template.getTemplateToolTip());
 
 		href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(template));
 		

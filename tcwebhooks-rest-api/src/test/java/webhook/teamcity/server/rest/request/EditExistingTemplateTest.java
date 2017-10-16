@@ -8,12 +8,14 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.intellij.openapi.editor.markup.ErrorStripeRenderer;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
@@ -103,6 +105,92 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
 		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).post(Template.TemplateItem.class, responseMsg);
 		prettyPrint(responseMsg2);
 		
+    }
+    
+    @Test
+    public void testEditTemplateUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals("slack.com-compact", responseMsg.name);
+    	prettyPrint(responseMsg);
+
+    	responseMsg.description = "New Description";
+    	responseMsg.rank = 999;
+    	responseMsg.preferredDateFormat="YYYY-MM";
+    	responseMsg.toolTip = "Woot, a tooltip";
+    	
+    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
+    	
+    	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals("slack.com-compact", responseAfterEdit.name);
+    	assertEquals("New Description", responseAfterEdit.description);
+    	assertEquals("YYYY-MM", responseAfterEdit.preferredDateFormat);
+    	assertEquals("Woot, a tooltip", responseAfterEdit.toolTip);
+    	prettyPrint(responseAfterEdit);
+    }
+    
+    @Test
+    public void testEditTemplateWithMinimalChangesUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals("slack.com-compact", responseMsg.name);
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg.description = null;
+    	responseMsg.rank = null;
+    	responseMsg.preferredDateFormat = null;
+    	responseMsg.toolTip = null;
+    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
+    	
+    	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals("Slack.com Compact Notifcation", responseAfterEdit.description);
+    	assertEquals("slack.com-compact", responseAfterEdit.name);
+    	assertEquals("", responseAfterEdit.preferredDateFormat);
+    	assertEquals("POSTs a very compact slack.com notification", responseAfterEdit.toolTip);
+    	prettyPrint(responseAfterEdit);
+    }
+    
+    @Test
+    public void testEditTemplateFromEmptyTemplateUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template responseMsg = new Template();
+    	responseMsg.name = "slack.com-compact";
+    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
+    	
+    	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals("Slack.com Compact Notifcation", responseAfterEdit.description);
+    	assertEquals("slack.com-compact", responseAfterEdit.name);
+    	assertEquals("", responseAfterEdit.preferredDateFormat);
+    	assertEquals("POSTs a very compact slack.com notification", responseAfterEdit.toolTip);
+    	prettyPrint(responseAfterEdit);
+    }
+    
+    @Test(expected=UniformInterfaceException.class)
+    public void testChangeExistingTemplateNameCausesExceptionAsJson() throws FileNotFoundException, JAXBException {
+    	
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	slackCompact.register();
+    	
+    	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	assertEquals("slack.com-compact", responseMsg.name);
+    	prettyPrint(responseMsg);
+    	
+    	responseMsg.name = "newDescription";
+    	try {
+    		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Response.class, responseMsg);
+    	} catch (UniformInterfaceException ex) {
+    		assertEquals(422, ex.getResponse().getStatus());
+    		throw ex;
+    	}
     }
     
 }

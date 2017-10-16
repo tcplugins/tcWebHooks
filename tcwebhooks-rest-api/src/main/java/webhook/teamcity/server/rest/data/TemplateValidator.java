@@ -1,5 +1,7 @@
 package webhook.teamcity.server.rest.data;
 
+import java.util.regex.Pattern;
+
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
@@ -13,7 +15,12 @@ public class TemplateValidator {
 		
 		if (requestTemplate.name == null || requestTemplate.name.trim().isEmpty()) {
 			result.setErrored(true);
-			result.addError("name", "The template name annot be empty. It is used to identify the template and is referenced by webhook configuration");
+			result.addError("name", "The template name cannot be empty. It is used to identify the template and is referenced by webhook configuration");
+		}
+		
+		if ( ! Pattern.matches("^[A-Za-z0-9_.-]+$", requestTemplate.name) ) {
+			result.setErrored(true);
+			result.addError("name", "The template name can only be 'A-Za-z0-9_.-'. It is used to identify the template and is referenced by webhook configuration");
 		}
 		
 		if (requestTemplate.format == null || requestTemplate.format.trim().isEmpty()) {
@@ -41,13 +48,19 @@ public class TemplateValidator {
 	
 	public TemplateValidationResult validateTemplate(WebHookTemplateConfig webHookTemplateConfig, Template requestTemplate, TemplateValidationResult result) {
 		
+		if ( ! webHookTemplateConfig.getName().equals(requestTemplate.name)) {
+			result.setErrored(true);
+			result.addError("name", "Sorry, it's not possible to change the name (aka id) of an existing template. Please create a new template with a new name and delete this one.");
+			
+		}
+		
 		if (requestTemplate.defaultTemplate != null) {
 			result.setErrored(true);
 			result.addError("defaultTemplate", "Sorry, it's not possible to update templateItems when updating a template. Please update the templateItem specifically.");
 			//validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
 		}
 		
-		  if (requestTemplate.getTemplates() != null || requestTemplate.getTemplates().size() > 0) {
+		  if (requestTemplate.getTemplates() != null) {
 			result.setErrored(true);
 			result.addError("templateItem", "Sorry, it's not possible to update templateItems when updating a template. Please update the templateItem specifically.");
 			//validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
