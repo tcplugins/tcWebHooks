@@ -1,6 +1,6 @@
 package webhook.teamcity.server.rest.request;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES_URL;
 
 import javax.ws.rs.core.MediaType;
@@ -19,7 +19,6 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.server.rest.model.template.Template;
-import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
@@ -42,7 +41,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
 	}
  
     @Test
-    public void testDeleteTemplateItem() {
+    public void testDeleteTemplateItemUsingJson() {
     	
     	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	slackCompact.register();
@@ -72,7 +71,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     }
     
     @Test
-    public void testDeleteDeafultTemplateItem() {
+    public void testDeleteDefaultTemplateItemUsingJson() {
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	

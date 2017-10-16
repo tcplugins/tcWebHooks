@@ -35,7 +35,6 @@ import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.data.WebHookTemplateStates;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
-import webhook.teamcity.server.rest.model.template.NewTemplateDescription;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
@@ -45,6 +44,7 @@ import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
+import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItems;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateState;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
@@ -139,21 +139,98 @@ public class TemplateRequest {
   @POST
   @Consumes({"application/xml", "application/json"})
   @Produces({"application/xml", "application/json"})
-  public Template createEmptyTemplate(NewTemplateDescription templateDescription) {
-    if (StringUtil.isEmpty(templateDescription.getName())) {
-      throw new BadRequestException("Template name cannot be empty.");
-    }
-    WebHookTemplateConfig template = new WebHookTemplateConfig(templateDescription.getName(), true);
-    template.setTemplateDescription(templateDescription.getDescription());
+  public Template createNewTemplate(Template newTemplate) {
+	TemplateValidationResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new TemplateValidationResult());
+	  if (validationResult.isErrored()) {
+		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
+	  }	  
+    WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.name, true);
+    template.setTemplateDescription(newTemplate.description);
+    
     if (myTemplateManager.getTemplate(template.getName()) != null){
     	throw new BadRequestException("Template of that name already exists. To update existing template, please use PUT");
     }
+    
+    template.setFormat(newTemplate.format);
+	template.setRank(newTemplate.rank);
+	
+	if (newTemplate.preferredDateFormat != null) {
+		template.setPreferredDateTimeFormat(newTemplate.preferredDateFormat);
+	}
+	
+	if (newTemplate.toolTip != null) {
+		template.setTemplateToolTip(newTemplate.toolTip);
+	}
+	
+    if (newTemplate.defaultTemplate != null) {
+    	WebHookTemplateItem templateItemConfig = buildDeafultTemplateItem(newTemplate.defaultTemplate);
+    	template.setDefaultTemplate(templateItemConfig.getTemplateText());
+    	template.setDefaultBranchTemplate(templateItemConfig.getBranchTemplateText());
+    }
+    
+    if (newTemplate.getTemplates() != null && newTemplate.getTemplates().size() > 0) {
+    	WebHookTemplateItems templates = template.getTemplates();
+    	templates.setMaxId(0);
+	    for (TemplateItem templateItem : newTemplate.getTemplates()) {
+	  	  	WebHookTemplateItem templateItemConfig = buildTemplateItem(templateItem, templates);
+	  	  	templates.addTemplateItem(templateItemConfig);
+	    }
+    }    
+    
     myTemplateManager.registerTemplateFormatFromXmlConfig(template);
     if (myTemplateManager.persistAllXmlConfigTemplates()){
-    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(templateDescription.getName()), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.name), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
     } else {
     	throw new OperationException("There was an error saving your template. Sorry.");
     }
+  }
+  
+  @PUT
+  @Path("/{templateLocator}")
+  @Consumes({"application/xml", "application/json"})
+  @Produces({"application/xml", "application/json"})
+  public Template updateTemplate(@PathParam("templateLocator") String templateLocator, Template newTemplate) {
+	  
+	  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  if (templateConfigWrapper.getTemplateConfig() == null){
+		  throw new NotFoundException("No template found by that name/id");
+	  }
+	  
+	  TemplateValidationResult validationResult = myTemplateValidator.validateTemplate(templateConfigWrapper.getTemplateConfig(), newTemplate, new TemplateValidationResult());
+	  if (validationResult.isErrored()) {
+		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
+	  }	  
+	  WebHookTemplateConfig template = templateConfigWrapper.getTemplateConfig();
+	  
+	  if(newTemplate.description != null) {
+		  template.setTemplateDescription(newTemplate.description);
+	  }
+	  
+	  if(newTemplate.format != null) {
+		  template.setFormat(newTemplate.format);
+	  }
+	  
+	  if(newTemplate.rank != null) {
+		  template.setRank(newTemplate.rank);
+	  }
+	  
+	  if (newTemplate.preferredDateFormat != null) {
+		  template.setPreferredDateTimeFormat(newTemplate.preferredDateFormat);
+	  }
+	  
+	  if (newTemplate.toolTip != null) {
+		  template.setTemplateToolTip(newTemplate.toolTip);
+	  }
+
+	  // We don't (currently) support updating defaultTemplate or other templateItems
+	  // The validator will have thrown an error above. 
+	  
+	  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
+	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.name), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+	  } else {
+		  throw new OperationException("There was an error saving your template. Sorry.");
+	  }
   }
   
   @GET
@@ -363,7 +440,7 @@ public class TemplateRequest {
 	  if("defaultTemplate".equals(templateItemConfigWrapper.getTemplateItem().getId())) {
 		  
 		  TemplateItem previousDefaultTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
-		  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousDefaultTemplateItem, templateItem);
+		  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousDefaultTemplateItem, templateItem, new TemplateValidationResult());
 		  if (validationResult.isErrored()) {
 			  throw new UnprocessableEntityException("TemplateItem contained invalid data", validationResult);
 		  }
@@ -393,7 +470,7 @@ public class TemplateRequest {
 		  
 	  }
 	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext);
-	  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem);
+	  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new TemplateValidationResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("TemplateItem contained invalid data", validationResult);
 	  }
@@ -453,17 +530,38 @@ public class TemplateRequest {
 	  }
 	  
 	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext);
-	  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem);
+	  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new TemplateValidationResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("TemplateItem contained invalid data", validationResult);
 	  }
 	  
 	  WebHookTemplateConfig templateConfig = templateConfigWrapper.getTemplateConfig();
 	  
-	  WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
+	  WebHookTemplateItem templateItemConfig = buildTemplateItem(templateItem, templateConfig.getTemplates());
+	  
+	  templateConfig.getTemplates().getTemplates().add(templateItemConfig);
+	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
+	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+		  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemConfig.getId().toString());
+		  return Response.status(201)
+				  .header(
+						  "Location",
+						  myBeanContext.getApiUrlBuilder().getTemplateItemHref(templateConfig, templateItemConfigWrapper.getTemplateItem())
+						  )
+				  .entity(new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext))
+				  .build();
+	  } else {
+		  throw new OperationException("There was an error saving your template. Sorry.");
+	  }
+	  
+  }
+
+private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHookTemplateItems templates) {
+	WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
 	  templateItemConfig.setTemplateText(new WebHookTemplateText(""));
 	  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
-	  templateItemConfig.setId(templateConfig.getTemplates().getMaxId());
+	  templateItemConfig.setId(templates.getMaxId());
 	  
 	  if (templateItem.getTemplateText() != null) {
 		  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
@@ -488,24 +586,8 @@ public class TemplateRequest {
 			  }
 		  }
 	  }
-	  
-	  templateConfig.getTemplates().getTemplates().add(templateItemConfig);
-	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
-	  if (myTemplateManager.persistAllXmlConfigTemplates()){
-		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-		  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemConfig.getId().toString());
-		  return Response.status(201)
-				  .header(
-						  "Location",
-						  myBeanContext.getApiUrlBuilder().getTemplateItemHref(templateConfig, templateItemConfigWrapper.getTemplateItem())
-						  )
-				  .entity(new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext))
-				  .build();
-	  } else {
-		  throw new OperationException("There was an error saving your template. Sorry.");
-	  }
-	  
-  }
+	return templateItemConfig;
+}
   
   /**
    *  /app/rest/webhooks/templates/id:flowdock/templateItem/id:2/buildState/buildStarted
@@ -572,30 +654,14 @@ public class TemplateRequest {
 		  throw new BadRequestException("Default Template Item already exists. To update existing default template, please use PUT");
 	  }
 
-	  final TemplateValidationResult validationResult = myTemplateValidator.validateDefaultTemplateItem(templateItem);
+	  final TemplateValidationResult validationResult = myTemplateValidator.validateDefaultTemplateItem(templateItem, new TemplateValidationResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("DefaultTemplateItem contained invalid data", validationResult);
 	  }
 	  
 	  WebHookTemplateConfig templateConfig = templateConfigWrapper.getTemplateConfig();
 	  
-	  WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
-	  templateItemConfig.setTemplateText(new WebHookTemplateText(""));
-	  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
-	  
-	  if (templateItem.getTemplateText() != null) {
-		  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
-			  templateItemConfig.getTemplateText().setUseTemplateTextForBranch(templateItem.getTemplateText().getUseTemplateTextForBranch());
-		  }
-		  if (templateItem.getTemplateText().getContent() != null) {
-			  templateItemConfig.getTemplateText().setTemplateContent(templateItem.getTemplateText().getContent());
-		  }
-	  }
-	  if (templateItem.getBranchTemplateText() != null) {
-		  if (templateItem.getBranchTemplateText().getContent() != null) {
-			  templateItemConfig.getBranchTemplateText().setTemplateContent(templateItem.getBranchTemplateText().getContent());
-		  }
-	  }
+	  WebHookTemplateItem templateItemConfig = buildDeafultTemplateItem(templateItem);
 	  
 	  templateConfig.setDefaultTemplate(templateItemConfig.getTemplateText());
 	  templateConfig.setDefaultBranchTemplate(templateItemConfig.getBranchTemplateText());
@@ -620,6 +686,27 @@ public class TemplateRequest {
 	  }
 	  
   }
+
+private WebHookTemplateItem buildDeafultTemplateItem(TemplateItem templateItem) {
+	WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
+	  templateItemConfig.setTemplateText(new WebHookTemplateText(""));
+	  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
+	  
+	  if (templateItem.getTemplateText() != null) {
+		  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
+			  templateItemConfig.getTemplateText().setUseTemplateTextForBranch(templateItem.getTemplateText().getUseTemplateTextForBranch());
+		  }
+		  if (templateItem.getTemplateText().getContent() != null) {
+			  templateItemConfig.getTemplateText().setTemplateContent(templateItem.getTemplateText().getContent());
+		  }
+	  }
+	  if (templateItem.getBranchTemplateText() != null) {
+		  if (templateItem.getBranchTemplateText().getContent() != null) {
+			  templateItemConfig.getBranchTemplateText().setTemplateContent(templateItem.getBranchTemplateText().getContent());
+		  }
+	  }
+	return templateItemConfig;
+}
   
   
   /*
