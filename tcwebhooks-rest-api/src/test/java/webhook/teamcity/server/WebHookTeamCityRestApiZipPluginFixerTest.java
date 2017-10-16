@@ -27,7 +27,7 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("src/test/resources/catalina_home"), "rest-api.zip");
 		assertEquals(1, filesFound.size());
-		boolean fileContainsJars = fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.filenames);
+		boolean fileContainsJars = fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames());
 		assertTrue(fileContainsJars);
 	}
 	
@@ -36,7 +36,7 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("src/test/resources/catalina_home"), "somefile.zip");
 		assertEquals(1, filesFound.size());
-		boolean fileContainsJars = fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.filenames);
+		boolean fileContainsJars = fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames());
 		assertFalse(fileContainsJars);
 	}
 
@@ -47,9 +47,9 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("target/catalina_home"), "rest-api.zip");
 		assertEquals(1, filesFound.size());
-		assertTrue(fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.filenames));
-		fixer.deleteFilesFromRestApiZipFile(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.filenames);
-		assertFalse(fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.filenames));
+		assertTrue(fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames()));
+		fixer.deleteFilesFromRestApiZipFile(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames());
+		assertFalse(fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames()));
 		
 	}
 	

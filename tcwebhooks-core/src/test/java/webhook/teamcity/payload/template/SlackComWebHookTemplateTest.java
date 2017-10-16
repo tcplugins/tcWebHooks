@@ -9,14 +9,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.jdom.JDOMException;
+import org.junit.Test;
+
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-
-import org.jdom.JDOMException;
-import org.junit.Test;
-
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
@@ -43,7 +42,6 @@ public class SlackComWebHookTemplateTest {
 
 	private WebHookContentBuilder webHookContentBuilder;
 	private WebHookTemplateResolver templateResolver;
-	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 
 	@Test
 	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
@@ -62,7 +60,7 @@ public class SlackComWebHookTemplateTest {
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		slackCompactTemplate.register();
-		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, payloadManager, templateResolver);
+		webHookContentBuilder = new WebHookContentBuilder(payloadManager, templateResolver);
 		
 		WebHookConfig webhookSlackCompact  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-slackcompact.xml"));
 		when(mainSettings.getProxyConfigForUrl(webhookSlackCompact.getUrl())).thenReturn(null);

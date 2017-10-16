@@ -82,6 +82,9 @@ public class WebHookProjectSettings implements ProjectSettings {
     }
     
     public List<WebHookConfig> getWebHooksAsList(){
+    	if (this.webHooksConfigs == null) {
+    		return new ArrayList<>();
+    	}
     	return this.webHooksConfigs;
     }    
     
@@ -158,9 +161,9 @@ public class WebHookProjectSettings implements ProjectSettings {
                 	}
             		if (webHookAuthConfig != null){
             			whc.setAuthEnabled(true);
-            			whc.setAuthType(webHookAuthConfig.type);
-            			whc.setAuthPreemptive(webHookAuthConfig.preemptive);
-            			whc.setAuthParameters(webHookAuthConfig.parameters);
+            			whc.setAuthType(webHookAuthConfig.getType());
+            			whc.setAuthPreemptive(webHookAuthConfig.getPreemptive());
+            			whc.setAuthParameters(webHookAuthConfig.getParameters());
             		} else {
             			whc.setAuthEnabled(false);
             			whc.setAuthType("");

@@ -40,21 +40,19 @@ public class UsernamePasswordAuthenticatorFactoryTest {
 	@Test
 	public void testAllRequiredParamtersPresentReturnsTrue() {
 		WebHookAuthenticatorFactory factory = new UsernamePasswordAuthenticatorFactory(provider);
-		WebHookAuthConfig webHookAuthConfig = WebHookAuthConfig.builder()
-						 .parameter(UsernamePasswordAuthenticator.USERNAME,"username")
-						 .parameter(UsernamePasswordAuthenticator.PASSWORD, "password")
-						 .preemptive(false)
-						 .build();
+		WebHookAuthConfig webHookAuthConfig = new WebHookAuthConfig();
+		webHookAuthConfig.getParameters().put(UsernamePasswordAuthenticator.KEY_USERNAME,"username");
+		webHookAuthConfig.getParameters().put(UsernamePasswordAuthenticator.KEY_PASS, "password");
+		webHookAuthConfig.setPreemptive(false);
 		factory.areAllRequiredParametersPresent(webHookAuthConfig);
 	}
 	
 	@Test
 	public void testMissingRequiredParamterPresentReturnsFalse() {
 		WebHookAuthenticatorFactory factory = new UsernamePasswordAuthenticatorFactory(provider);
-		WebHookAuthConfig webHookAuthConfig = WebHookAuthConfig.builder()
-				.parameter(UsernamePasswordAuthenticator.USERNAME,"username")
-				.preemptive(false)
-				.build();
+		WebHookAuthConfig webHookAuthConfig = new WebHookAuthConfig();
+		webHookAuthConfig.getParameters().put(UsernamePasswordAuthenticator.KEY_USERNAME,"username");
+		webHookAuthConfig.setPreemptive(false);
 		factory.areAllRequiredParametersPresent(webHookAuthConfig);
 	}
 

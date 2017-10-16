@@ -85,7 +85,7 @@ public class WebHookListenerTest {
 		webHookImpl.setBuildStates(allBuildStates);
 		spyWebHook = spy(webHookImpl);   
 		webHookConfig = mock(WebHookConfig.class);
-		contentBuilder = new WebHookContentBuilder(sBuildServer, manager, templateResolver);
+		contentBuilder = new WebHookContentBuilder(manager, templateResolver);
 		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver, contentBuilder);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);

@@ -1,17 +1,15 @@
 package webhook.teamcity;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import jetbrains.buildServer.serverSide.ParametersSupport;
-import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-
 import org.jetbrains.annotations.Nullable;
 
+import jetbrains.buildServer.serverSide.ParametersSupport;
+import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.WebHook;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -25,15 +23,13 @@ import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class WebHookContentBuilder {
-	private final SBuildServer buildServer;
 	private final WebHookPayloadManager payloadManager;
 	private final WebHookTemplateResolver webHookTemplateResolver;
 	
 
-	public WebHookContentBuilder(SBuildServer server, WebHookPayloadManager manager, WebHookTemplateResolver resolver) {
+	public WebHookContentBuilder(WebHookPayloadManager manager, WebHookTemplateResolver resolver) {
 		this.payloadManager = manager;
 		this.webHookTemplateResolver = resolver;
-		this.buildServer = server;
 	}
 	
 	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isOverrideEnabled) throws WebHookPayloadContentAssemblyException{
@@ -144,9 +140,9 @@ public class WebHookContentBuilder {
 
 		// Then override any from ones declared in the actual build via webhook.*
 		Map<String,String> teamCityProperties = build.getParametersProvider().getAll(); 
-		for (String key : teamCityProperties.keySet()){
-			if (key.startsWith("webhook.")){
-				newMap.put(key.substring("webhook.".length()), teamCityProperties.get(key));
+		for (Entry<String,String> tcProperty : teamCityProperties.entrySet()){
+			if (tcProperty.getKey().startsWith("webhook.")){
+				newMap.put(tcProperty.getKey().substring("webhook.".length()), tcProperty.getValue());
 			}
 		}
 		return newMap;

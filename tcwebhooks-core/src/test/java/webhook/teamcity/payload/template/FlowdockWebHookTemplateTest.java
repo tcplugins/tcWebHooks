@@ -9,20 +9,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.jdom.JDOMException;
+import org.junit.Test;
+
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-
-import org.jdom.JDOMException;
-import org.junit.Test;
-
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
-import webhook.teamcity.TestingWebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
@@ -43,7 +41,6 @@ public class FlowdockWebHookTemplateTest {
 
 	private WebHookContentBuilder webHookContentBuilder;
 	private WebHookTemplateResolver templateResolver;
-	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 
 	@Test
 	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
@@ -61,7 +58,7 @@ public class FlowdockWebHookTemplateTest {
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		flockdockTemplate.register();
-		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, payloadManager, templateResolver);
+		webHookContentBuilder = new WebHookContentBuilder(payloadManager, templateResolver);
 		
 		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-flowdock.xml"));
 		when(mainSettings.getProxyConfigForUrl(webhookElastic.getUrl())).thenReturn(null);

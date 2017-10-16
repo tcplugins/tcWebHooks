@@ -1,6 +1,5 @@
 package webhook;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ public interface WebHook {
 
 	public abstract void setProxyUserAndPass(String username, String password);
 
-	public abstract void post() throws FileNotFoundException, IOException;
+	public abstract void post() throws IOException;
 
 	public abstract Integer getStatus();
 
@@ -68,9 +67,6 @@ public interface WebHook {
 	public abstract BuildState getBuildStates();
 	
 	public abstract void setBuildStates(BuildState states);
-	
-	//public abstract Integer getEventListBitMask();
-	//public abstract void setTriggerStateBitMask(Integer triggerStateBitMask);
 
 	public abstract String getProxyUsername();
 

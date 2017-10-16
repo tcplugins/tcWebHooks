@@ -17,7 +17,6 @@ import com.riffpie.common.testing.AbstractSpringAwareJerseyTest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import com.sun.jersey.test.framework.spi.container.TestContainerException;
 
 /**
  * Base for unit-integration testing of REST web services based on Jersey (v. 1.9).

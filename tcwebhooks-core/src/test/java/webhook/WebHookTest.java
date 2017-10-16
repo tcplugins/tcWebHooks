@@ -124,11 +124,11 @@ public class WebHookTest{
 		WebHook w = factory.getWebHook(url + "/auth/200");
 		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
-		authConfig.type = "userPass";
-		authConfig.preemptive = false;
-		authConfig.parameters.put("username", "user1");
-		authConfig.parameters.put("password", "user1pass");
-		authConfig.parameters.put("realm", "realmywealmy");
+		authConfig.setType("userPass");
+		authConfig.setPreemptive(false);
+		authConfig.getParameters().put("username", "user1");
+		authConfig.getParameters().put("password", "user1pass");
+		authConfig.getParameters().put("realm", "realmywealmy");
 		authenticator.setWebHookAuthConfig(authConfig);
 		w.setAuthentication(authenticator);
 		
@@ -148,11 +148,13 @@ public class WebHookTest{
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/auth/200");
 		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
-		authConfig.type = "userPass";
-		authConfig.parameters.put("username", "user1");
-		authConfig.parameters.put("password", "user1pass");
-		authConfig.parameters.put("realm", "realmywealmy");
+				authConfig.setType("userPass");
+				authConfig.getParameters().put(UsernamePasswordAuthenticator.KEY_USERNAME,"user1");
+				authConfig.getParameters().put(UsernamePasswordAuthenticator.KEY_PASS, "user1pass");
+				authConfig.getParameters().put(UsernamePasswordAuthenticator.KEY_REALM, "realmywealmy");
+		
 		authenticator.setWebHookAuthConfig(authConfig);
 		w.setAuthentication(authenticator);
 		
@@ -173,9 +175,9 @@ public class WebHookTest{
 		WebHook w = factory.getWebHook(url + "/auth/200");
 		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
-		authConfig.type = "userPass";
-		authConfig.parameters.put("username", "user1");
-		authConfig.parameters.put("password", "user1pass");
+		authConfig.setType("userPass");
+		authConfig.getParameters().put("username", "user1");
+		authConfig.getParameters().put("password", "user1pass");
 		authenticator.setWebHookAuthConfig(authConfig);
 		w.setAuthentication(authenticator);
 		
@@ -280,9 +282,9 @@ public class WebHookTest{
 		
 		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
-		authConfig.type = "userPass";
-		authConfig.parameters.put("username", "user1");
-		authConfig.parameters.put("password", "user1pass");
+		authConfig.setType("userPass");
+		authConfig.getParameters().put("username", "user1");
+		authConfig.getParameters().put("password", "user1pass");
 		authenticator.setWebHookAuthConfig(authConfig);
 		w.setAuthentication(authenticator);
 		

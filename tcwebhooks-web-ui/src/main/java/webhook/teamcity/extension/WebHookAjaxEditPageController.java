@@ -81,7 +81,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        
 	        SUser myUser = SessionUser.getUser(request);
 	        SProject myProject = null;
-	        WebHookProjectSettings projSettings = null;
 	    	
 	    	if (request.getMethod().equalsIgnoreCase("post")){
 	    		boolean noErrors = true;
@@ -91,7 +90,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 		        		params.put("messages", "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
 		        		noErrors = false;
 		        	} else {
-	    		    	projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 
 			    		if (noErrors && (projSettings != null) && (myProject != null)
 			    				&& (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT))){
@@ -161,19 +160,19 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								&& !request.getParameter("extraAuthType").equals("")){
 			    							
 			    							webHookAuthConfig =  new WebHookAuthConfig();
-			    							webHookAuthConfig.type = request.getParameter("extraAuthType").toString();
-			    							webHookAuthConfig.preemptive = false;
+			    							webHookAuthConfig.setType(request.getParameter("extraAuthType").toString());
+			    							webHookAuthConfig.setPreemptive(false);
 			    							if (request.getParameter("extraAuthPreemptive") != null){
-			    								webHookAuthConfig.preemptive = request.getParameter("extraAuthPreemptive").equalsIgnoreCase("on");
+			    								webHookAuthConfig.setPreemptive(request.getParameter("extraAuthPreemptive").equalsIgnoreCase("on"));
 			    							}
 				    						Enumeration<String> attrs =  request.getParameterNames();
 				    						while(attrs.hasMoreElements()) {
 				    							String paramName = attrs.nextElement();
 				    							if (paramName.startsWith("extraAuthParam_") && request.getParameter(paramName) != null){
-				    								webHookAuthConfig.parameters.put(paramName.substring("extraAuthParam_".length()), request.getParameter(paramName).toString());
+				    								webHookAuthConfig.getParameters().put(paramName.substring("extraAuthParam_".length()), request.getParameter(paramName).toString());
 				    							}
 				    						}
-				    						if (myAuthenticatorProvider.isRegisteredType(webHookAuthConfig.type)) {
+				    						if (myAuthenticatorProvider.isRegisteredType(webHookAuthConfig.getType())) {
 				    							if (myAuthenticatorProvider.areAllRequiredParametersPresent(webHookAuthConfig)){
 				    								params.put("messages", "<errors />");
 				    							} else {
@@ -236,9 +235,9 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
 	        	if (project != null){
 	        	
-			    	WebHookProjectSettings projSettings1 = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
 			    	
-			    	String message = projSettings1.getWebHooksAsString();
+			    	String message = projSettings.getWebHooksAsString();
 			    	
 			    	params.put("haveProject", "true");
 			    	params.put("messages", message);
@@ -246,8 +245,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 			    	params.put("projectName", project.getName());
 			    	
-			    	params.put("webHookCount", projSettings1.getWebHooksCount());
-			    	if (projSettings1.getWebHooksCount() == 0){
+			    	params.put("webHookCount", projSettings.getWebHooksCount());
+			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
 			    		params.put("webHooks", "false");
 			    	} else {

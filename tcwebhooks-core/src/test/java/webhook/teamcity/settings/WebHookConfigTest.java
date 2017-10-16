@@ -199,9 +199,9 @@ public class WebHookConfigTest {
 	public void testAuthParametersAreLoaded(){
 		assertTrue(webhookWithAuth.getAuthEnabled());
 		assertNotNull(webhookWithAuth.getAuthenticationConfig());
-		assertTrue(webhookWithAuth.getAuthenticationConfig().parameters.containsKey("username"));
-		assertTrue(webhookWithAuth.getAuthenticationConfig().parameters.containsKey("password"));
-		assertTrue(webhookWithAuth.getAuthenticationConfig().parameters.containsKey("realm"));
+		assertTrue(webhookWithAuth.getAuthenticationConfig().getParameters().containsKey("username"));
+		assertTrue(webhookWithAuth.getAuthenticationConfig().getParameters().containsKey("password"));
+		assertTrue(webhookWithAuth.getAuthenticationConfig().getParameters().containsKey("realm"));
 	}
 
 	@Test

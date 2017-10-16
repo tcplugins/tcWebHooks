@@ -253,10 +253,10 @@ public class WebHookConfig {
 			this.enabledBuildTypesSet = enabledBuildTypes;
 		}
 		if (webHookAuthConfig != null){
-			this.authType = webHookAuthConfig.type;
-			this.authPreemptive = webHookAuthConfig.preemptive;
+			this.authType = webHookAuthConfig.getType();
+			this.authPreemptive = webHookAuthConfig.getPreemptive();
 			this.authEnabled = true;
-			this.authParameters.putAll(webHookAuthConfig.parameters);
+			this.authParameters.putAll(webHookAuthConfig.getParameters());
 		}
 	}
 
@@ -630,9 +630,9 @@ public class WebHookConfig {
 	public WebHookAuthConfig getAuthenticationConfig() {
 		if (authEnabled && !authType.equals("")){
 			WebHookAuthConfig webhookAuthConfig= new WebHookAuthConfig();
-			webhookAuthConfig.type = authType;
-			webhookAuthConfig.preemptive = authPreemptive;
-			webhookAuthConfig.parameters.putAll(authParameters);
+			webhookAuthConfig.setType(authType);
+			webhookAuthConfig.setPreemptive(authPreemptive);
+			webhookAuthConfig.getParameters().putAll(authParameters);
 			return webhookAuthConfig;
 		}
 		return null;

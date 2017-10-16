@@ -60,15 +60,8 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		Map<String, String> contentMap = null;
 		try {
 			 contentMap = BeanUtils.describe(content);
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (InvocationTargetException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (NoSuchMethodException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+			Loggers.SERVER.debug("It was not possible to convert 'content' into a bean", ex );
 		}
 		
 		if (contentMap != null && contentMap.size() > 0){
@@ -86,17 +79,11 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 							pair += "=" + URLEncoder.encode("null", this.charset);
 						}
 					}
-				} catch (UnsupportedEncodingException e) {
-					// TODO Need a better way to handle to string.
-					e.printStackTrace();
+				} catch (UnsupportedEncodingException | ClassCastException ex ){
 					pair = "";
-				} catch (ClassCastException e){
-					// TODO Need a better way to handle to string.
-					e.printStackTrace();
-					pair = "";
+					Loggers.SERVER.debug("failed to encode 'content' parameter '" + key + "' to URL format. Value has been converted to an empty string", ex );
 				}
 				returnString += pair;
-				//Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString);
 			}
 		
 		}
@@ -109,23 +96,16 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 				String pair = "&";
 				try {
 					if (key != null){
-						System.out.println(this.getClass().getSimpleName() + ": key is " + key);
 						pair += URLEncoder.encode(key, this.charset);
-						System.out.println(this.getClass().getSimpleName() + ": value is " + (String)content.getExtraParameters().get(key));
 						if (content.getExtraParameters().get(key) != null){
 							pair += "=" + URLEncoder.encode((String)content.getExtraParameters().get(key), this.charset);
 						} else {
 							pair += "=" + URLEncoder.encode("null", this.charset);
 						}
 					}
-				} catch (UnsupportedEncodingException e) {
-					// TODO Need a better way to handle to string.
-					e.printStackTrace();
+				} catch (UnsupportedEncodingException | ClassCastException ex ) {
 					pair = "";
-				} catch (ClassCastException e){
-					// TODO Need a better way to handle to string.
-					e.printStackTrace();
-					pair = "";
+					Loggers.SERVER.debug("failed to encode 'extra' parameter '" + key + "' to URL format. Value has been converted to an empty string.", ex );
 				}
 				returnString += pair;
 				Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString);

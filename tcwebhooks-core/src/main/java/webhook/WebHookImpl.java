@@ -2,11 +2,11 @@ package webhook;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -79,7 +79,7 @@ public class WebHookImpl implements WebHook {
 			try {
 				this.proxyPort = Integer.parseInt(proxyPort);
 			} catch (NumberFormatException ex){
-				ex.printStackTrace();
+				Loggers.SERVER.warn("Proxy port does not appear to be a valid number: " + proxyPort);
 			}
 		}
 		this.setProxy(proxyHost, this.proxyPort);
@@ -130,7 +130,7 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	@Override
-	public void post() throws FileNotFoundException, IOException{
+	public void post() throws IOException{
 		if ((this.enabled) && (!this.errored)){
 			PostMethod httppost = new PostMethod(this.url);
 			if (this.filename.length() > 0){
@@ -141,7 +141,7 @@ public class WebHookImpl implements WebHook {
 			if (   this.payload != null && this.payload.length() > 0 
 				&& this.contentType != null && this.contentType.length() > 0){
 				httppost.setRequestEntity(new StringRequestEntity(this.payload, this.contentType, this.charset));
-			} else if (this.params.size() > 0){
+			} else if ( ! this.params.isEmpty()){
 				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
 				httppost.setRequestBody(paramsArray);
 			}
@@ -223,8 +223,8 @@ public class WebHookImpl implements WebHook {
 	
 	@Override
 	public void addParams(Map<String,String> paramsList){
-		for (String key : paramsList.keySet()){
-			addParam(key, paramsList.get(key)); 
+		for (Entry<String,String> entry : paramsList.entrySet()){
+			addParam(entry.getKey(), entry.getValue()); 
 		}		
 	}
 	
@@ -266,7 +266,7 @@ public class WebHookImpl implements WebHook {
 
 	@Override
 	public void setEnabled(String enabled){
-		if (enabled.toLowerCase().equals("true")){
+		if ("true".equalsIgnoreCase(enabled)){
 			this.enabled = true;
 		} else {
 			this.enabled = false;
@@ -377,8 +377,10 @@ public class WebHookImpl implements WebHook {
 				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
 				this.enabled = false;
 				return false;
-			} {
-				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHookImpl: Filter match found: " + filter.getValue() + " (" + variable + ") matches using regex " + filter.getRegex() );
+			} else {
+				if (Loggers.SERVER.isDebugEnabled()) {
+					Loggers.SERVER.debug("WebHookImpl: Filter match found: " + filter.getValue() + " (" + variable + ") matches using regex " + filter.getRegex() );
+				}
 			}
 			
 		}

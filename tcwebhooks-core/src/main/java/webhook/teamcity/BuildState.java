@@ -18,7 +18,6 @@ public class BuildState {
 		states.clear();
 		states.put(BuildStateEnum.BUILD_STARTED, 			new SimpleBuildState(BuildStateEnum.BUILD_STARTED, 			false));
 		states.put(BuildStateEnum.CHANGES_LOADED, 			new SimpleBuildState(BuildStateEnum.CHANGES_LOADED, 		false));
-		//states.put(BuildStateEnum.BUILD_CHANGED_STATUS, 	new SimpleBuildState(BuildStateEnum.BUILD_CHANGED_STATUS, 	false)); 	
 		states.put(BuildStateEnum.BEFORE_BUILD_FINISHED, 	new SimpleBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, 	false)); 
 		states.put(BuildStateEnum.RESPONSIBILITY_CHANGED, 	new SimpleBuildState(BuildStateEnum.RESPONSIBILITY_CHANGED,	false));
 		states.put(BuildStateEnum.BUILD_INTERRUPTED, 		new SimpleBuildState(BuildStateEnum.BUILD_INTERRUPTED, 		false));
@@ -208,6 +207,6 @@ public class BuildState {
 		}
 		
 		// If it's enabled, check its sub-settings.
-		return (states.get(BUILD_FAILED).isEnabled() || states.get(BUILD_SUCCESSFUL).isEnabled());
+		return states.get(BUILD_FAILED).isEnabled() || states.get(BUILD_SUCCESSFUL).isEnabled();
 	}
 }

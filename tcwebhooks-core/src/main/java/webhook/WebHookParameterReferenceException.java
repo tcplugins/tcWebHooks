@@ -2,7 +2,7 @@ package webhook;
 
 @SuppressWarnings("serial")
 public class WebHookParameterReferenceException extends Exception {
-	String key;
+	private final String key;
 
 	public WebHookParameterReferenceException(String key){
 		super();

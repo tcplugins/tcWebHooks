@@ -11,25 +11,25 @@ import org.jetbrains.annotations.NotNull;
 
 public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
 
-		protected static final String REALM = "realm";
-		protected static final String PASSWORD = "password";
-		protected static final String USERNAME = "username";
+		public static final String KEY_REALM = "realm";
+		public static final String KEY_PASS = "password";
+		public static final String KEY_USERNAME = "username";
 		WebHookAuthenticatorProvider myProvider;
 		WebHookAuthConfig config;
 		
 		@Override
 		public void addAuthentication(PostMethod method, HttpClient client, String url) {
-			if (config.parameters.containsKey(USERNAME) && config.parameters.containsKey(PASSWORD)){
+			if (config.getParameters().containsKey(KEY_USERNAME) && config.getParameters().containsKey(KEY_PASS)){
 					URI uri = URI.create(url);
 					AuthScope scope;
-					if (config.parameters.containsKey(REALM)){
-						scope = new AuthScope(uri.getHost(), uri.getPort(), config.parameters.get(REALM));
+					if (config.getParameters().containsKey(KEY_REALM)){
+						scope = new AuthScope(uri.getHost(), uri.getPort(), config.getParameters().get(KEY_REALM));
 					} else {
 						scope = new AuthScope(uri.getHost(), uri.getPort());
 					}
-					Credentials creds = new UsernamePasswordCredentials(config.parameters.get(USERNAME), config.parameters.get(PASSWORD));
+					Credentials creds = new UsernamePasswordCredentials(config.getParameters().get(KEY_USERNAME), config.getParameters().get(KEY_PASS));
 					client.getState().setCredentials(scope, creds);
-					client.getParams().setAuthenticationPreemptive(config.preemptive);
+					client.getParams().setAuthenticationPreemptive(config.getPreemptive());
 			}
 		}
 

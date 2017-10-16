@@ -43,7 +43,6 @@ public class ElasticSearchWebHookTemplateTest {
 
 	private WebHookContentBuilder webHookContentBuilder;
 	private WebHookTemplateResolver templateResolver;
-	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 
 	@Test
 	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
@@ -62,7 +61,7 @@ public class ElasticSearchWebHookTemplateTest {
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		elasticTemplate.register();
-		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, payloadManager, templateResolver);
+		webHookContentBuilder = new WebHookContentBuilder(payloadManager, templateResolver);
 		
 		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-elastic.xml"));
 		when(mainSettings.getProxyConfigForUrl(webhookElastic.getUrl())).thenReturn(null);

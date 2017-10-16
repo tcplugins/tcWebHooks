@@ -78,7 +78,7 @@ public class ProjectHistoryResolver {
 		}
 	}
 	
-	public static final List<Long> times = Arrays.asList(
+	private static final List<Long> times = Arrays.asList(
 	        TimeUnit.DAYS.toMillis(365),
 	        TimeUnit.DAYS.toMillis(30),
 	        TimeUnit.DAYS.toMillis(1),
@@ -86,7 +86,7 @@ public class ProjectHistoryResolver {
 	        TimeUnit.MINUTES.toMillis(1),
 	        TimeUnit.SECONDS.toMillis(1) );
 	
-	public static final List<String> timesString = Arrays.asList("year","month","day","hour","minute","second");
+	private static final List<String> timesString = Arrays.asList("year","month","day","hour","minute","second");
 
 	public static String toDuration(long duration) {
 

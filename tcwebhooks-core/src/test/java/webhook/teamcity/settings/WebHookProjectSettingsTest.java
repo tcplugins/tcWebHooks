@@ -53,9 +53,9 @@ public class WebHookProjectSettingsTest {
 		assertFalse("Auth should be disabled", config.getAuthEnabled());
 		
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
-		authConfig.type = "userpass";
-		authConfig.preemptive = true;
-		authConfig.parameters.put("username", "usernamey");
+		authConfig.setType("userpass");
+		authConfig.setPreemptive(true);
+		authConfig.getParameters().put("username", "usernamey");
 		
 		settings.updateWebHook("project01", config.getUniqueKey(), config.getUrl(), config.getEnabled(), new BuildState(), config.getPayloadFormat(), config.getPayloadTemplate(), config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), null, authConfig);
 		

@@ -24,8 +24,8 @@ import webhook.teamcity.Loggers;
 
 public class WebHookTeamCityRestApiZipPluginFixer {
 	
-	final static String[] filenames = { "server/jaxb-api-2.2.5.jar", "server/jaxb-impl-2.2.5.jar"};
-	final static String unpackedLocation = File.separator + ".unpacked" + File.separator + "rest-api";
+	private final static String[] filenames = { "server/jaxb-api-2.2.5.jar", "server/jaxb-impl-2.2.5.jar"};
+	private final static String unpackedLocation = File.separator + ".unpacked" + File.separator + "rest-api";
 	
 	@Getter
 	private boolean haveFilesBeenCleanedSinceBoot = false;
@@ -47,6 +47,10 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	
 	public boolean foundApiZipFilesContainingJaxbJars() {
 		return foundApiZipFilesContainingJaxbJars.size() > 0 || foundUnpackedApiZipFilesContainingJaxbJars.size() > 0;
+	}
+	
+	protected static String[] getFilenames () {
+		return filenames;
 	}
 	
 	public synchronized void findRestApiZipPlugins() {

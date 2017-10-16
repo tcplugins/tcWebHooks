@@ -92,6 +92,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	        try {
 	            InputStream in = url.openStream();
 	            webhookEntity = webHookTemplateJaxHelper.read(in).getWebHookTemplateList().get(0);
+	            webhookEntity.fixTemplateIds();
 	        } catch (IOException | JAXBException e) {
 	        	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ".");
 	        	Loggers.SERVER.debug(e);
@@ -102,7 +103,6 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	    } else {
 	    	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ". The file was not found in the classpath.");
 	    }
-	    webhookEntity.fixTemplateIds();
 	    return webhookEntity;
 	}
 

@@ -1,7 +1,6 @@
 package webhook.teamcity.server.rest.request;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES_URL;
 
 import java.io.FileNotFoundException;
@@ -15,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.intellij.openapi.editor.markup.ErrorStripeRenderer;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
@@ -26,7 +24,6 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
-import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTest {

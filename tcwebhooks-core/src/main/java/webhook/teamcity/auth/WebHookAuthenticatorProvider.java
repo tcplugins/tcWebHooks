@@ -32,7 +32,7 @@ public class WebHookAuthenticatorProvider {
 	}
 	
 	public boolean areAllRequiredParametersPresent(WebHookAuthConfig webHookAuthConfig){
-		return types.get(webHookAuthConfig.type).areAllRequiredParametersPresent(webHookAuthConfig);
+		return types.get(webHookAuthConfig.getType()).areAllRequiredParametersPresent(webHookAuthConfig);
 	}
 	
 	public String getDescription(String typeName){

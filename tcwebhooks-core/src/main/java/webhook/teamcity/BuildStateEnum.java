@@ -3,7 +3,6 @@ package webhook.teamcity;
 public enum BuildStateEnum {
     BUILD_STARTED 			("buildStarted",			"started",					"Build Started"),                
     CHANGES_LOADED 			("changesLoaded",			"loaded changes",			"Changes Loaded"),                
-    //BUILD_CHANGED_STATUS	("statusChanged", 			"changed status"),
     BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted"),
     BEFORE_BUILD_FINISHED	("beforeBuildFinish", 		"nearly finished",			"Build Almost Completed"),
 	BUILD_FINISHED 			("buildFinished", 			"finished",					"Build Finished"),

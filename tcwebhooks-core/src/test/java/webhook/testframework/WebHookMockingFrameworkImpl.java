@@ -55,10 +55,6 @@ import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
@@ -73,8 +69,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
 	WebHookTemplateResolver resolver = mock(WebHookTemplateResolver.class);
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
-	//WebHookContentBuilder contentBuilder = mock(WebHookContentBuilder.class);
-	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(getServer(), manager, resolver);
+	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(manager, resolver);
 	WebHookPayloadTemplate template;
 	WebHookPayload payloadJson = new WebHookPayloadJson(manager);
 	WebHookPayload payloadXml = new WebHookPayloadXml(manager);
