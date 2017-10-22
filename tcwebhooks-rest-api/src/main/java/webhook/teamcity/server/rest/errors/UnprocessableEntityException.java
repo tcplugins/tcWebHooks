@@ -2,6 +2,7 @@ package webhook.teamcity.server.rest.errors;
 
 import webhook.teamcity.server.rest.model.template.TemplateValidationResult;
 
+@SuppressWarnings("serial")
 public class UnprocessableEntityException extends RuntimeException {
   private TemplateValidationResult result;
 

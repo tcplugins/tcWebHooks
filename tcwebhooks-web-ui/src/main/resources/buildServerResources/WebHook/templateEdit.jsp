@@ -50,7 +50,7 @@
 			      <a href="#" title="Disable Template" onclick="WebHooksPlugin.disableTemplate('${webhookTemplateBean.templateId}'); return false">Disable template...</a>
 		        </l:li>
 		        <l:li>
-			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate('${webhookTemplateBean.templateId}'); return false">Delete template...</a>
+			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate({ templateName: '${webhookTemplateBean.templateId}' }); return false">Delete template...</a>
 		        </l:li>
 		      </jsp:body>
 		    </authz:authorize>
@@ -327,26 +327,25 @@
         </forms:multipartForm>
     </bs:dialog>
     
-    <bs:dialog dialogId="deleteRepoDialog"
-               dialogClass="deleteRepoDialog"
-               title="Confirm Debian Repository deletion"
-               closeCommand="DebRepoPlugin.DeleteRepoDialog.close()">
-        <forms:multipartForm id="deleteRepoForm"
-                             action="/admin/debianRepositoryAction.html"
+    <bs:dialog dialogId="deleteTemplateDialog"
+               dialogClass="deleteTemplateDialog"
+               title="Confirm Webhook Template deletion"
+               closeCommand="WebHooksPlugin.DeleteTemplateDialog.close()">
+        <forms:multipartForm id="deleteTemplateForm"
+                             action="/admin/manageWebhookTemplate.html"
                              targetIframe="hidden-iframe"
-                             onsubmit="return DebRepoPlugin.DeleteRepoDialog.doPost();">
+                             onsubmit="return WebHooksPlugin.DeleteTemplateDialog.doPost();">
 
             <table class="runnerFormTable">
-                <tr><td>Deleting a Debian Repository removes all repository configuration and  artifacts from the repository listing.<br>
-                		It does not delete the build artifacts from disk.
-                        <div id="ajaxRepoDeleteResult"></div>
+                <tr><td id="deleteTemplateWarningMessage">This is a default warning. You should not be seeing this. 
+                        <div id="ajaxTemplateDeleteResult"></div>
                 </td></tr>
             </table>
-            <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
-            <input type="hidden" name="action" id="WebhookTemplateaction" value="deleteRepo"/>
+            <input type="hidden" id="templateName" name="templateName" value="${webhookTemplateBean.templateId}"/>
+            <input type="hidden" name="action" id="WebHookTemplateAction" value="deleteTemplateItem"/>
             <div class="popupSaveButtonsBlock">
-                <forms:submit id="deleteRepoDialogSubmit" label="Delete Repository"/>
-                <forms:cancel onclick="DebRepoPlugin.DeleteRepoDialog.close()"/>
+                <forms:submit id="deleteTemplateDialogSubmit" label="Delete Template"/>
+                <forms:cancel onclick="WebHooksPlugin.DeleteTemplateDialog.close()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>

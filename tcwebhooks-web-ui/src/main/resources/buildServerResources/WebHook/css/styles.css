@@ -417,7 +417,7 @@ div#templateEditor ul.etabs {
 	margin-top: 1.25em;
 }
 
-#deleteTemplateItemDialogSubmit {
+#deleteTemplateDialogSubmit, #deleteTemplateItemDialogSubmit {
 	background-color: red;
 	background-image: linear-gradient(to bottom, #e06667, #e50000);
 }

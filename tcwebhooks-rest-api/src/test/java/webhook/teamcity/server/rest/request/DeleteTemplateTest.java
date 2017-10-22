@@ -19,6 +19,7 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.server.rest.model.template.Template;
+import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
@@ -40,6 +41,31 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	webResource.addFilter(new LoggingFilter(System.out));
 	}
  
+    @Test
+    public void testDeleteTemplateUsingJson() {
+    	
+    	WebResource webResource = resource();
+    	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertEquals(0, (int)responseMsg.count);
+    	
+    	Template newTemplate = new Template();
+    	newTemplate.description = "A test template";
+    	newTemplate.name = "testTemplateFromUnitTest";
+    	newTemplate.format = "jsontemplate";
+    	newTemplate.rank = 500;
+
+    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplate);
+    	Templates updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertEquals(1, (int)updatedResponse.count);
+    	
+
+    	webResource.path(API_TEMPLATES_URL + "/id:testTemplateFromUnitTest").delete();
+    	
+    	updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
+    	assertEquals(0, (int)updatedResponse.count);
+    	
+    	
+    }
     @Test
     public void testDeleteTemplateItemUsingJson() {
     	

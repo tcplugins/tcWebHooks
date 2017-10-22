@@ -18,6 +18,9 @@ WebHooksPlugin = {
     deleteBuildEventTemplate: function(data) {
     	WebHooksPlugin.DeleteTemplateItemDialog.showDialog("Delete Build Event Template", 'deleteBuildEventTemplate', data);
     },
+    deleteTemplate: function(data) {
+    	WebHooksPlugin.DeleteTemplateDialog.showDialog("Delete Template", 'deleteTemplate', data);
+    },
     TemplateEditBuildEventDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
             return $('editTemplateDialog');
@@ -434,6 +437,79 @@ WebHooksPlugin = {
 					alert(response);
 				}
 			});
+    		
+    		return false;
+    	}
+    })),
+    
+    DeleteTemplateDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    	getContainer: function () {
+    		return $('deleteTemplateDialog');
+    	},
+    	
+    	formElement: function () {
+    		return $('deleteTemplateForm');
+    	},
+    	
+    	showDialog: function (title, action, data) {
+    		$j("input[id='WebhookTemplateaction']").val(action);
+    		$j(".dialogTitle").html(title);
+    		this.cleanFields(data);
+    		this.cleanErrors();
+    		this.showCentered();
+    	},
+    	
+    	cleanFields: function (data) {
+    		$j("#deleteTemplateForm input[id='templateName']").val(data.templateName);
+    		this.cleanErrors();
+    	},
+    	
+    	cleanErrors: function () {
+    		$j("#deleteTemplateForm .error").remove();
+    	},
+    	
+    	error: function($element, message) {
+    		var next = $element.next();
+    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+    			next.text(message);
+    		} else {
+    			$element.after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+    	
+    	ajaxError: function(message) {
+    		var next = $j("#ajaxDeleteResult").next();
+    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+    			next.text(message);
+    		} else {
+    			$j("#ajaxDeleteResult").after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+    	
+    	doPost: function() {
+    		this.cleanErrors();
+    		
+    		var dialog = this;
+    		console.log($j("input[id='WebhookTemplateaction']").val());
+    		
+    		var templateName = $j("#deleteTemplateForm input[id='templateName']").val()
+    		
+    		$j.ajax ({
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName,
+    			type: "DELETE",
+    			headers : {
+    				'Content-Type' : 'application/json',
+    				'Accept' : 'application/json'
+    			},
+    			success: function (response) {
+    				dialog.close();
+    				window.location = window['base_uri'] + '/webhooks/templates.html';
+    			},
+    			error: function (response) {
+    				console.log(response);
+    				alert(response);
+    			}
+    		});
     		
     		return false;
     	}

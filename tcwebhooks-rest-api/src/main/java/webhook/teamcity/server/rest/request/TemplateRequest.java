@@ -275,6 +275,36 @@ public class TemplateRequest {
   public WebHookTemplateConfig updateFullConfigTemplateInPlainText(@PathParam("templateLocator") String templateLocator,  String rawConfig) {
 	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
   }
+  
+  /**
+   * /webhooks/templates/id:elasticsearch
+   */
+  @DELETE
+  @Path("/{templateLocator}")
+  @Produces({"application/xml", "application/json"})
+  public void deleteTemplate(@PathParam("templateLocator") String templateLocator,
+		  @QueryParam("fields") String fields) {
+	  WebHookTemplateConfigWrapper webHookTemplateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  if (webHookTemplateConfigWrapper.getTemplateConfig() == null){
+		  throw new NotFoundException("No template found by that name/id");
+	  }
+	  if (webHookTemplateConfigWrapper.getStatus().isStateProvided()) {
+		  throw new OperationException("You cannot delete a tcWebHooks provided template. If you want to make a template unavailable, please mark it as disabled.");
+	  }
+	  if (webHookTemplateConfigWrapper.getStatus().isStateUnknown()) {
+		  throw new OperationException("You cannot delete a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
+	  }
+	  if (myTemplateManager.removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getName())) {
+		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+			  return;
+		  } else {
+			  throw new OperationException("There was an error deleting your template. It was possible persist the change.");
+		  }
+	  } else {
+		  throw new OperationException("The template you wished to delete was not removed. It does not appear to be an XML defined template.");
+	  }
+  }
+
 
   @GET
   @Path("/{templateLocator}/{templateType}/templateContent")

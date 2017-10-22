@@ -222,5 +222,22 @@ public class WebHookTemplateManager {
 		this.configFilePath = configFilePath;
 		
 	}
+
+	public boolean removeXmlConfigTemplateFormat(String name) {
+		if (isRegisteredTemplate(name)) {
+			xmlConfigTemplates.remove(name);
+			rebuildOrderedListOfTemplates();
+			
+			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Deleting XML template " 
+					+ name);
+			rebuildOrderedListOfTemplates();
+			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
+				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
+			}			
+			return true;
+		}
+		return false;
+	}
 	
 }
