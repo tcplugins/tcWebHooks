@@ -1,5 +1,16 @@
 WebHooksPlugin = {
-		
+	handleAjaxError: function(dialog, response) {
+		dialog.cleanErrors();
+		if (response.status === 422) {
+			if (response.responseJSON.errored) {
+				$j.each(response.responseJSON.errors, function(index, errorMsg){
+					dialog.ajaxError(errorMsg)
+				});
+			}
+		} else {
+		  alert(response);
+		}
+	},
     editBuildEventTemplate: function(data) {
     	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Edit Build Event Template", 'editBuildEventTemplate', data);
     },
@@ -79,7 +90,7 @@ WebHooksPlugin = {
         },
 
         cleanErrors: function () {
-            $j("#repoEditFilterForm .error").remove();
+            $j("#editTemplateForm .error").remove();
         },
 
         error: function($element, message) {
@@ -92,11 +103,11 @@ WebHooksPlugin = {
         },
         
         ajaxError: function(message) {
-        	var next = $j("#ajaxResult").next();
+        	var next = $j("#ajaxTemplateEditResult").next();
         	if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
         		next.text(message);
         	} else {
-        		$j("#ajaxResult").after("<p class='error'>" + message + "</p>");
+        		$j("#ajaxTemplateEditResult").after("<p class='error'>" + message + "</p>");
         	}
         },
 
@@ -270,7 +281,7 @@ WebHooksPlugin = {
 				},
 				error: function (response) {
 					console.log(response);
-					alert(response);
+					WebHooksPlugin.handleAjaxError(dialog, response);
 				}
 			});
 		}, 
@@ -296,7 +307,7 @@ WebHooksPlugin = {
 				},
 				error: function (response) {
 					console.log(response);
-					alert(response);
+					WebHooksPlugin.handleAjaxError(dialog, response);
 				}
 			});
 		}, 

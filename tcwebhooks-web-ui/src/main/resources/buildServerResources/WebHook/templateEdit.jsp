@@ -140,7 +140,6 @@
                              action="/admin/manageWebhookTemplate.html"
                              targetIframe="hidden-iframe"
                              onsubmit="return WebHooksPlugin.TemplateEditBuildEventDialog.doPost();">
-			<div id="ajaxRepoEditResult"></div>
 			<div id="templateVariables"><h2>Available Variables</h2>
 				Click on a variable to insert it into your template.
 			</div>
@@ -190,6 +189,7 @@
             </table>
             </div>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplate"/>
+            <div id="ajaxTemplateEditResult"></div>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="editTemplateDialogSubmit" label="Save Template"/>
                 <forms:cancel onclick="WebHooksPlugin.TemplateEditBuildEventDialog.close()"/>

@@ -106,8 +106,8 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	assertTrue(templateResponse.getTemplates().size() == 1);
 
     	
-    	TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(TemplateItem.class);
-
+    	TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate").queryParam("fields","$long,templateItem,content").accept(MediaType.APPLICATION_JSON_TYPE).get(TemplateItem.class);
+    	prettyPrint(responseMsg);
     	responseMsg.id= "_new";
     	
     	webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem").accept(MediaType.APPLICATION_JSON_TYPE).post(responseMsg);

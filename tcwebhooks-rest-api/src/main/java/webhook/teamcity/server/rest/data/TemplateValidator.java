@@ -75,6 +75,8 @@ public class TemplateValidator {
 			result.addError("id", "The id field must match the existing one.");
 		}
 
+		validateTemplateText(requestTemplateItem, result);
+		
 		for (WebHookTemplateStateRest requestItemState : requestTemplateItem.getStates()) {
 			if (BuildStateEnum.findBuildState(requestItemState.getType()) == null){ 
 				result.setErrored(true);
@@ -94,6 +96,10 @@ public class TemplateValidator {
 	}
 
 	public TemplateValidationResult validateDefaultTemplateItem(TemplateItem requestTemplateItem, TemplateValidationResult result) {
+		return validateTemplateText(requestTemplateItem, result);
+	}
+
+	private TemplateValidationResult validateTemplateText(TemplateItem requestTemplateItem, TemplateValidationResult result) {
 		if (requestTemplateItem.getTemplateText().getContent() == null 
 				|| requestTemplateItem.getTemplateText().getContent().trim().isEmpty()) {
 			result.setErrored(true);
