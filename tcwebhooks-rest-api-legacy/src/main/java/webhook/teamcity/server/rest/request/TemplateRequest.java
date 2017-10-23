@@ -18,12 +18,14 @@ import com.intellij.openapi.diagnostic.Logger;
 
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.errors.OperationException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
+import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -34,6 +36,7 @@ import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.data.WebHookTemplateStates;
+import webhook.teamcity.server.rest.errors.TemplatePermissionException;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
@@ -54,6 +57,12 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 public class TemplateRequest {
   private static final Logger LOG = Logger.getInstance(TemplateRequest.class.getName());
   public static final boolean ID_GENERATION_FLAG = true;
+  private static final Permission templateEditPermission = Permission.CHANGE_SERVER_SETTINGS;
+  private static final Permission[] templateReadPermissions = { 
+		  													   Permission.VIEW_PROJECT, 
+		  													   Permission.VIEW_BUILD_CONFIGURATION_SETTINGS, 
+		  													   Permission.EDIT_PROJECT 
+		  													  };
 
   @Context @NotNull private DataProvider myDataProvider;
   @Context @NotNull private WebHookTemplateManager myTemplateManager;
@@ -126,13 +135,15 @@ public class TemplateRequest {
   @GET
   @Produces({"application/xml", "application/json"})
   public Templates serveTemplates(@QueryParam("fields") String fields) {
-    return new Templates(myDataProvider.getWebHookTemplates(), new PagerData(getHref()), new Fields(fields), myBeanContext);
+	  checkTemplateReadPermission();
+	  return new Templates(myDataProvider.getWebHookTemplates(), new PagerData(getHref()), new Fields(fields), myBeanContext);
   }
   
   @GET
   @Path("/{templateLocator}")
   @Produces({"application/xml", "application/json"})
   public Template serveTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
+	  checkTemplateReadPermission();
 	  return new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator), new Fields(fields), myBeanContext);
   }
 
@@ -140,6 +151,7 @@ public class TemplateRequest {
   @Consumes({"application/xml", "application/json"})
   @Produces({"application/xml", "application/json"})
   public Template createNewTemplate(Template newTemplate) {
+	checkTemplateWritePermission();
 	TemplateValidationResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new TemplateValidationResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
@@ -190,7 +202,7 @@ public class TemplateRequest {
   @Consumes({"application/xml", "application/json"})
   @Produces({"application/xml", "application/json"})
   public Template updateTemplate(@PathParam("templateLocator") String templateLocator, Template newTemplate) {
-	  
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  if (templateConfigWrapper.getTemplateConfig() == null){
 		  throw new NotFoundException("No template found by that name/id");
@@ -237,6 +249,7 @@ public class TemplateRequest {
   @Path("/{templateLocator}/rawConfig")
   @Produces({"application/xml"})
   public WebHookTemplateEntity serveRawConfigTemplate(@PathParam("templateLocator") String templateLocator) {
+	  checkTemplateReadPermission();
 	  return WebHookTemplateConfigBuilder.buildEntity(myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig());
   }
   
@@ -244,6 +257,7 @@ public class TemplateRequest {
   @Path("/{templateLocator}/fullConfig")
   @Produces({"application/xml", "application/json"})
   public WebHookTemplateConfig serveFullConfigTemplate(@PathParam("templateLocator") String templateLocator) {
+	  checkTemplateReadPermission();
 	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
   }
   
@@ -252,6 +266,7 @@ public class TemplateRequest {
   @Produces({"application/xml", "application/json"})
   @Consumes({"application/xml", "application/json"})
   public WebHookTemplateConfig updateFullConfigTemplate(@PathParam("templateLocator") String templateLocator,  WebHookTemplateConfig rawConfig) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfig webHookTemplateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (webHookTemplateConfig == null){
 		  throw new NotFoundException("No template found by that name/id");
@@ -273,6 +288,7 @@ public class TemplateRequest {
   @Produces({"text/plain"})
   @Consumes({"text/plain"})
   public WebHookTemplateConfig updateFullConfigTemplateInPlainText(@PathParam("templateLocator") String templateLocator,  String rawConfig) {
+	  checkTemplateWritePermission();
 	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
   }
   
@@ -284,6 +300,7 @@ public class TemplateRequest {
   @Produces({"application/xml", "application/json"})
   public void deleteTemplate(@PathParam("templateLocator") String templateLocator,
 		  @QueryParam("fields") String fields) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfigWrapper webHookTemplateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  if (webHookTemplateConfigWrapper.getTemplateConfig() == null){
 		  throw new NotFoundException("No template found by that name/id");
@@ -310,6 +327,7 @@ public class TemplateRequest {
   @Path("/{templateLocator}/{templateType}/templateContent")
   @Produces({"text/plain"})
   public String serveTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType) {
+	  checkTemplateReadPermission();	  
 	  WebHookTemplateConfig template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
@@ -333,6 +351,7 @@ public class TemplateRequest {
   @Consumes({"text/plain"})
   @Produces({"text/plain"})
   public String updateTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType, String templateText) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfig template = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (template == null){
 		  throw new NotFoundException("No template found by that name/id");
@@ -382,6 +401,7 @@ public class TemplateRequest {
   public String serveSpecificTemplateContent(@PathParam("templateLocator") String templateLocator, 
 		  									 @PathParam("templateItemId") String templateItemId, 
 		  									 @PathParam("templateContentType") String templateContentType) {
+	  checkTemplateReadPermission();
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template == null){
 		  throw new NotFoundException("No template item found by that name/id");
@@ -411,6 +431,7 @@ public class TemplateRequest {
   public TemplateItem serveTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  											 @PathParam("templateItemId") String templateItemId,
 		  											 @QueryParam("fields") String fields) {
+	  checkTemplateReadPermission();
 	  WebHookTemplateConfigWrapper templateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template.getTemplateItem() == null){
@@ -433,6 +454,7 @@ public class TemplateRequest {
   public void deleteTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  @PathParam("templateItemId") String templateItemId,
 		  @QueryParam("fields") String fields) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfigWrapper templateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template.getTemplateItem() == null){
@@ -462,6 +484,7 @@ public class TemplateRequest {
   @Produces({"application/xml", "application/json"})
   public TemplateItem updateTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  @PathParam("templateItemId") String templateItemId, @QueryParam("fields") String fields, TemplateItem templateItem) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  WebHookTemplateItemConfigWrapper templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (templateItemConfigWrapper.getTemplateItem() == null){
@@ -553,6 +576,7 @@ public class TemplateRequest {
   @Produces({"application/xml", "application/json"})
   public Response createTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  @QueryParam("fields") String fields, TemplateItem templateItem) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  WebHookTemplateItemConfigWrapper templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, "_new");
 	  if (templateConfigWrapper.getTemplateConfig() == null){
@@ -631,6 +655,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 		  											 @PathParam("templateItemId") String templateItemId,
 		  											 @PathParam("buildState") String buildState,
 		  											 @QueryParam("fields") String fields) {
+	  checkTemplateReadPermission();
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template.getTemplateItem() == null){
 		  throw new NotFoundException("No template item found by that name/id");
@@ -657,6 +682,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 		  @PathParam("templateItemId") String templateItemId,
 		  @PathParam("buildState") String buildState,
 		  WebHookTemplateStateRest updatedBuildState) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template.getTemplateItem() == null){
 		  throw new NotFoundException("No template item found by that name/id");
@@ -674,6 +700,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
   @Produces({"application/xml", "application/json"})
   public Response createDefaultTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  @QueryParam("fields") String fields, TemplateItem templateItem) {
+	  checkTemplateWritePermission();
 	  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  
 	  if (templateConfigWrapper.getTemplateConfig() == null){
@@ -717,28 +744,43 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  
   }
 
-private WebHookTemplateItem buildDeafultTemplateItem(TemplateItem templateItem) {
-	WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
-	  templateItemConfig.setTemplateText(new WebHookTemplateText(""));
-	  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
-	  
-	  if (templateItem.getTemplateText() != null) {
-		  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
-			  templateItemConfig.getTemplateText().setUseTemplateTextForBranch(templateItem.getTemplateText().getUseTemplateTextForBranch());
+	private WebHookTemplateItem buildDeafultTemplateItem(TemplateItem templateItem) {
+		WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
+		  templateItemConfig.setTemplateText(new WebHookTemplateText(""));
+		  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
+		  
+		  if (templateItem.getTemplateText() != null) {
+			  if (templateItem.getTemplateText().getUseTemplateTextForBranch() != null) {
+				  templateItemConfig.getTemplateText().setUseTemplateTextForBranch(templateItem.getTemplateText().getUseTemplateTextForBranch());
+			  }
+			  if (templateItem.getTemplateText().getContent() != null) {
+				  templateItemConfig.getTemplateText().setTemplateContent(templateItem.getTemplateText().getContent());
+			  }
 		  }
-		  if (templateItem.getTemplateText().getContent() != null) {
-			  templateItemConfig.getTemplateText().setTemplateContent(templateItem.getTemplateText().getContent());
+		  if (templateItem.getBranchTemplateText() != null) {
+			  if (templateItem.getBranchTemplateText().getContent() != null) {
+				  templateItemConfig.getBranchTemplateText().setTemplateContent(templateItem.getBranchTemplateText().getContent());
+			  }
 		  }
-	  }
-	  if (templateItem.getBranchTemplateText() != null) {
-		  if (templateItem.getBranchTemplateText().getContent() != null) {
-			  templateItemConfig.getBranchTemplateText().setTemplateContent(templateItem.getBranchTemplateText().getContent());
-		  }
-	  }
-	return templateItemConfig;
-}
+		return templateItemConfig;
+	}
   
-  
+
+	private void checkTemplateReadPermission() {
+		try {
+			myPermissionChecker.checkGlobalPermissionAnyOf(templateReadPermissions);
+		} catch (AuthorizationFailedException e) {
+			throw new TemplatePermissionException("Reading templates requires at least one of the following permissions: 'VIEW_PROJECT, VIEW_BUILD_CONFIGURATION_SETTINGS, EDIT_PROJECT'");
+		}
+	}
+	
+	private void checkTemplateWritePermission() {
+		try {
+			myPermissionChecker.checkGlobalPermission(templateEditPermission);
+		} catch (AuthorizationFailedException e) {
+			throw new TemplatePermissionException("Writing templates requires permission 'CHANGE_SERVER_SETTINGS'");
+		}
+	}
   /*
   @POST
   @Consumes({"application/xml", "application/json"})
