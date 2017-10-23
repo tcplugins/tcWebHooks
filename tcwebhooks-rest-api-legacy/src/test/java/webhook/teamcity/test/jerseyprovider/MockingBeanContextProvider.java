@@ -70,7 +70,7 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
     return ComponentScope.PerRequest;
   }
 
-  public Injectable getInjectable(final ComponentContext ic, final Context context, final Type type) {
+  public Injectable<BeanContext> getInjectable(final ComponentContext ic, final Context context, final Type type) {
     if (type.equals(BeanContext.class)) {
       return this;
     }
