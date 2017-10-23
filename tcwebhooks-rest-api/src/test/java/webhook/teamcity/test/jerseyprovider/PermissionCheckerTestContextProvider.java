@@ -8,6 +8,7 @@ import javax.ws.rs.ext.Provider;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -19,6 +20,7 @@ public class PermissionCheckerTestContextProvider implements InjectableProvider<
   @Mock PermissionChecker permissionChecker;
   
   public PermissionCheckerTestContextProvider() {
+	  MockitoAnnotations.initMocks(this);
 	  System.out.println("We are here: Trying to provide a testable PermissionChecker instance");
   }
 
