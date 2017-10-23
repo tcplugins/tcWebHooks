@@ -6,7 +6,7 @@
 		<template-description>"Test XML Template"</template-description>
 		<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
 		<formats>
-			<format name="json" enabled="true" />
+			<format name="jsontemplate" enabled="true" />
 			<format name="nvpairs" enabled="true" />
 			<format name="tailoredjson" enabled="true" />
 		</formats>

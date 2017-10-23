@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -26,17 +28,12 @@ import org.jetbrains.annotations.Nullable;
  * 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<webhook-templates>
-		<webhook-template enabled="true" name="testXMLtemplate" rank="10">
+		<webhook-template enabled="true" name="testXMLtemplate" rank="10" format="jsonTemplate">
 			<default-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-template>
 			<default-branch-template>{ "defaultBuildStatus" : "${buildStatus}" }</default-branch-template>
 			<template-description>"Test XML Template"</template-description>
 			<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
 			<preferred-date-format value="yyyy-MM-dd'T'HH:mm:ss.SSSXXX"/>
-			<formats>
-				<format name="json" enabled="true" />
-				<format name="nvpairs" enabled="true" />
-				<format name="tailoredjson" enabled="true" />
-			</formats>
 			<templates max-id="10">
 				<template id="10">
 					<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
@@ -162,9 +159,15 @@ public class WebHookTemplateEntity {
 	 * &nbsp;&nbsp;...
 	 * &nbsp;&lt;/template&gt;
 	 * </pre>
-	 * @return
+	 * <p>
+	 * NOTE: only migrates the first enabled format listed.
+	 * Others are discarded.
+	 * 
+	 * @param unmarshaller - Passed by JAXB
+	 * @param parent - Passed by JAXB
 	 */
-	public String getFormat() {
+	@SuppressWarnings("unused")
+	private void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
 		if (this.format == null && this.getFormats() != null) {
 			for (WebHookTemplateFormat format : getFormats()) {
 				if (format.enabled) {
@@ -174,8 +177,19 @@ public class WebHookTemplateEntity {
 			}
 			this.formats = null;
 		}
-		return format;
 	}
+	
+    /**
+     * Added to prevent empty formats list from being persisted.
+     * This compliments the above to remove the list once it has
+     * been migrated.
+     * @param marshaller - Passed by JAXB
+     */
+    @SuppressWarnings("unused")
+	private void beforeMarshal(Marshaller marshaller) {
+         if (formats != null && formats.isEmpty())
+        	 formats = null;
+    }
 	
 	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD) @NoArgsConstructor
 	public static class WebHookTemplateItems {
