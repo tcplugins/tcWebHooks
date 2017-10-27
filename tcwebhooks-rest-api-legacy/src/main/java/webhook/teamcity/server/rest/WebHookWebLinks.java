@@ -31,8 +31,10 @@ public class WebHookWebLinks {
 	@NotNull
 	private String makeUrl(@NotNull String relativePart) {
 	    String baseUrl = myHolder.getRootUrl();
-	    if (!baseUrl.endsWith("/")) baseUrl += "/";
-	    	return baseUrl + relativePart;
+	    if (!baseUrl.endsWith("/")) {
+	    	baseUrl += "/";
+	    }
+	    return baseUrl + relativePart;
 	}
 
 	@NotNull
