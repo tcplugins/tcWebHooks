@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
-import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.teamcity.Loggers;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookEndPointViewerController extends BaseController {
 	
 	
@@ -25,15 +25,12 @@ public class WebHookEndPointViewerController extends BaseController {
 	private final WebHookEndPointContentStore endPointContentStore;
 	private final WebControllerManager myWebManager;
 	private String myPluginPath;
-	private SBuildServer myServer;
 	
 	public WebHookEndPointViewerController(	SBuildServer server,
 								WebHookEndPointContentStore endPointContentStore, 
 								PluginDescriptor pluginDescriptor, 
-								WebControllerManager webControllerManager,
-								AuthorizationInterceptor authorizationInterceptor) {
+								WebControllerManager webControllerManager) {
 		super(server);
-		this.myServer = server;
 		this.endPointContentStore = endPointContentStore;
 		this.myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		this.myWebManager = webControllerManager;
@@ -58,7 +55,7 @@ public class WebHookEndPointViewerController extends BaseController {
     		
     	} else if (request.getMethod().equalsIgnoreCase("get")){
     		
-    		HashMap<String,Object> params = new HashMap<String,Object>();
+    		HashMap<String,Object> params = new HashMap<>();
     		params.put("jspHome",this.myPluginPath);
     		params.put("postURL", stripTrailingSlash(myServer.getRootUrl()) + WebHookEndPointController.MY_URL);
     		params.put("count", endPointContentStore.store.size());

@@ -1,10 +1,10 @@
 package webhook.teamcity.extension.bean;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor @Getter
 public class StateBean{
-	public String buildStateName;
-	public boolean enabled;
-	
-	public StateBean(String name1, boolean enabled1) {
-		this.buildStateName = name1;
-		this.enabled = enabled1;
-	}
+	private String buildStateName;
+	private boolean enabled;
 }

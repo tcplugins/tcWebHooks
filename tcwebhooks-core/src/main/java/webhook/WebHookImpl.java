@@ -199,14 +199,14 @@ public class WebHookImpl implements WebHook {
 
 	@Override
 	public String parametersAsQueryString(){
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		for (NameValuePair nv : this.params){
-			s += "&" + nv.getName() + "=" + nv.getValue(); 
+			s.append("&").append(nv.getName()).append("=").append(nv.getValue()); 
 		}
 		if (s.length() > 0 ){
 			return "?" + s.substring(1);
 		}
-		return s;
+		return s.toString();
 	}
 	
 	@Override

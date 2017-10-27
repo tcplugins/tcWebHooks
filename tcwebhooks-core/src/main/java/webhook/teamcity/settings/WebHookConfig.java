@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildType;
 
 import org.jdom.DataConversionException;
@@ -97,7 +98,9 @@ public class WebHookConfig {
 					try {
 						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue("type")), 
 										  eState.getAttribute("enabled").getBooleanValue());
-					} catch (DataConversionException e1) {e1.printStackTrace();}
+					} catch (DataConversionException e1) {
+						Loggers.SERVER.warn("WebHookConfig :: " + e1.getMessage());
+					}
 				}
 			}
 		}
@@ -107,12 +110,16 @@ public class WebHookConfig {
 			if (eTypes.getAttribute("enabled-for-all") != null){
 				try {
 					this.enableForAllBuildsInProject(eTypes.getAttribute("enabled-for-all").getBooleanValue());
-				} catch (DataConversionException e1) {e1.printStackTrace();}
+				} catch (DataConversionException e1) {
+					Loggers.SERVER.warn("WebHookConfig :: " + e1.getMessage());
+				}
 			}
 			if (eTypes.getAttribute("enabled-for-subprojects") != null){
 				try {
 					this.enableForSubProjects(eTypes.getAttribute("enabled-for-subprojects").getBooleanValue());
-				} catch (DataConversionException e1) {e1.printStackTrace();}
+				} catch (DataConversionException e1) {
+					Loggers.SERVER.warn("WebHookConfig :: " + e1.getMessage());
+				}
 			}
 			if (!isEnabledForAllBuildsInProject()){
 				List<Element> typesList = eTypes.getChildren("build-type");

@@ -91,7 +91,7 @@ public class WebHookTemplateEntity {
 	String preferredDateTimeFormat = "";
 	
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
-	private List<WebHookTemplateFormat> formats = new ArrayList<WebHookTemplateFormat>();
+	private List<WebHookTemplateFormat> formats = new ArrayList<>();
 	
 	@XmlAttribute
 	String format;
@@ -99,13 +99,14 @@ public class WebHookTemplateEntity {
 	@XmlElement(name="templates")
 	WebHookTemplateItems templates;
 	
-	public WebHookTemplateEntity(String name, boolean enabled) {
+	public WebHookTemplateEntity(String name, boolean enabled, String templateDescription) {
 		this.name = name;
 		this.enabled = enabled;
+		this.templateDescription = templateDescription;
 	}
 	
 	public static WebHookTemplateEntity build (WebHookTemplateConfig config) {
-		WebHookTemplateEntity entity = new WebHookTemplateEntity(config.getName(), config.isEnabled());
+		WebHookTemplateEntity entity = new WebHookTemplateEntity(config.getName(), config.isEnabled(), config.getTemplateDescription());
 		entity.rank = config.getRank();
 		
 		if (config.getDefaultTemplate() != null) {

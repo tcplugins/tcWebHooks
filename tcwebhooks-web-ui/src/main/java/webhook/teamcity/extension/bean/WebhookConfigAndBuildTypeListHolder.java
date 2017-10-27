@@ -4,24 +4,34 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 
+@Getter
 public class WebhookConfigAndBuildTypeListHolder {
-	public String url;
-	public String uniqueKey; 
-	public boolean enabled;
-	public String payloadFormat;
-	public String payloadTemplate;
-	public String payloadFormatForWeb = "Unknown";
-	public List<StateBean> states = new ArrayList<StateBean>();
-	public boolean allBuildTypesEnabled;
-	public boolean subProjectsEnabled;
+	private String url;
+	private String uniqueKey; 
+	private boolean enabled;
+	private String payloadFormat;
+	private String payloadTemplate;
+	private String payloadFormatForWeb = "Unknown";
+	private List<StateBean> states = new ArrayList<StateBean>();
+	private boolean allBuildTypesEnabled;
+	private boolean subProjectsEnabled;
+	
+	@Setter
 	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<WebhookBuildTypeEnabledStatusBean>();
+	
+	@Setter
 	private String enabledEventsListForWeb;
+	@Setter
 	private String enabledBuildsListForWeb;
+	
+	@Setter
 	private WebhookAuthenticationConfigBean authConfig = null;
 	
 	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList) {
@@ -34,9 +44,8 @@ public class WebhookConfigAndBuildTypeListHolder {
 		setEnabledBuildsListForWeb(config.getBuildTypeCountAsFriendlyString());
 		allBuildTypesEnabled = config.isEnabledForAllBuildsInProject();
 		subProjectsEnabled = config.isEnabledForSubProjects();
-		for (BuildStateEnum state : config.getBuildStates().getStateSet()){
-			states.add(new StateBean(state.getShortName(), config.getBuildStates().enabled(state)));
-		}
+		addBuildStatesFromConfig(config);
+		
 		if (config.getAuthenticationConfig() != null){
 			this.authConfig = WebhookAuthenticationConfigBean.build(config.getAuthenticationConfig());
 		}
@@ -61,8 +70,10 @@ public class WebhookConfigAndBuildTypeListHolder {
 		}
 	}
 
-	public List<WebhookBuildTypeEnabledStatusBean> getBuilds() {
-		return builds;
+	private void addBuildStatesFromConfig(WebHookConfig config) {
+		for (BuildStateEnum state : config.getBuildStates().getStateSet()){
+			states.add(new StateBean(state.getShortName(), config.getBuildStates().enabled(state)));
+		}
 	}
 	
 	public String getEnabledBuildTypes(){
@@ -75,62 +86,9 @@ public class WebhookConfigAndBuildTypeListHolder {
 		return types.toString();
 		
 	}
-
-	public void setBuilds(List<WebhookBuildTypeEnabledStatusBean> builds) {
-		this.builds = builds;
-	}
-	
 	
 	public void addWebHookBuildType(WebhookBuildTypeEnabledStatusBean status){
 		this.builds.add(status);
-	}
-
-	public String getEnabledEventsListForWeb() {
-		return enabledEventsListForWeb;
-	}
-
-	public void setEnabledEventsListForWeb(String enabledEventsListForWeb) {
-		this.enabledEventsListForWeb = enabledEventsListForWeb;
-	}
-
-	public String getEnabledBuildsListForWeb() {
-		return enabledBuildsListForWeb;
-	}
-
-	public void setEnabledBuildsListForWeb(String enabledBuildsListForWeb) {
-		this.enabledBuildsListForWeb = enabledBuildsListForWeb;
-	}
-	
-	public String getUniqueKey() {
-		return uniqueKey;
-	}
-	
-	public String getPayloadFormat() {
-		return payloadFormat;
-	}
-	
-	public String getPayloadFormatForWeb() {
-		return payloadFormatForWeb;
-	}
-	
-	public String getPayloadTemplate() {
-		return payloadTemplate;
-	}
-	
-	public String getUrl() {
-		return url;
-	}
-	
-	public List<StateBean> getStates() {
-		return states;
-	}
-	
-	public WebhookAuthenticationConfigBean getAuthConfig() {
-		return authConfig;
-	}
-	
-	public void setAuthConfig(WebhookAuthenticationConfigBean authConfig) {
-		this.authConfig = authConfig;
 	}
 	
 }

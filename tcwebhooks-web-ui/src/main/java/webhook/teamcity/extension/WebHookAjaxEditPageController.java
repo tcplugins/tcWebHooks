@@ -36,10 +36,11 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookAjaxEditPageController extends BaseController {
 
-	    protected static final String BEFORE_FINISHED = "BeforeFinished";
+	    private static final String PARAMS_MESSAGES_KEY = "messages";
+		protected static final String BEFORE_FINISHED = "BeforeFinished";
 		protected static final String BUILD_INTERRUPTED = "BuildInterrupted";
 		protected static final String BUILD_STARTED = "BuildStarted";
 		protected static final String CHANGES_LOADED = "ChangesLoaded";
@@ -49,7 +50,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 		protected static final String BUILD_SUCCESSFUL = "BuildSuccessful";
 		
 		private final WebControllerManager myWebManager;
-	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
@@ -57,11 +57,10 @@ public class WebHookAjaxEditPageController extends BaseController {
 		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager manager,
+	    		ProjectSettingsManager settings, WebHookPayloadManager manager,
 	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
-	        myServer = server;
 	        mySettings = settings;
 	        myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	        myManager = manager;
@@ -77,7 +76,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    	
-	        HashMap<String,Object> params = new HashMap<String,Object>();
+	        HashMap<String,Object> params = new HashMap<>();
 	        
 	        SUser myUser = SessionUser.getUser(request);
 	        SProject myProject = null;
@@ -87,7 +86,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    		if ((request.getParameter("projectId") != null)){
 	    			myProject = this.myServer.getProjectManager().findProjectById(request.getParameter("projectId"));
 		        	if (myProject == null){
-		        		params.put("messages", "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
+		        		params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
 		        		noErrors = false;
 		        	} else {
 		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
@@ -100,9 +99,9 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    					projSettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
 			    					if(projSettings.updateSuccessful()){
 			    						myProject.persist();
-			    						params.put("messages", "<errors />");
+			    						params.put(PARAMS_MESSAGES_KEY, "<errors />");
 			    					} else {
-			    						params.put("messages", "<errors><error id=\"messageArea\">The webhook was not found. Have the WebHooks been edited on disk or by another user?</error></errors>");		
+			    						params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. Have the WebHooks been edited on disk or by another user?</error></errors>");		
 			    						noErrors = false;
 			    					}
 			    					
@@ -117,7 +116,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 				    				{
 			    					
 			    					if (!myTemplateResolver.templateIsValid(myProject, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"))){
-			    						params.put("messages", "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
+			    						params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
 			    						noErrors = false;
 			    					}else if (request.getParameter("webHookId") != null){
 			    						Boolean enabled = false;
@@ -160,7 +159,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								&& !request.getParameter("extraAuthType").equals("")){
 			    							
 			    							webHookAuthConfig =  new WebHookAuthConfig();
-			    							webHookAuthConfig.setType(request.getParameter("extraAuthType").toString());
+			    							webHookAuthConfig.setType(request.getParameter("extraAuthType"));
 			    							webHookAuthConfig.setPreemptive(false);
 			    							if (request.getParameter("extraAuthPreemptive") != null){
 			    								webHookAuthConfig.setPreemptive(request.getParameter("extraAuthPreemptive").equalsIgnoreCase("on"));
@@ -174,13 +173,13 @@ public class WebHookAjaxEditPageController extends BaseController {
 				    						}
 				    						if (myAuthenticatorProvider.isRegisteredType(webHookAuthConfig.getType())) {
 				    							if (myAuthenticatorProvider.areAllRequiredParametersPresent(webHookAuthConfig)){
-				    								params.put("messages", "<errors />");
+				    								params.put(PARAMS_MESSAGES_KEY, "<errors />");
 				    							} else {
-				    								params.put("messages", "<errors><error id=\"emptyAuthParameter\">Please complete all required authentication fields.</error></errors>");
+				    								params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"emptyAuthParameter\">Please complete all required authentication fields.</error></errors>");
 				    								noErrors = false;
 				    							}
 				    						} else {
-				    							params.put("messages", "<errors><error id=\"emptyAuthParameter\">The authentication type selected is not valid.</error></errors>");
+				    							params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"emptyAuthParameter\">The authentication type selected is not valid.</error></errors>");
 				    						}
 			    						}
 			    						
@@ -190,7 +189,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
-			    	    						params.put("messages", "<errors />");
+			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors />");
 			    							} else {
 			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
 			    							}
@@ -201,7 +200,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){
 			    								myProject.persist();
-			    	    						params.put("messages", "<errors />");
+			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors />");
 			    							} else {
 			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
 			    							}
@@ -211,16 +210,16 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    				} else {
 			    					if ((request.getParameter("URL") == null ) 
 				    				|| (request.getParameter("URL").length() == 0)){
-			    						params.put("messages", "<errors><error id=\"emptyWebHookUrl\">Please enter a URL.</error></errors>");
+			    						params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"emptyWebHookUrl\">Please enter a URL.</error></errors>");
 			    					} else if ((request.getParameter("payloadFormat") == null)
 				    				|| (request.getParameter("payloadFormat").length() == 0)){
-			    						params.put("messages", "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
+			    						params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"emptyPayloadFormat\">Please choose a Payload Format.</error></errors>");
 			    					}
 			    				}
 				    			
 			    			}
 			    		} else {
-			    			params.put("messages", "<errors><error id=\"messageArea\">You do not appear to have permission to edit WebHooks.</error></errors>");
+			    			params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">You do not appear to have permission to edit WebHooks.</error></errors>");
 			    		}
 		        	}
 	    		}
@@ -240,7 +239,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    	String message = projSettings.getWebHooksAsString();
 			    	
 			    	params.put("haveProject", "true");
-			    	params.put("messages", message);
+			    	params.put(PARAMS_MESSAGES_KEY, message);
 			    	params.put("projectId", project.getProjectId());
 			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 			    	params.put("projectName", project.getName());
@@ -271,14 +270,11 @@ public class WebHookAjaxEditPageController extends BaseController {
 									)
 								);
 
-			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(RegisteredWebHookTemplateBean.ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 			    	}
 			    	
 	        	} else {
 	        		params.put("haveProject", "false");
 	        	}
-//	        } else {
-//	        	params.put("haveProject", "false");
 	        }
 	        
 	        return new ModelAndView(myPluginPath + "WebHook/ajaxEdit.jsp", params);

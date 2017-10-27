@@ -49,7 +49,9 @@ public class WebHookEndPointController extends BaseController {
     		
     		boolean debug = Loggers.SERVER.isDebugEnabled();
     		
-    		if (debug) Loggers.SERVER.debug(WebHookEndPointController.this.getClass().getName() + ":: Showing received content.");
+    		if (debug) { 
+    			Loggers.SERVER.debug(WebHookEndPointController.this.getClass().getName() + ":: Showing received content.");
+    		}
 			
 			// Read from request
 			StringBuilder buffer = new StringBuilder();

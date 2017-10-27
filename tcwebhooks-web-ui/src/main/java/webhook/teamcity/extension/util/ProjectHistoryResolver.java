@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import lombok.Getter;
 
 public class ProjectHistoryResolver {
 	private ProjectHistoryResolver(){}
@@ -17,7 +18,7 @@ public class ProjectHistoryResolver {
 
 	public static ProjectHistoryBean getProjectHistory(SProject project) {
 		Date now = new Date();
-		List<ProjectHistoryItemBean> finishedBuilds = new ArrayList<ProjectHistoryItemBean>();
+		List<ProjectHistoryItemBean> finishedBuilds = new ArrayList<>();
 		List<SBuildType> buildTypes = project.getOwnBuildTypes();
 		for (SBuildType type : buildTypes){
 			List<SFinishedBuild> builds = type.getHistory();
@@ -33,7 +34,7 @@ public class ProjectHistoryResolver {
 	
 	public static ProjectHistoryBean getBuildHistory(SBuildType type) {
 		Date now = new Date();
-		List<ProjectHistoryItemBean> finishedBuilds = new ArrayList<ProjectHistoryItemBean>();
+		List<ProjectHistoryItemBean> finishedBuilds = new ArrayList<>();
 
 		List<SFinishedBuild> builds = type.getHistory();
 		for (int i = 0; i < builds.size(); i++) {
@@ -60,12 +61,13 @@ public class ProjectHistoryResolver {
 			this.recentBuilds = history;
 		}
 	}
-
+	
+	@Getter
 	public static class ProjectHistoryItemBean {
-		public long buildId;
-		public String title;
-		public String buildNumber;
-		public String buildDate;
+		private long buildId;
+		private String title;
+		private String buildNumber;
+		private String buildDate;
 		
 		public static ProjectHistoryItemBean build(Date now, SFinishedBuild build){
 			ProjectHistoryItemBean bean = new ProjectHistoryItemBean();
@@ -90,7 +92,7 @@ public class ProjectHistoryResolver {
 
 	public static String toDuration(long duration) {
 
-	    StringBuffer res = new StringBuffer();
+	    StringBuilder res = new StringBuilder();
 	    for(int i=0;i< times.size(); i++) {
 	        Long current = times.get(i);
 	        long temp = duration/current;

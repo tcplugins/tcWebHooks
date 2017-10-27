@@ -116,6 +116,6 @@ public class ProjectWebHooksBean {
 													)
 										);
 		}
-		bean.webHookList.put(holder.uniqueKey, holder);
+		bean.webHookList.put(holder.getUniqueKey(), holder);
 	}
 }

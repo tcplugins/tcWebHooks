@@ -10,8 +10,8 @@ import lombok.Setter;
 
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class WebHookAuthConfig {
-	public String type = "";
-	public Boolean preemptive = true;
+	private String type = "";
+	private Boolean preemptive = true;
 	
-	public Map<String, String> parameters = new LinkedHashMap<>();
+	private Map<String, String> parameters = new LinkedHashMap<>();
 }

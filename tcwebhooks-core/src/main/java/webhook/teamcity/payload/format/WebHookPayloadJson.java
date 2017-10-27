@@ -42,11 +42,6 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content,WebHookTemplateContent webHookTemplate){
 
-		if (content.getExtraParameters().containsKey("showAllTeamCityParameters") && content.getExtraParameters().get("showAllTeamCityParameters").equalsIgnoreCase("true")){
-			// let teamcity values through
-		} else {
-			//content.te
-		}
 		XStream xstream = new XStream(new JsonHierarchicalStreamDriver());
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToJsonConvertor());
