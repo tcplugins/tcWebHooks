@@ -430,3 +430,7 @@ div#templateEditor ul.etabs li {
 div#templateEditor .etabs .tab.active {
 	border-bottom: none;
 }*/
+
+tr.templateDetails > td > div > input {
+	width:90%;
+}
