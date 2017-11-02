@@ -96,7 +96,7 @@ WebHooksPlugin = {
     			},
     			success: function (response) {
     				dialog.close();
-    				window.location = window['base_uri'] + '/webhooks/template.html?' + myJsonContent.name;
+    				window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJsonContent.name;
     			},
     			error: function (response) {
     				console.log(response);
