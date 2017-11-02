@@ -18,7 +18,7 @@ public class TemplateValidator {
 			result.addError("name", "The template name cannot be empty. It is used to identify the template and is referenced by webhook configuration");
 		}
 		
-		if ( ! Pattern.matches("^[A-Za-z0-9_.-]+$", requestTemplate.name) ) {
+		if (requestTemplate.name != null && ! Pattern.matches("^[A-Za-z0-9_.-]+$", requestTemplate.name) ) {
 			result.setErrored(true);
 			result.addError("name", "The template name can only be 'A-Za-z0-9_.-'. It is used to identify the template and is referenced by webhook configuration");
 		}
