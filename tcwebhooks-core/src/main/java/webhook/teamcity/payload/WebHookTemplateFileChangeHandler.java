@@ -51,7 +51,7 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 	@Override
 	public void changeOccured(String requestor) {
 		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Handling change to file: " + this.configFile.getPath() + " requested by " + requestor);
-		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: My instance is: " + this.toString() + " :: WebHookTemplateManager: " + webHookPayloadManager.toString());
+		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: My instance is: " + this.toString() + " :: WebHookTemplateManager: " + webHookTemplateManager.toString());
 		this.handleConfigFileChange();
 
 	}
@@ -60,11 +60,7 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 	public void handleConfigFileChange() {
 		try {
 			WebHookTemplates templatesList =  webHookTemplateJaxHelper.read(configFile.getPath());
-			this.webHookTemplateManager.unregisterAllXmlConfigTemplates();
-			for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
-				template.fixTemplateIds();
-				this.webHookTemplateManager.registerTemplateFormatFromXmlEntity(template);
-			}
+			this.webHookTemplateManager.registerAllXmlTemplates(templatesList);
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. File not found: " + this.configFile.getPath());
 			Loggers.SERVER.debug(e);

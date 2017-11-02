@@ -46,13 +46,19 @@ public class WebHookTemplateManager {
 		}
 	}
 	
+	private void registerTemplateFormatFromXmlEntityUnsyncd(WebHookTemplateEntity payloadTemplate){
+		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
+				+ payloadTemplate.getName() 
+				+ " with rank of " + payloadTemplate.getRank());
+		payloadTemplate.fixTemplateIds();
+		xmlConfigTemplates.put(payloadTemplate.getName(),WebHookTemplateFromXml.build(payloadTemplate, webHookPayloadManager));
+	}
+	
+	
+	
 	public void registerTemplateFormatFromXmlEntity(WebHookTemplateEntity payloadTemplate){
 		synchronized (orderedTemplateCollection) {
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
-					+ payloadTemplate.getName() 
-					+ " with rank of " + payloadTemplate.getRank());
-			payloadTemplate.fixTemplateIds();
-			xmlConfigTemplates.put(payloadTemplate.getName(),WebHookTemplateFromXml.build(payloadTemplate, webHookPayloadManager));
+			registerTemplateFormatFromXmlEntityUnsyncd(payloadTemplate);	
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
@@ -63,11 +69,17 @@ public class WebHookTemplateManager {
 	
 	public void registerTemplateFormatFromXmlConfig(WebHookTemplateConfig payloadTemplateConfig){
 		WebHookTemplateEntity payloadTemplate = WebHookTemplateConfigBuilder.buildEntity(payloadTemplateConfig);
-		registerTemplateFormatFromXmlEntity(payloadTemplate);	
+		synchronized (orderedTemplateCollection) {
+			registerTemplateFormatFromXmlEntityUnsyncd(payloadTemplate);	
+			rebuildOrderedListOfTemplates();
+			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
+				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
+			}
+		}
 	}
 	
-	public void unregisterAllXmlConfigTemplates(){
-		synchronized (orderedTemplateCollection) {
+	private void unregisterAllXmlConfigTemplates(){
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: un-registering all XML config templates.");
 			xmlConfigTemplates.clear();
 			rebuildOrderedListOfTemplates();
@@ -75,7 +87,6 @@ public class WebHookTemplateManager {
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
 				Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
 			}
-		}
 	}
 	
 	public boolean persistAllXmlConfigTemplates(){
@@ -224,20 +235,36 @@ public class WebHookTemplateManager {
 	}
 
 	public boolean removeXmlConfigTemplateFormat(String name) {
-		if (isRegisteredTemplate(name)) {
-			xmlConfigTemplates.remove(name);
-			rebuildOrderedListOfTemplates();
-			
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Deleting XML template " 
-					+ name);
+		synchronized (orderedTemplateCollection) {
+			if (isRegisteredTemplate(name)) {
+				xmlConfigTemplates.remove(name);
+				rebuildOrderedListOfTemplates();
+				
+				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Deleting XML template " 
+						+ name);
+				rebuildOrderedListOfTemplates();
+				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+				for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
+					Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
+				}			
+				return true;
+			}
+			return false;
+		}
+	}
+
+	public void registerAllXmlTemplates(WebHookTemplates templatesList) {
+		synchronized (orderedTemplateCollection) {
+			this.unregisterAllXmlConfigTemplates();
+			for (WebHookTemplateEntity template : templatesList.getWebHookTemplateList()){
+				this.registerTemplateFormatFromXmlEntityUnsyncd(template);
+			}
 			rebuildOrderedListOfTemplates();
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
 				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateShortName() + " Rank: " + pl.getRank());
-			}			
-			return true;
+			}
 		}
-		return false;
 	}
 	
 }
