@@ -14,22 +14,18 @@ public class TemplateValidator {
 	public TemplateValidationResult validateNewTemplate(Template requestTemplate, TemplateValidationResult result) {
 		
 		if (requestTemplate.name == null || requestTemplate.name.trim().isEmpty()) {
-			result.setErrored(true);
 			result.addError("name", "The template name cannot be empty. It is used to identify the template and is referenced by webhook configuration");
 		}
 		
 		if (requestTemplate.name != null && ! Pattern.matches("^[A-Za-z0-9_.-]+$", requestTemplate.name) ) {
-			result.setErrored(true);
 			result.addError("name", "The template name can only be 'A-Za-z0-9_.-'. It is used to identify the template and is referenced by webhook configuration");
 		}
 		
 		if (requestTemplate.format == null || requestTemplate.format.trim().isEmpty()) {
-			result.setErrored(true);
 			result.addError("format", "The template format cannot be empty.");
 		}
 		
 		if (requestTemplate.rank == null || requestTemplate.rank < 0 || requestTemplate.rank > 1000) {
-			result.setErrored(true);
 			result.addError("rank", "The template rank cannot be empty and must be between 0 and 1000.");
 		}
 		
@@ -49,19 +45,16 @@ public class TemplateValidator {
 	public TemplateValidationResult validateTemplate(WebHookTemplateConfig webHookTemplateConfig, Template requestTemplate, TemplateValidationResult result) {
 		
 		if ( ! webHookTemplateConfig.getName().equals(requestTemplate.name)) {
-			result.setErrored(true);
 			result.addError("name", "Sorry, it's not possible to change the name (aka id) of an existing template. Please create a new template with a new name and delete this one.");
 			
 		}
 		
 		if (requestTemplate.defaultTemplate != null) {
-			result.setErrored(true);
 			result.addError("defaultTemplate", "Sorry, it's not possible to update templateItems when updating a template. Please update the templateItem specifically.");
 			//validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
 		}
 		
 		  if (requestTemplate.getTemplates() != null) {
-			result.setErrored(true);
 			result.addError("templateItem", "Sorry, it's not possible to update templateItems when updating a template. Please update the templateItem specifically.");
 			//validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
 		}
@@ -71,7 +64,6 @@ public class TemplateValidator {
 	
 	public TemplateValidationResult validateTemplateItem(TemplateItem templateItem, TemplateItem requestTemplateItem, TemplateValidationResult result) {
 		if (!"_new".equals(requestTemplateItem.getId()) && !templateItem.getId().equals(requestTemplateItem.getId())) {
-			result.setErrored(true);
 			result.addError("id", "The id field must match the existing one.");
 		}
 
@@ -79,7 +71,6 @@ public class TemplateValidator {
 		
 		for (WebHookTemplateStateRest requestItemState : requestTemplateItem.getStates()) {
 			if (BuildStateEnum.findBuildState(requestItemState.getType()) == null){ 
-				result.setErrored(true);
 				result.addError(requestItemState.getType(), requestItemState.getType() + " is an not a valid buildState");
 			}
 		}
@@ -88,7 +79,6 @@ public class TemplateValidator {
 			WebHookTemplateStateRest requestItemState = requestTemplateItem.findConfigForBuildState(itemState.getType());
 				
 			if (requestItemState != null && !itemState.getEditable() && itemState.isEnabled() != requestItemState.isEnabled()) { 
-				result.setErrored(true);
 				result.addError(itemState.getType(), itemState.getType() + " is not editable for this templateItem");						
 			}
 		}
@@ -102,7 +92,6 @@ public class TemplateValidator {
 	private TemplateValidationResult validateTemplateText(TemplateItem requestTemplateItem, TemplateValidationResult result) {
 		if (requestTemplateItem.getTemplateText().getContent() == null 
 				|| requestTemplateItem.getTemplateText().getContent().trim().isEmpty()) {
-			result.setErrored(true);
 			result.addError("templateText", "The template text content must not be null or empty.");
 		}
 		
@@ -112,7 +101,6 @@ public class TemplateValidator {
 					||  requestTemplateItem.getBranchTemplateText().getContent().trim().isEmpty()
 					)
 			) {
-			result.setErrored(true);
 			result.addError("branchTemplateText", "The branch template text content must not be null or empty if 'useTemplateTextForBranch' is false.");
 		}
 		return result;
