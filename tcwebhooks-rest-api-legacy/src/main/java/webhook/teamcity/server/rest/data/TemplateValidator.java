@@ -6,12 +6,12 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
-import webhook.teamcity.server.rest.model.template.TemplateValidationResult;
+import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 public class TemplateValidator {
 	
-	public TemplateValidationResult validateNewTemplate(Template requestTemplate, TemplateValidationResult result) {
+	public ErrorResult validateNewTemplate(Template requestTemplate, ErrorResult result) {
 		
 		if (requestTemplate.name == null || requestTemplate.name.trim().isEmpty()) {
 			result.addError("name", "The template name cannot be empty. It is used to identify the template and is referenced by webhook configuration");
@@ -42,7 +42,7 @@ public class TemplateValidator {
 		
 	}
 	
-	public TemplateValidationResult validateTemplate(WebHookTemplateConfig webHookTemplateConfig, Template requestTemplate, TemplateValidationResult result) {
+	public ErrorResult validateTemplate(WebHookTemplateConfig webHookTemplateConfig, Template requestTemplate, ErrorResult result) {
 		
 		if ( ! webHookTemplateConfig.getName().equals(requestTemplate.name)) {
 			result.addError("name", "Sorry, it's not possible to change the name (aka id) of an existing template. Please create a new template with a new name and delete this one.");
@@ -62,7 +62,7 @@ public class TemplateValidator {
 		return result;
 	}
 	
-	public TemplateValidationResult validateTemplateItem(TemplateItem templateItem, TemplateItem requestTemplateItem, TemplateValidationResult result) {
+	public ErrorResult validateTemplateItem(TemplateItem templateItem, TemplateItem requestTemplateItem, ErrorResult result) {
 		if (!"_new".equals(requestTemplateItem.getId()) && !templateItem.getId().equals(requestTemplateItem.getId())) {
 			result.addError("id", "The id field must match the existing one.");
 		}
@@ -85,11 +85,11 @@ public class TemplateValidator {
 		return result;
 	}
 
-	public TemplateValidationResult validateDefaultTemplateItem(TemplateItem requestTemplateItem, TemplateValidationResult result) {
+	public ErrorResult validateDefaultTemplateItem(TemplateItem requestTemplateItem, ErrorResult result) {
 		return validateTemplateText(requestTemplateItem, result);
 	}
 
-	private TemplateValidationResult validateTemplateText(TemplateItem requestTemplateItem, TemplateValidationResult result) {
+	private ErrorResult validateTemplateText(TemplateItem requestTemplateItem, ErrorResult result) {
 		if (requestTemplateItem.getTemplateText().getContent() == null 
 				|| requestTemplateItem.getTemplateText().getContent().trim().isEmpty()) {
 			result.addError("templateText", "The template text content must not be null or empty.");

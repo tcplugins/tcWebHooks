@@ -19,7 +19,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
-import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.errors.OperationException;
 import jetbrains.buildServer.server.rest.model.Fields;
@@ -36,12 +35,13 @@ import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.data.WebHookTemplateStates;
+import webhook.teamcity.server.rest.errors.BadRequestException;
 import webhook.teamcity.server.rest.errors.TemplatePermissionException;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
-import webhook.teamcity.server.rest.model.template.TemplateValidationResult;
+import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
@@ -152,7 +152,7 @@ public class TemplateRequest {
   @Produces({"application/xml", "application/json"})
   public Template createNewTemplate(Template newTemplate) {
 	checkTemplateWritePermission();
-	TemplateValidationResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new TemplateValidationResult());
+	ErrorResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
 	  }	  
@@ -160,7 +160,8 @@ public class TemplateRequest {
     template.setTemplateDescription(newTemplate.description);
     
     if (myTemplateManager.getTemplate(template.getName()) != null){
-    	throw new BadRequestException("Template of that name already exists. To update existing template, please use PUT");
+    	validationResult.addError("name", "Template of that name already exists. To update existing template, please use PUT");
+    	throw new BadRequestException("Template name already exists", validationResult);
     }
     
     template.setFormat(newTemplate.format);
@@ -208,7 +209,7 @@ public class TemplateRequest {
 		  throw new NotFoundException("No template found by that name/id");
 	  }
 	  
-	  TemplateValidationResult validationResult = myTemplateValidator.validateTemplate(templateConfigWrapper.getTemplateConfig(), newTemplate, new TemplateValidationResult());
+	  ErrorResult validationResult = myTemplateValidator.validateTemplate(templateConfigWrapper.getTemplateConfig(), newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
 	  }	  
@@ -493,7 +494,7 @@ public class TemplateRequest {
 	  if("defaultTemplate".equals(templateItemConfigWrapper.getTemplateItem().getId())) {
 		  
 		  TemplateItem previousDefaultTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
-		  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousDefaultTemplateItem, templateItem, new TemplateValidationResult());
+		  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousDefaultTemplateItem, templateItem, new ErrorResult());
 		  if (validationResult.isErrored()) {
 			  throw new UnprocessableEntityException("TemplateItem contained invalid data", validationResult);
 		  }
@@ -523,7 +524,7 @@ public class TemplateRequest {
 		  
 	  }
 	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext);
-	  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new TemplateValidationResult());
+	  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("TemplateItem contained invalid data", validationResult);
 	  }
@@ -584,7 +585,7 @@ public class TemplateRequest {
 	  }
 	  
 	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId().toString(), new Fields(fields), myBeanContext);
-	  final TemplateValidationResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new TemplateValidationResult());
+	  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("TemplateItem contained invalid data", validationResult);
 	  }
@@ -711,7 +712,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 		  throw new BadRequestException("Default Template Item already exists. To update existing default template, please use PUT");
 	  }
 
-	  final TemplateValidationResult validationResult = myTemplateValidator.validateDefaultTemplateItem(templateItem, new TemplateValidationResult());
+	  final ErrorResult validationResult = myTemplateValidator.validateDefaultTemplateItem(templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("DefaultTemplateItem contained invalid data", validationResult);
 	  }
