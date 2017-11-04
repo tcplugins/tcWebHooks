@@ -11,7 +11,7 @@ import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
-import webhook.teamcity.server.rest.model.template.TemplateValidationResult;
+import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.settings.entity.JaxHelper;
 
 public class TemplateValidatorTest {
@@ -24,7 +24,7 @@ public class TemplateValidatorTest {
 		TemplateValidator tv = new TemplateValidator();
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertFalse(result.isErrored());
 		assertEquals(0,result.getErrors().size());
 	}
@@ -35,7 +35,7 @@ public class TemplateValidatorTest {
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.setId("someOtherId");
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertTrue(result.isErrored());
 		assertEquals(1,result.getErrors().size());
 		assertTrue(result.getErrors().get("id").contains("The id field must match the existing one"));
@@ -47,7 +47,7 @@ public class TemplateValidatorTest {
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setEnabled(false);
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertTrue(result.isErrored());
 		assertEquals(1,result.getErrors().size());
 		assertTrue(result.getErrors().get("buildStarted").contains("buildStarted is not editable"));
@@ -59,7 +59,7 @@ public class TemplateValidatorTest {
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setType("invalidname");
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertTrue(result.isErrored());
 		assertEquals(1,result.getErrors().size());
 		assertTrue(result.getErrors().get("invalidname").contains("invalidname is an not a valid buildState"));
@@ -70,7 +70,7 @@ public class TemplateValidatorTest {
 		TemplateValidator tv = new TemplateValidator();
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertFalse(result.isErrored());
 		assertEquals(0,result.getErrors().size());
 	}
@@ -81,7 +81,7 @@ public class TemplateValidatorTest {
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.setId("someOtherId");
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertTrue(result.isErrored());
 		assertEquals(1,result.getErrors().size());
 		assertTrue(result.getErrors().get("id").contains("The id field must match the existing one"));
@@ -93,7 +93,7 @@ public class TemplateValidatorTest {
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setEnabled(false);
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertFalse(result.isErrored());
 		assertEquals(0,result.getErrors().size());
 	}
@@ -104,7 +104,7 @@ public class TemplateValidatorTest {
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setType("invalidname");
-		TemplateValidationResult result = tv.validateTemplateItem(templateItem, templateItem2, new TemplateValidationResult());
+		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
 		assertTrue(result.isErrored());
 		assertEquals(1,result.getErrors().size());
 		assertTrue(result.getErrors().get("invalidname").contains("invalidname is an not a valid buildState"));
