@@ -11,12 +11,15 @@ import lombok.Data;
 @Data @XmlRootElement
 public class TemplateValidationResult implements Serializable {
 	
-	private static final long serialVersionUID = 6224688951409513197L;
-	private boolean isErrored = false;
+	private static final long serialVersionUID = -8395102761842280396L;
 	private Map<String, String> errors = new LinkedHashMap<>();
 	
 	public void addError(String fieldname, String errorMessage) {
 		this.errors.put(fieldname, errorMessage);
+	}
+	
+	public boolean isErrored() {
+		return ! this.errors.isEmpty();
 	}
 
 }
