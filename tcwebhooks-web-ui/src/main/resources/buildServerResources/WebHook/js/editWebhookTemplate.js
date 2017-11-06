@@ -29,6 +29,9 @@ WebHooksPlugin = {
     copyTemplate: function(data) {
     	WebHooksPlugin.EditTemplateDialog.showDialog("Copy Template", 'copyTemplate', data);
     },
+    disableTemplate: function(data) {
+    	alert("This is not implemented yet.");
+    },
     deleteBuildEventTemplate: function(data) {
     	WebHooksPlugin.DeleteTemplateItemDialog.showDialog("Delete Build Event Template", 'deleteBuildEventTemplate', data);
     },
