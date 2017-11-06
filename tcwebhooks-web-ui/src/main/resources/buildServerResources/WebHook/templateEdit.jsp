@@ -97,10 +97,11 @@
 				});
 		});
 		</script>		
-    <bs:refreshable containerId="repoRepoInfoContainer" pageUrl="${pageUrl}">
+    <bs:refreshable containerId="templateInfoContainer" pageUrl="${pageUrl}">
 
-	<bs:messages key="repoInfoUpdateResult"/>
+	<bs:messages key="templateUpdateResult"/>
 	
+	  <input type="hidden" name="action" id="WebhookTemplateaction" value=""/>
       <table class="settings parameterTable" id="webhookTemplateHeader">
         
         <tr>
@@ -132,11 +133,11 @@
         </tr>
       </table>
       
-          <bs:dialog dialogId="editTemplateDialog"
-               dialogClass="editTemplateDialog"
+          <bs:dialog dialogId="editTemplateItemDialog"
+               dialogClass="editTemplateItemDialog"
                title="Edit Build Event Template"
                closeCommand="WebHooksPlugin.TemplateEditBuildEventDialog.close()">
-        <forms:multipartForm id="editTemplateForm"
+        <forms:multipartForm id="editTemplateItemForm"
                              action="/admin/manageWebhookTemplate.html"
                              targetIframe="hidden-iframe"
                              onsubmit="return WebHooksPlugin.TemplateEditBuildEventDialog.doPost();">
@@ -188,10 +189,10 @@
                  </tr>
             </table>
             </div>
-            <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplate"/>
-            <div id="ajaxTemplateEditResult"></div>
+            <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplateItem"/>
+            <div id="ajaxTemplateItemEditResult"></div>
             <div class="popupSaveButtonsBlock">
-                <forms:submit id="editTemplateDialogSubmit" label="Save Template"/>
+                <forms:submit id="editTemplateItemDialogSubmit" label="Save Template"/>
                 <forms:cancel onclick="WebHooksPlugin.TemplateEditBuildEventDialog.close()"/>
             </div>
         </forms:multipartForm>
@@ -251,58 +252,6 @@
     langTools.addCompleter(customCompleter);
 </script>
 
-    <bs:dialog dialogId="repoEditFilterDialog"
-               dialogClass="repoEditFilterDialog"
-               title="Edit Artifact Filter"
-               closeCommand="DebRepoFilterPlugin.RepoEditFilterDialog.close()">
-        <forms:multipartForm id="repoEditFilterForm"
-                             action="/admin/debianRepositoryAction.html"
-                             targetIframe="hidden-iframe"
-                             onsubmit="return DebRepoFilterPlugin.RepoEditFilterDialog.doPost();">
-
-            <table class="runnerFormTable">
-                <tr>
-                    <th>Build Type<l:star/></th>
-                    <td>
-                        <div>
-                        	<select id="debrepofilter.buildtypeid" name="debrepofilter.buildtypeid">
-                        	<c:forEach items="${sortedProjectBuildTypes}" var="buildType">
-                        		<option value="${buildType.buildTypeId}">${buildType.fullName}</option>
-                        	</c:forEach>
-                        	</select>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>regex<l:star/></th>
-                    <td>
-                        <div><input type="text" id="debrepofilter.regex" name="debrepofilter.regex"/></div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>dist<l:star/></th>
-                    <td>
-                        <div><input type="text" id="debrepofilter.dist" name="debrepofilter.dist"/></div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>component<l:star/></th>
-                    <td>
-                        <div><input type="text" id="debrepofilter.component" name="debrepofilter.component"/></div>
-                        <div id="ajaxResult"></div>
-                    </td>
-                </tr>
-            </table>
-            <input type="hidden" id="debrepofilter.id" name="debrepofilter.id"/>
-            <input type="hidden" id="debrepo.uuid" name="debrepo.uuid" value="${repoConfig.uuid}"/>
-            <input type="hidden" name="action" id="WebhookTemplateaction" value="editFilter"/>
-            <div class="popupSaveButtonsBlock">
-                <forms:submit id="repoEditFilterDialogSubmit" label="Save"/>
-                <forms:cancel onclick="DebRepoFilterPlugin.RepoEditFilterDialog.close()"/>
-            </div>
-        </forms:multipartForm>
-    </bs:dialog>
-
     <bs:dialog dialogId="deleteTemplateItemDialog"
                dialogClass="deleteTemplateItemDialog"
                title="Confirm Build Event Template deletion"
@@ -349,6 +298,72 @@
             </div>
         </forms:multipartForm>
     </bs:dialog>
+
+    <bs:dialog dialogId="editTemplateDialog"
+               dialogClass="editTemplateDialog"
+               title="Edit Webhook Template details"
+               closeCommand="WebHooksPlugin.EditTemplateDialog.close()">
+        <forms:multipartForm id="editTemplateForm"
+                             action="/admin/manageWebhookTemplate.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.EditTemplateDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td colspan=2>
+                	<div class="templateEdit">
+                			<p><strong>Are you sure you want to create a new template from scratch?</strong></p>
+                			<p>It might be easier to cancel this dialog and copy one of the existing templates.<p>
+                			<p>To copy an existing template, click &quot;view&quot; 
+                			on the template and choose &quot;Copy template...&quot; from the Actions menu on the next page.</p>
+                	</div>
+
+                	<div class="templateCopy">
+                			<p><strong>Fill in the fields below to copy this template.</strong></p>
+                			<p>The most important thing is that the ID must be unique.</p>
+                			<p>Once you have copied the template you will be redirected to the template view page
+                			 where you can edit any build event template items. 
+                	</div>
+                	<div id="ajaxTemplateEditResult"></div>
+                	
+                </td></tr>
+                <tr class="templateDetails">
+                    <th>ID<l:star/></th>
+                    <td>
+                        <div><input type="text" id="template.id" name="template.id"/></div>
+                    </td>
+                </tr>
+                <tr class="templateDetails">
+                    <th>Name<l:star/></th>
+                    <td>
+                        <div><input type="text" id="template.name" name="template.name"/></div>
+                    </td>
+                </tr>
+                <tr class="templateDetails">
+                    <th>Tooltip</th>
+                    <td>
+                        <div><input type="text" id="template.tooltip" name="template.tooltip"/></div>
+                    </td>
+                </tr>
+                <tr class="templateDetails">
+                    <th>Rank</th>
+                    <td>
+                        <div><input type="text" id="template.rank" name="template.rank"/></div>
+                    </td>
+                </tr>
+                <tr class="templateDetails">
+                    <th>Date Format</th>
+                    <td>
+                        <div><input type="text" id="template.dateFormat" name="template.dateFormat"/></div>
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplate"/>
+            <div class="popupSaveButtonsBlock">
+                <forms:submit id="editTemplateDialogSubmit" label="Save Template"/>
+                <forms:cancel onclick="WebHooksPlugin.EditTemplateDialog.close()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog> 
     
   </jsp:attribute>
 </bs:page>

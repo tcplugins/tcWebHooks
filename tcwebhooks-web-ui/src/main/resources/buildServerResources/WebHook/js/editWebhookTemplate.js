@@ -23,8 +23,11 @@ WebHooksPlugin = {
     createDefaultTemplate: function(data) {
     	WebHooksPlugin.TemplateEditBuildEventDialog.showDialogCreateDefaultTemplate("Add Default Template", 'addDefaultTemplate', data);
     },
-    copyFilter: function(data) {
-    	DebRepoFilterPlugin.RepoEditFilterDialog.showDialog("Copy Artifact Filter", 'copyArtifactFilter', data);
+    editTemplateDetails: function(data) {
+    	WebHooksPlugin.EditTemplateDialog.showDialog("Edit Template", 'editTemplate', data);
+    },
+    copyTemplate: function(data) {
+    	WebHooksPlugin.EditTemplateDialog.showDialog("Copy Template", 'copyTemplate', data);
     },
     deleteBuildEventTemplate: function(data) {
     	WebHooksPlugin.DeleteTemplateItemDialog.showDialog("Delete Build Event Template", 'deleteBuildEventTemplate', data);
@@ -34,11 +37,11 @@ WebHooksPlugin = {
     },
     TemplateEditBuildEventDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
-            return $('editTemplateDialog');
+            return $('editTemplateItemDialog');
         },
 
         formElement: function () {
-            return $('editTemplateForm');
+            return $('editTemplateItemForm');
         },
 
         showDialogCreateDefaultTemplate: function (title, action, data) {
@@ -90,7 +93,7 @@ WebHooksPlugin = {
         },
 
         cleanErrors: function () {
-            $j("#editTemplateForm .error").remove();
+            $j("#editTemplateItemForm .error").remove();
         },
 
         error: function($element, message) {
@@ -103,11 +106,11 @@ WebHooksPlugin = {
         },
         
         ajaxError: function(message) {
-        	var next = $j("#ajaxTemplateEditResult").next();
+        	var next = $j("#ajaxTemplateItemEditResult").next();
         	if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
         		next.text(message);
         	} else {
-        		$j("#ajaxTemplateEditResult").after("<p class='error'>" + message + "</p>");
+        		$j("#ajaxTemplateItemEditResult").after("<p class='error'>" + message + "</p>");
         	}
         },
 
@@ -139,20 +142,20 @@ WebHooksPlugin = {
 			this.postTemplateData();
 		},
 		disableCheckboxes: function () {
-			$j("#editTemplateForm input.buildState").prop("disabled", true);
-			$j("#editTemplateForm label").addClass("checkboxLooksDisabled");
+			$j("#editTemplateItemForm input.buildState").prop("disabled", true);
+			$j("#editTemplateItemForm label").addClass("checkboxLooksDisabled");
 		},
 		enableCheckboxes: function () {
-			$j("#editTemplateForm input.buildState").prop("disabled", false);
+			$j("#editTemplateItemForm input.buildState").prop("disabled", false);
 		},
 		updateJsonDataFromForm: function () {
 			myJson.templateText.content = editor.getValue();
-			myJson.templateText.useTemplateTextForBranch = $j("#editTemplateForm input#useTemplateTextForBranch").is(':checked');
+			myJson.templateText.useTemplateTextForBranch = $j("#editTemplateItemForm input#useTemplateTextForBranch").is(':checked');
 			myJson.branchTemplateText.content = editorBranch.getValue();
 			
     		$j(myJson.state).each(function() {
     			//console.log(this.type + " :: "+ this.enabled);
-    			this.enabled = $j("#editTemplateForm input[id='" + this.type + "']").prop( "checked");
+    			this.enabled = $j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked");
     		});
 
 		},
@@ -322,17 +325,17 @@ WebHooksPlugin = {
         		if (myJson.id == 'defaultTemplate') {
             		$j(myJson.state).each(function() {
             			//console.log(this.type + " :: "+ this.enabled);
-            			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.enabled);
+            			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.enabled);
             			if (this.enabled) {
-            				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+            				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
             			}
             		});
         		} else {
             		$j(myJson.state).each(function() {
             			//console.log(this.type + " :: "+ this.enabled);
-            			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.editable && ! this.enabled);
+            			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.editable && ! this.enabled);
             			if (this.editable && ! this.enabled) {
-            				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+            				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
             			}
             		});
         		}
@@ -340,19 +343,19 @@ WebHooksPlugin = {
         	} else {
 	    		$j(myJson.state).each(function() {
 	    			//console.log(this.type + " :: "+ this.enabled);
-	    			$j("#editTemplateForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
+	    			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
 	    			if (this.editable) {
-	    				$j("#editTemplateForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+	    				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
 	    			}
 	    		});
         	}
         	
         	if (action === 'addDefaultTemplate' || action === 'addBuildEventTemplate') {
-	    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", false).prop( "disabled", false);
+	    		$j("#editTemplateItemForm input[id='useTemplateTextForBranch']").prop( "checked", false).prop( "disabled", false);
 				$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
 				myJson.id = '_new';
         	} else {
-	    		$j("#editTemplateForm input[id='useTemplateTextForBranch']").prop( "checked", myJson.templateText.useTemplateTextForBranch).prop( "disabled", false);
+	    		$j("#editTemplateItemForm input[id='useTemplateTextForBranch']").prop( "checked", myJson.templateText.useTemplateTextForBranch).prop( "disabled", false);
 				$j("label.useTemplateTextForBranch").removeClass("checkboxLooksDisabled");
 			}
 		},
@@ -519,6 +522,154 @@ WebHooksPlugin = {
     			error: function (response) {
     				console.log(response);
     				alert(response);
+    			}
+    		});
+    		
+    		return false;
+    	}
+    })),
+    
+    EditTemplateDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    	getContainer: function () {
+    		return $('editTemplateDialog');
+    	},
+    	
+    	formElement: function () {
+    		return $('editTemplateForm');
+    	},
+    	
+    	showDialog: function (title, action, templateName) {
+    		
+    		console.log(templateName);
+    		this.getTemplateData(templateName, action);
+    		
+    		$j("input[id='WebhookTemplateaction']").val(action);
+    		$j(".dialogTitle").html(title);
+    		
+    		if (action == 'copyTemplate') {
+	    		$j("#editTemplateForm .templateEdit").hide();
+	    		$j("#editTemplateForm .templateCopy").show();
+    		} else {
+    			$j("#editTemplateForm .templateCopy").hide();
+    			$j("#editTemplateForm .templateEdit").show();
+    		}
+    		this.cleanFields();
+    		this.cleanErrors();
+    		this.showCentered();
+    	},
+
+		handleGetSuccess: function (action) {
+			if (action == 'copyTemplate') {
+				$j("#editTemplateForm input[id='template.id']").val("").prop( "disabled", false );
+			} else {
+				$j("#editTemplateForm input[id='template.id']").val(myJson.id).prop( "disabled", true );
+			}
+			$j("#editTemplateForm input[id='template.name']").val(myJson.description);
+			$j("#editTemplateForm input[id='template.tooltip']").val(myJson.toolTip);
+			$j("#editTemplateForm input[id='template.rank']").val(myJson.rank);
+			$j("#editTemplateForm input[id='template.dateFormat']").val(myJson.preferredDateFormat);
+			console.log(myJson);
+		},    	
+    	
+    	cleanFields: function () {
+    		this.cleanErrors();
+    	},
+    	
+    	cleanErrors: function () {
+    		$j("#editTemplateForm .error").remove();
+    	},
+    	
+    	error: function($element, message) {
+    		var next = $element.next();
+    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+    			next.text(message);
+    		} else {
+    			$element.after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+    	
+    	ajaxError: function(message) {
+    		var next = $j("#ajaxTemplateEditResult").next();
+    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+    			next.text(message);
+    		} else {
+    			$j("#ajaxTemplateEditResult").after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+
+		getTemplateData: function (templateName, action) {
+			var dialog = this;
+			var URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName  + '?fields=$long,content';
+			
+			if (action == "editTemplate") {
+				URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName  + '?fields=$short'
+			}
+			
+    		$j.ajax ({
+    			//url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName  + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+    			url: URL,
+    		    type: "GET",
+    		    headers : {
+    		        'Accept' : 'application/json'
+    		    },
+    		    success: function (response) {
+    				myJson = response;
+    				//console.log(myJson);
+    				dialog.handleGetSuccess(action);
+    		    }
+    		});
+		},
+    	
+    	doPost: function() {
+    		this.cleanErrors();
+    		
+    		var dialog = this;
+    		//console.log($j("input[id='WebhookTemplateaction']").val());
+    		
+    		var action = $j("input[id='WebhookTemplateaction']").val();
+    		var httpMethod = "POST";
+    		var URL  = window['base_uri'] + '/app/rest/webhooks/templates';
+    		
+    		if (action === "editTemplate") {
+    			httpMethod = "PUT";
+    			URL = URL + "/" + myJson.name;  
+    		} else if (action === "copyTemplate") {
+    			myJson.name = $j("#editTemplateForm input[id='template.id']").val();
+    		} else {
+    			alert("eeek. I can't tell what action we are performing. Please report bug for tcWebhooks");
+    		}
+    		
+    		myJson.description = $j("#editTemplateForm input[id='template.name']").val();
+			myJson.toolTip = $j("#editTemplateForm input[id='template.tooltip']").val();
+			myJson.rank = $j("#editTemplateForm input[id='template.rank']").val();
+			myJson.preferredDateFormat = $j("#editTemplateForm input[id='template.dateFormat']").val();
+			
+			
+    		console.log(myJson);
+    		
+    		$j.ajax ({
+    			url: URL,
+    			type: httpMethod,
+				data: JSON.stringify(myJson),
+				dataType: 'json',
+    			headers : {
+    				'Content-Type' : 'application/json',
+    				'Accept' : 'application/json'
+    			},
+    			success: function (response) {
+    				var action = $j("input[id='WebhookTemplateaction']").val();
+    				dialog.close();
+    				console.log(action);
+    				if (action === "editTemplate") {
+    					$("templateInfoContainer").refresh();
+    				} else {
+    					window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJson.name;
+    				}
+    				
+    			},
+    			error: function (response) {
+    				console.log(response);
+    				WebHooksPlugin.handleAjaxError(dialog, response);
     			}
     		});
     		

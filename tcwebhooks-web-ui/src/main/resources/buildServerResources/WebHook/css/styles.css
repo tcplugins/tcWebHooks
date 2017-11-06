@@ -379,7 +379,7 @@ ul.templateBuildStates li:last-child:after {
 	border: 1px #ccc solid;
 }
 
-div#editTemplateDialog {
+div#editTemplateItemDialog {
 	width: 80%;
 	min-width: 80em;
 	max-width: 1000px;
