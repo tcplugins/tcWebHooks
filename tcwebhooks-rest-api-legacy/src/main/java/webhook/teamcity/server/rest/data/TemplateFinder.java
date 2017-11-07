@@ -26,7 +26,7 @@ public class TemplateFinder {
 	}
 	
 	public static String getLocator(final WebHookTemplateConfig template) {
-	    return Locator.createEmptyLocator().setDimension("id", template.getName()).getStringRepresentation();
+	    return Locator.createEmptyLocator().setDimension("id", template.getId()).getStringRepresentation();
 	}
 
 	public static String getTemplateTextLocator(final String id){
@@ -52,7 +52,7 @@ public class TemplateFinder {
 			template = myTemplateManager.getTemplateConfig(singleValue);
 			if (template != null) {
 				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getName()), 
+														myTemplateManager.getTemplateState(template.getId()), 
 														WebHookTemplateStates.build(template));
 			}
 			throw new NotFoundException(
@@ -66,7 +66,7 @@ public class TemplateFinder {
 			template = myTemplateManager.getTemplateConfig(templateId);
 			if (template != null) {
 				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getName()),
+														myTemplateManager.getTemplateState(template.getId()),
 														WebHookTemplateStates.build(template)
 														);
 			}
@@ -81,7 +81,7 @@ public class TemplateFinder {
 			template = myTemplateManager.getTemplateConfig(templateName);
 			if (template != null) {
 				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getName()),
+														myTemplateManager.getTemplateState(template.getId()),
 														WebHookTemplateStates.build(template)
 														);
 			}

@@ -65,7 +65,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	
     	Template newTemplate = new Template();
     	newTemplate.description = "A test template";
-    	newTemplate.name = "testTemplateFromUnitTest";
+    	newTemplate.id = "testTemplateFromUnitTest";
     	newTemplate.format = "jsontemplate";
     	newTemplate.rank = 500;
 
@@ -83,7 +83,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	
     	Template newTemplate = new Template();
     	newTemplate.description = "A test template";
-    	newTemplate.name = "testTemplateFromUnitTest";
+    	newTemplate.id = "testTemplateFromUnitTest";
     	
     	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplate);
     	Templates updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
@@ -151,7 +151,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	Template templateResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").queryParam("fields","$long,templateItem,content").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertTrue(templateResponse.getTemplates().size() == 1);
     	
-    	templateResponse.name  ="newElastic";
+    	templateResponse.id  ="newElastic";
     	
     	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(templateResponse);
     	

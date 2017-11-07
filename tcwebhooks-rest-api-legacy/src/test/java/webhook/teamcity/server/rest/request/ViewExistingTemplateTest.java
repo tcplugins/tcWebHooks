@@ -224,7 +224,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		if (Integer.valueOf(responseMsg.id) == templateItem.getId()){
     			assertEquals(templateItem.getTemplateText().getTemplateContent(), responseMsg.getTemplateText().content);
     			assertEquals(elastic.getTemplateDescription(), responseMsg.parentTemplate.getDescription());
-    			assertEquals(elastic.getTemplateShortName(), responseMsg.parentTemplate.getName());
+    			assertEquals(elastic.getTemplateId(), responseMsg.parentTemplate.getName());
     			itemFound = true;
     		}
     	}
@@ -243,7 +243,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	for (WebHookTemplateItem item : elastic.getAsEntity().getTemplates().getTemplates()){
     		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
     			WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
-    																	"/id:" + elastic.getTemplateShortName() + 
+    																	"/id:" + elastic.getTemplateId() + 
     																	"/templateItem/id:" + item.getId() + 
     																	"/buildState/" + state.getShortName()
     													   )
@@ -270,7 +270,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	for (WebHookTemplateItem item : elastic.getAsEntity().getTemplates().getTemplates()){
     		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
     			WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
-    					"/id:" + elastic.getTemplateShortName() + 
+    					"/id:" + elastic.getTemplateId() + 
     					"/templateItem/id:defaultTemplate" + 
     					"/buildState/" + state.getShortName()
     					)
@@ -298,7 +298,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
 		for (WebHookTemplateItem item : flowdock.getAsEntity().getTemplates().getTemplates()){
 			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 				WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
-						"/id:" + flowdock.getTemplateShortName() + 
+						"/id:" + flowdock.getTemplateId() + 
 						"/templateItem/id:" + item.getId() + 
 						"/buildState/" + state.getShortName()
 						)
@@ -351,7 +351,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookTemplateConfig responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/fullConfig").accept(MediaType.APPLICATION_XML_TYPE).get(WebHookTemplateConfig.class);
     	
     	assertEquals(2, responseMsg.getTemplates().getTemplates().size());
-    	assertEquals("slack.com-compact", responseMsg.getName());
+    	assertEquals("slack.com-compact", responseMsg.getId());
     	//prettyPrint(responseMsg);
     }  
     
