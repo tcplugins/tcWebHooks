@@ -173,15 +173,18 @@
 					  <ul class='etabs'>
 						   <li class='tab' id="nonBranchPaneTab"><a href="#nonBranchPane" class="active">Non-Branch Template</a></li>
 						   <li class='tab' id="branchPaneTab"><a href="#branchPane">Branch Template</a></li>
+						   <li class='tab' id="branchOptionTab"><a href="#branchPane"></a><label style='white-space:nowrap;' class="useTemplateTextForBranch"><input id="useTemplateTextForBranch" name="UseTemplateTextForBranch" type=checkbox /> Use Non-branch template text for Branch template text</label></li>
 					  </ul>
-					  <div class='panel-container'>
+					  <div class='panel-container' style="padding:0px;">
 						<div id='nonBranchPane'>
-							&nbsp;
+							<p>This template is used for builds for which TeamCity is <strong>not</strong> aware of branches.</p>
 							<pre id="editor" class="editor"></pre>
 						</div>
 						<div id='branchPane'>
-							<label style='white-space:nowrap;' class="useTemplateTextForBranch"><input id="useTemplateTextForBranch" name="UseTemplateTextForBranch" type=checkbox /> Use Non-branch template text for Branch template text</label>
+							<p>This template is used for builds for which TeamCity <strong>is</strong> aware of branches.</p>
 							<pre id="editorBranch" class="editor"></pre>
+						</div>
+						<div id='branchOption'>
 						</div>
 					  </div>
 					</div>                        

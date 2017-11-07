@@ -413,9 +413,22 @@ div#templateEditor {
 
 div#templateEditor ul.etabs {
 	padding: 0px;
-	margin-left: 3em;
+	margin-left: 1em;
 	margin-top: 1.25em;
 }
+
+div#templateEditor ul.etabs li {
+	text-align: center;
+	font-weight: bold;
+}
+
+div#templateEditor ul.etabs li#branchOptionTab {
+	text-align: right;
+	font-weight: normal;
+ 	border:none; 
+ 	background:#fff;
+}
+
 
 #deleteTemplateDialogSubmit, #deleteTemplateItemDialogSubmit {
 	background-color: red;
