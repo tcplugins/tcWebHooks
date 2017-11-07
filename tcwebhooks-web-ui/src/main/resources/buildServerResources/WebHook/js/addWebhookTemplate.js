@@ -76,8 +76,8 @@ WebHooksPlugin = {
     		//console.log($j("input[id='WebhookTemplateaction']").val());
     		
     		var myJsonContent = {
-    				name : $j("#addTemplateForm input[id='template.id']").val(),
-					description : $j("#addTemplateForm input[id='template.name']").val(),
+    				id : $j("#addTemplateForm input[id='template.id']").val(),
+					description : $j("#addTemplateForm input[id='template.description']").val(),
 					toolTip : $j("#addTemplateForm input[id='template.tooltip']").val(),
 					rank : $j("#addTemplateForm input[id='template.rank']").val(),
 					format : "jsonTemplate",
@@ -96,7 +96,7 @@ WebHooksPlugin = {
     			},
     			success: function (response) {
     				dialog.close();
-    				window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJsonContent.name;
+    				window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJsonContent.id;
     			},
     			error: function (response) {
     				console.log(response);

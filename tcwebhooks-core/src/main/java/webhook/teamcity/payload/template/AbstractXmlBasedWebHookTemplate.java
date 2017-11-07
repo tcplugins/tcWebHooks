@@ -56,10 +56,10 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 			this.templateManager.registerTemplateFormatFromSpring(template);
 		} else {
 			if (template.templateContent.isEmpty()){
-				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateShortName() + ". No regular template configurations were found.");
+				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No regular template configurations were found.");
 			}
 			if (template.branchTemplateContent.isEmpty()){
-				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateShortName() + ". No branch template configurations were found.");
+				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No branch template configurations were found.");
 			}
 		}
 	}
@@ -127,8 +127,8 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	}
 
 	@Override
-	public String getTemplateShortName() {
-		return template.getTemplateShortName();
+	public String getTemplateId() {
+		return template.getTemplateId();
 	}
 
 	@Override

@@ -156,10 +156,10 @@ public class TemplateRequest {
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
 	  }	  
-    WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.name, true);
+    WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
     template.setTemplateDescription(newTemplate.description);
     
-    if (myTemplateManager.getTemplate(template.getName()) != null){
+    if (myTemplateManager.getTemplate(template.getId()) != null){
     	validationResult.addError("name", "Template of that name already exists. To update existing template, please use PUT");
     	throw new BadRequestException("Template name already exists", validationResult);
     }
@@ -192,7 +192,7 @@ public class TemplateRequest {
     
     myTemplateManager.registerTemplateFormatFromXmlConfig(template);
     if (myTemplateManager.persistAllXmlConfigTemplates()){
-    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.name), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
     } else {
     	throw new OperationException("There was an error saving your template. Sorry.");
     }
@@ -240,7 +240,7 @@ public class TemplateRequest {
 	  
 	  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
 	  if (myTemplateManager.persistAllXmlConfigTemplates()){
-		  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.name), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+		  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
 	  } else {
 		  throw new OperationException("There was an error saving your template. Sorry.");
 	  }
@@ -273,10 +273,10 @@ public class TemplateRequest {
 		  throw new NotFoundException("No template found by that name/id");
 	  }
 	  // The above will throw errors if the template is not found, so let's attempt to update it.
-	  if (webHookTemplateConfig.getName().equals(rawConfig.getName())) {
+	  if (webHookTemplateConfig.getId().equals(rawConfig.getId())) {
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(rawConfig);
 		  if (myTemplateManager.persistAllXmlConfigTemplates()){
-		  	return myTemplateManager.getTemplateConfig(rawConfig.getName());
+		  	return myTemplateManager.getTemplateConfig(rawConfig.getId());
 		  } else {
 		   	throw new OperationException("There was an error saving your template. Sorry.");
 		  }
@@ -312,7 +312,7 @@ public class TemplateRequest {
 	  if (webHookTemplateConfigWrapper.getStatus().isStateUnknown()) {
 		  throw new OperationException("You cannot delete a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
 	  }
-	  if (myTemplateManager.removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getName())) {
+	  if (myTemplateManager.removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getId())) {
 		  if (myTemplateManager.persistAllXmlConfigTemplates()){
 			  return;
 		  } else {

@@ -34,7 +34,7 @@ public class RegisteredWebHookTemplateBean {
 		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
-					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateShortName()));
+					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateId()));
 					bean.templateList.put(template.getTemplateFormatCombinationKey(), template);
 				}
 			}
@@ -52,8 +52,9 @@ public class RegisteredWebHookTemplateBean {
 	
 	public static class SimpleTemplate{
 		private String description;
-		private String templateShortName;
+		private String templateId;
 		private String templateDescription;
+		private String templateToolTip;
 		private String formatShortName;
 		private String formatDescription;
 		private String templateFormatCombinationKey;
@@ -67,10 +68,11 @@ public class RegisteredWebHookTemplateBean {
 			
 			temp.description = webHookTemplate.getTemplateDescription() + " (" + format.getFormatDescription() + ")";
 			temp.templateDescription = webHookTemplate.getTemplateDescription();
+			temp.templateToolTip = webHookTemplate.getTemplateToolTip();
 			temp.formatDescription = format.getFormatDescription();
-			temp.templateShortName = webHookTemplate.getTemplateShortName();
+			temp.templateId = webHookTemplate.getTemplateId();
 			temp.formatShortName = format.getFormatShortName().toLowerCase();
-			temp.templateFormatCombinationKey = webHookTemplate.getTemplateShortName() + "_" + format.getFormatShortName().toLowerCase();
+			temp.templateFormatCombinationKey = webHookTemplate.getTemplateId() + "_" + format.getFormatShortName().toLowerCase();
 			for (BuildStateEnum s : webHookTemplate.getSupportedBuildStates()){
 				temp.supportedStates.add(s.getShortName());
 				temp.supportedBuildEnumStates.add(s);
@@ -87,8 +89,8 @@ public class RegisteredWebHookTemplateBean {
 			return temp;
 		}
 		
-		public String getTemplateShortName() {
-			return templateShortName;
+		public String getTemplateId() {
+			return templateId;
 		}
 		
 		public String getDescription() {
@@ -97,6 +99,10 @@ public class RegisteredWebHookTemplateBean {
 		
 		public String getTemplateDescription() {
 			return templateDescription;
+		}
+		
+		public String getTemplateToolTip() {
+			return templateToolTip;
 		}
 		
 		public String getFormatShortName() {

@@ -65,7 +65,10 @@ import org.jetbrains.annotations.Nullable;
 
 @XmlRootElement(name = "webhook-template")
 public class WebHookTemplateEntity {
-	@NotNull @XmlAttribute(name="name")
+	@NotNull @XmlAttribute(name="id")
+	String id;
+	
+	@XmlAttribute(name="name")
 	String name;
 	
 	@XmlAttribute
@@ -99,14 +102,22 @@ public class WebHookTemplateEntity {
 	@XmlElement(name="templates")
 	WebHookTemplateItems templates;
 	
-	public WebHookTemplateEntity(String name, boolean enabled, String templateDescription) {
+	private String getName() {
+		return this.name;
+	}
+	
+	private void setName(String name) {
 		this.name = name;
+	}
+	
+	public WebHookTemplateEntity(String id, boolean enabled, String templateDescription) {
+		this.id = id;
 		this.enabled = enabled;
 		this.templateDescription = templateDescription;
 	}
 	
 	public static WebHookTemplateEntity build (WebHookTemplateConfig config) {
-		WebHookTemplateEntity entity = new WebHookTemplateEntity(config.getName(), config.isEnabled(), config.getTemplateDescription());
+		WebHookTemplateEntity entity = new WebHookTemplateEntity(config.getId(), config.isEnabled(), config.getTemplateDescription());
 		entity.rank = config.getRank();
 		
 		if (config.getDefaultTemplate() != null) {
@@ -170,13 +181,17 @@ public class WebHookTemplateEntity {
 	@SuppressWarnings("unused")
 	private void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
 		if (this.format == null && this.getFormats() != null) {
-			for (WebHookTemplateFormat format : getFormats()) {
-				if (format.enabled) {
-					this.format = format.getName();
+			for (WebHookTemplateFormat localFormat : getFormats()) {
+				if (localFormat.enabled) {
+					this.format = localFormat.getName();
 					break;
 				}
 			}
 			this.formats = null;
+		}
+		if (this.id == null && this.name != null) {
+			this.id = this.name;
+			this.name = null;
 		}
 	}
 	
@@ -188,8 +203,12 @@ public class WebHookTemplateEntity {
      */
     @SuppressWarnings("unused")
 	private void beforeMarshal(Marshaller marshaller) {
-         if (formats != null && formats.isEmpty())
+         if (formats != null && formats.isEmpty()) {
         	 formats = null;
+         }
+         if (this.name != null) {
+        	 this.name = null;
+         }
     }
 	
 	@XmlType(name="templates") @Data @XmlAccessorType(XmlAccessType.FIELD) @NoArgsConstructor
@@ -199,7 +218,7 @@ public class WebHookTemplateEntity {
 	    Integer maxId = 0;
 		
 		@XmlElements(@XmlElement(name="template", type=WebHookTemplateItem.class))
-	    List<WebHookTemplateItem> templates = new ArrayList<WebHookTemplateItem>();
+	    List<WebHookTemplateItem> templates = new ArrayList<>();
 
 		public void fixTemplateIds() {
 			List<Integer> usedIds = new ArrayList<>();
@@ -269,7 +288,7 @@ public class WebHookTemplateEntity {
 		Integer id;
 		
 		@XmlElement(name="state") @XmlElementWrapper(name="states")
-		private List<WebHookTemplateState> states = new ArrayList<WebHookTemplateState>();
+		private List<WebHookTemplateState> states = new ArrayList<>();
 
 		public static Collection<? extends WebHookTemplateItem> buildAll(
 				Collection<WebHookTemplateConfig.WebHookTemplateItem> templateItems) {

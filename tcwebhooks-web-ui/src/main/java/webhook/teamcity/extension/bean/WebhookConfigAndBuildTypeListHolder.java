@@ -53,7 +53,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 		
 		if (payloadFormat != null){
 			for (WebHookPayloadTemplate template : templateList){
-				if (template.supportsPayloadFormat(payloadFormat) && template.getTemplateShortName().equals(payloadTemplate)){
+				if (template.supportsPayloadFormat(payloadFormat) && template.getTemplateId().equals(payloadTemplate)){
 					t = template;
 				}
 			}

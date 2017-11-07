@@ -40,21 +40,21 @@ public class TemplateFinderTest {
 	public void testFindTemplateWithNoDimention() {
 		TemplateFinder templateFinder = new TemplateFinder(webHookTemplateManager);
 		WebHookTemplateConfig e = templateFinder.findTemplateById("slack.com-compact").getTemplateConfig();
-		assertEquals("slack.com-compact", e.getName());
+		assertEquals("slack.com-compact", e.getId());
 	}
 	
 	@Test
 	public void testFindTemplateByIdDimension() {
 		TemplateFinder templateFinder = new TemplateFinder(webHookTemplateManager);
 		WebHookTemplateConfig e = templateFinder.findTemplateById("id:slack.com-compact").getTemplateConfig();
-		assertEquals("slack.com-compact", e.getName());
+		assertEquals("slack.com-compact", e.getId());
 	}
 	
 	@Test
 	public void testFindTemplateByNameDimension() {
 		TemplateFinder templateFinder = new TemplateFinder(webHookTemplateManager);
 		WebHookTemplateConfig e = templateFinder.findTemplateById("name:slack.com-compact").getTemplateConfig();
-		assertEquals("slack.com-compact", e.getName());
+		assertEquals("slack.com-compact", e.getId());
 		System.out.println(e.getTemplateDescription());
 	}
 

@@ -209,7 +209,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 			}
 			
 			@Override
-			public String getTemplateShortName() {
+			public String getTemplateId() {
 				return "mockedJsonTemplate";
 			}
 			

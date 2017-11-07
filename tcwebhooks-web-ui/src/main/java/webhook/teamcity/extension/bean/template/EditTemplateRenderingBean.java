@@ -22,14 +22,14 @@ public class EditTemplateRenderingBean {
 	String templateId;
 	int rank;
 	String dateFormat;
-	String templateName;
+	String templateDescription;
 	String payloadFormat;
 	String toolTipText;
-	List<BuildStateEnum> defaultTemplateStates = new ArrayList<>();
+	@Builder.Default List<BuildStateEnum> defaultTemplateStates = new ArrayList<>();
 	Boolean defaultIsBranchTemplate; 
 	WebHookTemplateText defaultTemplateItem;
 	WebHookTemplateBranchText defaultTemplateBranchItem;
-	List<EditTemplateRenderingEventTemplateBean> buildEventTemplates = new ArrayList<>();
+	@Builder.Default List<EditTemplateRenderingEventTemplateBean> buildEventTemplates = new ArrayList<>();
 	
 	protected void removeBuildStateFromDefaultTemplate(BuildStateEnum state) {
 		if (state != null) {
@@ -39,10 +39,11 @@ public class EditTemplateRenderingBean {
 
 	public static EditTemplateRenderingBean build(WebHookTemplateConfig config) {
 		EditTemplateRenderingBean bean = builder()
-										 .templateId(config.getName())
+										 .templateId(config.getId())
 										 .rank(config.getRank())
 										 .dateFormat(config.getPreferredDateTimeFormat())
-										 .templateName(config.getTemplateDescription())
+										 .templateDescription(config.getTemplateDescription())
+										 .payloadFormat(config.getFormat())
 										 .toolTipText(config.getTemplateToolTip())
 										 .defaultTemplateStates(new ArrayList<BuildStateEnum>())
 										 .buildEventTemplates(new ArrayList<EditTemplateRenderingEventTemplateBean>())

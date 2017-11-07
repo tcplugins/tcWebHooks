@@ -24,7 +24,7 @@ public class SlackComWebHookTemplate extends AbstractPropertiesBasedWebHookTempl
 	}
 
 	@Override
-	public String getTemplateShortName() {
+	public String getTemplateId() {
 		return "slack.com-old";
 	}
 	

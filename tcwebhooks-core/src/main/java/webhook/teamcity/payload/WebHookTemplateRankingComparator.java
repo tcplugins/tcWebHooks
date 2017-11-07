@@ -13,8 +13,8 @@ public class WebHookTemplateRankingComparator implements Comparator<WebHookPaylo
 			
 		// If both templates have the same rank, compare the name and sort alphabetically
 		} else {
-	        int res = String.CASE_INSENSITIVE_ORDER.compare(template1.getTemplateShortName(), template2.getTemplateShortName());
-	        return (res != 0) ? res : template1.getTemplateShortName().compareTo(template2.getTemplateShortName());
+	        int res = String.CASE_INSENSITIVE_ORDER.compare(template1.getTemplateId(), template2.getTemplateId());
+	        return (res != 0) ? res : template1.getTemplateId().compareTo(template2.getTemplateId());
 		}
 	}
 }

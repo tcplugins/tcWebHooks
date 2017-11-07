@@ -27,7 +27,7 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	
 	protected WebHookTemplateManager templateManager;
 	private int rank = 10; // Default to 10.
-	private String shortName = "";
+	private String id = "";
 	private String toolTipText = "";
 	private String description = "";
 	private String preferredDateTimeFormat = "";
@@ -79,12 +79,12 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	}
 
 	@Override
-	public String getTemplateShortName() {
-		return this.shortName;
+	public String getTemplateId() {
+		return this.id;
 	}
 	
-	public void setTemplateShortName(String shortName){
-		this.shortName = shortName;
+	public void setTemplateId(String id){
+		this.id = id;
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 		WebHookTemplateFromXml template = new WebHookTemplateFromXml();
 		template.entity = entityTemplate;
 		template.setRank(entityTemplate.getRank());
-		template.setTemplateShortName(entityTemplate.getName());
+		template.setTemplateId(entityTemplate.getId());
 		template.setPreferredDateTimeFormat(entityTemplate.getPreferredDateTimeFormat());
 		
 		if (entityTemplate.getTemplateDescription() != null){
@@ -138,9 +138,9 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 		if (entityTemplate.getTemplateToolTip() != null){
 			template.setTemplateToolTipText(entityTemplate.getTemplateToolTip());
 		} else if( entityTemplate.getTemplateDescription() != null){
-			template.setTemplateToolTipText(entityTemplate.getName() + ":" + entityTemplate.getTemplateDescription());
+			template.setTemplateToolTipText(entityTemplate.getId() + ":" + entityTemplate.getTemplateDescription());
 		} else {
-			template.setTemplateToolTipText(entityTemplate.getName());
+			template.setTemplateToolTipText(entityTemplate.getId());
 		}
 		
 		// If a default template is set, populate all BuildStates with it.

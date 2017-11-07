@@ -74,7 +74,7 @@ public class WebHookTemplateManagerTest {
 
 		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertEquals(4, regsiteredTemplates.size());
-		assertEquals("testXMLtemplate", wtm.getTemplate("testXMLtemplate").getTemplateShortName());
+		assertEquals("testXMLtemplate", wtm.getTemplate("testXMLtemplate").getTemplateId());
 	}
 	
 	@Test
@@ -91,7 +91,7 @@ public class WebHookTemplateManagerTest {
 		
 		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertEquals(2, regsiteredTemplates.size());
-		assertEquals("testXMLtemplateWithId", wtm.getTemplate("testXMLtemplateWithId").getTemplateShortName());
+		assertEquals("testXMLtemplateWithId", wtm.getTemplate("testXMLtemplateWithId").getTemplateId());
 	}
 	
 	@Test
@@ -108,7 +108,7 @@ public class WebHookTemplateManagerTest {
 		
 		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		assertTrue(regsiteredTemplates.size() == 1);
-		assertTrue(regsiteredTemplates.get(0).getTemplateShortName().equals("testXMLtemplate"));
+		assertTrue(regsiteredTemplates.get(0).getTemplateId().equals("testXMLtemplate"));
 		System.out.println("###########################");
 		System.out.println(regsiteredTemplates.get(0).getTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText());
 		System.out.println("###########################");
@@ -154,7 +154,7 @@ public class WebHookTemplateManagerTest {
 		}
 
 		@Override
-		public String getTemplateShortName() {
+		public String getTemplateId() {
 			return "testWebHookTemplate";
 		}
 
@@ -214,7 +214,7 @@ public class WebHookTemplateManagerTest {
 		}
 		
 		@Override
-		public String getTemplateShortName() {
+		public String getTemplateId() {
 			return "AaaTestWebHookTemplate";
 		}
 		
@@ -227,7 +227,7 @@ public class WebHookTemplateManagerTest {
 		}
 		
 		@Override
-		public String getTemplateShortName() {
+		public String getTemplateId() {
 			return "BbbTestWebHookTemplate";
 		}
 		

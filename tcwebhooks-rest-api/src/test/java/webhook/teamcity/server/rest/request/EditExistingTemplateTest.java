@@ -111,7 +111,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals("slack.com-compact", responseMsg.name);
+    	assertEquals("slack.com-compact", responseMsg.id);
     	prettyPrint(responseMsg);
 
     	responseMsg.description = "New Description";
@@ -122,7 +122,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals("slack.com-compact", responseAfterEdit.name);
+    	assertEquals("slack.com-compact", responseAfterEdit.id);
     	assertEquals("New Description", responseAfterEdit.description);
     	assertEquals("YYYY-MM", responseAfterEdit.preferredDateFormat);
     	assertEquals("Woot, a tooltip", responseAfterEdit.toolTip);
@@ -136,7 +136,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals("slack.com-compact", responseMsg.name);
+    	assertEquals("slack.com-compact", responseMsg.id);
     	prettyPrint(responseMsg);
     	
     	responseMsg.description = null;
@@ -147,7 +147,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals("Slack.com Compact Notifcation", responseAfterEdit.description);
-    	assertEquals("slack.com-compact", responseAfterEdit.name);
+    	assertEquals("slack.com-compact", responseAfterEdit.id);
     	assertEquals("", responseAfterEdit.preferredDateFormat);
     	assertEquals("POSTs a very compact slack.com notification", responseAfterEdit.toolTip);
     	prettyPrint(responseAfterEdit);
@@ -160,12 +160,12 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	slackCompact.register();
     	
     	Template responseMsg = new Template();
-    	responseMsg.name = "slack.com-compact";
+    	responseMsg.id = "slack.com-compact";
     	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals("Slack.com Compact Notifcation", responseAfterEdit.description);
-    	assertEquals("slack.com-compact", responseAfterEdit.name);
+    	assertEquals("slack.com-compact", responseAfterEdit.id);
     	assertEquals("", responseAfterEdit.preferredDateFormat);
     	assertEquals("POSTs a very compact slack.com notification", responseAfterEdit.toolTip);
     	prettyPrint(responseAfterEdit);
@@ -178,10 +178,10 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals("slack.com-compact", responseMsg.name);
+    	assertEquals("slack.com-compact", responseMsg.id);
     	prettyPrint(responseMsg);
     	
-    	responseMsg.name = "newDescription";
+    	responseMsg.id = "newDescription";
     	try {
     		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Response.class, responseMsg);
     	} catch (UniformInterfaceException ex) {

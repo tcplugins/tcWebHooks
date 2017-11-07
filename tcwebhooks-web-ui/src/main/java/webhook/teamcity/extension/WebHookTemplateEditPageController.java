@@ -66,7 +66,7 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    	
 	    	if (request.getParameter(GET_VARIABLE_NAME_TEMPLATE) != null){
 	    		
-    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE).toString();
+    			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE);
     			if (templateName != null) {
     				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
     				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig));

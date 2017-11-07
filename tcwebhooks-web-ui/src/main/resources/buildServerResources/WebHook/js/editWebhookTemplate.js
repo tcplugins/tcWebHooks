@@ -49,8 +49,8 @@ WebHooksPlugin = {
 
         showDialogCreateDefaultTemplate: function (title, action, data) {
         	
-        	//this.getWebHookTemplateData(data.templateName, data.templateNumber, action);
-        	this.getParentTemplateData(data.templateName, data.templateNumber, action)
+        	//this.getWebHookTemplateData(data.templateId, data.templateNumber, action);
+        	this.getParentTemplateData(data.templateId, data.templateNumber, action)
 			this.disableCheckboxes();
 			this.clearEditor();
 
@@ -63,7 +63,7 @@ WebHooksPlugin = {
         
         showDialogAddEventTemplate: function (title, action, data) {
         	
-        	this.getTemplateDataOrGetParentOnFailure(data.templateName, data.templateNumber, action)
+        	this.getTemplateDataOrGetParentOnFailure(data.templateId, data.templateNumber, action)
         	
         	$j("input[id='WebhookTemplateaction']").val(action);
         	$j(".dialogTitle").html(title);
@@ -74,7 +74,7 @@ WebHooksPlugin = {
         
         showDialog: function (title, action, data) {
         	
-        	this.getWebHookTemplateData(data.templateName, data.templateNumber, action);
+        	this.getWebHookTemplateData(data.templateId, data.templateNumber, action);
         	
             $j("input[id='WebhookTemplateaction']").val(action);
             $j(".dialogTitle").html(title);
@@ -129,10 +129,10 @@ WebHooksPlugin = {
             return !errorFound;
         },
         
-		getWebHookTemplateData: function (templateName, buildTemplateId, action) {
+		getWebHookTemplateData: function (templateId, buildTemplateId, action) {
 			this.disableCheckboxes();
 			this.clearEditor();
-			this.getTemplateData(templateName, buildTemplateId, action);
+			this.getTemplateData(templateId, buildTemplateId, action);
 		},
 		putWebHookTemplateData: function () {
 			this.disableCheckboxes();
@@ -140,7 +140,6 @@ WebHooksPlugin = {
 			this.putTemplateData();
 		},
 		postWebHookTemplateData: function () {
-			this.disableCheckboxes();
 			this.updateJsonDataFromForm();
 			this.postTemplateData();
 		},
@@ -166,7 +165,7 @@ WebHooksPlugin = {
 			editor.session.setValue("Loading...");
 			editorBranch.session.setValue("Loading...");
 		},
-		getParentTemplateData: function (templateName, buildTemplateId, action) {
+		getParentTemplateData: function (templateId, buildTemplateId, action) {
 			/* This method is used if the payload template does not have a default template.
 			 * In that case, we don't have info about the parent template, so we request it here
 			 * and graft it into the json request. 
@@ -177,7 +176,7 @@ WebHooksPlugin = {
 			 */
 			var dialog = this;
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName,
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId,
 				type: "GET",
 				headers : {
 					'Accept' : 'application/json'
@@ -226,10 +225,10 @@ WebHooksPlugin = {
 				}
 			});
 		}, 
-		getTemplateData: function (templateName, buildTemplateId, action) {
+		getTemplateData: function (templateId, buildTemplateId, action) {
 			var dialog = this;
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
     		    type: "GET",
     		    headers : {
     		        'Accept' : 'application/json'
@@ -241,10 +240,10 @@ WebHooksPlugin = {
     		    }
     		});
 		}, 
-		getTemplateDataOrGetParentOnFailure: function (templateName, buildTemplateId, action) {
+		getTemplateDataOrGetParentOnFailure: function (templateId, buildTemplateId, action) {
 			var dialog = this;
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
 				type: "GET",
 				headers : {
 					'Accept' : 'application/json'
@@ -259,7 +258,7 @@ WebHooksPlugin = {
 					console.log(ajaxOptions);
 					console.log(thrownError);
 					if (xhr.status == 404) {
-						dialog.getParentTemplateData(templateName, buildTemplateId, action);
+						dialog.getParentTemplateData(templateId, buildTemplateId, action);
 					}
 				}
 			});
@@ -402,7 +401,7 @@ WebHooksPlugin = {
     	},
     	
     	cleanFields: function (data) {
-    		$j("#deleteTemplateItemForm input[id='templateName']").val(data.templateName);
+    		$j("#deleteTemplateItemForm input[id='templateId']").val(data.templateId);
     		$j("#deleteTemplateItemForm input[id='templateNumber']").val(data.templateNumber);
     		this.cleanErrors();
     	},
@@ -435,11 +434,11 @@ WebHooksPlugin = {
 			var dialog = this;
 			//console.log($j("input[id='WebhookTemplateaction']").val());
 			
-			var templateName = $j("#deleteTemplateItemForm input[id='templateName']").val()
+			var templateId = $j("#deleteTemplateItemForm input[id='templateId']").val()
 			var templateNumber = $j("#deleteTemplateItemForm input[id='templateNumber']").val()
 			
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName + '/templateItem/' + templateNumber,
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItem/' + templateNumber,
 				type: "DELETE",
 				headers : {
 					'Content-Type' : 'application/json',
@@ -477,7 +476,7 @@ WebHooksPlugin = {
     	},
     	
     	cleanFields: function (data) {
-    		$j("#deleteTemplateForm input[id='templateName']").val(data.templateName);
+    		$j("#deleteTemplateForm input[id='templateId']").val(data.templateId);
     		this.cleanErrors();
     	},
     	
@@ -509,10 +508,10 @@ WebHooksPlugin = {
     		var dialog = this;
     		console.log($j("input[id='WebhookTemplateaction']").val());
     		
-    		var templateName = $j("#deleteTemplateForm input[id='templateName']").val()
+    		var templateId = $j("#deleteTemplateForm input[id='templateId']").val()
     		
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName,
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId,
     			type: "DELETE",
     			headers : {
     				'Content-Type' : 'application/json',
@@ -541,10 +540,10 @@ WebHooksPlugin = {
     		return $('editTemplateForm');
     	},
     	
-    	showDialog: function (title, action, templateName) {
+    	showDialog: function (title, action, templateId) {
     		
-    		console.log(templateName);
-    		this.getTemplateData(templateName, action);
+    		console.log(templateId);
+    		this.getTemplateData(templateId, action);
     		
     		$j("input[id='WebhookTemplateaction']").val(action);
     		$j(".dialogTitle").html(title);
@@ -567,7 +566,7 @@ WebHooksPlugin = {
 			} else {
 				$j("#editTemplateForm input[id='template.id']").val(myJson.id).prop( "disabled", true );
 			}
-			$j("#editTemplateForm input[id='template.name']").val(myJson.description);
+			$j("#editTemplateForm input[id='template.description']").val(myJson.description);
 			$j("#editTemplateForm input[id='template.tooltip']").val(myJson.toolTip);
 			$j("#editTemplateForm input[id='template.rank']").val(myJson.rank);
 			$j("#editTemplateForm input[id='template.dateFormat']").val(myJson.preferredDateFormat);
@@ -600,16 +599,16 @@ WebHooksPlugin = {
     		}
     	},
 
-		getTemplateData: function (templateName, action) {
+		getTemplateData: function (templateId, action) {
 			var dialog = this;
-			var URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName  + '?fields=$long,content';
+			var URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$long,content';
 			
 			if (action == "editTemplate") {
-				URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName  + '?fields=$short'
+				URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$short'
 			}
 			
     		$j.ajax ({
-    			//url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateName  + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+    			//url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
     			url: URL,
     		    type: "GET",
     		    headers : {
@@ -635,14 +634,14 @@ WebHooksPlugin = {
     		
     		if (action === "editTemplate") {
     			httpMethod = "PUT";
-    			URL = URL + "/" + myJson.name;  
+    			URL = URL + "/" + myJson.id;  
     		} else if (action === "copyTemplate") {
-    			myJson.name = $j("#editTemplateForm input[id='template.id']").val();
+    			myJson.id = $j("#editTemplateForm input[id='template.id']").val();
     		} else {
     			alert("eeek. I can't tell what action we are performing. Please report bug for tcWebhooks");
     		}
     		
-    		myJson.description = $j("#editTemplateForm input[id='template.name']").val();
+    		myJson.description = $j("#editTemplateForm input[id='template.description']").val();
 			myJson.toolTip = $j("#editTemplateForm input[id='template.tooltip']").val();
 			myJson.rank = $j("#editTemplateForm input[id='template.rank']").val();
 			myJson.preferredDateFormat = $j("#editTemplateForm input[id='template.dateFormat']").val();
@@ -666,7 +665,7 @@ WebHooksPlugin = {
     				if (action === "editTemplate") {
     					$("templateInfoContainer").refresh();
     				} else {
-    					window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJson.name;
+    					window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJson.id;
     				}
     				
     			},

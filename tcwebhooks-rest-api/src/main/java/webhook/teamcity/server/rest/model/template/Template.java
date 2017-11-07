@@ -42,14 +42,11 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateSta
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 
 @XmlRootElement(name = "template")
-@XmlType(name = "template", propOrder = { "id", "name", "description", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "preferredDateFormat", "toolTip", "templates" })
+@XmlType(name = "template", propOrder = { "id", "description", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "preferredDateFormat", "toolTip", "templates" })
 
 public class Template {
 	@XmlAttribute
 	public String id;
-
-	@XmlAttribute
-	public String name;
 
 	@XmlAttribute
 	public String status;
@@ -182,7 +179,7 @@ public class Template {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateDefaultItemHref(template.getTemplateConfig())));
 			this.templateText = ValueWithDefault.decideDefault(fields.isIncluded("templateText", false, true), new TemplateText(template.getTemplateConfig(), id, fields, beanContext));
 			this.branchTemplateText = ValueWithDefault.decideDefault(fields.isIncluded("branchTemplateText", false, true), new BranchTemplateText(template.getTemplateConfig(), id, fields, beanContext));
-			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getName(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
+			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getId(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
 
 			if (fields.isIncluded("states", false, true)) {
 				states = new ArrayList<>();
@@ -213,7 +210,7 @@ public class Template {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), String.valueOf(beanContext.getApiUrlBuilder().getTemplateItemHref(template.getTemplateConfig(), templateItem)));
 			this.templateText = new TemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
 			this.branchTemplateText = new BranchTemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
-			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getName(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
+			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getId(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
 			this.states.clear();
 			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 				WebHookTemplateStateRest myState = new WebHookTemplateStateRest(state.getShortName(), 
@@ -303,9 +300,7 @@ public class Template {
 		WebHookTemplateConfig template = templateWrapper.getTemplateConfig(); 
 		
 		id = ValueWithDefault.decideDefault(fields.isIncluded("id"),
-				template.getName());
-		name = ValueWithDefault.decideDefault(fields.isIncluded("name"),
-				template.getName());
+				template.getId());
 		description = ValueWithDefault.decideDefault(
 				fields.isIncluded("description"),
 				template.getTemplateDescription());
@@ -350,11 +345,11 @@ public class Template {
 	public static String getFieldValue(final WebHookTemplateConfig template,
 			final String field) {
 		if ("id".equals(field)) {
-			return template.getName();
+			return template.getId();
 		} else if ("description".equals(field)) {
 			return template.getTemplateDescription();
 		} else if ("name".equals(field)) {
-			return template.getName();
+			return template.getId();
 		}
 		throw new NotFoundException("Field '" + field
 				+ "' is not supported.  Supported are: id, name, description.");
@@ -367,7 +362,7 @@ public class Template {
 			if (StringUtil.isEmpty(value)) {
 				throw new BadRequestException("Template name cannot be empty.");
 			}
-			template.setTemplateShortName(value);
+			template.setTemplateId(value);
 			template.persist();
 			return;
 		} else if ("description".equals(field)) {
@@ -384,7 +379,7 @@ public class Template {
 
 	public WebHookTemplateConfig getTemplateFromPosted(
 			TemplateFinder templateFinder) {
-		return templateFinder.findTemplateById(this.name).getTemplateConfig();
+		return templateFinder.findTemplateById(this.id).getTemplateConfig();
 	}
 	
 	@XmlRootElement

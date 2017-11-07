@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor
 public class WebHookTemplateConfig {
 
-	String name;
+	String id;
 	boolean enabled;
 	int rank;
 	WebHookTemplateText defaultTemplate;
@@ -28,8 +28,8 @@ public class WebHookTemplateConfig {
 	WebHookTemplateItems templates = new WebHookTemplateItems();
 	
 
-	public WebHookTemplateConfig(String templateName, boolean templateEnabled) {
-		this.name = templateName;
+	public WebHookTemplateConfig(String id, boolean templateEnabled) {
+		this.id = id;
 		this.enabled = templateEnabled;
 	}
 

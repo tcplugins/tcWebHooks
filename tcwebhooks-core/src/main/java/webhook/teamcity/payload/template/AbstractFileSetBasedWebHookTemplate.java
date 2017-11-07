@@ -38,10 +38,10 @@ public abstract class AbstractFileSetBasedWebHookTemplate extends AbstractWebHoo
 			super.register(this);
 		} else {
 			if (templateContent.isEmpty()){
-				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateShortName() + ". No regular template configurations were found.");
+				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No regular template configurations were found.");
 			}
 			if (branchTemplateContent.isEmpty()){
-				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateShortName() + ". No branch template configurations were found.");
+				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No branch template configurations were found.");
 			}
 		}
 	}

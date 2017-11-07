@@ -13,12 +13,12 @@ public class TemplateValidator {
 	
 	public ErrorResult validateNewTemplate(Template requestTemplate, ErrorResult result) {
 		
-		if (requestTemplate.name == null || requestTemplate.name.trim().isEmpty()) {
-			result.addError("name", "The template name cannot be empty. It is used to identify the template and is referenced by webhook configuration");
+		if (requestTemplate.id == null || requestTemplate.id.trim().isEmpty()) {
+			result.addError("id-empty", "The template id cannot be empty. It is used to identify the template and is referenced by webhook configuration");
 		}
 		
-		if (requestTemplate.name != null && ! Pattern.matches("^[A-Za-z0-9_.-]+$", requestTemplate.name) ) {
-			result.addError("name", "The template name can only be 'A-Za-z0-9_.-'. It is used to identify the template and is referenced by webhook configuration");
+		if (requestTemplate.id != null && ! Pattern.matches("^[A-Za-z0-9_.-]+$", requestTemplate.id) ) {
+			result.addError("id-name", "The template id can only be 'A-Za-z0-9_.-'. It is used to identify the template and is referenced by webhook configuration");
 		}
 		
 		if (requestTemplate.format == null || requestTemplate.format.trim().isEmpty()) {
@@ -44,19 +44,17 @@ public class TemplateValidator {
 	
 	public ErrorResult validateTemplate(WebHookTemplateConfig webHookTemplateConfig, Template requestTemplate, ErrorResult result) {
 		
-		if ( ! webHookTemplateConfig.getName().equals(requestTemplate.name)) {
-			result.addError("name", "Sorry, it's not possible to change the name (aka id) of an existing template. Please create a new template with a new name and delete this one.");
+		if ( ! webHookTemplateConfig.getId().equals(requestTemplate.id)) {
+			result.addError("id", "Sorry, it's not possible to change the id of an existing template. Please create a new template (or a copy) with a new id and delete this one.");
 			
 		}
 		
 		if (requestTemplate.defaultTemplate != null) {
 			result.addError("defaultTemplate", "Sorry, it's not possible to update templateItems when updating a template. Please update the templateItem specifically.");
-			//validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
 		}
 		
 		  if (requestTemplate.getTemplates() != null) {
 			result.addError("templateItem", "Sorry, it's not possible to update templateItems when updating a template. Please update the templateItem specifically.");
-			//validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
 		}
 
 		return result;

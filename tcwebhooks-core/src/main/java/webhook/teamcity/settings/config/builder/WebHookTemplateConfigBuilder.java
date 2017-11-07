@@ -9,6 +9,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public class WebHookTemplateConfigBuilder {
 	
+	private WebHookTemplateConfigBuilder() {}
 	
 	public static WebHookTemplateEntity buildEntity(WebHookTemplateConfig config) {
 		return WebHookTemplateEntity.build(config);
@@ -23,7 +24,7 @@ public class WebHookTemplateConfigBuilder {
 	}
 	
 	private static WebHookTemplateConfig build (WebHookTemplateEntity entity) {
-		WebHookTemplateConfig config = new WebHookTemplateConfig(entity.getName(), entity.isEnabled());
+		WebHookTemplateConfig config = new WebHookTemplateConfig(entity.getId(), entity.isEnabled());
 		config.setRank(entity.getRank());
 		
 		if (entity.getDefaultTemplate() != null) {

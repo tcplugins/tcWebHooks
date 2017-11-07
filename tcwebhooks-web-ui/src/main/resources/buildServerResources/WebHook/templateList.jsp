@@ -47,7 +47,7 @@
     <table id="webHookTemplateTable" class="settings">
 		<thead>
 		<tr style="background-color: rgb(245, 245, 245);">
-		<th class="">Name</th>
+		<th class="">Description</th>
 		<th class="">Payload Format</th>
 		<th class="">Supported Build Events</th>
 		<th class="">Type</th>
@@ -56,8 +56,8 @@
 		</thead>
 		<tbody>
 		    <c:forEach items="${webHookTemplates}" var="template">
-			  <tr id="viewRow_${template.templateShortName}" class="webHookTemplate">
-				<td class="nowrap heading">${template.templateDescription}</td>
+			  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
+				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}" default="No Tooltip set for this template"/>">${template.templateDescription}</td>
 				<td class="nowrap">${template.formatDescription}</td>
 				<td>
 					<ul class="commalist">
@@ -71,11 +71,11 @@
 				<td><i>not implemented yet</i></td>
 
 		<c:choose>  
-    		<c:when test="${template.templateShortName == 'none'}"> 		
+    		<c:when test="${template.templateId == 'none'}"> 		
 				<td>No template available</td>
 			</c:when>
 			<c:otherwise>  		
-				<td><a href="template.html?template=${template.templateShortName}">View</a></td>
+				<td><a href="template.html?template=${template.templateId}">View</a></td>
 			</c:otherwise>  
 		</c:choose>
 		
@@ -120,7 +120,7 @@
                 <tr class="templateDetails">
                     <th>Name<l:star/></th>
                     <td>
-                        <div><input type="text" id="template.name" name="template.name"/></div>
+                        <div><input type="text" id="template.description" name="template.description"/></div>
                     </td>
                 </tr>
                 <tr class="templateDetails">

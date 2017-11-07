@@ -38,7 +38,7 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 	}
 
 	@Override
-	public String getTemplateShortName() {
+	public String getTemplateId() {
 		return "none";
 	}
 	

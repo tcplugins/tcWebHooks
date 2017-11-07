@@ -58,5 +58,36 @@ public class WebHookTemplateFormatMigrationTest {
 		String xml = new String(outputXml.toByteArray(), StandardCharsets.UTF_8);
 		assertFalse(xml.contains("<formats"));
 	}
+	
+	@Test
+	public void testLoadOfOldNameDoesNotContainNameAttributeWhenSerialised() throws JAXBException, FileNotFoundException {
+		ByteArrayOutputStream outputXml = new ByteArrayOutputStream();
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
 
+		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
+		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+		jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		jaxbMarshaller.marshal(templatesList, outputXml);
+		
+		String xml = new String(outputXml.toByteArray(), StandardCharsets.UTF_8);
+		System.out.println(xml);
+		assertFalse(xml.contains(" name=\""));
+	}
+
+	@Test
+	public void testLoadOfNewIdDoesNotContainNameAttributeWhenSerialised() throws JAXBException, FileNotFoundException {
+		ByteArrayOutputStream outputXml = new ByteArrayOutputStream();
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
+		
+		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
+		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+		
+		jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		jaxbMarshaller.marshal(templatesList, outputXml);
+		
+		String xml = new String(outputXml.toByteArray(), StandardCharsets.UTF_8);
+		assertFalse(xml.contains(" name=\""));
+	}
+	
 }

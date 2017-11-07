@@ -50,7 +50,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	
     	Template newTemplate = new Template();
     	newTemplate.description = "A test template";
-    	newTemplate.name = "testTemplateFromUnitTest";
+    	newTemplate.id = "testTemplateFromUnitTest";
     	newTemplate.format = "jsontemplate";
     	newTemplate.rank = 500;
 
@@ -77,7 +77,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	
     	prettyPrint(responseTemplate);
     	
-    	assertEquals("slack.com-compact", responseTemplate.name);
+    	assertEquals("slack.com-compact", responseTemplate.id);
     	assertEquals("slack.com-compact", responseTemplateItem.parentTemplate.getName());
     	prettyPrint(responseTemplateItem);
     	

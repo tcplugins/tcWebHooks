@@ -31,7 +31,7 @@ public class ElasticSearchWebHookTemplate extends AbstractPropertiesBasedWebHook
 	}
 
 	@Override
-	public String getTemplateShortName() {
+	public String getTemplateId() {
 		return "elasticsearch";
 	}
 	

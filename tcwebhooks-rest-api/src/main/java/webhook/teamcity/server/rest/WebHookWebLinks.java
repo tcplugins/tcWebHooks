@@ -25,7 +25,7 @@ public class WebHookWebLinks {
 	
 	@NotNull
 	private String makeWebHookTemplateUrl(@NotNull WebHookTemplateConfig entity) {
-	    return makeUrl("webhooks/template.html?template=" + entity.getName());
+	    return makeUrl("webhooks/template.html?template=" + entity.getId());
 	}
 	
 	@NotNull

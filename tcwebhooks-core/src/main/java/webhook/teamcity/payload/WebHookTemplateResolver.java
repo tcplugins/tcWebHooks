@@ -17,7 +17,7 @@ public class WebHookTemplateResolver {
 	public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SBuildType buildType, String webhookFormat, String templateName){
 		// TODO: This needs to be more build aware.
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForBuild(buildType)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 				return template.getTemplateForState(state);
 			}
 		}
@@ -26,7 +26,7 @@ public class WebHookTemplateResolver {
 	public WebHookTemplateContent findWebHookBranchTemplate(BuildStateEnum state, SBuildType buildType, String webhookFormat, String templateName){
 		// TODO: This needs to be more build aware.
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForBuild(buildType)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 				return template.getBranchTemplateForState(state);
 			}
 		}
@@ -36,7 +36,7 @@ public class WebHookTemplateResolver {
 	public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SProject project, String webhookFormat, String templateName){
 		// TODO: This needs to be more project aware.
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 				return template.getTemplateForState(state);
 			}
 		}
@@ -46,7 +46,7 @@ public class WebHookTemplateResolver {
 	public WebHookTemplateContent findWebHookBranchTemplate(BuildStateEnum state, SProject project, String webhookFormat, String templateName){
 		// TODO: This needs to be more project aware.
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 				return template.getBranchTemplateForState(state);
 			}
 		}
@@ -60,7 +60,7 @@ public class WebHookTemplateResolver {
 			BuildStateEnum state =	BuildStateEnum.findBuildState(sBuildState);
 			if (state != null){
 				for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-					if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+					if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 						return template.getBranchTemplateForState(state);
 					}
 				}
@@ -69,7 +69,7 @@ public class WebHookTemplateResolver {
 			BuildStateEnum state =	BuildStateEnum.findBuildState(stateString);
 			if (state != null){
 				for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-					if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+					if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 						return template.getTemplateForState(state);
 					}
 				}
@@ -91,7 +91,7 @@ public class WebHookTemplateResolver {
 	
 	public boolean templateIsValid(SProject project, String webhookFormat, String templateName){
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equalsIgnoreCase(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equalsIgnoreCase(templateName)){
 				return true;
 			}
 		}
@@ -102,7 +102,7 @@ public class WebHookTemplateResolver {
 			SProject project, String webhookFormat, String templateName){
 		// TODO: This needs to be more project aware.
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 				return template.getSupportedBuildStates().contains(myBuildState);
 			}
 		}
@@ -112,7 +112,7 @@ public class WebHookTemplateResolver {
 			SProject project, String webhookFormat, String templateName){
 		// TODO: This needs to be more project aware.
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateShortName().equals(templateName)){
+			if (template.supportsPayloadFormat(webhookFormat) && template.getTemplateId().equals(templateName)){
 				return template.getSupportedBranchBuildStates().contains(myBuildState);
 			}
 		}

@@ -30,7 +30,7 @@
       BS.Navigation.items = [
         {title: "Administration", url: '<c:url value="/admin/admin.html"/>'},
         {title: "Webhook Payload Templates", url: '<c:url value="/webhooks/templates.html"/>'},
-        {title: '<c:out value="${webhookTemplateBean.templateName}"/>', selected: true}
+        {title: '<c:out value="${webhookTemplateBean.templateId}"/>', selected: true}
       ];
     </script>
   </jsp:attribute>
@@ -50,7 +50,7 @@
 			      <a href="#" title="Disable Template" onclick="WebHooksPlugin.disableTemplate('${webhookTemplateBean.templateId}'); return false">Disable template...</a>
 		        </l:li>
 		        <l:li>
-			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate({ templateName: '${webhookTemplateBean.templateId}' }); return false">Delete template...</a>
+			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate({ templateId: '${webhookTemplateBean.templateId}' }); return false">Delete template...</a>
 		        </l:li>
 		      </jsp:body>
 		    </authz:authorize>
@@ -105,11 +105,11 @@
       <table class="settings parameterTable" id="webhookTemplateHeader">
         
         <tr>
-          <th style="width:15%;">Template Id:</th><td style="width:35%;">${webhookTemplateBean.templateId}</td>
-          <th style="width:10%;">Rank:</th><td style="width:10%; border:none;">${webhookTemplateBean.rank}</td>
+          <th style="width:15%;" title="Used to map WebHooks to their Template">Template Id:</th><td style="width:35%;">${webhookTemplateBean.templateId}</td>
+          <th style="width:10%;" title="Determines Template ordering in the WebHook UI (smallest number first)">Rank:</th><td style="width:10%; border:none;">${webhookTemplateBean.rank}</td>
           <c:choose>
 		  	<c:when test="${not empty webhookTemplateBean.dateFormat}">
-          	<th style="width:15%;">Date Format:</th><td style="border:none;">${webhookTemplateBean.dateFormat}</td>
+          	<th style="width:15%;" title="Used used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none;">${webhookTemplateBean.dateFormat}</td>
           	</c:when>
           	<c:otherwise>
           	<th style="width:15%;">Date Format:</th><td style="border:none;"><i>none</i></td>
@@ -117,11 +117,11 @@
           </c:choose>
         </tr>
         <tr>
-          <th style="width:15%;">Template Name:</th><td style="width:35%;">${webhookTemplateBean.templateName}</td>
-          <th style="width:15%;">Payload Format:</th><td style="width:35%;" colspan=3>webhookTemplateBean.payloadFormat</td>
+          <th style="width:15%;" title="Shown in the WebHook UI when choosing a Payload">Template Description:</th><td style="width:35%;">${webhookTemplateBean.templateDescription}</td>
+          <th style="width:15%;">Payload Format:</th><td style="width:35%;" colspan=3>${webhookTemplateBean.payloadFormat}</td>
         </tr>
         <tr>
-          <th style="width:15%;">Tooltip Text:</th>
+          <th style="width:15%;" title="Used in the UI to show extra information about a Template">Tooltip Text:</th>
           <c:choose>
 		  	<c:when test="${not empty webhookTemplateBean.toolTipText}">
 	          <td style="width:85%;" colspan="5">${webhookTemplateBean.toolTipText}</td>
@@ -266,8 +266,8 @@
                         <div id="ajaxDeleteResult"></div>
                 </td></tr>
             </table>
-            <input type="hidden" id="templateName" name="templateName"/>
-            <input type="hidden" id="templateNumber" name="templateName"/>
+            <input type="hidden" id="templateId" name="templateId"/>
+            <input type="hidden" id="templateNumber" name="templateNumber"/>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="deleteTemplateItem"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="deleteTemplateItemDialogSubmit" label="Delete Build Event Template"/>
@@ -290,7 +290,7 @@
                         <div id="ajaxTemplateDeleteResult"></div>
                 </td></tr>
             </table>
-            <input type="hidden" id="templateName" name="templateName" value="${webhookTemplateBean.templateId}"/>
+            <input type="hidden" id="templateId" name="templateId" value="${webhookTemplateBean.templateId}"/>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="deleteTemplateItem"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="deleteTemplateDialogSubmit" label="Delete Template"/>
@@ -333,9 +333,9 @@
                     </td>
                 </tr>
                 <tr class="templateDetails">
-                    <th>Name<l:star/></th>
+                    <th>Description<l:star/></th>
                     <td>
-                        <div><input type="text" id="template.name" name="template.name"/></div>
+                        <div><input type="text" id="template.description" name="template.description"/></div>
                     </td>
                 </tr>
                 <tr class="templateDetails">

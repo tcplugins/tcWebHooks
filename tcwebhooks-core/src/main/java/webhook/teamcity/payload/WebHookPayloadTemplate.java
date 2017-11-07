@@ -54,7 +54,7 @@ public interface WebHookPayloadTemplate {
 	 * 
 	 * @return	Text for uniquely referring to the template type. eg, "elasticsearch".
 	 */
-	String getTemplateShortName();
+	String getTemplateId();
 	
 	/**
 	 * Asks if this template can provide a set of templates for this format.
