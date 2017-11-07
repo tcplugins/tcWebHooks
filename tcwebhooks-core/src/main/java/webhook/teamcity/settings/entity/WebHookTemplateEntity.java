@@ -102,10 +102,14 @@ public class WebHookTemplateEntity {
 	@XmlElement(name="templates")
 	WebHookTemplateItems templates;
 	
+	// Hide the getter created by Lombok
+	@SuppressWarnings("squid:UnusedPrivateMethod")
 	private String getName() {
 		return this.name;
 	}
 	
+	// Hide the setter created by Lombok
+	@SuppressWarnings({ "squid:UnusedPrivateMethod", "unused" })
 	private void setName(String name) {
 		this.name = name;
 	}

@@ -35,6 +35,24 @@ import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 
 public class WebHookConfig {
+	private static final String CHECKED = "checked ";
+	private static final String EL_CUSTOM_TEMPLATE = "custom-template";
+	private static final String EL_CUSTOM_TEMPLATES = "custom-templates";
+	private static final String ATTR_VALUE = "value";
+	private static final String ATTR_NAME = "name";
+	private static final String ATTR_PARAM = "param";
+	private static final String EL_PARAMETERS = "parameters";
+	private static final String ATTR_STATEMASK = "statemask";
+	private static final String ATTR_TYPE = "type";
+	private static final String EL_STATE = "state";
+	private static final String ATTR_TEMPLATE = "template";
+	private static final String ATTR_FORMAT = "format";
+	private static final String ATTR_ENABLED = "enabled";
+	private static final String EL_STATES = "states";
+	private static final String EL_BUILD_TYPES = "build-types";
+	private static final String ATTR_ENABLED_FOR_ALL = "enabled-for-all";
+	private static final String ATTR_ENABLED_FOR_SUBPROJECTS = "enabled-for-subprojects";
+	private static final String LOG_PREFIX_WEB_HOOK_CONFIG = "WebHookConfig :: ";
 	private SortedMap<String,String> extraParameters;
 	private Boolean enabled = true;
 	private String uniqueKey = "";
@@ -66,64 +84,64 @@ public class WebHookConfig {
 			this.setUrl(e.getAttributeValue("url"));
 		}
 		
-		if (e.getAttribute("enabled") != null){
-			this.setEnabled(Boolean.parseBoolean(e.getAttributeValue("enabled")));
+		if (e.getAttribute(ATTR_ENABLED) != null){
+			this.setEnabled(Boolean.parseBoolean(e.getAttributeValue(ATTR_ENABLED)));
 		}
 
-		if (e.getAttribute("statemask") != null){
-			this.setBuildStates(WebHookBuildStateConverter.convert(Integer.parseInt(e.getAttributeValue("statemask"))));
+		if (e.getAttribute(ATTR_STATEMASK) != null){
+			this.setBuildStates(WebHookBuildStateConverter.convert(Integer.parseInt(e.getAttributeValue(ATTR_STATEMASK))));
 		}
 
 		if (e.getAttribute("key") != null){
 			this.setUniqueKey(e.getAttributeValue("key"));
 		}
 
-		if (e.getAttribute("format") != null){
-			this.setPayloadFormat(e.getAttributeValue("format"));
+		if (e.getAttribute(ATTR_FORMAT) != null){
+			this.setPayloadFormat(e.getAttributeValue(ATTR_FORMAT));
 		} else {
 			// Set to nvpairs by default for backward compatibility.
 			this.setPayloadFormat("nvpairs");
 		}
 		
-		if (e.getAttribute("template") != null){
-			this.setPayloadTemplate(e.getAttributeValue("template"));
+		if (e.getAttribute(ATTR_TEMPLATE) != null){
+			this.setPayloadTemplate(e.getAttributeValue(ATTR_TEMPLATE));
 		}
 		
-		if(e.getChild("states") != null){
-			Element eStates = e.getChild("states");
-			List<Element> statesList = eStates.getChildren("state");
-			if (statesList.size() > 0){
+		if(e.getChild(EL_STATES) != null){
+			Element eStates = e.getChild(EL_STATES);
+			List<Element> statesList = eStates.getChildren(EL_STATE);
+			if ( ! statesList.isEmpty()){
 				for(Element eState : statesList)
 				{
 					try {
-						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue("type")), 
-										  eState.getAttribute("enabled").getBooleanValue());
+						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue(ATTR_TYPE)), 
+										  eState.getAttribute(ATTR_ENABLED).getBooleanValue());
 					} catch (DataConversionException e1) {
-						Loggers.SERVER.warn("WebHookConfig :: " + e1.getMessage());
+						Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
 					}
 				}
 			}
 		}
 		
-		if(e.getChild("build-types") != null){
-			Element eTypes = e.getChild("build-types");
-			if (eTypes.getAttribute("enabled-for-all") != null){
+		if(e.getChild(EL_BUILD_TYPES) != null){
+			Element eTypes = e.getChild(EL_BUILD_TYPES);
+			if (eTypes.getAttribute(ATTR_ENABLED_FOR_ALL) != null){
 				try {
-					this.enableForAllBuildsInProject(eTypes.getAttribute("enabled-for-all").getBooleanValue());
+					this.enableForAllBuildsInProject(eTypes.getAttribute(ATTR_ENABLED_FOR_ALL).getBooleanValue());
 				} catch (DataConversionException e1) {
-					Loggers.SERVER.warn("WebHookConfig :: " + e1.getMessage());
+					Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
 				}
 			}
-			if (eTypes.getAttribute("enabled-for-subprojects") != null){
+			if (eTypes.getAttribute(ATTR_ENABLED_FOR_SUBPROJECTS) != null){
 				try {
-					this.enableForSubProjects(eTypes.getAttribute("enabled-for-subprojects").getBooleanValue());
+					this.enableForSubProjects(eTypes.getAttribute(ATTR_ENABLED_FOR_SUBPROJECTS).getBooleanValue());
 				} catch (DataConversionException e1) {
-					Loggers.SERVER.warn("WebHookConfig :: " + e1.getMessage());
+					Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
 				}
 			}
 			if (!isEnabledForAllBuildsInProject()){
 				List<Element> typesList = eTypes.getChildren("build-type");
-				if (typesList.size() > 0){
+				if ( ! typesList.isEmpty()){
 					for(Element eType : typesList)
 					{
 						if (eType.getAttributeValue("id")!= null){
@@ -134,24 +152,24 @@ public class WebHookConfig {
 			}
 		}
 		
-		if(e.getChild("parameters") != null){
-			Element eParams = e.getChild("parameters");
-			List<Element> paramsList = eParams.getChildren("param");
-			if (paramsList.size() > 0){
+		if(e.getChild(EL_PARAMETERS) != null){
+			Element eParams = e.getChild(EL_PARAMETERS);
+			List<Element> paramsList = eParams.getChildren(ATTR_PARAM);
+			if ( ! paramsList.isEmpty()){
 				for(Element eParam : paramsList)
 				{
 					this.extraParameters.put(
-							eParam.getAttributeValue("name"), 
-							eParam.getAttributeValue("value")
+							eParam.getAttributeValue(ATTR_NAME), 
+							eParam.getAttributeValue(ATTR_VALUE)
 							);
 				}
 			}
 		}
 		
-		if(e.getChild("custom-templates") != null){
-			Element eParams = e.getChild("custom-templates");
-			List<Element> templateList = eParams.getChildren("custom-template");
-			if (templateList.size() > 0){
+		if(e.getChild(EL_CUSTOM_TEMPLATES) != null){
+			Element eParams = e.getChild(EL_CUSTOM_TEMPLATES);
+			List<Element> templateList = eParams.getChildren(EL_CUSTOM_TEMPLATE);
+			if ( ! templateList.isEmpty()){
 				for(Element eParam : templateList)
 				{
 					this.templates.put(
@@ -168,12 +186,12 @@ public class WebHookConfig {
 		
 		if(e.getChild("auth") != null){
 			Element eAuth = e.getChild("auth");
-			if (eAuth.getAttribute("type") != null){
+			if (eAuth.getAttribute(ATTR_TYPE) != null){
 				// We have an "auth" element
 				// Try to get the enabled flag
-				authType = eAuth.getAttribute("type").getValue();
+				authType = eAuth.getAttribute(ATTR_TYPE).getValue();
 				try {
-					authEnabled = eAuth.getAttribute("enabled").getBooleanValue();
+					authEnabled = eAuth.getAttribute(ATTR_ENABLED).getBooleanValue();
 				} catch (DataConversionException e1){
 					// And if it can't be read as boolean default it 
 					// to true anyway (since we have the auth type).
@@ -190,13 +208,13 @@ public class WebHookConfig {
 				}
 				Element eParams = eAuth.getChild("auth-parameters");
 				if (eParams != null){
-					List<Element> paramsList = eParams.getChildren("param");
+					List<Element> paramsList = eParams.getChildren(ATTR_PARAM);
 					if (paramsList.size() > 0){
 						for(Element eParam : paramsList)
 						{
 							this.authParameters.put(
-									eParam.getAttributeValue("name"), 
-									eParam.getAttributeValue("value")
+									eParam.getAttributeValue(ATTR_NAME), 
+									eParam.getAttributeValue(ATTR_VALUE)
 									);
 						}
 					}
@@ -270,8 +288,8 @@ public class WebHookConfig {
 	private Element getKeyAndValueAsElement(Map<String,String> map, String key, String elementName){
 		Element e = new Element(elementName);
 		if (map.containsKey(key)){
-			e.setAttribute("name", key);
-			e.setAttribute("value",map.get(key));
+			e.setAttribute(ATTR_NAME, key);
+			e.setAttribute(ATTR_VALUE,map.get(key));
 		}
 		return e;
 	}
@@ -279,33 +297,31 @@ public class WebHookConfig {
 	public Element getAsElement(){
 		Element el = new Element("webhook");
 		el.setAttribute("url", this.getUrl());
-		el.setAttribute("enabled", String.valueOf(this.enabled));
-		el.setAttribute("format", String.valueOf(this.payloadFormat).toLowerCase());
-		el.setAttribute("template", String.valueOf(this.payloadTemplate));
+		el.setAttribute(ATTR_ENABLED, String.valueOf(this.enabled));
+		el.setAttribute(ATTR_FORMAT, String.valueOf(this.payloadFormat).toLowerCase());
+		el.setAttribute(ATTR_TEMPLATE, String.valueOf(this.payloadTemplate));
 		
-		Element statesEl = new Element("states");
+		Element statesEl = new Element(EL_STATES);
 		for (BuildStateEnum state : states.getStateSet()){
-			Element e = new Element("state");
-			e.setAttribute("type", state.getShortName());
-			e.setAttribute("enabled", Boolean.toString(states.enabled(state)));
+			Element e = new Element(EL_STATE);
+			e.setAttribute(ATTR_TYPE, state.getShortName());
+			e.setAttribute(ATTR_ENABLED, Boolean.toString(states.enabled(state)));
 			statesEl.addContent(e);
 		}
 		el.addContent(statesEl);
 		
-		Element buildsEl = new Element("build-types");
-		buildsEl.setAttribute("enabled-for-all", Boolean.toString(isEnabledForAllBuildsInProject()));
-		buildsEl.setAttribute("enabled-for-subprojects", Boolean.toString(isEnabledForSubProjects()));
+		Element buildsEl = new Element(EL_BUILD_TYPES);
+		buildsEl.setAttribute(ATTR_ENABLED_FOR_ALL, Boolean.toString(isEnabledForAllBuildsInProject()));
+		buildsEl.setAttribute(ATTR_ENABLED_FOR_SUBPROJECTS, Boolean.toString(isEnabledForSubProjects()));
 		
-		if (this.enabledBuildTypesSet.size() > 0){
-			for (String i : enabledBuildTypesSet){
-				Element e = new Element("build-type");
-				e.setAttribute("id", i);
-				buildsEl.addContent(e);
-			}
+		for (String i : enabledBuildTypesSet){
+			Element e = new Element("build-type");
+			e.setAttribute("id", i);
+			buildsEl.addContent(e);
 		}
 		el.addContent(buildsEl);
 		
-		if (this.filters != null && this.filters.size() > 0){
+		if (this.filters != null &&  ! this.filters.isEmpty()){
 			Element filtersEl = new Element("trigger-filters");
 			for (WebHookFilterConfig f : this.filters){
 				filtersEl.addContent(f.getAsElement());
@@ -314,15 +330,15 @@ public class WebHookConfig {
 		}		
 		
 		if (this.extraParameters.size() > 0){
-			Element paramsEl = new Element("parameters");
+			Element paramsEl = new Element(EL_PARAMETERS);
 			for (String i : this.extraParameters.keySet()){
-				paramsEl.addContent(this.getKeyAndValueAsElement(this.extraParameters, i, "param"));
+				paramsEl.addContent(this.getKeyAndValueAsElement(this.extraParameters, i, ATTR_PARAM));
 			}
 			el.addContent(paramsEl);
 		}
 		
 		if (this.templates.size() > 0){
-			Element templatesEl = new Element("custom-templates");
+			Element templatesEl = new Element(EL_CUSTOM_TEMPLATES);
 			for (CustomMessageTemplate t : this.templates.values()){
 				templatesEl.addContent(t.getAsElement());
 			}
@@ -331,13 +347,13 @@ public class WebHookConfig {
 		
 		if (this.authType != ""){
 			Element authEl = new Element("auth");
-			authEl.setAttribute("enabled", this.authEnabled.toString());
-			authEl.setAttribute("type", this.authType);
+			authEl.setAttribute(ATTR_ENABLED, this.authEnabled.toString());
+			authEl.setAttribute(ATTR_TYPE, this.authType);
 			authEl.setAttribute("preemptive", this.authPreemptive.toString() );
 			if (this.authParameters.size() > 0){
 				Element paramsEl = new Element("auth-parameters");
 				for (String i : this.authParameters.keySet()){
-					paramsEl.addContent(this.getKeyAndValueAsElement(this.authParameters, i, "param"));
+					paramsEl.addContent(this.getKeyAndValueAsElement(this.authParameters, i, ATTR_PARAM));
 				}
 				authEl.addContent(paramsEl);
 			}
@@ -352,10 +368,6 @@ public class WebHookConfig {
 	public SortedMap<String,String> getParams() {
 		return extraParameters;
 	}
-//
-//	public void setParams(List<NameValuePair> params) {
-//		this.params = params;
-//	}
 	
 	public boolean isEnabledForBuildType(SBuildType sBuildType){
 		// If allBuildTypes enabled, return true, otherwise  return whether the build is in the list of enabled buildTypes. 
@@ -429,12 +441,6 @@ public class WebHookConfig {
 			if (states.enabled(BuildStateEnum.BUILD_STARTED)){
 				enabledStates += ", Build Started";
 			}
-//			if (BuildState.enabled(BuildState.BUILD_FINISHED,this.statemask)){
-//				enabledStates += ", Build Completed";
-//			}
-//			if (BuildState.enabled(BuildState.BUILD_CHANGED_STATUS,this.statemask)){
-//				enabledStates += ", Build Changed Status";
-//			}
 			if (states.enabled(BuildStateEnum.CHANGES_LOADED)){
 				enabledStates += ", Changes Loaded";
 			}
@@ -471,84 +477,84 @@ public class WebHookConfig {
 	
 	public String getWebHookEnabledAsChecked() {
 		if (this.enabled){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 	
 	public String getStateAllAsChecked() {
 		if (states.allEnabled()){
-			return "checked ";
+			return CHECKED;
 		}		
 		return ""; 
 	}
 	
 	public String getStateBuildStartedAsChecked() {
 		if (states.enabled(BUILD_STARTED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 	
 	public String getStateChangesLoadedAsChecked() {
 		if (states.enabled(CHANGES_LOADED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildFinishedAsChecked() {
 		if (states.enabled(BUILD_FINISHED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 
 	public String getStateBeforeFinishedAsChecked() {
 		if (states.enabled(BEFORE_BUILD_FINISHED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 
 	public String getStateResponsibilityChangedAsChecked() {
 		if (states.enabled(RESPONSIBILITY_CHANGED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 
 	public String getStateBuildInterruptedAsChecked() {
 		if (states.enabled(BUILD_INTERRUPTED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildSuccessfulAsChecked() {
 		if (states.enabled(BUILD_SUCCESSFUL)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildFixedAsChecked() {
 		if (states.enabled(BUILD_FIXED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 	
 	public String getStateBuildFailedAsChecked() {
 		if (states.enabled(BUILD_FAILED)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
 
 	public String getStateBuildBrokenAsChecked() {
 		if (states.enabled(BUILD_BROKEN)){
-			return "checked ";
+			return CHECKED;
 		}
 		return ""; 
 	}
