@@ -254,11 +254,12 @@ WebHooksPlugin = {
 					dialog.handleGetSuccess(action);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
-					console.log(xhr);
-					console.log(ajaxOptions);
-					console.log(thrownError);
 					if (xhr.status == 404) {
 						dialog.getParentTemplateData(templateId, buildTemplateId, action);
+					} else {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
 					}
 				}
 			});
@@ -282,6 +283,9 @@ WebHooksPlugin = {
 				success: function (response) {
 					//console.log(response);
 					dialog.close();
+					
+					// Refresh both container in case the template status has changed to "overridden". 
+					$("templateInfoContainer").refresh();
 					$("buildEventTemplatesContainer").refresh();
 				},
 				error: function (response) {
@@ -308,6 +312,8 @@ WebHooksPlugin = {
 				},
 				success: function (response) {
 					dialog.close();
+					// Refresh both container in case the template status has changed to "overridden". 
+					$("templateInfoContainer").refresh();
 					$("buildEventTemplatesContainer").refresh();
 				},
 				error: function (response) {

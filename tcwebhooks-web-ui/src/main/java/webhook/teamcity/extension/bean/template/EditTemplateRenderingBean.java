@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import lombok.Builder;
 import lombok.Data;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
@@ -30,6 +31,7 @@ public class EditTemplateRenderingBean {
 	WebHookTemplateText defaultTemplateItem;
 	WebHookTemplateBranchText defaultTemplateBranchItem;
 	@Builder.Default List<EditTemplateRenderingEventTemplateBean> buildEventTemplates = new ArrayList<>();
+	TemplateState templateState;
 	
 	protected void removeBuildStateFromDefaultTemplate(BuildStateEnum state) {
 		if (state != null) {
@@ -37,7 +39,7 @@ public class EditTemplateRenderingBean {
 		}
 	}
 
-	public static EditTemplateRenderingBean build(WebHookTemplateConfig config) {
+	public static EditTemplateRenderingBean build(WebHookTemplateConfig config, TemplateState templateState) {
 		EditTemplateRenderingBean bean = builder()
 										 .templateId(config.getId())
 										 .rank(config.getRank())
@@ -47,6 +49,7 @@ public class EditTemplateRenderingBean {
 										 .toolTipText(config.getTemplateToolTip())
 										 .defaultTemplateStates(new ArrayList<BuildStateEnum>())
 										 .buildEventTemplates(new ArrayList<EditTemplateRenderingEventTemplateBean>())
+										 .templateState(templateState)
 										 .build();
 		for (WebHookTemplateItem eventStateItem : config.getTemplates().getTemplates()) {
 			bean.buildEventTemplates.add(new EditTemplateRenderingEventTemplateBean(eventStateItem));

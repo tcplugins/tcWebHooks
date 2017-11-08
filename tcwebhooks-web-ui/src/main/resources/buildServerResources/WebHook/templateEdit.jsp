@@ -100,7 +100,7 @@
     <bs:refreshable containerId="templateInfoContainer" pageUrl="${pageUrl}">
 
 	<bs:messages key="templateUpdateResult"/>
-	
+		${webhookTemplateBean.templateState.description}
 	  <input type="hidden" name="action" id="WebhookTemplateaction" value=""/>
       <table class="settings parameterTable" id="webhookTemplateHeader">
         
