@@ -50,7 +50,8 @@ label.webhookEnabled {
 .tab a:hover { text-decoration: underline; }
 .tab.active { background: #fff; padding-top: 6px; position: relative; top: 1px; border-color: #666; }
 .tab a.active { font-weight: bold; }
-.tab-container .panel-container { background: #fff; border-top: solid #ccc 1px; padding: 10px; -moz-border-radius: 0 4px 4px 4px; -webkit-border-radius: 0 4px 4px 4px; }
+.tab-container .panel-container { background: #fff; border-top: solid #ccc 1px; padding: 10px;}
+.tab-container { -moz-border-radius: 0 4px 4px 4px; -webkit-border-radius: 0 4px 4px 4px; }
 
 
 ul.commalist {
@@ -219,6 +220,15 @@ div.endpointPayloadHeaders table tr :first-child {
 #buildSuccessful.buildState, #buildFailed.buildState {
     margin-left: 2px;
 }
+
+#addTemplateItemDialog #buildSuccessful.buildState, 
+#addTemplateItemDialog #buildFailed.buildState, 
+#editTemplateItemDialog #buildSuccessful.buildState, 
+#editTemplateItemDialog #buildFailed.buildState { 
+    margin-left: 0px;
+}
+
+
 
 /*
 span.templateRenderHeader {
@@ -401,15 +411,38 @@ table.templateDialogFormTable label.checkboxLooksDisabled {
 	cursor: not-allowed;
 }
 
+div#templateWrapper {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
 div#templateVariables {
-	float: right;
-	width: 30%;
+	display: table-cell;
 }
 
 div#templateEditor {
+	display: table-cell;
+	vertical-align:top;
 	width: 70%;
 }
 
+.templateVariablesOverflow {
+	vertical-align:top;
+	overflow-y:scroll;
+	height: 40em;
+}
+
+ul#templateVariableList li {
+	list-style: none;
+	padding:0;
+	cursor: pointer;
+}
+
+ul#templateVariableList li:hover {
+	background-color: #F6F6F6;
+	text-weight: bold;
+}
 
 div#templateEditor ul.etabs {
 	padding: 0px;
@@ -447,3 +480,4 @@ div#templateEditor .etabs .tab.active {
 tr.templateDetails > td > div > input {
 	width:90%;
 }
+

@@ -30,7 +30,7 @@
       BS.Navigation.items = [
         {title: "Administration", url: '<c:url value="/admin/admin.html"/>'},
         {title: "Webhook Payload Templates", url: '<c:url value="/webhooks/templates.html"/>'},
-        {title: '<c:out value="${webhookTemplateBean.templateId}"/>', selected: true}
+        {title: '<c:out value="${webhookTemplateBean.templateDescription}"/>', selected: true}
       ];
     </script>
   </jsp:attribute>
@@ -141,9 +141,8 @@
                              action="/admin/manageWebhookTemplate.html"
                              targetIframe="hidden-iframe"
                              onsubmit="return WebHooksPlugin.TemplateEditBuildEventDialog.doPost();">
-			<div id="templateVariables"><h2>Available Variables</h2>
-				Click on a variable to insert it into your template.
-			</div>
+		<div id="templateWrapper">
+		
 			<div id="templateEditor">
 			<h2 id="templateHeading"></h2>
             <table class="templateDialogFormTable">
@@ -192,6 +191,15 @@
                  </tr>
             </table>
             </div>
+            
+			<div id="templateVariables"><h2>Available Variables</h2>
+				Click on a variable to insert it into your template.
+				<div class="templateVariablesOverflow">
+					<ul id=templateVariableList></ul>
+				</div>
+			</div>              
+            
+          </div>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplateItem"/>
             <div id="ajaxTemplateItemEditResult"></div>
             <div class="popupSaveButtonsBlock">
@@ -230,19 +238,21 @@
         enableSnippets: true,
         enableLiveAutocompletion: true
     });
+
+    var wordList = ["buildFullName", "buildComment", "changes", "agentOs", 
+					"buildNumber", "branchIsDefault", "buildResultPrevious", "buildStatus", 
+					"projectInternalId", "buildStatusUrl", "buildTypeId", "responsibilityUserNew", 
+					"buildRunners", "buildStartTime", "buildTags", "responsibilityUserOld", 
+					"buildFinishTime", "buildStateDescription", "text", "buildName", 
+					"buildResult", "agentName", "branchName", "buildResultDelta", "buildId", 
+					"message", "buildExternalTypeId", "rootUrl", "currentTime", "notifyType", 
+					"buildInternalTypeId", "comment", "projectExternalId", "branchDisplayName", 
+					"projectName", "projectId", "agentHostname", "buildStatusHtml", "triggeredBy", ];
     
     /* your custom completer */
     var customCompleter = {
           getCompletions: function(editor, session, pos, prefix, callback) {
-	   	        var wordList = ["buildFullName", "buildComment", "changes", "agentOs", 
-	   	        				"buildNumber", "branchIsDefault", "buildResultPrevious", "buildStatus", 
-	   	        				"projectInternalId", "buildStatusUrl", "buildTypeId", "responsibilityUserNew", 
-	   	        				"buildRunners", "buildStartTime", "buildTags", "responsibilityUserOld", 
-	   	        				"buildFinishTime", "buildStateDescription", "text", "buildName", 
-	   	        				"buildResult", "agentName", "branchName", "buildResultDelta", "buildId", 
-	   	        				"message", "buildExternalTypeId", "rootUrl", "currentTime", "notifyType", 
-	   	        				"buildInternalTypeId", "comment", "projectExternalId", "branchDisplayName", 
-	   	        				"projectName", "projectId", "agentHostname", "buildStatusHtml", "triggeredBy", ];
+
 	   	        callback(null, wordList.map(function(word) {
 	   	            return {
 	   	                caption: "\$\{" + word + "\}",
@@ -253,6 +263,36 @@
           }
      }
     langTools.addCompleter(customCompleter);
+    
+    // Iterate over the word list and add them to the right hand panel. 
+    wordList.map(function(word) {
+    	$j("#templateVariableList").append("<li title='Click to insert \$\{" + word + "\} into editor'>" + word + "</li>");
+    });
+
+    // Add click handler for each item above.
+    $j("#templateVariableList").on("click","li", function(){
+    	// Get the text from the li, and wrap it in dollar and curl braces
+	    var text = '\$\{' + $j(this).text() + '\}';
+	    var insertDone = false;
+	    
+	    // Determine which editor is active.
+	    $j("ul.etabs li.active").each(function(){
+	    		if ($j(this).attr('id') == 'nonBranchPaneTab') {
+	    			editor.focus();
+	    			editor.session.insert(editor.getCursorPosition(), text)
+	    			insertDone = true;
+	    		} else if ($j(this).attr('id') == 'branchPaneTab') {
+	    			editorBranch.focus();
+	    			editorBranch.session.insert(editorBranch.getCursorPosition(), text)
+	    			insertDone = true;
+	    		}
+	    });
+	    if (! insertDone) {
+	    	alert("Sorry, insert failed. Could not determine branch or nonbranch editor");
+	    }
+     });
+    
+    
 </script>
 
     <bs:dialog dialogId="deleteTemplateItemDialog"
