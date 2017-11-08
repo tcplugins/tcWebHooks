@@ -308,7 +308,7 @@
 			var name;
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
 				if (templateFormatCombinationKey === templateKey){
-					name = template.templateShortName;
+					name = template.templateId;
 					return false;
 				}
 			});
