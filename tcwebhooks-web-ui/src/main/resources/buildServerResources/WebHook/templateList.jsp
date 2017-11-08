@@ -57,7 +57,7 @@
 		<tbody>
 		    <c:forEach items="${webHookTemplates}" var="template">
 			  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
-				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}" default="No Tooltip set for this template"/>">${template.templateDescription}</td>
+				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)">${template.templateDescription}</td>
 				<td class="nowrap">${template.formatDescription}</td>
 				<td>
 					<ul class="commalist">
