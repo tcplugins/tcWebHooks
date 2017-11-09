@@ -44,9 +44,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				String datePattern = variableName.substring("now(".length(), variableName.length() - ")".length());
 				SimpleDateFormat format = new SimpleDateFormat(datePattern);
 				return format.format(new Date());
-			} catch (NullPointerException npe){
-				// do nothing and let the logic below handle it.
-			} catch (IllegalArgumentException iae){
+			} catch (NullPointerException | IllegalArgumentException e){
 				// do nothing and let the logic below handle it.
 			}
 		}
@@ -61,11 +59,9 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				}
 				return StringEscapeUtils.escapeJson((String) PropertyUtils.getProperty(bean, dirtyString).toString());
 			// do nothing and let the logic below handle it.
-			} catch (NullPointerException npe){
-			} catch (IllegalArgumentException iae){
-			} catch (IllegalAccessException e) {
-			} catch (InvocationTargetException e) {
-			} catch (NoSuchMethodException e) {
+			} catch (NullPointerException | IllegalArgumentException | 
+					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e) 
+			{
 			}			
 		}
 		
@@ -80,11 +76,8 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				return StringSanitiser.sanitise((String) PropertyUtils.getProperty(bean, dirtyString).toString());
 
 			// do nothing and let the logic below handle it.
-			} catch (NullPointerException npe){
-			} catch (IllegalArgumentException iae){
-			} catch (IllegalAccessException e) {
-			} catch (InvocationTargetException e) {
-			} catch (NoSuchMethodException e) {
+			} catch (NullPointerException | IllegalArgumentException | 
+					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			}
 		}
 		
@@ -98,18 +91,12 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			
 			// Or override it from the PayloadContent if it exists.
 			try {
-				value = (String) PropertyUtils.getProperty(bean, variableName).toString();
+				value = PropertyUtils.getProperty(bean, variableName).toString();
 			} catch (NullPointerException npe){
 				value = (String) PropertyUtils.getProperty(bean, variableName);
 			}
 			
-		} catch (IllegalAccessException e) {
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
-			Loggers.SERVER.debug(e);
-		} catch (InvocationTargetException e) {
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
-			Loggers.SERVER.debug(e);
-		} catch (NoSuchMethodException e) {
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
 			Loggers.SERVER.debug(e);
 		}

@@ -8,9 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
-import org.jetbrains.annotations.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -35,12 +32,11 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookIndexPageController extends BaseController {
 
 	    private final WebControllerManager myWebManager;
 	    private final WebHookMainSettings myMainSettings;
-	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
@@ -53,7 +49,6 @@ public class WebHookIndexPageController extends BaseController {
 	    		WebHookMainSettings configSettings, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
-	        myServer = server;
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
 	        myMainSettings = configSettings;
@@ -70,7 +65,7 @@ public class WebHookIndexPageController extends BaseController {
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    	
-	        HashMap<String,Object> params = new HashMap<String,Object>();
+	        HashMap<String,Object> params = new HashMap<>();
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
         	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
         	params.put("rootContext", myServer.getServerRootPath());
@@ -142,10 +137,8 @@ public class WebHookIndexPageController extends BaseController {
 																			myTemplateResolver.findWebHookTemplatesForProject(project))
 							);
 			    		
-			    		//params.put("webHookList", projSettings.getWebHooksAsList());
 			    		params.put("webHooksDisabled", !projSettings.isEnabled());
 			    		params.put("webHooksEnabledAsChecked", projSettings.isEnabledAsChecked());
-			    		//params.put("projectWebHooksAsJson", ProjectWebHooksBeanJsonSerialiser.serialise(ProjectWebHooksBean.build(projSettings, project, myManager.getRegisteredFormatsAsCollection())));
 			    		
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
@@ -197,8 +190,8 @@ public class WebHookIndexPageController extends BaseController {
 				    	params.put("buildName", sBuildType.getName());
 				    	params.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(sBuildType));
 				    	params.put("buildTypeList", project.getBuildTypes());
-			    		params.put("noWebHooks", bean.getWebHookList().size() == 0);
-			    		params.put("webHooks", bean.getWebHookList().size() != 0);
+			    		params.put("noWebHooks", bean.getWebHookList().isEmpty());
+			    		params.put("webHooks", ! bean.getWebHookList().isEmpty());
 				    	
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(

@@ -33,7 +33,7 @@ public class BuildWebhooksBean{
 	}
 	
 	public boolean hasBuilds(){
-		return this.buildConfigs.size() > 0;
+		return ! this.buildConfigs.isEmpty();
 	}
 	
 	public boolean isHasBuilds(){
@@ -41,7 +41,7 @@ public class BuildWebhooksBean{
 	}
 	
 	public boolean hasNoBuildWebHooks(){
-		return this.buildConfigs.size() == 0;
+		return this.buildConfigs.isEmpty();
 	}
 	
 	public boolean isHasNoBuildWebHooks(){
@@ -49,7 +49,7 @@ public class BuildWebhooksBean{
 	}
 	
 	public boolean hasBuildWebHooks(){
-		return this.buildConfigs.size() > 0;
+		return ! this.buildConfigs.isEmpty();
 	}
 	
 	public boolean isHasBuildWebHooks(){

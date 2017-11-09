@@ -14,7 +14,7 @@ import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 
 public class RegisteredWebHookTemplateBean {
 	
-	Map<String,SimpleTemplate> templateList = new LinkedHashMap<String,SimpleTemplate>();
+	Map<String,SimpleTemplate> templateList = new LinkedHashMap<>();
 
 	public static RegisteredWebHookTemplateBean build(List<WebHookPayloadTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
 		RegisteredWebHookTemplateBean bean = new RegisteredWebHookTemplateBean();
@@ -58,9 +58,9 @@ public class RegisteredWebHookTemplateBean {
 		private String formatShortName;
 		private String formatDescription;
 		private String templateFormatCombinationKey;
-		private List<String> supportedStates = new ArrayList<String>();
-		private List<BuildStateEnum> supportedBuildEnumStates = new ArrayList<BuildStateEnum>();
-		private List<String> supportedBranchStates = new ArrayList<String>();
+		private List<String> supportedStates = new ArrayList<>();
+		private List<BuildStateEnum> supportedBuildEnumStates = new ArrayList<>();
+		private List<String> supportedBranchStates = new ArrayList<>();
 		private TemplateState templateState;
 
 		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format) {

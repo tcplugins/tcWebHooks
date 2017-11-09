@@ -2,8 +2,6 @@ package webhook.teamcity.server.rest.data;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.intellij.openapi.diagnostic.Logger;
-
 import jetbrains.buildServer.server.rest.data.Locator;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
@@ -17,8 +15,6 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 
 public class TemplateFinder {
 
-	private static final Logger LOG = Logger.getInstance(TemplateFinder.class.getName());
-	
 	@NotNull private final WebHookTemplateManager myTemplateManager;
 	
 	public TemplateFinder(@NotNull final WebHookTemplateManager templateManager){
@@ -32,7 +28,6 @@ public class TemplateFinder {
 	public static String getTemplateTextLocator(final String id){
 		return Locator.createEmptyLocator().setDimension("id", id).getStringRepresentation();
 	}
-	
 	
 	public WebHookTemplateConfigWrapper findTemplateById(String templateLocator) {
 

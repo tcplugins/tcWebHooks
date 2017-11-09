@@ -36,6 +36,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 	}
 
+	@Override
 	public boolean isAvailable(@NotNull HttpServletRequest request) {
 		return true;
 	}
@@ -45,7 +46,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	protected void fillModel(Map model, HttpServletRequest request,
 			 @NotNull SProject project, SUser user) {
 		
-		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<ProjectAndBuildWebhooksBean>();  
+		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
 		List<SProject> parentProjects = project.getProjectPath();
 		
 		model.put("permissionError", "");
@@ -66,31 +67,8 @@ public class WebHookProjectTabExtension extends ProjectTab {
 					);
 		}
 		
-//		projectAndParents.add(
-//				ProjectAndBuildWebhooksBean.newInstance(
-//						project,
-//						(WebHookProjectSettings) this.projSettings.getSettings(project.getProjectId(), "webhooks"),
-//						true
-//						)
-//				);
-
 		model.put("projectAndParents", projectAndParents);
-		
-		
-		
-//    	model.put("projectWebHookCount", projectWebhooks.size());
-//    	if (projectWebhooks.size() == 0){
-//    		model.put("noProjectWebHooks", "true");
-//    		model.put("projectWebHooks", "false");
-//    	} else {
-//    		model.put("noProjectWebHooks", "false");
-//    		model.put("projectWebHooks", "true");
-//    		model.put("projectWebHookList", projectWebhooks);
-//    		model.put("projectWebHooksDisabled", !this.settings.isEnabled());
-//    	}
-//    	
-//		model.put("buildWebHookList", buildWebhooks);
-    	
+   	
     	model.put("projectId", project.getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
     	model.put("projectName", project.getName());

@@ -21,7 +21,7 @@ public class ProjectAndBuildWebhooksBean {
 		bean.webHookProjectSettings = settings;
 		
 		bean.projectWebhooks = settings.getProjectWebHooksAsList();
-		bean.buildWebhooks = new ArrayList<BuildWebhooksBean>();
+		bean.buildWebhooks = new ArrayList<>();
 		
 		if (sBuild != null && sBuild.getProjectId().equals(project.getProjectId())){
 			bean.buildWebhooks.add(new BuildWebhooksBean(sBuild, settings.getBuildWebHooksAsList(sBuild)));

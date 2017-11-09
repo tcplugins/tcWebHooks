@@ -35,6 +35,8 @@ import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 
 public class WebHookConfig {
+	private static final String EL_TRIGGER_FILTERS = "trigger-filters";
+	private static final String ATTR_PREEMPTIVE = "preemptive";
 	private static final String CHECKED = "checked ";
 	private static final String EL_CUSTOM_TEMPLATE = "custom-template";
 	private static final String EL_CUSTOM_TEMPLATES = "custom-templates";
@@ -198,8 +200,8 @@ public class WebHookConfig {
 					authEnabled = true;
 				}
 				try {
-					if (eAuth.getAttribute("preemptive") != null){
-						authPreemptive = eAuth.getAttribute("preemptive").getBooleanValue();
+					if (eAuth.getAttribute(ATTR_PREEMPTIVE) != null){
+						authPreemptive = eAuth.getAttribute(ATTR_PREEMPTIVE).getBooleanValue();
 					}
 				} catch (DataConversionException e1){
 					// And if it can't be read as boolean default it 
@@ -209,7 +211,7 @@ public class WebHookConfig {
 				Element eParams = eAuth.getChild("auth-parameters");
 				if (eParams != null){
 					List<Element> paramsList = eParams.getChildren(ATTR_PARAM);
-					if (paramsList.size() > 0){
+					if (!paramsList.isEmpty()){
 						for(Element eParam : paramsList)
 						{
 							this.authParameters.put(
@@ -228,10 +230,10 @@ public class WebHookConfig {
 	  			<filter value="${branchDisplayName}" regex="^master$" />
 	  		</trigger-filters>
 		 */
-		if(e.getChild("trigger-filters") != null){
-			Element eParams = e.getChild("trigger-filters");
+		if(e.getChild(EL_TRIGGER_FILTERS) != null){
+			Element eParams = e.getChild(EL_TRIGGER_FILTERS);
 			List<Element> filterList = eParams.getChildren("filter");
-			if (filterList.size() > 0){
+			if (! filterList.isEmpty()){
 				for(Element eParam : filterList)
 				{
 					this.filters.add(
@@ -322,7 +324,7 @@ public class WebHookConfig {
 		el.addContent(buildsEl);
 		
 		if (this.filters != null &&  ! this.filters.isEmpty()){
-			Element filtersEl = new Element("trigger-filters");
+			Element filtersEl = new Element(EL_TRIGGER_FILTERS);
 			for (WebHookFilterConfig f : this.filters){
 				filtersEl.addContent(f.getAsElement());
 			}
@@ -349,7 +351,7 @@ public class WebHookConfig {
 			Element authEl = new Element("auth");
 			authEl.setAttribute(ATTR_ENABLED, this.authEnabled.toString());
 			authEl.setAttribute(ATTR_TYPE, this.authType);
-			authEl.setAttribute("preemptive", this.authPreemptive.toString() );
+			authEl.setAttribute(ATTR_PREEMPTIVE, this.authPreemptive.toString() );
 			if (this.authParameters.size() > 0){
 				Element paramsEl = new Element("auth-parameters");
 				for (String i : this.authParameters.keySet()){

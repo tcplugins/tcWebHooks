@@ -22,6 +22,7 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.util.StringUtils;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookEndPointController extends BaseController {
 	
 	

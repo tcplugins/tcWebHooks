@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -16,8 +15,6 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWebHookTemplate {
@@ -208,13 +205,11 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 
 	@Override
 	public WebHookTemplateEntity getAsEntity() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
 	public WebHookTemplateConfig getAsConfig() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

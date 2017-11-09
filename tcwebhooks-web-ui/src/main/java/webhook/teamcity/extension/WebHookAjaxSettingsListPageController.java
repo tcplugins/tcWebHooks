@@ -27,11 +27,10 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookAjaxSettingsListPageController extends BaseController {
 
 	    private final WebControllerManager myWebManager;
-	    private SBuildServer myServer;
 	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
@@ -43,7 +42,6 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	    		WebHookTemplateResolver webHookTemplateResolver, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
-	        myServer = server;
 	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
 	        myManager = manager;
@@ -58,7 +56,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    	
-	        HashMap<String,Object> params = new HashMap<String,Object>();
+	        HashMap<String,Object> params = new HashMap<>();
 	        params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
 	        
 	        
@@ -112,7 +110,6 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        }
 
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/settingsList.jsp", params);
-	        //return new ModelAndView("/WebHook/settingsList.jsp", params);
 	    }
 	    
 }

@@ -11,7 +11,7 @@ import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 
 public class RegisteredWebhookAuthenticationTypesBean {
 	
-	Map<String,SimpleAuthType> authenticators = new LinkedHashMap<String,SimpleAuthType>();
+	Map<String,SimpleAuthType> authenticators = new LinkedHashMap<>();
 	
 	public static RegisteredWebhookAuthenticationTypesBean build(WebHookAuthenticatorProvider provider) {
 		RegisteredWebhookAuthenticationTypesBean bean = new RegisteredWebhookAuthenticationTypesBean();
@@ -31,7 +31,7 @@ public class RegisteredWebhookAuthenticationTypesBean {
 	public static class SimpleAuthType {
 		
 		private String description;
-		private List<WebHookAuthenticationParameter> parameters = new ArrayList<WebHookAuthenticationParameter>();
+		private List<WebHookAuthenticationParameter> parameters = new ArrayList<>();
 
 		public SimpleAuthType(String description, List<WebHookAuthenticationParameter> params) {
 			this.description = description;

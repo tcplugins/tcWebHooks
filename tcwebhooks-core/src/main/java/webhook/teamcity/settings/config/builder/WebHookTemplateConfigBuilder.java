@@ -19,10 +19,6 @@ public class WebHookTemplateConfigBuilder {
 		return build(entity);
 	}
 	
-	public static WebHookTemplateConfig copyConfig(WebHookTemplateConfig config) {
-		return new WebHookTemplateConfig();		
-	}
-	
 	private static WebHookTemplateConfig build (WebHookTemplateEntity entity) {
 		WebHookTemplateConfig config = new WebHookTemplateConfig(entity.getId(), entity.isEnabled());
 		config.setRank(entity.getRank());

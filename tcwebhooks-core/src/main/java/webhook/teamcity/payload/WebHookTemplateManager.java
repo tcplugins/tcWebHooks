@@ -18,6 +18,9 @@ import webhook.teamcity.settings.entity.WebHookTemplates;
 
 public class WebHookTemplateManager {
 	
+	private static final String TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER = " items long. Templates are ranked in the following order..";
+	private static final String TEMPLATE_NAME = " :: Template Name: ";
+	private static final String TEMPLATES_LIST_IS = " :: Templates list is ";
 	HashMap<String, WebHookPayloadTemplate> springTemplates = new HashMap<>();
 	HashMap<String, WebHookPayloadTemplate> xmlConfigTemplates = new HashMap<>();
 	Comparator<WebHookPayloadTemplate> rankComparator = new WebHookTemplateRankingComparator();
@@ -39,9 +42,9 @@ public class WebHookTemplateManager {
 					+ " with rank of " + payloadTemplate.getRank());
 			springTemplates.put(payloadTemplate.getTemplateId(),payloadTemplate);
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateDescription() + " (" + pl.getTemplateId() + ")" + " Rank: " + pl.getRank());
+				Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateDescription() + " (" + pl.getTemplateId() + ")" + " Rank: " + pl.getRank());
 			}
 		}
 	}
@@ -60,9 +63,9 @@ public class WebHookTemplateManager {
 		synchronized (orderedTemplateCollection) {
 			registerTemplateFormatFromXmlEntityUnsyncd(payloadTemplate);	
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateId() + " Rank: " + pl.getRank());
+				Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 		}
 	}
@@ -72,9 +75,9 @@ public class WebHookTemplateManager {
 		synchronized (orderedTemplateCollection) {
 			registerTemplateFormatFromXmlEntityUnsyncd(payloadTemplate);	
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateId() + " Rank: " + pl.getRank());
+				Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 		}
 	}
@@ -83,9 +86,9 @@ public class WebHookTemplateManager {
 			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: un-registering all XML config templates.");
 			xmlConfigTemplates.clear();
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateId() + " Rank: " + pl.getRank());
+				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 	}
 	
@@ -101,9 +104,7 @@ public class WebHookTemplateManager {
 			} catch (JAXBException jaxbException){
 				Loggers.SERVER.debug(jaxbException);
 				return false;
-			} finally {
-				templates = null;
-			}
+			} 
 		}
 	}
 	
@@ -243,9 +244,9 @@ public class WebHookTemplateManager {
 				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Deleting XML template " 
 						+ name);
 				rebuildOrderedListOfTemplates();
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+				Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 				for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-					Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateId() + " Rank: " + pl.getRank());
+					Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 				}			
 				return true;
 			}
@@ -260,9 +261,9 @@ public class WebHookTemplateManager {
 				this.registerTemplateFormatFromXmlEntityUnsyncd(template);
 			}
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Templates list is " + this.orderedTemplateCollection.size() + " items long. Templates are ranked in the following order..");
+			Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Template Name: " + pl.getTemplateId() + " Rank: " + pl.getRank());
+				Loggers.SERVER.info(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 		}
 	}

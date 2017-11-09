@@ -12,7 +12,6 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.WebHook;
@@ -29,13 +28,12 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 import webhook.teamcity.settings.WebHookConfig;
-import webhook.teamcity.settings.WebHookProjectSettings;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookTemplateRenderingController extends BaseController {
 	
 	
 	private final WebControllerManager myWebManager;
-    private SBuildServer myServer;
     private final String myPluginPath;
     private final WebHookPayloadManager myPayloadManager;
 	private final WebHookTemplateResolver myTemplateResolver;
@@ -43,12 +41,11 @@ public class WebHookTemplateRenderingController extends BaseController {
 	private final WebHookFactory myWebHookFactory;
     
     public WebHookTemplateRenderingController(SBuildServer server, WebControllerManager webManager, 
-    		ProjectSettingsManager settings, WebHookProjectSettings whSettings, WebHookPayloadManager payloadManager,
+    		WebHookPayloadManager payloadManager,
     		WebHookTemplateResolver templateResolver, WebHookContentBuilder builder, PluginDescriptor pluginDescriptor,
     		WebHookFactory webhookFactory) {
         super(server);
         myWebManager = webManager;
-        myServer = server;
         myPluginPath = pluginDescriptor.getPluginResourcesPath();
         myPayloadManager = payloadManager;
         myTemplateResolver = templateResolver;
@@ -99,13 +96,13 @@ public class WebHookTemplateRenderingController extends BaseController {
 				rendererTextTemplate = renderer.render(content.getTemplateText());
 			}
 			
-			HashMap<String,Object> params = new HashMap<String,Object>();
+			HashMap<String,Object> params = new HashMap<>();
 			String rendererTextActualContent = "";
 			
 			try {
 				rendererTextActualContent = renderer.render(wh.getPayload());
 			} catch (WebHookHtmlRendererException ex){
-				rendererTextActualContent = "Error rendering webhook payload for this build: " + ex.getMessage().toString();
+				rendererTextActualContent = "Error rendering webhook payload for this build: " + ex.getMessage();
 				Loggers.SERVER.info(ex);
 			}
 			params.put("templateRendering", TemplateRenderingBeanJsonSerialiser.serialise(

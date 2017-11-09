@@ -9,9 +9,9 @@ public class WebHookTemplateContent {
 	String preferredDateTimeFormat = "";
 	
 	public static final String XML_ELEMENT_NAME = "template";
-	public static final String STATE = "build-state";
-	public static final String TEMPLATE = "template-text";
-	public static final String ENABLED = "enabled";
+	public static final String ATTR_STATE = "build-state";
+	public static final String ATTR_TEMPLATE = "template-text";
+	public static final String ATTR_ENABLED = "enabled";
 	
 	public static WebHookTemplateContent create(String templateState, String templateText, boolean enabled, String dateTimeFormat){
 		WebHookTemplateContent t = new WebHookTemplateContent();
@@ -32,9 +32,9 @@ public class WebHookTemplateContent {
 
 	public Element getAsElement() {
 		Element e = new Element(XML_ELEMENT_NAME);
-			e.setAttribute(STATE, this.templateState);
-			e.setAttribute(TEMPLATE, this.templateText);
-			e.setAttribute(ENABLED, String.valueOf(this.enabled));
+			e.setAttribute(ATTR_STATE, this.templateState);
+			e.setAttribute(ATTR_TEMPLATE, this.templateText);
+			e.setAttribute(ATTR_ENABLED, String.valueOf(this.enabled));
 		return e;
 	}
 	

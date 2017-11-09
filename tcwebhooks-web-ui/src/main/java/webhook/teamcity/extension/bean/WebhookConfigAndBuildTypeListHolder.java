@@ -19,12 +19,12 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private String payloadFormat;
 	private String payloadTemplate;
 	private String payloadFormatForWeb = "Unknown";
-	private List<StateBean> states = new ArrayList<StateBean>();
+	private List<StateBean> states = new ArrayList<>();
 	private boolean allBuildTypesEnabled;
 	private boolean subProjectsEnabled;
 	
 	@Setter
-	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<WebhookBuildTypeEnabledStatusBean>();
+	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<>();
 	
 	@Setter
 	private String enabledEventsListForWeb;

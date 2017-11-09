@@ -10,43 +10,26 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
-import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
-import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
-
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookTemplateEditPageController extends BaseController {
 
-	    private static final String GET_VARIABLE_NAME_ACTION = "action";
 	    private static final String GET_VARIABLE_NAME_TEMPLATE = "template";
 		private final WebControllerManager myWebManager;
-	    private final WebHookMainSettings myMainSettings;
-	    private SBuildServer myServer;
-	    private ProjectSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
-	    private final WebHookPayloadManager myManager;
-		private final WebHookTemplateResolver myTemplateResolver;
 		private final WebHookTemplateManager myTemplateManager;
 
 	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
-	    		WebHookTemplateResolver templateResolver, WebHookTemplateManager webHookTemplateManager,
-	    		WebHookMainSettings configSettings) {
+	    		PluginDescriptor pluginDescriptor,  
+	    		WebHookTemplateManager webHookTemplateManager) {
 	        super(server);
 	        myWebManager = webManager;
-	        myServer = server;
-	        mySettings = settings;
 	        myPluginDescriptor = pluginDescriptor;
-	        myMainSettings = configSettings;
-	        myManager = manager;
-	        myTemplateResolver = templateResolver;
 	        myTemplateManager = webHookTemplateManager;
 	    }
 
@@ -57,7 +40,7 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    	
-	    	HashMap<String,Object> params = new HashMap<String,Object>();
+	    	HashMap<String,Object> params = new HashMap<>();
 	    	params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
 	    	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
 	    	params.put("rootContext", myServer.getServerRootPath());
@@ -77,10 +60,4 @@ public class WebHookTemplateEditPageController extends BaseController {
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
 	    }
 
-		private String getProjectName(String externalProjectId, String name) {
-			if (externalProjectId.equalsIgnoreCase("_Root")){
-				return externalProjectId;
-			}
-			return name;
-		}
 }
