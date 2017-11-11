@@ -125,5 +125,19 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		assertEquals(webHook.getDisabledReason(), "");
 		assertTrue(webHook.isEnabled());
 	}
+	
+	@Test
+	public void testCheckFilterPassWithoutBeginAndStartCharsFilterFromBean() {
+		
+		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		VariableResolver resolver = new WebHooksBeanUtilsVariableResolver(content, allProperties); 
+		WebHook webHook = new WebHookImpl(null);
+		webHook.setEnabled(true);
+		webHook.addFilter(WebHookFilterConfig.create("Some big long string", ".+ong.+", true));
+		System.out.println(webHook.getDisabledReason());
+		assertTrue(webHook.checkFilters(resolver));
+		assertEquals(webHook.getDisabledReason(), "");
+		assertTrue(webHook.isEnabled());
+	}
 
 }

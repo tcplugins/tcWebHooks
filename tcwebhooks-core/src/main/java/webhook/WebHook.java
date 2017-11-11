@@ -86,6 +86,11 @@ public interface WebHook {
 
 	public abstract void setAuthentication(WebHookAuthenticator authenticator);
 
+	/**
+	 * Returns true if all enabled filters match.
+	 * @param variableResolver
+	 * @return boolean indicating if webhook is enabled.
+	 */
 	public abstract boolean checkFilters(VariableResolver variableResolver);
 
 	public abstract void addFilter(WebHookFilterConfig filterHolder);
