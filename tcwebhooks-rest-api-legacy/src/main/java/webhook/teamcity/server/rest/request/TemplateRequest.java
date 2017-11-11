@@ -14,8 +14,6 @@ import javax.ws.rs.core.Response;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.intellij.openapi.diagnostic.Logger;
-
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
@@ -43,6 +41,7 @@ import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateState
 import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
@@ -54,7 +53,6 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 @Path(TemplateRequest.API_TEMPLATES_URL)
 public class TemplateRequest {
-  private static final Logger LOG = Logger.getInstance(TemplateRequest.class.getName());
   public static final boolean ID_GENERATION_FLAG = true;
   private static final Permission templateEditPermission = Permission.CHANGE_SERVER_SETTINGS;
   private static final Permission[] templateReadPermissions = { 
@@ -67,13 +65,6 @@ public class TemplateRequest {
   @Context @NotNull private WebHookTemplateManager myTemplateManager;
   @Context @NotNull private TemplateValidator myTemplateValidator;
   
-//  @Autowired
-//  private DataProvider myDataProvider;
-//  
-//  @Autowired
-//  private WebHookTemplateManager myTemplateManager;
-
-  //@Context @NotNull private WebHookApiUrlBuilder myApiUrlBuilder;
   @Context @NotNull private ServiceLocator myServiceLocator;
   @Context @NotNull private BeanContext myBeanContext;
   @Context @NotNull public PermissionChecker myPermissionChecker;
@@ -280,16 +271,37 @@ public class TemplateRequest {
 		   	throw new OperationException("There was an error saving your template. Sorry.");
 		  }
 	  }
-	  throw new OperationException("The template name in the payload did not match the template name in the URL.");
+	  throw new OperationException("The template id in the payload did not match the template id in the URL.");
   }
   
   @PUT
-  @Path("/{templateLocator}/fullConfig")
-  @Produces({"text/plain"})
-  @Consumes({"text/plain"})
-  public WebHookTemplateConfig updateFullConfigTemplateInPlainText(@PathParam("templateLocator") String templateLocator,  String rawConfig) {
+  @Path("/{templateLocator}/rawConfig")
+  @Consumes({"application/xml"})
+  @Produces({"application/xml"})
+  public WebHookTemplateEntity updateFullConfigTemplateInPlainText(@PathParam("templateLocator") String templateLocator,  WebHookTemplateEntity rawConfig) {
 	  checkTemplateWritePermission();
-	  return myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
+	  WebHookTemplateConfig webHookTemplateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
+	  if (webHookTemplateConfig == null){
+		  throw new NotFoundException("No template found by that id");
+	  }
+	  
+	  WebHookTemplateConfig newConfig = WebHookTemplateConfigBuilder.buildConfig(rawConfig);
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId()), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
+	  
+	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfig, newTemplate, new ErrorResult());
+	  if (validationResult.isErrored()) {
+		  throw new UnprocessableEntityException("Template contained invalid data", validationResult);
+	  }	  
+
+	  if (webHookTemplateConfig.getId().equals(rawConfig.getId())) {
+		  myTemplateManager.registerTemplateFormatFromXmlConfig(newConfig);
+		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+			  return WebHookTemplateConfigBuilder.buildEntity(myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig());
+		  } else {
+		   	throw new OperationException("There was an error saving your template. Sorry.");
+		  }
+	  }
+	  throw new OperationException("The template id in the payload did not match the template id in the URL.");
   }
   
   /**
