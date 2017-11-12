@@ -224,7 +224,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		if (Integer.valueOf(responseMsg.id) == templateItem.getId()){
     			assertEquals(templateItem.getTemplateText().getTemplateContent(), responseMsg.getTemplateText().content);
     			assertEquals(elastic.getTemplateDescription(), responseMsg.parentTemplate.getDescription());
-    			assertEquals(elastic.getTemplateId(), responseMsg.parentTemplate.getName());
+    			assertEquals(elastic.getTemplateId(), responseMsg.parentTemplate.getId());
     			itemFound = true;
     		}
     	}

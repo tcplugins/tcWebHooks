@@ -242,12 +242,12 @@ public class Template {
 	}
 	
 	@XmlRootElement
-	@XmlType (name = "parentTemplate", propOrder = { "name", "description", "href" }) 
+	@XmlType (name = "parentTemplate", propOrder = { "id", "description", "href" }) 
 	@Getter @Setter @XmlAccessorType(XmlAccessType.FIELD)
 	@NoArgsConstructor // empty constructor for JAXB
 	@AllArgsConstructor
 	public static class TemplateItemParent {
-		String name;
+		String id;
 		String description;
 		String href;
 	}
