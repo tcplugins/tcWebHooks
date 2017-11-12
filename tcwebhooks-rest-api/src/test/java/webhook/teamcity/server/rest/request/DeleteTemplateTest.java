@@ -78,7 +78,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	prettyPrint(responseTemplate);
     	
     	assertEquals("slack.com-compact", responseTemplate.id);
-    	assertEquals("slack.com-compact", responseTemplateItem.parentTemplate.getName());
+    	assertEquals("slack.com-compact", responseTemplateItem.parentTemplate.getId());
     	prettyPrint(responseTemplateItem);
     	
     	assertEquals(2, responseTemplate.getTemplates().size());

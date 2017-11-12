@@ -53,7 +53,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
-    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getName());
+    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
     	responseMsg.findConfigForBuildState("beforeBuildFinish").setEnabled(true);
@@ -73,7 +73,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
-    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getName());
+    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
     	responseMsg.findConfigForBuildState("buildFailed").setEnabled(true);
@@ -93,7 +93,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
-    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getName());
+    	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
     	responseMsg.id= "_new";
