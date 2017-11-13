@@ -137,7 +137,7 @@ public class Template {
 	}
 
 	@XmlRootElement(name = "templateItem")
-	@XmlType(name = "templateItem", propOrder = { "id", "enabled", "href", "templateText", "branchTemplateText", "parentTemplate", "states"})
+	@XmlType(name = "templateItem", propOrder = { "id", "enabled", "href", "templateText", "branchTemplateText", "parentTemplate", "buildStates"})
 	@Data @XmlAccessorType(XmlAccessType.FIELD)
 	public static class TemplateItem {
 		@XmlElement
@@ -158,8 +158,8 @@ public class Template {
 		@XmlElement
 		public TemplateItemParent parentTemplate;
 		
-		@XmlElement(name = "state")	@XmlElementWrapper(name = "states")
-		private List<WebHookTemplateStateRest> states = new ArrayList<WebHookTemplateStateRest>();
+		@XmlElement(name = "buildState")	@XmlElementWrapper(name = "buildStates")
+		private List<WebHookTemplateStateRest> buildStates = new ArrayList<>();
 
 		public TemplateItem() {
 			// empty constructor for JAXB
@@ -181,10 +181,10 @@ public class Template {
 			this.branchTemplateText = ValueWithDefault.decideDefault(fields.isIncluded("branchTemplateText", false, true), new BranchTemplateText(template.getTemplateConfig(), id, fields, beanContext));
 			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getId(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
 
-			if (fields.isIncluded("states", false, true)) {
-				states = new ArrayList<>();
+			if (fields.isIncluded("buildStates", false, true)) {
+				buildStates = new ArrayList<>();
 				for (BuildStateEnum state : BuildStateEnum.getNotifyStates()) {
-					states.add(
+					buildStates.add(
 								new WebHookTemplateStateRest(
 														state.getShortName(), 
 														template.getBuildStatesWithTemplate().isAvailable(state), 
@@ -211,7 +211,7 @@ public class Template {
 			this.templateText = new TemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
 			this.branchTemplateText = new BranchTemplateText(template.getTemplateConfig(), templateItem, id, fields, beanContext);
 			this.parentTemplate = ValueWithDefault.decideDefault(fields.isIncluded("parentTemplate", false, true), new TemplateItemParent(template.getTemplateConfig().getId(), template.getTemplateConfig().getTemplateDescription(), beanContext.getApiUrlBuilder().getHref(template.getTemplateConfig())));
-			this.states.clear();
+			this.buildStates.clear();
 			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 				WebHookTemplateStateRest myState = new WebHookTemplateStateRest(state.getShortName(), 
 														false,
@@ -226,12 +226,12 @@ public class Template {
 						}
 					}
 				}
-				this.states.add(myState);
+				this.buildStates.add(myState);
 			}
 		}
 		
 		public WebHookTemplateStateRest findConfigForBuildState(String buildStateShortName) {
-			for (WebHookTemplateStateRest itemState: this.getStates()){
+			for (WebHookTemplateStateRest itemState: this.getBuildStates()){
 				if (buildStateShortName.equals(itemState.getType())){
 					return itemState;
 				}
@@ -252,7 +252,7 @@ public class Template {
 		String href;
 	}
 	
-	@XmlRootElement
+	@XmlRootElement (name = "buildState")
 	@XmlType (name = "buildState", propOrder = { "type", "enabled", "editable", "href" }) 
 	@Getter @Setter @XmlAccessorType(XmlAccessType.FIELD)
 	@NoArgsConstructor // empty constructor for JAXB
@@ -330,7 +330,7 @@ public class Template {
 		}
 
 		if (fields.isIncluded("templateItem", false, true)){
-			templates = new ArrayList<Template.TemplateItem>();
+			templates = new ArrayList<>();
 			
 			if (template.getTemplates() != null){
 				for (WebHookTemplateItem templateItem: template.getTemplates().getTemplates()){
@@ -401,24 +401,5 @@ public class Template {
 			this.description = state.getDescription();
 		}
 	}
-
-	/*
-	 * @NotNull public WebHookTemplate getProjectFromPosted(@NotNull
-	 * TemplateFinder templateFinder) { //todo: support posted parentProject
-	 * fields here String locatorText = ""; if (internalId != null) locatorText
-	 * = "internalId:" + internalId; if (id != null) locatorText +=
-	 * (!locatorText.isEmpty() ? "," : "") + "id:" + id; if
-	 * (locatorText.isEmpty()) { locatorText = locator; } else { if (locator !=
-	 * null) { throw new BadRequestException(
-	 * "Both 'locator' and 'id' or 'internalId' attributes are specified. Only one should be present."
-	 * ); } } if (jetbrains.buildServer.util.StringUtil.isEmpty(locatorText)){
-	 * //find by href for compatibility with 7.0 if
-	 * (!jetbrains.buildServer.util.StringUtil.isEmpty(href)){ return
-	 * templateFinder
-	 * .getTemplate(jetbrains.buildServer.util.StringUtil.lastPartOf(href,
-	 * '/')); } throw new BadRequestException(
-	 * "No project specified. Either 'id', 'internalId' or 'locator' attribute should be present."
-	 * ); } return templateFinder.getProject(locatorText); }
-	 */
 
 }

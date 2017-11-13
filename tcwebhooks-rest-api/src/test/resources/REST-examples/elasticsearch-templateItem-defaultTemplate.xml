@@ -8,69 +8,69 @@
 		href="/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/branchTemplateContent"
 		webUrl="http://192.168.1.72:8111/webhooks/templates.html?template=elasticsearch"
 		content="&#xA;{ &#xA;  &quot;branch_name&quot;: &quot;${branchName}&quot;, &#xA;  &quot;branch_display_name&quot;: &quot;${branchDisplayName}&quot;, &#xA;  &quot;branch_is_default&quot;: &quot;${branchIsDefault}&quot;, &#xA;  &quot;build_start_time&quot;: &quot;${buildStartTime}&quot;, &#xA;  &quot;timestamp&quot;: &quot;${currentTime}&quot;, &#xA;  &quot;build_event&quot;: &quot;${notifyType}&quot;, &#xA;  &quot;build_name&quot;: &quot;${buildName}&quot;, &#xA;  &quot;build_status_url&quot;: &quot;${buildStatusUrl}&quot;, &#xA;  &quot;build_number&quot;: &quot;${buildNumber}&quot;, &#xA;  &quot;triggered_by&quot;: &quot;${triggeredBy}&quot;, &#xA;  &quot;build_result&quot;: &quot;${buildResult}&quot;, &#xA;  &quot;build_result_previous&quot;: &quot;${buildResultPrevious}&quot;, &#xA;  &quot;build_result_delta&quot;: &quot;${buildResultDelta}&quot; &#xA;}&#xA;&#xA;&#x9;&#x9;" />
-	<states>
-		<state>
+	<buildStates>
+		<buildState>
 			<type>buildStarted</type>
 			<enabled>true</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/buildStarted
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>changesLoaded</type>
 			<enabled>true</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/changesLoaded
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>buildInterrupted</type>
 			<enabled>true</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/buildInterrupted
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>beforeBuildFinish</type>
 			<enabled>true</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/beforeBuildFinish
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>buildSuccessful</type>
 			<enabled>false</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/buildSuccessful
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>buildFailed</type>
 			<enabled>false</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/buildFailed
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>buildFixed</type>
 			<enabled>false</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/buildFixed
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>buildBroken</type>
 			<enabled>false</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/buildBroken
 			</href>
-		</state>
-		<state>
+		</buildState>
+		<buildState>
 			<type>responsibilityChanged</type>
 			<enabled>true</enabled>
 			<editable>false</editable>
 			<href>/httpAuth/app/rest/webhooks/templates/id:elasticsearch/templateItem/defaultTemplate/buildState/responsibilityChanged
 			</href>
-		</state>
-	</states>
+		</buildState>
+	</buildStates>
 </templateItem>

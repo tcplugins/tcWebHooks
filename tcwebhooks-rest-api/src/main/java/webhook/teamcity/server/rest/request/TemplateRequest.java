@@ -84,42 +84,42 @@ public class TemplateRequest {
   
   @NotNull
   public static String getDefaultTemplateTextHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/defaultTemplate/templateContent" ;
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItems/defaultTemplate/templateContent" ;
   }
   
   @NotNull
   public static String getDefaultBranchTemplateTextHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/defaultTemplate/branchTemplateContent" ;
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItems/defaultTemplate/branchTemplateContent" ;
   }
   
   @NotNull
   public static String getTemplateDefaultItemHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/defaultTemplate";
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItems/defaultTemplate";
   }
   
   @NotNull
   public static String getTemplateItemHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId());
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItems/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId());
   }
   
   @NotNull
   public static String getTemplateItemTextHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) + "/templateContent" ;
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template)+ "/templateItems/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) + "/templateContent" ;
   }
   
   @NotNull
   public static String getTemplateItemBranchTextHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItem/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) +  "/branchTemplateContent" ;
+	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/templateItems/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) +  "/branchTemplateContent" ;
   }
  
   @NotNull  
   public static String getTemplateStateHref(WebHookTemplateConfig template,	String state) {
-		return getTemplateDefaultItemHref(template) + "/buildState/" + state;
+		return getTemplateDefaultItemHref(template) + "/buildStates/" + state;
   }
   
   @NotNull  
   public static String getTemplateItemStateHref(WebHookTemplateConfig template,	WebHookTemplateItemRest templateItem, String state) {
-	  return getTemplateItemHref(template, templateItem) + "/buildState/" + state;
+	  return getTemplateItemHref(template, templateItem) + "/buildStates/" + state;
   }
   
   @GET
@@ -408,7 +408,7 @@ public class TemplateRequest {
 
 
   @GET
-  @Path("/{templateLocator}/templateItem/{templateItemId}/{templateContentType}")
+  @Path("/{templateLocator}/templateItems/{templateItemId}/{templateContentType}")
   @Produces({"text/plain"})
   public String serveSpecificTemplateContent(@PathParam("templateLocator") String templateLocator, 
 		  									 @PathParam("templateItemId") String templateItemId, 
@@ -433,12 +433,12 @@ public class TemplateRequest {
   }
   
   /**
-   * /webhooks/templates/id:elasticsearch/templateItem/id:1
-   * /webhooks/templates/id:elasticsearch/templateItem/defaultTemplate
-   * /webhooks/templates/id:elasticsearch/templateItem/id:defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:1
+   * /webhooks/templates/id:elasticsearch/templateItems/defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:defaultTemplate
    */
   @GET
-  @Path("/{templateLocator}/templateItem/{templateItemId}")
+  @Path("/{templateLocator}/templateItems/{templateItemId}")
   @Produces({"application/xml", "application/json"})
   public TemplateItem serveTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  											 @PathParam("templateItemId") String templateItemId,
@@ -456,12 +456,12 @@ public class TemplateRequest {
   }
   
   /**
-   * /webhooks/templates/id:elasticsearch/templateItem/id:1
-   * /webhooks/templates/id:elasticsearch/templateItem/defaultTemplate
-   * /webhooks/templates/id:elasticsearch/templateItem/id:defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:1
+   * /webhooks/templates/id:elasticsearch/templateItems/defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:defaultTemplate
    */
   @DELETE
-  @Path("/{templateLocator}/templateItem/{templateItemId}")
+  @Path("/{templateLocator}/templateItems/{templateItemId}")
   @Produces({"application/xml", "application/json"})
   public void deleteTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  @PathParam("templateItemId") String templateItemId,
@@ -487,12 +487,12 @@ public class TemplateRequest {
   }
   
   /**
-   * /webhooks/templates/id:elasticsearch/templateItem/id:1
-   * /webhooks/templates/id:elasticsearch/templateItem/defaultTemplate
-   * /webhooks/templates/id:elasticsearch/templateItem/id:defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:1
+   * /webhooks/templates/id:elasticsearch/templateItems/defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:defaultTemplate
    */
   @PUT
-  @Path("/{templateLocator}/templateItem/{templateItemId}")
+  @Path("/{templateLocator}/templateItems/{templateItemId}")
   @Produces({"application/xml", "application/json"})
   public TemplateItem updateTemplateItem(@PathParam("templateLocator") String templateLocator,
 		  @PathParam("templateItemId") String templateItemId, @QueryParam("fields") String fields, TemplateItem templateItem) {
@@ -557,10 +557,10 @@ public class TemplateRequest {
 			  templateItemConfig.getBranchTemplateText().setTemplateContent(templateItem.getBranchTemplateText().getContent());
 		  }
 	  }
-	  if (templateItem.getStates() != null) {
+	  if (templateItem.getBuildStates() != null) {
 		  templateItemConfig.getStates().clear();
 		  
-		  for (WebHookTemplateStateRest itemState : templateItem.getStates()) {
+		  for (WebHookTemplateStateRest itemState : templateItem.getBuildStates()) {
 					
 				if (itemState != null && itemState.isEnabled()) {
 					templateItemConfig.getStates().add(new WebHookTemplateState(itemState.getType(), itemState.isEnabled()));
@@ -642,10 +642,10 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 			  templateItemConfig.getBranchTemplateText().setTemplateContent(templateItem.getBranchTemplateText().getContent());
 		  }
 	  }
-	  if (templateItem.getStates() != null) {
+	  if (templateItem.getBuildStates() != null) {
 		  templateItemConfig.getStates().clear();
 		  
-		  for (WebHookTemplateStateRest itemState : templateItem.getStates()) {
+		  for (WebHookTemplateStateRest itemState : templateItem.getBuildStates()) {
 			  
 			  if (itemState != null && itemState.isEnabled()) {
 				  templateItemConfig.getStates().add(new WebHookTemplateState(itemState.getType(), itemState.isEnabled()));
@@ -656,12 +656,12 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 }
   
   /**
-   *  /app/rest/webhooks/templates/id:flowdock/templateItem/id:2/buildState/buildStarted
-   *  							  /id:elasticsearch/templateItem/id:1/buildState/buildStarted
-   *  							  /id:elasticsearch/templateItem/defaultTemplate/buildState/buildStarted
+   *  /app/rest/webhooks/templates/id:flowdock/templateItems/id:2/buildStates/buildStarted
+   *  							  /id:elasticsearch/templateItems/id:1/buildStates/buildStarted
+   *  							  /id:elasticsearch/templateItems/defaultTemplate/buildStates/buildStarted
    */
   @GET
-  @Path("/{templateLocator}/templateItem/{templateItemId}/buildState/{buildState}")
+  @Path("/{templateLocator}/templateItems/{templateItemId}/buildStates/{buildState}")
   @Produces({"application/xml", "application/json"})
   public WebHookTemplateStateRest serveTemplateItemBuildStateSetting(@PathParam("templateLocator") String templateLocator,
 		  											 @PathParam("templateItemId") String templateItemId,
@@ -688,7 +688,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
   }
   
   @PUT
-  @Path("/{templateLocator}/templateItem/{templateItemId}/buildState/{buildState}")
+  @Path("/{templateLocator}/templateItems/{templateItemId}/buildStates/{buildState}")
   @Produces({"application/xml", "application/json"})
   public WebHookTemplateStateRest updateTemplateItemBuildStateSetting(@PathParam("templateLocator") String templateLocator,
 		  @PathParam("templateItemId") String templateItemId,

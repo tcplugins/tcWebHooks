@@ -155,7 +155,7 @@ WebHooksPlugin = {
 			myJson.templateText.useTemplateTextForBranch = $j("#editTemplateItemForm input#useTemplateTextForBranch").is(':checked');
 			myJson.branchTemplateText.content = editorBranch.getValue();
 			
-    		$j(myJson.state).each(function() {
+    		$j(myJson.buildState).each(function() {
     			//console.log(this.type + " :: "+ this.enabled);
     			this.enabled = $j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked");
     		});
@@ -170,8 +170,8 @@ WebHooksPlugin = {
 			 * In that case, we don't have info about the parent template, so we request it here
 			 * and graft it into the json request. 
 			 * 
-			 * Next we initialise the states as all editable and then iterate over any
-			 * Build Event Templates  in the templateItem[] and set editable:false for any states 
+			 * Next we initialise the buildStates as all editable and then iterate over any
+			 * Build Event Templates  in the templateItem[] and set editable:false for any buildStates 
 			 * which already have a template defined. 
 			 */
 			var dialog = this;
@@ -186,7 +186,7 @@ WebHooksPlugin = {
 							parentTemplate : response,
 							templateText : { content: "" },
 							branchTemplateText :  { content: "" },
-							state : [ 
+							buildState : [ 
 										{ type: "buildStarted", 		 enabled : false, editable: true },
 										{ type: "changesLoaded", 		 enabled : false, editable: true },
 										{ type: "buildInterrupted", 	 enabled : false, editable: true },
@@ -206,13 +206,13 @@ WebHooksPlugin = {
 						$j(myJson.parentTemplate.templateItem).each(function(thing, templateItem) {
 							//console.log(templateItem);
 							//console.log(templateItem.enabled);
-							$j(templateItem.state).each(function(index, itemState){
-								if (itemState.enabled) {
-									$j(myJson.state).each(function(thang, state) {
-										//console.log(state);
-										if (state.type == itemState.type) {
-											//console.log("they match " + state + templateItem);
-											state.editable = false;
+							$j(templateItem.buildState).each(function(index, itembuildState){
+								if (itembuildState.enabled) {
+									$j(myJson.buildState).each(function(thang, buildState) {
+										//console.log(buildState);
+										if (buildState.type == itembuildState.type) {
+											//console.log("they match " + buildState + templateItem);
+											buildState.editable = false;
 										}
 									});
 								}
@@ -228,7 +228,7 @@ WebHooksPlugin = {
 		getTemplateData: function (templateId, buildTemplateId, action) {
 			var dialog = this;
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
     		    type: "GET",
     		    headers : {
     		        'Accept' : 'application/json'
@@ -243,7 +243,7 @@ WebHooksPlugin = {
 		getTemplateDataOrGetParentOnFailure: function (templateId, buildTemplateId, action) {
 			var dialog = this;
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItem/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
 				type: "GET",
 				headers : {
 					'Accept' : 'application/json'
@@ -326,7 +326,7 @@ WebHooksPlugin = {
 			
         	if (action === 'copyBuildEventTemplate' || action === 'addBuildEventTemplate') {
         		if (myJson.id == 'defaultTemplate') {
-            		$j(myJson.state).each(function() {
+            		$j(myJson.buildState).each(function() {
             			//console.log(this.type + " :: "+ this.enabled);
             			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.enabled);
             			if (this.enabled) {
@@ -334,7 +334,7 @@ WebHooksPlugin = {
             			}
             		});
         		} else {
-            		$j(myJson.state).each(function() {
+            		$j(myJson.buildState).each(function() {
             			//console.log(this.type + " :: "+ this.enabled);
             			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.editable && ! this.enabled);
             			if (this.editable && ! this.enabled) {
@@ -344,7 +344,7 @@ WebHooksPlugin = {
         		}
         		myJson.id = '_new';
         	} else {
-	    		$j(myJson.state).each(function() {
+	    		$j(myJson.buildState).each(function() {
 	    			//console.log(this.type + " :: "+ this.enabled);
 	    			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
 	    			if (this.editable) {
@@ -439,7 +439,7 @@ WebHooksPlugin = {
 			var templateNumber = $j("#deleteTemplateItemForm input[id='templateNumber']").val()
 			
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItem/' + templateNumber,
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + templateNumber,
 				type: "DELETE",
 				headers : {
 					'Content-Type' : 'application/json',
