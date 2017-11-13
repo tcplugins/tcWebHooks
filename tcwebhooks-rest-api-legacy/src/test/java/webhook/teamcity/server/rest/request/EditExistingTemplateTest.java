@@ -51,16 +51,16 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	slackCompact.register();
     	
-    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
     	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
     	responseMsg.findConfigForBuildState("beforeBuildFinish").setEnabled(true);
-		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
+		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
 		prettyPrint(responseMsg2);
 		
-    	Template.TemplateItem responseMsg3 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseMsg3 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	assertEquals(true, responseMsg3.findConfigForBuildState("beforeBuildFinish").isEnabled());
     	prettyPrint(responseMsg3);
     }
@@ -71,14 +71,14 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	slackCompact.register();
     	
-    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
     	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
     	responseMsg.findConfigForBuildState("buildFailed").setEnabled(true);
     	try {
-    		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
+    		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
     	} catch (UniformInterfaceException e) {
     		assertEquals("Client response status: 422", e.getMessage());
     		throw e;
@@ -91,13 +91,13 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	slackCompact.register();
     	
-    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
     	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
     	responseMsg.id= "_new";
-    	responseMsg.setStates(new ArrayList<WebHookTemplateStateRest>());
+    	responseMsg.setBuildStates(new ArrayList<WebHookTemplateStateRest>());
     	
 		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).post(Template.TemplateItem.class, responseMsg);
 		prettyPrint(responseMsg2);

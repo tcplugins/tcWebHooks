@@ -73,7 +73,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	slackCompact.register();
     	
     	Template responseTemplate = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	Template.TemplateItem responseTemplateItem = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseTemplateItem = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	
     	prettyPrint(responseTemplate);
     	
@@ -83,10 +83,10 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	
     	assertEquals(2, responseTemplate.getTemplates().size());
     	
-    	ClientResponse deleteResponse = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).delete(ClientResponse.class);
+    	ClientResponse deleteResponse = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).delete(ClientResponse.class);
     	assertEquals(204, deleteResponse.getStatus());
     	
-    	ClientResponse getResponse = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItem/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+    	ClientResponse getResponse = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
     	// I've not figured out how to invoke the exception handler, so "NotFoundException" returns 500
     	// in Grizzly tests.
     	assertEquals(500, getResponse.getStatus());
@@ -106,13 +106,13 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	Template templateResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals(1, templateResponse.getTemplates().size());
 
-    	ClientResponse responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+    	ClientResponse responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
     	assertEquals(200, responseMsg.getStatus());
     	
-    	ClientResponse deleteResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).delete(ClientResponse.class);
+    	ClientResponse deleteResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).delete(ClientResponse.class);
     	assertEquals(204, deleteResponse.getStatus());
     	
-    	ClientResponse getResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+    	ClientResponse getResponse = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
     	// I've not figured out how to invoke the exception handler, so "NotFoundException" returns 500
     	// in Grizzly tests.
     	assertEquals(500, getResponse.getStatus());

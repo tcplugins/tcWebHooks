@@ -81,7 +81,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	prettyPrint(responseMsg);
     	
     	assertEquals(1, (int)responseMsg.count);
-    	assertEquals(1, responseMsg.getTemplates().size());
+    	assertEquals(1, responseMsg.getTemplateList().size());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	}
     	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
     	assertEquals(3, (int)responseMsg.count);
-    	assertEquals(3, responseMsg.getTemplates().size());
+    	assertEquals(3, responseMsg.getTemplateList().size());
     	
     	prettyPrint(responseMsg);
     }    
@@ -136,11 +136,11 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	
-    	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
     	assertEquals(elastic.getTemplateForState(BuildStateEnum.BUILD_FIXED).getTemplateText(), responseMsg);
     	prettyPrint(responseMsg);
     	
-    	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
     	assertEquals(elastic.getBranchTemplateForState(BuildStateEnum.BUILD_FIXED).getTemplateText(), responseMsg);
     	prettyPrint(responseMsg);
     }
@@ -151,11 +151,11 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	
-    	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/defaultTemplate/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
     	assertEquals(elastic.getTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText(), responseMsg);
     	prettyPrint(responseMsg);
     	
-    	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
+    	responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/defaultTemplate/branchTemplateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
     	assertEquals(elastic.getBranchTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText(), responseMsg);
     	prettyPrint(responseMsg);
     }  
@@ -166,7 +166,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	
-    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1").queryParam("fields","id,content").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1").queryParam("fields","id,content").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	for (WebHookTemplateItem templateItem : elastic.getAsEntity().getTemplates().getTemplates()) {
     		if (Integer.valueOf(responseMsg.id) == templateItem.getId()){
     			assertEquals(templateItem.getTemplateText().getTemplateContent(), responseMsg.getTemplateText().content);
@@ -206,7 +206,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	
-    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class); //.queryParam("fields","id,content,parentTemplateDescription,parentTemplateName")
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class); //.queryParam("fields","id,content,parentTemplateDescription,parentTemplateName")
     	assertEquals("defaultTemplate", responseMsg.getId());
     	prettyPrint(responseMsg);
     	
@@ -218,7 +218,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
     	elastic.register();
     	
-    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItem/id:1").queryParam("fields","id,content,parentTemplate,parentTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+    	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1").queryParam("fields","id,content,parentTemplate,parentTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
     	boolean itemFound=false;
     	for (WebHookTemplateItem templateItem : elastic.getAsEntity().getTemplates().getTemplates()) {
     		if (Integer.valueOf(responseMsg.id) == templateItem.getId()){
@@ -244,8 +244,8 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
     			WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
     																	"/id:" + elastic.getTemplateId() + 
-    																	"/templateItem/id:" + item.getId() + 
-    																	"/buildState/" + state.getShortName()
+    																	"/templateItems/id:" + item.getId() + 
+    																	"/buildStates/" + state.getShortName()
     													   )
     													  .accept(MediaType.APPLICATION_JSON_TYPE)
     													  .get(WebHookTemplateStateRest.class);
@@ -271,8 +271,8 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
     			WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
     					"/id:" + elastic.getTemplateId() + 
-    					"/templateItem/id:defaultTemplate" + 
-    					"/buildState/" + state.getShortName()
+    					"/templateItems/id:defaultTemplate" + 
+    					"/buildStates/" + state.getShortName()
     					)
     					.accept(MediaType.APPLICATION_JSON_TYPE)
     					.get(WebHookTemplateStateRest.class);
@@ -299,8 +299,8 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
 			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()){
 				WebHookTemplateStateRest responseMsg = webResource.path(API_TEMPLATES_URL + 
 						"/id:" + flowdock.getTemplateId() + 
-						"/templateItem/id:" + item.getId() + 
-						"/buildState/" + state.getShortName()
+						"/templateItems/id:" + item.getId() + 
+						"/buildStates/" + state.getShortName()
 						)
 						.accept(MediaType.APPLICATION_JSON_TYPE)
 						.get(WebHookTemplateStateRest.class);

@@ -67,13 +67,13 @@ public class TemplateValidator {
 
 		validateTemplateText(requestTemplateItem, result);
 		
-		for (WebHookTemplateStateRest requestItemState : requestTemplateItem.getStates()) {
+		for (WebHookTemplateStateRest requestItemState : requestTemplateItem.getBuildStates()) {
 			if (BuildStateEnum.findBuildState(requestItemState.getType()) == null){ 
 				result.addError(requestItemState.getType(), requestItemState.getType() + " is an not a valid buildState");
 			}
 		}
 		
-		for (WebHookTemplateStateRest itemState : templateItem.getStates()) {
+		for (WebHookTemplateStateRest itemState : templateItem.getBuildStates()) {
 			WebHookTemplateStateRest requestItemState = requestTemplateItem.findConfigForBuildState(itemState.getType());
 				
 			if (requestItemState != null && !itemState.getEditable() && itemState.isEnabled() != requestItemState.isEnabled()) { 
