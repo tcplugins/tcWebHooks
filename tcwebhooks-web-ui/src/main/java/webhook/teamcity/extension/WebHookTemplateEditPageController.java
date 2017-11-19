@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
-import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -18,37 +17,24 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class WebHookTemplateEditPageController extends BaseController {
-
-	    private static final String GET_VARIABLE_NAME_TEMPLATE = "template";
-		private final WebControllerManager myWebManager;
-	    private PluginDescriptor myPluginDescriptor;
-		private final WebHookTemplateManager myTemplateManager;
-		private final WebHookPluginDataResolver myWebHookPluginDataResolver;
+public class WebHookTemplateEditPageController extends WebHookTemplateBasePageController {
 
 	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
 	    		WebHookTemplateManager webHookTemplateManager) {
-	        super(server);
-	        myWebManager = webManager;
-	        myPluginDescriptor = pluginDescriptor;
-	        myWebHookPluginDataResolver = webHookPluginDataResolver;
-	        myTemplateManager = webHookTemplateManager;
+	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager);
 	    }
 
-	    public void register(){
-	      myWebManager.registerController("/webhooks/template.html", this);
+	    @Override
+	    protected String getUrl() {
+	    	return "/webhooks/template.html";
 	    }
 
 	    @Nullable
 	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 	    	
 	    	HashMap<String,Object> params = new HashMap<>();
-	    	params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
-	    	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
-	    	params.put("rootContext", myServer.getServerRootPath());
-	    	params.put("isRestApiInstalled", myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
-	    	
+	    	addBaseParams(params);
 	    	
 	    	if (request.getParameter(GET_VARIABLE_NAME_TEMPLATE) != null){
 	    		
@@ -62,5 +48,6 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    	
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
 	    }
+
 
 }
