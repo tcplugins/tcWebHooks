@@ -669,7 +669,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  checkTemplateReadPermission();
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template.getTemplateItem() == null){
-		  throw new NotFoundException("No template item found by that name/id");
+		  throw new NotFoundException("No template item found by that id");
 	  }
 	  if (DEFAULT_TEMPLATE.equals(template.getTemplateItem().getId())){
 			for (BuildStateEnum state : BuildStateEnum.getNotifyStates()) {
@@ -696,7 +696,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  checkTemplateWritePermission();
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 	  if (template.getTemplateItem() == null){
-		  throw new NotFoundException("No template item found by that name/id");
+		  throw new NotFoundException("No template item found by that id");
 	  }
 	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(null), myBeanContext);
 	  
