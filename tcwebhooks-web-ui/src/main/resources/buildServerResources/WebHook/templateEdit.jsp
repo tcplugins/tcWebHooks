@@ -96,7 +96,12 @@
 					editorBranch.resize();
 				});
 		});
+		var restApiDetected = ${isRestApiInstalled};
 		</script>		
+	<c:if test="${not isRestApiInstalled}">
+		<div class="icon_before icon16 attentionRed">The <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> is not installed. Most settings on this page will non-functional.</div>
+	</c:if>
+		
     <bs:refreshable containerId="templateInfoContainer" pageUrl="${pageUrl}">
 
 	<bs:messages key="templateUpdateResult"/>
@@ -338,6 +343,27 @@
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="deleteTemplateDialogSubmit" label="Delete Template"/>
                 <forms:cancel onclick="WebHooksPlugin.DeleteTemplateDialog.close()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
+    
+    <bs:dialog dialogId="noRestApiDialog"
+               dialogClass="noRestApiDialog"
+               title="No WebHoooks REST API Plugin detected"
+               closeCommand="WebHooksPlugin.NoRestApiDialog.close()">
+        <forms:multipartForm id="noRestApiForm"
+                             action="/admin/manageWebhookTemplate.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.NoRestApiDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td>The WebHoooks REST API Plugin was not detected. This page makes heavy use of
+                		the WebHooks REST API to provide editing of WebHook Templates.<p>
+                		Please install the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> to use this page.
+                </td></tr>
+            </table>
+            <div class="popupSaveButtonsBlock">
+                <forms:cancel onclick="WebHooksPlugin.NoRestApiDialog.close()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>

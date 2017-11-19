@@ -12,6 +12,7 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
@@ -23,13 +24,15 @@ public class WebHookTemplateEditPageController extends BaseController {
 		private final WebControllerManager myWebManager;
 	    private PluginDescriptor myPluginDescriptor;
 		private final WebHookTemplateManager myTemplateManager;
+		private final WebHookPluginDataResolver myWebHookPluginDataResolver;
 
 	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		PluginDescriptor pluginDescriptor,  
+	    		PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
 	    		WebHookTemplateManager webHookTemplateManager) {
 	        super(server);
 	        myWebManager = webManager;
 	        myPluginDescriptor = pluginDescriptor;
+	        myWebHookPluginDataResolver = webHookPluginDataResolver;
 	        myTemplateManager = webHookTemplateManager;
 	    }
 
@@ -44,7 +47,7 @@ public class WebHookTemplateEditPageController extends BaseController {
 	    	params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
 	    	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
 	    	params.put("rootContext", myServer.getServerRootPath());
-	    	
+	    	params.put("isRestApiInstalled", myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
 	    	
 	    	
 	    	if (request.getParameter(GET_VARIABLE_NAME_TEMPLATE) != null){

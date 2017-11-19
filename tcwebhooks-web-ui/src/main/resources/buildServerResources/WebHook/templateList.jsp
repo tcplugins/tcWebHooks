@@ -44,6 +44,14 @@
       
     <jsp:attribute name="body_include">
     
+    <script type=text/javascript>
+    		var restApiDetected = ${isRestApiInstalled};
+		</script>		
+		<div>The following WebHooks Templates are available for use when configuring a WebHooks.
+		<c:if test="${not isRestApiInstalled}">
+			<p>Viewing or making changes to template content will not be possible using the WebHook Templates UI because the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API</a> is not installed.
+		</c:if>
+    	</div>
     <table id="webHookTemplateTable" class="settings">
 		<thead>
 		<tr style="background-color: rgb(245, 245, 245);">
@@ -83,6 +91,27 @@
 		    </c:forEach>
     	</tbody>
     	</table>
+
+    <bs:dialog dialogId="noRestApiDialog"
+               dialogClass="noRestApiDialog"
+               title="No WebHoooks REST API Plugin detected"
+               closeCommand="WebHooksPlugin.NoRestApiDialog.close()">
+        <forms:multipartForm id="noRestApiForm"
+                             action="/admin/manageWebhookTemplate.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.NoRestApiDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td>The WebHoooks REST API Plugin was not detected. This page makes heavy use of
+                		the WebHooks REST API to provide editing of WebHook Templates.<p>
+                		Please install the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> to use this page.
+                </td></tr>
+            </table>
+            <div class="popupSaveButtonsBlock">
+                <forms:cancel onclick="WebHooksPlugin.NoRestApiDialog.close()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
     	
     <bs:dialog dialogId="addTemplateDialog"
                dialogClass="addTemplateDialog"

@@ -12,31 +12,63 @@ WebHooksPlugin = {
 		}
 	},
     editBuildEventTemplate: function(data) {
-    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Edit Build Event Template", 'editBuildEventTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Edit Build Event Template", 'editBuildEventTemplate', data);
+    	}
     },
     copyBuildEventTemplate: function(data) {
-    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Copy Build Event Template", 'copyBuildEventTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.TemplateEditBuildEventDialog.showDialog("Copy Build Event Template", 'copyBuildEventTemplate', data);
+    	}
     },
     addBuildEventTemplate: function(data) {
-    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialogAddEventTemplate("Add Build Event Template", 'addBuildEventTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.TemplateEditBuildEventDialog.showDialogAddEventTemplate("Add Build Event Template", 'addBuildEventTemplate', data);
+    	}
     },
     createDefaultTemplate: function(data) {
-    	WebHooksPlugin.TemplateEditBuildEventDialog.showDialogCreateDefaultTemplate("Add Default Template", 'addDefaultTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.TemplateEditBuildEventDialog.showDialogCreateDefaultTemplate("Add Default Template", 'addDefaultTemplate', data);
+    	}
     },
     editTemplateDetails: function(data) {
-    	WebHooksPlugin.EditTemplateDialog.showDialog("Edit Template", 'editTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.EditTemplateDialog.showDialog("Edit Template", 'editTemplate', data);
+    	}
     },
     copyTemplate: function(data) {
-    	WebHooksPlugin.EditTemplateDialog.showDialog("Copy Template", 'copyTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.EditTemplateDialog.showDialog("Copy Template", 'copyTemplate', data);
+    	}
     },
     disableTemplate: function(data) {
     	alert("This is not implemented yet.");
     },
     deleteBuildEventTemplate: function(data) {
-    	WebHooksPlugin.DeleteTemplateItemDialog.showDialog("Delete Build Event Template", 'deleteBuildEventTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.DeleteTemplateItemDialog.showDialog("Delete Build Event Template", 'deleteBuildEventTemplate', data);
+    	}
     },
     deleteTemplate: function(data) {
-    	WebHooksPlugin.DeleteTemplateDialog.showDialog("Delete Template", 'deleteTemplate', data);
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.DeleteTemplateDialog.showDialog("Delete Template", 'deleteTemplate', data);
+    	}
     },
     TemplateEditBuildEventDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
@@ -384,6 +416,20 @@ WebHooksPlugin = {
 		}
     })),
     
+    NoRestApiDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    	getContainer: function () {
+    		return $('noRestApiDialog');
+    	},
+    	
+    	formElement: function () {
+    		return $('noRestApiForm');
+    	},
+    	
+    	showDialog: function () {
+    		this.showCentered();
+    	}
+ 
+    })),
     DeleteTemplateItemDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {
     		return $('deleteTemplateItemDialog');

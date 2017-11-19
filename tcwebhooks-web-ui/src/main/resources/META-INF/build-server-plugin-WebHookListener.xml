@@ -102,6 +102,10 @@
 		class="webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory"
 		init-method="register" 
 		/>
+		
+	<bean id="webHookPluginDataResolver"
+		class="webhook.teamcity.WebHookPluginDataResolverImpl"
+		/>
 
 	<bean id="webHookPayloadNameValuePairs"
 		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairs"

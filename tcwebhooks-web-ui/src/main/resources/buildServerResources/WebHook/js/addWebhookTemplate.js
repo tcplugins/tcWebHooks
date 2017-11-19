@@ -12,7 +12,11 @@ WebHooksPlugin = {
 		}
 	},
     addTemplate: function(data) {
-    	WebHooksPlugin.AddTemplateDialog.showDialog("Add New Template", 'addTemplate');
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.AddTemplateDialog.showDialog("Add New Template", 'addTemplate');
+    	}    	
     },
     AddTemplateDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {
