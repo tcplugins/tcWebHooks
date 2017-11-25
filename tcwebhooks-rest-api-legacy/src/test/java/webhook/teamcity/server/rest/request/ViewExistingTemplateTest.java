@@ -100,7 +100,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     }    
     
     @Test
-    public void testJsonTemplatesRequestUsingLotsOfRegisteredTemplatesButOnlyReturnignOne() throws FileNotFoundException, JAXBException {
+    public void testJsonTemplatesRequestUsingLotsOfRegisteredTemplatesButOnlyReturningOne() throws FileNotFoundException, JAXBException {
     	
     	WebResource webResource = resource();
     	WebHookTemplates templatesList =  webHookTemplateJaxHelper.read("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
