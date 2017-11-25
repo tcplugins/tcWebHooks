@@ -98,7 +98,6 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName); 
-			Loggers.SERVER.debug(e);
 		}
 		return value;
 		
