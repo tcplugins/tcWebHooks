@@ -53,7 +53,6 @@ public class BeanContextProvider implements InjectableProvider<Context, Type>, I
   private final ServiceLocator myServiceLocator;
 
   public BeanContextProvider(final RequestPathTransformInfo requestPathTransformInfo, final BeanFactory factory, final ServiceLocator serviceLocator) {
-	System.out.println("We are here: Trying to provide a real BeanContext instance");
 	myRequestPathTransformInfo = requestPathTransformInfo;
     myFactory = factory;
     myServiceLocator = serviceLocator;
