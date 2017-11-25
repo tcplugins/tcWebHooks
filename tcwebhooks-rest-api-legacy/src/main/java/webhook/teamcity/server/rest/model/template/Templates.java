@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 @XmlRootElement
 public class Templates {
 	
-	  @XmlElement(name = "templates") @Getter
+	  @XmlElement(name = "template") @XmlElementWrapper(name = "templates") @Getter
 	  private List<Template> templateList = new ArrayList<>();
 
 	  @XmlAttribute
