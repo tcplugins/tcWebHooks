@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <webhook-templates>
 	<webhook-template enabled="true" name="slack.com-compact" rank="20">
-		<template-description>Slack.com Compact Notifcation</template-description>
+		<template-description>Slack.com Compact Notification</template-description>
 		<template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip>
 		<formats>
 			<format name="jsonTemplate" enabled="true" />

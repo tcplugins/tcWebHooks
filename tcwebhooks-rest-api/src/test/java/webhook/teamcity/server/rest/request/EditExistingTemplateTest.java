@@ -146,7 +146,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals("Slack.com Compact Notifcation", responseAfterEdit.description);
+    	assertEquals("Slack.com Compact Notification", responseAfterEdit.description);
     	assertEquals("slack.com-compact", responseAfterEdit.id);
     	assertEquals("", responseAfterEdit.preferredDateFormat);
     	assertEquals("POSTs a very compact slack.com notification", responseAfterEdit.toolTip);
@@ -164,7 +164,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals("Slack.com Compact Notifcation", responseAfterEdit.description);
+    	assertEquals("Slack.com Compact Notification", responseAfterEdit.description);
     	assertEquals("slack.com-compact", responseAfterEdit.id);
     	assertEquals("", responseAfterEdit.preferredDateFormat);
     	assertEquals("POSTs a very compact slack.com notification", responseAfterEdit.toolTip);
