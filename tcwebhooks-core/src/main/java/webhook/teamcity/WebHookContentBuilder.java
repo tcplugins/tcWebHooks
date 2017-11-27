@@ -16,7 +16,6 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
-import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
@@ -32,7 +31,7 @@ public class WebHookContentBuilder {
 		this.webHookTemplateResolver = resolver;
 	}
 	
-	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isOverrideEnabled) throws WebHookPayloadContentAssemblyException{
+	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isOverrideEnabled) {
 		WebHookPayload payloadFormat = payloadManager.getFormat(whc.getPayloadFormat());
 		WebHookTemplateContent templateForThisBuild;
 		wh.setContentType(payloadFormat.getContentType());

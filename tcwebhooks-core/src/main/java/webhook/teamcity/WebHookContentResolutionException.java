@@ -9,7 +9,7 @@ public class WebHookContentResolutionException extends RuntimeException {
 	private static final long serialVersionUID = 2327979470726268623L;
 	private final int errorCode; 
 
-	private WebHookContentResolutionException(String message) {
+	public WebHookContentResolutionException(String message) {
 		super(message);
 		this.errorCode = ERROR_CODE;
 	}

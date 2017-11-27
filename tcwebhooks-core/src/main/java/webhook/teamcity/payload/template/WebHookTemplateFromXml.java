@@ -1,6 +1,7 @@
 package webhook.teamcity.payload.template;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +15,14 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 
 public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	
+	private static final String BRANCH_TYPE_BRANCH = "branch";
+	private static final String BRANCH_TYPE_NON_BRANCH = "nonBranch";
 	List<String> supportedFormats = new ArrayList<>();
-	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new HashMap<>();
-	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new HashMap<>();
+	Map<BuildStateEnum,WebHookTemplateContent> templateContent = new EnumMap<>(BuildStateEnum.class);
+	Map<BuildStateEnum,WebHookTemplateContent> branchTemplateContent = new EnumMap<>(BuildStateEnum.class);
 	
 	protected WebHookTemplateManager templateManager;
 	private int rank = 10; // Default to 10.
@@ -98,19 +97,19 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	}
 
 	@Override
-	public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) throws UnSupportedBuildStateException {
+	public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) {
 		if (templateContent.containsKey(buildState)){
 			return (templateContent.get(buildState)).copy(); 
 		}
-		throw new UnSupportedBuildStateException(buildState, "nonBranch", this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
+		throw new UnSupportedBuildStateException(buildState, BRANCH_TYPE_NON_BRANCH, this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
 	}
 	
 	@Override
-	public WebHookTemplateContent getBranchTemplateForState(BuildStateEnum buildState) throws UnSupportedBuildStateException {
+	public WebHookTemplateContent getBranchTemplateForState(BuildStateEnum buildState) {
 		if (branchTemplateContent.containsKey(buildState)){
 			return (branchTemplateContent.get(buildState)).copy(); 
 		}
-		throw new UnSupportedBuildStateException(buildState, "branch", this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
+		throw new UnSupportedBuildStateException(buildState, BRANCH_TYPE_BRANCH, this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
 	}
 	
 	private void addTemplateContentForState(BuildStateEnum state, WebHookTemplateContent content){

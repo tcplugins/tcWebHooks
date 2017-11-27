@@ -10,6 +10,8 @@ import webhook.teamcity.payload.template.UnSupportedBuildStateException;
 
 public class WebHookTemplateResolver {
 	
+	private static final String BRANCH_TYPE_BRANCH = "branch";
+	private static final String BRANCH_TYPE_NON_BRANCH = "nonBranch";
 	private WebHookTemplateManager webHookTemplateManager;
 
 	public WebHookTemplateResolver(WebHookTemplateManager webHookTemplateManager) {
@@ -23,7 +25,7 @@ public class WebHookTemplateResolver {
 				return template.getTemplateForState(state);
 			}
 		}
-		throw new TemplateNotFoundException(state, buildType, templateName, "nonBranch");
+		throw new TemplateNotFoundException(state, buildType, templateName, BRANCH_TYPE_NON_BRANCH);
 	}
 	public WebHookTemplateContent findWebHookBranchTemplate(BuildStateEnum state, SBuildType buildType, String webhookFormat, String templateName){
 		// TODO: This needs to be more build aware.
@@ -32,7 +34,7 @@ public class WebHookTemplateResolver {
 				return template.getBranchTemplateForState(state);
 			}
 		}
-		throw new TemplateNotFoundException(state, buildType, templateName, "branch");
+		throw new TemplateNotFoundException(state, buildType, templateName, BRANCH_TYPE_BRANCH);
 	}
 	
 	public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SProject project, String webhookFormat, String templateName){
@@ -42,7 +44,7 @@ public class WebHookTemplateResolver {
 				return template.getTemplateForState(state);
 			}
 		}
-		throw new TemplateNotFoundException(state, project, templateName, webhookFormat, "nonBranch");
+		throw new TemplateNotFoundException(state, project, templateName, webhookFormat, BRANCH_TYPE_NON_BRANCH);
 	}
 	
 	public WebHookTemplateContent findWebHookBranchTemplate(BuildStateEnum state, SProject project, String webhookFormat, String templateName){
@@ -52,14 +54,14 @@ public class WebHookTemplateResolver {
 				return template.getBranchTemplateForState(state);
 			}
 		}
-		throw new TemplateNotFoundException(state, project, templateName, webhookFormat, "branch");
+		throw new TemplateNotFoundException(state, project, templateName, webhookFormat, BRANCH_TYPE_BRANCH);
 	}
 	
 	public WebHookTemplateContent findWebHookBranchOrNonBranchTemplate(String stateString, SProject project, String webhookFormat, String templateName){
 		// TODO: This needs to be more project aware.
-		String branchType = "nonBranch";
+		String branchType = BRANCH_TYPE_NON_BRANCH;
 		if (stateString.endsWith("Branch")) {
-			branchType = "branch";
+			branchType = BRANCH_TYPE_BRANCH;
 			String sBuildState = stateString.substring(0,stateString.length() - "Branch".length());
 			BuildStateEnum state =	BuildStateEnum.findBuildState(sBuildState);
 			if (state != null){

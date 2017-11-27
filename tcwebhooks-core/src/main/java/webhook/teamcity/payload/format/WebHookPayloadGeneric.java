@@ -21,7 +21,6 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
-import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 
 public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	
@@ -36,12 +35,9 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		myManager = manager;
 	}
 	
-	public abstract void register();
-		
-	
 	@Override
 	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
@@ -60,40 +56,40 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 
 	@Override
 	public String buildFinished(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String buildInterrupted(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String changesLoaded(SBuild runningBuild, SFinishedBuild previousBuild, 
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.CHANGES_LOADED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 	
 	@Override
 	public String buildStarted(SBuild runningBuild, SFinishedBuild previousBuild, 
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	/** Used by versions of TeamCity less than 7.0
-	 * @throws WebHookPayloadContentAssemblyException 
+	 * @
 	 */
 	@Override
 	public String responsibleChanged(SBuildType buildType,
 			ResponsibilityInfo responsibilityInfoOld,
 			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		String oldUser = "Nobody";
@@ -104,22 +100,22 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		try {
 			newUser = responsibilityInfoNew.getResponsibleUser().getDescriptiveName();
 		} catch (Exception e) {}
-		content.setMessage("Build " + buildType.getFullName().toString()
+		content.setMessage("Build " + buildType.getFullName()
 				+ " has changed responsibility from " 
 				+ oldUser
 				+ " to "
 				+ newUser
 				+ " with comment '" 
-				+ responsibilityInfoNew.getComment().toString().trim()
+				+ responsibilityInfoNew.getComment().trim()
 				+ "'"
 			);
-		content.setText(buildType.getFullName().toString()
+		content.setText(buildType.getFullName()
 				+ " changed responsibility from " 
 				+ oldUser
 				+ " to "
 				+ newUser
 				+ " with comment '" 
-				+ responsibilityInfoNew.getComment().toString().trim()
+				+ responsibilityInfoNew.getComment().trim()
 				+ "'"
 			);
 		
@@ -128,13 +124,13 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	}
 
 	/** Used by versions of TeamCity 7.0 and above
-	 * @throws WebHookPayloadContentAssemblyException 
+	 * @
 	 */
 	@Override
 	public String responsibleChanged(SBuildType buildType,
 			ResponsibilityEntry responsibilityEntryOld,
 			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		
 		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		String oldUser = "Nobody";
@@ -145,7 +141,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		if (responsibilityEntryNew.getState() != ResponsibilityEntry.State.NONE) {
 			newUser = responsibilityEntryNew.getResponsibleUser().getDescriptiveName();
 		}
-		content.setMessage("Build " + buildType.getFullName().toString()
+		content.setMessage("Build " + buildType.getFullName()
 				+ " has changed responsibility from " 
 				+ oldUser
 				+ " to "
@@ -154,13 +150,13 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 				+ responsibilityEntryNew.getComment()
 				+ "'"
 			);
-		content.setText(buildType.getFullName().toString().toString().trim()
+		content.setText(buildType.getFullName().trim()
 				+ " changed responsibility from " 
 				+ oldUser
 				+ " to "
 				+ newUser
 				+ " with comment '" 
-				+ responsibilityEntryNew.getComment().toString().trim()
+				+ responsibilityEntryNew.getComment().trim()
 				+ "'"
 			);
 		content.setResponsibilityUserOld(oldUser);
@@ -186,15 +182,6 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		return null;
 	}
 	
-	protected abstract String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+	protected abstract String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate);
 
-	public abstract String getContentType();
-
-	public abstract Integer getRank();
-
-	public abstract void setRank(Integer rank);
-
-	public abstract String getCharset();
-
-	
 }
