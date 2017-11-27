@@ -13,6 +13,15 @@
   		init-method="register" 
   		/-->
   
+	<bean id="webHookHistoryRepository"
+        class="webhook.teamcity.WebHookHistoryRepositoryImpl"
+        />
+        
+	<bean id="webHookAdminPage"
+        class="webhook.teamcity.extension.admin.WebHookAdminPage"
+        init-method="register" 
+        />
+  
 	<bean id="webHookProjectTabExtension"
         class="webhook.teamcity.extension.WebHookProjectTabExtension"
         init-method="register" 

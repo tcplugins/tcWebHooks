@@ -45,9 +45,7 @@ public class WebHookEndPointController extends BaseController {
 
     @Nullable
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
-    	if (request.getMethod().equalsIgnoreCase("post")){
-    		
+    	if (isPost(request)) {
     		boolean debug = Loggers.SERVER.isDebugEnabled();
     		
     		if (debug) { 
@@ -63,12 +61,11 @@ public class WebHookEndPointController extends BaseController {
 				if (debug) Loggers.SERVER.debug(line);
 			}
 			
-			Map<String, String> headers = new TreeMap<String, String>();
+			Map<String, String> headers = new TreeMap<>();
 			
-			//request.getH
 			Enumeration<String> headerNames = request.getHeaderNames();
 			while (headerNames.hasMoreElements()) {
-				String key = (String) headerNames.nextElement();
+				String key = headerNames.nextElement();
 				String value = request.getHeader(key);
 				headers.put(key, value);
 			}

@@ -21,18 +21,30 @@ public class WebHookExecutionStats {
 	Header[] headers;
 
 	public long getPreExecutionTime() {
+		if (requestStartedTimeStamp == null) {
+			return -1;
+		}
 		return requestStartedTimeStamp.getTime() - initTimeStamp.getTime();
 	}
 	
 	public long getRequestExecutionTime() {
+		if (requestStartedTimeStamp == null) {
+			return -1;
+		}
 		return requestCompletedTimeStamp.getTime() - requestStartedTimeStamp.getTime();
 	}
 	
 	public long getRequestTeardownTime() {
+		if (requestStartedTimeStamp == null) {
+			return -1;
+		}
 		return requestTeardownTimeStamp.getTime() - requestCompletedTimeStamp.getTime();
 	}
 	
 	public long getTotalExecutionTime() {
+		if (requestStartedTimeStamp == null) {
+			return -1;
+		}
 		return requestTeardownTimeStamp.getTime() - initTimeStamp.getTime();
 	}
 	
