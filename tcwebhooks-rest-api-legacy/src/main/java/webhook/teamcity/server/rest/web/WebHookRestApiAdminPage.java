@@ -35,7 +35,7 @@ import webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer;
 
 public class WebHookRestApiAdminPage extends AdminPage {
 	public static final String TC_WEB_HOOK_REST_API_ADMIN_ID = "tcWebHooksRestApi";
-	final private WebHookTeamCityRestApiZipPluginFixer myPluginFixer;
+	private final WebHookTeamCityRestApiZipPluginFixer myPluginFixer;
 
 	public WebHookRestApiAdminPage(@NotNull PagePlaces pagePlaces, 
 								  @NotNull PluginDescriptor descriptor,
