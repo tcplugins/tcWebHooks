@@ -64,18 +64,44 @@ public class SlackComTemplatesAreEqualTest {
 		assertEquals(slackTemplate.getTemplateToolTip().trim(), slackXmlTemplate.getTemplateToolTip().trim());
 		
 		for (BuildStateEnum state : BuildStateEnum.getNotifyStates()) {
+			boolean t1Error = false;
+			boolean t2Error = false;
+			boolean t1BranchError = false;
+			boolean t2BranchError = false;
+
+			WebHookTemplateContent T1 = null;
+			WebHookTemplateContent T2 = null;
 			
-			WebHookTemplateContent T1 = slackTemplate.getTemplateForState(state);
-			WebHookTemplateContent T2 = slackXmlTemplate.getTemplateForState(state);
+			WebHookTemplateContent T1Branch = null;
+			WebHookTemplateContent T2Branch = null;
 			
-			if (T1 == null && T2 == null){
+			try {
+				T1 = slackTemplate.getTemplateForState(state);
+			} catch (UnSupportedBuildStateException e) {
+				t1Error = true;
+			}
+			
+			try {
+				T2 = slackXmlTemplate.getTemplateForState(state);
+			} catch (UnSupportedBuildStateException e) {
+				t2Error = true;
+			}
+			if (t1Error == t2Error){
 				continue;
 			}
 			
-			WebHookTemplateContent T1Branch = slackTemplate.getBranchTemplateForState(state);
-			WebHookTemplateContent T2Branch = slackXmlTemplate.getBranchTemplateForState(state);
-			
-			if (T1Branch == null && T2Branch == null){
+			try {
+				T1Branch = slackTemplate.getBranchTemplateForState(state);
+			} catch (UnSupportedBuildStateException e) {
+				t1BranchError = true;
+			}				
+
+			try {
+				T2Branch = slackXmlTemplate.getBranchTemplateForState(state);
+			} catch (UnSupportedBuildStateException e) {
+				t1BranchError = true;
+			}
+			if (t1BranchError == t2BranchError){
 				continue;
 			}
 			

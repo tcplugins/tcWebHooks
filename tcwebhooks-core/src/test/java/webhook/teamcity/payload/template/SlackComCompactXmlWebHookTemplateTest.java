@@ -23,7 +23,6 @@ import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
@@ -43,7 +42,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
 
 	private WebHookPayload payloadFormat;
 	
-	@Test
+	@Test(expected=UnSupportedBuildStateException.class)
 	public void testLoadDefaultCompactSlackTemplateAndVerifyThatThereIsNoTemplateForBuildStarted() {
 		
 		setup();

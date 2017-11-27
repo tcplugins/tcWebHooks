@@ -40,7 +40,7 @@ public class WebHookPayloadManager {
 		if (formats.containsKey(formatShortname.toLowerCase())){
 			return formats.get(formatShortname.toLowerCase());
 		}
-		return null;
+		throw new UnsupportedWebHookFormatException(formatShortname);
 	}
 	
 	public Boolean isRegisteredFormat(String format){

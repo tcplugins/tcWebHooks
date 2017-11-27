@@ -42,7 +42,7 @@ public class WebHookPayloadTailoredJson extends WebHookPayloadGeneric implements
 	}
 
 	@Override
-	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException {
+	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate) {
 		try {
 			return content.getExtraParameters().get("body");
 		} catch (NullPointerException npe){

@@ -33,6 +33,8 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
+import webhook.teamcity.WebHookHistoryRepository;
+import webhook.teamcity.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
@@ -108,11 +110,12 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	BuildStateEnum buildstateEnum;
 	List<WebHookPayloadTemplate> templateList = new ArrayList<>();
 	List<WebHookPayload> formatList = new ArrayList<>();
+	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
@@ -297,10 +300,14 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 
 	@Override
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException {
-		//webHookConfig = new WebHookConfig(ConfigLoaderUtil.getFullConfigElement(xmlConfigFile));
 		webHookConfig = ConfigLoaderUtil.getFirstWebHookInConfig(xmlConfigFile);
 		this.content = new WebHookPayloadContent(this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, teamcityProperties, webHookConfig.getEnabledTemplates());
-		
+	}
+	
+	@Override
+	public void loadNthWebHookConfigXml(int itemNumber, File xmlConfigFile) throws JDOMException, IOException {
+		webHookConfig = ConfigLoaderUtil.getSpecificWebHookInConfig(itemNumber, xmlConfigFile);
+		this.content = new WebHookPayloadContent(this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, teamcityProperties, webHookConfig.getEnabledTemplates());
 	}
 	
 	@Override

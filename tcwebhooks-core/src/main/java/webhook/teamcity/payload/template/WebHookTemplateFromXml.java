@@ -98,19 +98,19 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	}
 
 	@Override
-	public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) {
+	public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) throws UnSupportedBuildStateException {
 		if (templateContent.containsKey(buildState)){
 			return (templateContent.get(buildState)).copy(); 
 		}
-		return null;
+		throw new UnSupportedBuildStateException(buildState, "nonBranch", this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
 	}
 	
 	@Override
-	public WebHookTemplateContent getBranchTemplateForState(BuildStateEnum buildState) {
+	public WebHookTemplateContent getBranchTemplateForState(BuildStateEnum buildState) throws UnSupportedBuildStateException {
 		if (branchTemplateContent.containsKey(buildState)){
 			return (branchTemplateContent.get(buildState)).copy(); 
 		}
-		return null;
+		throw new UnSupportedBuildStateException(buildState, "branch", this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
 	}
 	
 	private void addTemplateContentForState(BuildStateEnum state, WebHookTemplateContent content){

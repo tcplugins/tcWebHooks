@@ -182,7 +182,7 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 		if (templateContent.containsKey(buildState)){
 			return (templateContent.get(buildState)).copy(); 
 		}
-		return null;
+		throw new UnSupportedBuildStateException(buildState, "non-branch", this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public abstract class AbstractPropertiesBasedWebHookTemplate extends AbstractWeb
 		if (branchTemplateContent.containsKey(buildState)){
 			return (branchTemplateContent.get(buildState)).copy(); 
 		}
-		return null;
+		throw new UnSupportedBuildStateException(buildState, "branch", this.getTemplateId(), this.getTemplateDescription(), this.getSupportedBranchBuildStates());
 	}
 
 	@Override

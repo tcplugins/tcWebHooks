@@ -7,6 +7,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class SlackComCompactXmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
 	
+	private static final String CONF_PROPERTIES = "webhook/teamcity/payload/template/SlackComCompactWebHookTemplate.xml";
 	
 	public SlackComCompactXmlWebHookTemplate(
 			WebHookTemplateManager templateManager,
@@ -14,9 +15,6 @@ public class SlackComCompactXmlWebHookTemplate extends AbstractXmlBasedWebHookTe
 			WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
 		super(templateManager, payloadManager, webHookTemplateJaxHelper);
 	}
-
-	String CONF_PROPERTIES = "webhook/teamcity/payload/template/SlackComCompactWebHookTemplate.xml";
-
 
 	@Override
 	public String getLoggingName() {

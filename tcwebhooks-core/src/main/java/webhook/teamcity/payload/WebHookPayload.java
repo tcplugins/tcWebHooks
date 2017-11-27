@@ -15,18 +15,17 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
-import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 public interface WebHookPayload {
 	
-	public final static String BUILD_STATUS_FAILURE   = "failure";
-	public final static String BUILD_STATUS_SUCCESS   = "success";
-	public final static String BUILD_STATUS_RUNNING   = "running";
-	public final static String BUILD_STATUS_NO_CHANGE = "unchanged";
-	public final static String BUILD_STATUS_FIXED     = "fixed";
-	public final static String BUILD_STATUS_BROKEN    = "broken";
-	public final static String BUILD_STATUS_UNKNOWN   = "unknown";
+	public static final String BUILD_STATUS_FAILURE   = "failure";
+	public static final String BUILD_STATUS_SUCCESS   = "success";
+	public static final String BUILD_STATUS_RUNNING   = "running";
+	public static final String BUILD_STATUS_NO_CHANGE = "unchanged";
+	public static final String BUILD_STATUS_FIXED     = "fixed";
+	public static final String BUILD_STATUS_BROKEN    = "broken";
+	public static final String BUILD_STATUS_UNKNOWN   = "unknown";
 	
 	/** 
 	 * Sets the PayloadManger so that register() can register this payload with that webHookTemplateManager.
@@ -79,7 +78,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildStarted event.
 	 */
-    String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
     
     /**
      * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -89,7 +88,7 @@ public interface WebHookPayload {
      * @param extraParameters
      * @return Formatted payload for the WebHook to send for the changesLoaded event.
      */
-    String changesLoaded(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    String changesLoaded(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -99,7 +98,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildFinished event.
 	 */
-    String buildFinished(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    String buildFinished(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -109,7 +108,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildInterrupted event.
 	 */
-    String buildInterrupted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    String buildInterrupted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -119,7 +118,7 @@ public interface WebHookPayload {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the beforeBuildFinish event.
 	 */
-    String beforeBuildFinish(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    String beforeBuildFinish(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
     
 	/**
 	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
@@ -144,7 +143,7 @@ public interface WebHookPayload {
     String responsibleChanged(@NotNull SBuildType sBuildType, 
     		@NotNull ResponsibilityInfo responsibilityInfoOld, 
     		@NotNull ResponsibilityInfo responsibilityInfoNew, 
-    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException;
+    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
      * Used by TC 7.x and above
@@ -157,7 +156,7 @@ public interface WebHookPayload {
 	String responsibleChanged(SBuildType sBuildType,
 			ResponsibilityEntry responsibilityEntryOld,
 			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) throws WebHookPayloadContentAssemblyException; 
+			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate); 
     
 	/**
 	 * Gets the content type of the format.

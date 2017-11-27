@@ -21,6 +21,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.WebHook;
+import webhook.teamcity.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -47,12 +48,13 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookFactory webHookFactory;
     private final WebHookTemplateResolver webHookTemplateResolver;
     private final WebHookContentBuilder webHookContentBuilder;
+    private final WebHookHistoryRepository webHookHistoryRepository;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
-    						WebHookContentBuilder contentBuilder) {
+    						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
@@ -61,6 +63,7 @@ public class WebHookListener extends BuildServerAdapter {
         webHookFactory = factory;
         webHookTemplateResolver = resolver;
         webHookContentBuilder = contentBuilder;
+        webHookHistoryRepository = historyRepository;
         
         Loggers.SERVER.info("WebHookListener :: Starting");
     }
@@ -76,17 +79,29 @@ public class WebHookListener extends BuildServerAdapter {
 
 			Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sRunningBuild.getProjectId() + " at buildState " + state.getShortName());
 			for (WebHookConfig whc : getListOfEnabledWebHooks(sRunningBuild.getProjectId())){
-
+				WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 				try {
-					WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 					wh = webHookContentBuilder.buildWebHookContent(wh, whc, sRunningBuild, state, overrideIsEnabled);
 					
 					doPost(wh, whc.getPayloadFormat());
 					Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-				
-				} catch (WebHookPayloadContentAssemblyException ex){
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh, 
+									sRunningBuild,
+									null)
+						);
+				} catch (WebHookContentResolutionException ex){
+					wh.setErrored(true);
+					wh.setErrorReason(ex.getMessage());
 					Loggers.SERVER.error(ex.getMessage());
 					Loggers.SERVER.debug(ex);
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh, 
+									sRunningBuild,
+									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
+						);
 				}
 	    	}
 	}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+
+  <webhooks enabled="true">
+    <webhook url="http://127.0.0.1:9200/teamcity-${now(yyyy-MM)}/buildevent" enabled="true" format="jsontemplate" template="slack.com-compact">
+      <states>
+        <state type="buildFinished" enabled="true" />
+        <state type="buildSuccessful" enabled="true" />
+        <state type="buildInterrupted" enabled="true" />
+        <state type="responsibilityChanged" enabled="true" />
+        <state type="buildFailed" enabled="true" />
+        <state type="buildFixed" enabled="true" />
+        <state type="buildBroken" enabled="true" />
+        <state type="beforeBuildFinish" enabled="true" />
+        <state type="buildStarted" enabled="true" />
+      </states>
+      <build-types enabled-for-all="true" enabled-for-subprojects="true" />
+    </webhook>
+  </webhooks>
+</settings>
+

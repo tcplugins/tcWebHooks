@@ -7,6 +7,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class ElasticSearchXmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
 	
+	private static final String CONF_PROPERTIES = "webhook/teamcity/payload/template/ElasticSearchWebHookTemplate.xml";
 	
 	public ElasticSearchXmlWebHookTemplate(
 			WebHookTemplateManager templateManager,
@@ -14,9 +15,6 @@ public class ElasticSearchXmlWebHookTemplate extends AbstractXmlBasedWebHookTemp
 			WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
 		super(templateManager, payloadManager, webHookTemplateJaxHelper);
 	}
-
-	String CONF_PROPERTIES = "webhook/teamcity/payload/template/ElasticSearchWebHookTemplate.xml";
-
 
 	@Override
 	public String getLoggingName() {

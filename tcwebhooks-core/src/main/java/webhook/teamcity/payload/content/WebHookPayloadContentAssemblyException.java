@@ -1,22 +1,14 @@
 package webhook.teamcity.payload.content;
 
-public class WebHookPayloadContentAssemblyException extends Exception {
+import webhook.teamcity.WebHookContentResolutionException;
 
-	/**
-	 * 
-	 */
+public class WebHookPayloadContentAssemblyException extends WebHookContentResolutionException {
+
+	private static final int ERROR_CODE = 904;
 	private static final long serialVersionUID = 1L;
 
-
-	public WebHookPayloadContentAssemblyException() {
-		super();
-	}
-	
-	
 	public WebHookPayloadContentAssemblyException(String message) {
-		super(message);
+		super(message, ERROR_CODE);
 	}
-	
-	
 
 }

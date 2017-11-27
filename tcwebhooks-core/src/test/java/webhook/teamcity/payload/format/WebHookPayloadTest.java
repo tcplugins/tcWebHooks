@@ -17,6 +17,7 @@ import org.junit.Test;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.payload.UnsupportedWebHookFormatException;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
@@ -149,8 +150,8 @@ public class WebHookPayloadTest {
 		
 	}
 	
-	@Test
-	public void test_Null(){
+	@Test(expected=UnsupportedWebHookFormatException.class)
+	public void test_NotFound(){
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 
