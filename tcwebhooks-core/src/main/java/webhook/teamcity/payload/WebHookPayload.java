@@ -175,7 +175,7 @@ public interface WebHookPayload {
      * Suggestion : When registering your plugin with Spring, you could set with a bean property
      * in the spring XML file. That way it can be edited by the end user if required.
      * 
-     * @return rank (higher numbers are ranked first)
+     * @return rank (lower numbers are ranked first)
      */
     Integer getRank();
     
@@ -188,7 +188,7 @@ public interface WebHookPayload {
      * Suggestion : When registering your plugin with Spring, you could set with a bean property
      * in the spring XML file. That way it can be edited by the end user if required.
      * 
-     * @param rank (higher numbers are ranked first)
+     * @param rank (lower numbers are ranked first)
      */
     void setRank(Integer rank);
 

@@ -9,7 +9,6 @@ import webhook.teamcity.WebHookContentResolutionException;
 @Getter
 public class TemplateNotFoundException extends WebHookContentResolutionException {
 
-	private static final int ERROR_CODE=901;
 	private static final long serialVersionUID = 3905139249271778803L;
 	private final BuildStateEnum buildState;
 	private final String projectId;
@@ -19,7 +18,7 @@ public class TemplateNotFoundException extends WebHookContentResolutionException
 	private final String templateId;
 
 	public TemplateNotFoundException(BuildStateEnum buildState, SBuildType buildType, String templateId, String nonBranchOrBranch) {
-		super("Template '" + templateId + "' was not found for build state '" + buildState.getShortName() + "'", ERROR_CODE);
+		super("Template '" + templateId + "' was not found for build state '" + buildState.getShortName() + "'", TEMPLATE_NOT_FOUND_ERROR_CODE);
 		this.buildState = buildState;
 		this.projectId = buildType.getProjectId();
 		this.buildTypeId = buildType.getInternalId();
@@ -29,7 +28,7 @@ public class TemplateNotFoundException extends WebHookContentResolutionException
 	}
 	
 	public TemplateNotFoundException(BuildStateEnum buildState, SProject project, String templateId, String templateFomat, String nonBranchOrBranch) {
-		super("TemplateFormat '" + templateFomat + "' was not found for build state '" + buildState.getShortName() + "'", ERROR_CODE);
+		super("TemplateFormat '" + templateFomat + "' was not found for build state '" + buildState.getShortName() + "'", TEMPLATE_NOT_FOUND_ERROR_CODE);
 		this.buildState = buildState;
 		this.projectId = project.getProjectId();
 		this.buildTypeId = "";

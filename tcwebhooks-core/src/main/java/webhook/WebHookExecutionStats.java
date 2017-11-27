@@ -28,14 +28,14 @@ public class WebHookExecutionStats {
 	}
 	
 	public long getRequestExecutionTime() {
-		if (requestStartedTimeStamp == null) {
+		if (requestStartedTimeStamp == null || requestCompletedTimeStamp == null) {
 			return -1;
 		}
 		return requestCompletedTimeStamp.getTime() - requestStartedTimeStamp.getTime();
 	}
 	
 	public long getRequestTeardownTime() {
-		if (requestStartedTimeStamp == null) {
+		if (requestStartedTimeStamp == null || requestCompletedTimeStamp == null) {
 			return -1;
 		}
 		return requestTeardownTimeStamp.getTime() - requestCompletedTimeStamp.getTime();

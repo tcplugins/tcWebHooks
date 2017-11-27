@@ -65,12 +65,12 @@ public class WebHookListener extends BuildServerAdapter {
         webHookContentBuilder = contentBuilder;
         webHookHistoryRepository = historyRepository;
         
-        Loggers.SERVER.info("WebHookListener :: Starting");
+        Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Starting");
     }
     
     public void register(){
         myBuildServer.addListener(this);
-        Loggers.SERVER.info("WebHookListener :: Registering");
+        Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Registering");
     }
 
 	private void processBuildEvent(SRunningBuild sRunningBuild, BuildStateEnum state) {
@@ -91,10 +91,11 @@ public class WebHookListener extends BuildServerAdapter {
 									sRunningBuild,
 									null)
 						);
-				} catch (WebHookContentResolutionException ex){
+				} catch (WebHookExecutionException ex){
 					wh.setErrored(true);
 					wh.setErrorReason(ex.getMessage());
-					Loggers.SERVER.error(ex.getMessage());
+					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
@@ -172,51 +173,14 @@ public class WebHookListener extends BuildServerAdapter {
     	processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED);
 	}
     
-    @Deprecated
-    /** This method has been removed from the TeamCity API as of version 7.1
-     * 
-     * @param sBuildType
-     * @param responsibilityInfoOld
-     * @param responsibilityInfoNew
-     * @param isUserAction
-     */
-    public void responsibleChanged(@NotNull SBuildType sBuildType, 
-    							   @NotNull ResponsibilityInfo responsibilityInfoOld, 
-    							   @NotNull ResponsibilityInfo responsibilityInfoNew, 
-    							   boolean isUserAction) {
-    	
-    	if (myBuildServer.getServerMajorVersion() >= 7){
-    		return;
-    	}
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuildType.getProjectId() + " at buildState responsibilityChanged");
-		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuildType.getProjectId())){
-						try {
-							WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-							WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
-							WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, sBuildType, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
-							wh.setContentType(payloadFormat.getContentType());
-							wh.setPayload(payloadFormat.responsibleChanged(sBuildType, 
-										responsibilityInfoOld, 
-										responsibilityInfoNew, 
-										isUserAction, 
-										WebHookContentBuilder.mergeParameters(whc.getParams(),sBuildType, templateForThisBuild.getPreferredDateTimeFormat()), whc.getEnabledTemplates(), templateForThisBuild));
-							wh.setEnabled(whc.isEnabledForBuildType(sBuildType) && wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
-							doPost(wh, whc.getPayloadFormat());
-						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-						} catch (WebHookPayloadContentAssemblyException ex){
-							Loggers.SERVER.error(ex.getMessage());
-							Loggers.SERVER.debug(ex);
-						}						
-		}
-     }
-
 	@Override
 	public void responsibleChanged(SProject project,
 			Collection<TestName> testNames, ResponsibilityEntry entry,
 			boolean isUserAction) {
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId() + " at buildState responsibilityChanged");
 		for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())){
-						WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+					WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+					try {
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
 						WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, project, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
 						wh.setContentType(payloadFormat.getContentType());
@@ -228,6 +192,25 @@ public class WebHookListener extends BuildServerAdapter {
 						wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+						webHookHistoryRepository.addHistoryItem(
+								new WebHookHistoryItem(
+										wh, 
+										project,
+										null)
+							);
+					} catch (WebHookExecutionException ex){
+						wh.setErrored(true);
+						wh.setErrorReason(ex.getMessage());
+						wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+						Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
+						Loggers.SERVER.debug(ex);
+						webHookHistoryRepository.addHistoryItem(
+								new WebHookHistoryItem(
+										wh, 
+										project,
+										new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
+							);
+					}						
 
      	}
 	}
@@ -236,7 +219,8 @@ public class WebHookListener extends BuildServerAdapter {
 	public void responsibleChanged(SProject project, TestNameResponsibilityEntry oldTestNameResponsibilityEntry, TestNameResponsibilityEntry newTestNameResponsibilityEntry, boolean isUserAction) {
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId() + " at buildState responsibilityChanged");
 		for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())){
-						WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+				WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+				try {
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
 						WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, project, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
 						wh.setContentType(payloadFormat.getContentType());
@@ -248,7 +232,25 @@ public class WebHookListener extends BuildServerAdapter {
 						wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-
+						webHookHistoryRepository.addHistoryItem(
+								new WebHookHistoryItem(
+										wh, 
+										project,
+										null)
+							);
+				} catch (WebHookExecutionException ex){
+					wh.setErrored(true);
+					wh.setErrorReason(ex.getMessage());
+					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
+					Loggers.SERVER.debug(ex);
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh, 
+									project,
+									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
+						);
+				}
      	}
 	}
 	
@@ -267,8 +269,8 @@ public class WebHookListener extends BuildServerAdapter {
 		
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuildType.getProjectId() + " at buildState responsibilityChanged");
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuildType.getProjectId())){
+			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 				try {	
-						WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
 						WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, sBuildType, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
 						wh.setContentType(payloadFormat.getContentType());
@@ -282,10 +284,26 @@ public class WebHookListener extends BuildServerAdapter {
 						wh.setEnabled(whc.isEnabledForBuildType(sBuildType) && wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-				} catch (WebHookPayloadContentAssemblyException ex){
-					Loggers.SERVER.error(ex.getMessage());
+						webHookHistoryRepository.addHistoryItem(
+								new WebHookHistoryItem(
+										wh, 
+										sBuildType,
+										null)
+							);
+				} catch (WebHookExecutionException ex){
+					wh.setErrored(true);
+					wh.setErrorReason(ex.getMessage());
+					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
-				}						
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh, 
+									sBuildType,
+									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
+						);
+				}
+						
      	}
 	}
 	
@@ -294,7 +312,7 @@ public class WebHookListener extends BuildServerAdapter {
 	}
 	
     
-	/** doPost used by responsibleChanged
+	/** doPost
 	 * 
 	 * @param wh
 	 * @param payloadFormat
@@ -320,12 +338,14 @@ public class WebHookListener extends BuildServerAdapter {
 			}
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
-					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following stacktrace");
-			Loggers.SERVER.warn(e);
+					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
+			Loggers.SERVER.debug(e);
+			throw new WebHookHttpExecutionException("A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + ")", e);
 		} catch (IOException e) {
 			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
-					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following stacktrace");
-			Loggers.SERVER.warn(e);
+					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
+			Loggers.SERVER.debug(e);
+			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);
 		}
 	}
 

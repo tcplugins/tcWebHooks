@@ -10,8 +10,6 @@ import webhook.teamcity.WebHookContentResolutionException;
 @Getter
 public class UnSupportedBuildStateException extends WebHookContentResolutionException {
 
-	private static final int ERROR_CODE = 902;
-
 	private static final long serialVersionUID = -9034464700540385492L;
 	
 	private final BuildStateEnum buildState;
@@ -23,7 +21,7 @@ public class UnSupportedBuildStateException extends WebHookContentResolutionExce
 
 	public UnSupportedBuildStateException(BuildStateEnum buildState, String nonBranchOrBranch, String templateId, String templateDescription,
 			Set<BuildStateEnum> supportedBranchBuildStates) {
-		super("Template '" + templateId + "' does not support build state '" + buildState.getShortName() + "'", ERROR_CODE);
+		super("Template '" + templateId + "' does not support build state '" + buildState.getShortName() + "'", UNSUPPORTED_BUILDSTATE_EXCEPTION_ERROR_CODE);
 		this.nonBranchOrBranch = nonBranchOrBranch;
 		this.buildState = buildState;
 		this.templateId = templateId;
@@ -33,7 +31,7 @@ public class UnSupportedBuildStateException extends WebHookContentResolutionExce
 	}
 	
 	public UnSupportedBuildStateException(BuildStateEnum buildState, String nonBranchOrBranch, String projectId, String templateId ) {
-		super("Template '" + templateId + "' does not support build state '" + buildState.getShortName() + "'", ERROR_CODE);
+		super("Template '" + templateId + "' does not support build state '" + buildState.getShortName() + "'", UNSUPPORTED_BUILDSTATE_EXCEPTION_ERROR_CODE);
 		this.nonBranchOrBranch = nonBranchOrBranch;
 		this.buildState = buildState;
 		this.templateId = templateId;

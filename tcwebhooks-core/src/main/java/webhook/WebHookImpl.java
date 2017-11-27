@@ -130,7 +130,7 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	@Override
-	public void post() throws IOException{
+	public void post() throws IOException {
 		if ((this.enabled) && (!this.errored)){
 			PostMethod httppost = new PostMethod(this.url);
 			if (this.filename.length() > 0){
