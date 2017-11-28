@@ -95,8 +95,8 @@ public class WebHookListener extends BuildServerAdapter {
 					wh.setErrored(true);
 					wh.setErrorReason(ex.getMessage());
 					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
-					Loggers.SERVER.debug(ex);
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
 									wh, 
@@ -326,13 +326,17 @@ public class WebHookListener extends BuildServerAdapter {
 						+ " returned " + wh.getStatus() 
 						+ " " + wh.getErrorReason());	
 				Loggers.SERVER.debug(this.getClass().getSimpleName() + ":doPost :: content dump: " + wh.getPayload());
+				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
 				if (wh.isErrored()){
 					Loggers.SERVER.error(wh.getErrorReason());
 				}
-				if ((wh.getStatus() == null || wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES)) {
-					Loggers.ACTIVITIES.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
+				if (wh.getStatus() == null) {
+					Loggers.SERVER.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
+					throw new WebHookHttpExecutionException("WebHook endpoint returned null response code");
+				} else if (wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES) {
+					Loggers.SERVER.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
+					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response", wh.getStatus());
 				}
-				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
 			} else {
 				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	
 			}

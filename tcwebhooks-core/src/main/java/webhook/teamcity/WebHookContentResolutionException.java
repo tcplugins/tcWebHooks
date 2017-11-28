@@ -3,7 +3,7 @@ package webhook.teamcity;
 import lombok.Getter;
 
 @Getter
-public class WebHookContentResolutionException extends RuntimeException {
+public class WebHookContentResolutionException extends WebHookExecutionException {
 
 	private static final long serialVersionUID = 2327979470726268623L;
 	protected static final int WEBHOOK_CONTENT_RESOLUTION_ERROR_CODE = 900;
@@ -12,16 +12,12 @@ public class WebHookContentResolutionException extends RuntimeException {
 	protected static final int UNSUPPORTED_WEBHOOK_FORMAT_EXCEPTION_ERROR_CODE=903;
 	protected static final int WEBHOOK_PAYLOAD_CONTENT_ASSEMBLY_EXCEPTION_ERROR_CODE=904;
 	
-	protected final int errorCode;
-
 	public WebHookContentResolutionException(String message) {
-		super(message);
-		this.errorCode = WEBHOOK_CONTENT_RESOLUTION_ERROR_CODE;
+		super(message, WEBHOOK_CONTENT_RESOLUTION_ERROR_CODE);
 	}
 	
 	public WebHookContentResolutionException(String message, int errorCode) {
-		super(message);
-		this.errorCode = errorCode;
+		super(message, errorCode);
 	}
 
 }

@@ -133,6 +133,7 @@ public class WebHookImpl implements WebHook {
 	public void post() throws IOException {
 		if ((this.enabled) && (!this.errored)){
 			PostMethod httppost = new PostMethod(this.url);
+			httppost.addRequestHeader("X-tcwebhooks-request-id", this.getExecutionStats().getTrackingIdAsString());
 			if (this.filename.length() > 0){
 				File file = new File(this.filename);
 			    httppost.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(file)));

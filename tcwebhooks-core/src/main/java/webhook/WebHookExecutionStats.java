@@ -1,6 +1,7 @@
 package webhook;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.commons.httpclient.Header;
 
@@ -9,6 +10,7 @@ import lombok.Data;
 @Data
 public class WebHookExecutionStats {
 	
+	UUID trackingId = UUID.randomUUID();
 	Date initTimeStamp  = new Date();
 	Date requestStartedTimeStamp;
 	long preExecutionTime;
@@ -61,4 +63,7 @@ public class WebHookExecutionStats {
 		this.requestTeardownTimeStamp = new Date();
 	}
 	
+	public String getTrackingIdAsString() {
+		return this.trackingId.toString();
+	}
 }
