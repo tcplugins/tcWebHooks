@@ -25,6 +25,10 @@ public class WebHookFactoryImpl implements WebHookFactory {
 		WebHook webHook = new WebHookImpl(webHookConfig.getUrl(), proxyConfig, myWebHookHttpClientFactory.getHttpClient());
 		webHook.setUrl(webHookConfig.getUrl());
 		webHook.setEnabled(webHookConfig.getEnabled());
+		if (!webHookConfig.getEnabled()) {
+			webHook.getExecutionStats().setStatusReason("WebHook disabled");
+			webHook.getExecutionStats().setStatusCode(701);
+		}
 		webHook.setBuildStates(webHookConfig.getBuildStates());
 		if (webHookConfig.getAuthenticationConfig() != null){
 			WebHookAuthenticator auth = myAuthenticatorProvider.getAuthenticator(webHookConfig.getAuthenticationConfig().getType());

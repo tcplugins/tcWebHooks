@@ -32,6 +32,8 @@ import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.history.WebHookHistoryRepository;
+import webhook.teamcity.history.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;

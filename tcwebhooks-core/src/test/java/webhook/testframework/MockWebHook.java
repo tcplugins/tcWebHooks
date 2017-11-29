@@ -5,7 +5,6 @@ import java.io.IOException;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class MockWebHook  extends WebHookImpl implements WebHook, Mocked {
@@ -28,13 +27,13 @@ public class MockWebHook  extends WebHookImpl implements WebHook, Mocked {
 		invocationCount++;
 		this.getExecutionStats().setUrl(this.getUrl());
     	this.getExecutionStats().setRequestStarting();
-    	this.getExecutionStats().setRequestCompleted(-1);
+    	this.getExecutionStats().setRequestCompleted(500);
         this.getExecutionStats().setTeardownCompleted();
 	}
 
 	@Override
 	public Integer getStatus() {
-		return -1;
+		return 500;
 	}
 
 

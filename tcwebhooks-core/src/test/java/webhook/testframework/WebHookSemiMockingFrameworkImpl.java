@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.SortedMap;
 
 import org.jdom.JDOMException;
-import org.junit.Before;
 import org.mockito.MockitoAnnotations;
 
 import jetbrains.buildServer.messages.Status;
@@ -29,13 +28,12 @@ import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
-import webhook.teamcity.WebHookHistoryRepository;
-import webhook.teamcity.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.history.WebHookHistoryRepository;
+import webhook.teamcity.history.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.payload.WebHookPayload;
-import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;

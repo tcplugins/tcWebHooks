@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import lombok.Getter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthenticator;
@@ -36,12 +38,9 @@ public class WebHookImpl implements WebHook {
 	private String contentType;
 	private String charset;
 	private String payload;
-	private Integer resultCode;
 	private HttpClient client;
 	private String filename = "";
-	private Boolean enabled = false;
-	private Boolean errored = false;
-	private String errorReason = "";
+	private boolean enabled = false;
 	private String disabledReason = "";
 	private List<NameValuePair> params;
 	private BuildState states;
@@ -49,6 +48,9 @@ public class WebHookImpl implements WebHook {
 	private List<WebHookFilterConfig> filters;
 	private WebHookExecutionStats webhookStats;
 	private SFinishedBuild previousSFinishedBuild;
+	
+	@Getter
+	private UUID requestId = UUID.randomUUID();
 	
 	
 	public WebHookImpl(){
@@ -64,14 +66,14 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	public WebHookImpl(String url, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats();
+		this.webhookStats = new WebHookExecutionStats(url);
 		this.url = url;
 		this.client = client;
 		this.params = new ArrayList<>();
 	}
 	
 	public WebHookImpl (String url, String proxyHost, String proxyPort, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats();
+		this.webhookStats = new WebHookExecutionStats(url);
 		this.url = url;
 		this.client = client;
 		this.params = new ArrayList<>();
@@ -86,7 +88,7 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	public WebHookImpl (String url, String proxyHost, Integer proxyPort, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats();
+		this.webhookStats = new WebHookExecutionStats(url);
 		this.url = url;
 		this.client = client;
 		this.params = new ArrayList<>();
@@ -94,7 +96,7 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	public WebHookImpl (String url, WebHookProxyConfig proxyConfig, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats();
+		this.webhookStats = new WebHookExecutionStats(url);
 		this.url = url;
 		this.client = client;
 		this.params = new ArrayList<>();
@@ -131,7 +133,7 @@ public class WebHookImpl implements WebHook {
 	
 	@Override
 	public void post() throws IOException {
-		if ((this.enabled) && (!this.errored)){
+		if ((this.enabled) && (!this.getExecutionStats().isErrored())){
 			PostMethod httppost = new PostMethod(this.url);
 			httppost.addRequestHeader("X-tcwebhooks-request-id", this.getExecutionStats().getTrackingIdAsString());
 			if (this.filename.length() > 0){
@@ -158,9 +160,8 @@ public class WebHookImpl implements WebHook {
 		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.client.getHttpConnectionManager().getParams().getSoTimeout());
 		        client.executeMethod(httppost);
 		        this.webhookStats.setRequestCompleted(httppost.getStatusCode());
-		        this.resultCode = httppost.getStatusCode();
 		        this.content = httppost.getResponseBodyAsString();
-		        this.webhookStats.setHeaders(httppost.getResponseHeaders());
+		        this.webhookStats.setResponseHeaders(httppost.getResponseHeaders());
 		    } finally {
 		        httppost.releaseConnection();
 		        this.webhookStats.setTeardownCompleted();
@@ -170,7 +171,7 @@ public class WebHookImpl implements WebHook {
 
 	@Override
 	public Integer getStatus(){
-		return this.resultCode;
+		return this.getExecutionStats().getStatusCode();
 	}
 	
 	@Override
@@ -191,6 +192,7 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setUrl(String url) {
 		this.url = url;
+		this.getExecutionStats().setUrl(url);
 	}
 	
 	@Override
@@ -263,35 +265,36 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+		this.getExecutionStats().setEnabled(enabled);
 	}
 
 	@Override
 	public void setEnabled(String enabled){
 		if ("true".equalsIgnoreCase(enabled)){
-			this.enabled = true;
+			this.setEnabled(true);
 		} else {
-			this.enabled = false;
+			this.setEnabled(false);
 		}
 	}
 
 	@Override
 	public Boolean isErrored() {
-		return errored;
+		return this.getExecutionStats().isErrored();
 	}
 
 	@Override
 	public void setErrored(Boolean errored) {
-		this.errored = errored;
+		this.getExecutionStats().setErrored(errored);
 	}
 
 	@Override
 	public String getErrorReason() {
-		return errorReason;
+		return this.getExecutionStats().getStatusReason();
 	}
 
 	@Override
 	public void setErrorReason(String errorReason) {
-		this.errorReason = errorReason;
+		this.getExecutionStats().setStatusReason(errorReason);
 	}
 
 	@Override
@@ -376,7 +379,8 @@ public class WebHookImpl implements WebHook {
 			Pattern p = filter.getPattern();
 			if (!p.matcher(variable).matches()){
 				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
-				this.enabled = false;
+				this.setEnabled(false);
+				this.getExecutionStats().setStatusReason(disabledReason);
 				return false;
 			} else {
 				if (Loggers.SERVER.isDebugEnabled()) {

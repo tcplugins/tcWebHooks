@@ -481,3 +481,74 @@ tr.templateDetails > td > div > input {
 	width:90%;
 }
 
+div.webhookCounts {
+	display: table-row;
+	width:100%;
+    height:150px;
+    padding:1em;
+}
+
+div.webhookCounts div.webhookCount {
+	display: table-cell;
+    height: 100px;
+    border: 2px solid;
+    margin-right: 1em;
+    width: 20%;
+}
+
+div.webhookCounts div.spacer {
+	display: table-cell;
+	width: 3%;
+}
+
+div.webhookCounts div span.count {
+	display:block;
+    font-size: 50px;
+    height: 80%;
+    position: relative;
+    line-height: 120px;
+    text-align: center;
+}
+
+div.webhookCounts div span.description {
+	display:block;
+    height: 20%;
+    text-align: center;
+    padding-top: 0.4em;
+    line-height: 20px;
+}
+
+div.webhookOkCount {
+	border-color: #008500;
+	color: #008500;
+}
+
+div.webhookOkCount span.description {
+	background-color: #008500;
+	color: #fff;
+}
+
+div.webhookErrorCount {
+	border-color: #A70000;
+	color: #A70000;
+}
+
+div.webhookErrorCount span.description {
+	background-color: #A70000;
+	color: #fff;
+}
+
+div.webhookSkippedCount {
+	border-color: #858585;
+	color: #858585;
+}
+
+div.webhookSkippedCount span.description {
+	background-color: #858585;
+	color: #fff;
+}
+
+div.webhookTotalCount span.description {
+	background-color: #000;
+	color: #fff;
+}

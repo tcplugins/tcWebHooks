@@ -6,8 +6,9 @@ import java.util.UUID;
 import org.apache.commons.httpclient.Header;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data @NoArgsConstructor
 public class WebHookExecutionStats {
 	
 	UUID trackingId = UUID.randomUUID();
@@ -19,8 +20,15 @@ public class WebHookExecutionStats {
 	Date requestTeardownTimeStamp;
 	long requestTeardownTime;
 	String url;
-	Integer httpStatusCode;
-	Header[] headers;
+	Integer statusCode;
+	String statusReason;
+	Header[] responseHeaders;
+	boolean errored = false;
+	boolean enabled = true;
+	
+	public WebHookExecutionStats(String url) {
+		this.url = url;
+	}
 
 	public long getPreExecutionTime() {
 		if (requestStartedTimeStamp == null) {
@@ -56,7 +64,13 @@ public class WebHookExecutionStats {
 	
 	public void setRequestCompleted(int status) {
 		this.requestCompletedTimeStamp = new Date();
-		this.httpStatusCode = status;
+		this.statusCode = status;
+	}
+	
+	public void setRequestCompleted(int status, String statusReason) {
+		this.requestCompletedTimeStamp = new Date();
+		this.statusCode = status;
+		this.statusReason = statusReason;
 	}
 	
 	public void setTeardownCompleted() {

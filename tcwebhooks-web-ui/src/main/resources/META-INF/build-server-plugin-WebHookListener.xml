@@ -14,7 +14,7 @@
   		/-->
   
 	<bean id="webHookHistoryRepository"
-        class="webhook.teamcity.WebHookHistoryRepositoryImpl"
+        class="webhook.teamcity.history.WebHookHistoryRepositoryImpl"
         />
         
 	<bean id="webHookAdminPage"

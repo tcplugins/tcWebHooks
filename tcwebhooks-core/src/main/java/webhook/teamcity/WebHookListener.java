@@ -9,7 +9,6 @@ import java.util.List;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
-import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
@@ -21,12 +20,13 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.WebHook;
-import webhook.teamcity.WebHookHistoryItem.WebHookErrorStatus;
+import webhook.teamcity.history.WebHookHistoryItem;
+import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
+import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -87,19 +87,18 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
-									wh, 
+									wh.getExecutionStats(), 
 									sRunningBuild,
 									null)
 						);
 				} catch (WebHookExecutionException ex){
-					wh.setErrored(true);
-					wh.setErrorReason(ex.getMessage());
-					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+					wh.getExecutionStats().setErrored(true);
+					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
-									wh, 
+									wh.getExecutionStats(), 
 									sRunningBuild,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
@@ -194,19 +193,18 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
-										wh, 
+										wh.getExecutionStats(), 
 										project,
 										null)
 							);
 					} catch (WebHookExecutionException ex){
 						wh.setErrored(true);
-						wh.setErrorReason(ex.getMessage());
-						wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+						wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 						Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 						Loggers.SERVER.debug(ex);
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
-										wh, 
+										wh.getExecutionStats(), 
 										project,
 										new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 							);
@@ -234,19 +232,18 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
-										wh, 
+										wh.getExecutionStats(), 
 										project,
 										null)
 							);
 				} catch (WebHookExecutionException ex){
 					wh.setErrored(true);
-					wh.setErrorReason(ex.getMessage());
-					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
-									wh, 
+									wh.getExecutionStats(), 
 									project,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
@@ -286,19 +283,18 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
-										wh, 
+										wh.getExecutionStats(), 
 										sBuildType,
 										null)
 							);
 				} catch (WebHookExecutionException ex){
 					wh.setErrored(true);
-					wh.setErrorReason(ex.getMessage());
-					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode());
+					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
-									wh, 
+									wh.getExecutionStats(), 
 									sBuildType,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
@@ -335,7 +331,7 @@ public class WebHookListener extends BuildServerAdapter {
 					throw new WebHookHttpExecutionException("WebHook endpoint returned null response code");
 				} else if (wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES) {
 					Loggers.SERVER.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
-					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response", wh.getStatus());
+					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response (" + HttpStatus.getStatusText(wh.getStatus()) +")", wh.getStatus());
 				}
 			} else {
 				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	

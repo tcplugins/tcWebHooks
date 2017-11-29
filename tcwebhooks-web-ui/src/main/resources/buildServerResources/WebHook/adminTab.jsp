@@ -6,18 +6,41 @@
 <bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
 
 	        <div class="repoList">
-	        <h2 class="noBorder">WebHook REST API</h2>
-	        <h3>Health Report</h3>
+	        <h2 class="noBorder">WebHooks</h2>
 	        
-	        <bs:messages key="apiFixResult"/>
-	        
+	        <p>The most recent 50,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
+	        <div class="webhookCounts">
+		        <div class="webhookOkCount webhookCount">
+		        	<span class="count">${okCount}</span>
+		        	<span class="description">Successful WebHook Events</span>
+		        </div>
+		        <div class="spacer"></div>
+		        <div class="webhookErrorCount webhookCount">
+		        	<span class="count">${errorCount}</span>
+		        	<span class="description">Errored WebHook Events</span>	        
+		        </div>
+		        <div class="spacer"></div>
+		        <div class="webhookSkippedCount webhookCount">
+		        	<span class="count">${skippedCount}</span>
+		        	<span class="description">Skipped WebHook Events</span>	        
+		        </div>
+		        <div class="spacer"></div>
+		        <div class="webhookTotalCount webhookCount">
+		        	<span class="count">${totalCount}</span>
+		        	<span class="description">Total WebHook Events</span>
+		        </div>
+	        </div>
+	        <hr>
+	        <p>
+	        <h2 class="noBorder">Recent WebHook Errors</h2>
+	        The following table shows the 20 most recent webhook errors.
 	        <table class="settings">
 	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>URL</th><th>Error</th></tr>
 	        <c:forEach items="${history}" var="historyItem">
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
-					<td>${historyItem.webHook.url}</td>
-					<td>${historyItem.httpStatus} :: ${historyItem.httpStatusDescription}</td>
+					<td>${historyItem.webHookExecutionStats.url}</td>
+					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
 	   				</tr>
 	        	
 	        </c:forEach>

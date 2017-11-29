@@ -48,7 +48,7 @@ public class WebHookRestApiAdminPage extends AdminPage {
         addCssFile(descriptor.getPluginResourcesPath("WebHookRestApi/css/tcWebHooksApi.css"));
         addJsFile(descriptor.getPluginResourcesPath("WebHookRestApi/restApiHealthStatus.js"));
 		setTabTitle("WebHooks REST API");
-		setPosition(PositionConstraint.after("clouds", "email", "jabber"));
+		setPosition(PositionConstraint.after("clouds", "email", "jabber", "tcWebHooks"));
 		register();
 	}
 
