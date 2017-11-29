@@ -481,11 +481,16 @@ tr.templateDetails > td > div > input {
 	width:90%;
 }
 
+div.stats-table-wrapper {
+	display: table;
+	width: 100%;
+}
+
 div.webhookCounts {
 	display: table-row;
 	width:100%;
     height:150px;
-    padding:1em;
+    /*padding:1em;*/
 }
 
 div.webhookCounts div.webhookCount {
@@ -504,7 +509,7 @@ div.webhookCounts div.spacer {
 div.webhookCounts div span.count {
 	display:block;
     font-size: 50px;
-    height: 80%;
+    /*height: 80%; */
     position: relative;
     line-height: 120px;
     text-align: center;
@@ -515,7 +520,8 @@ div.webhookCounts div span.description {
     height: 20%;
     text-align: center;
     padding-top: 0.4em;
-    line-height: 20px;
+    padding-bottom: 0.4em;
+    /*line-height: 20px;*/
 }
 
 div.webhookOkCount {

@@ -9,6 +9,7 @@
 	        <h2 class="noBorder">WebHooks</h2>
 	        
 	        <p>The most recent 50,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
+	        <div class="stats-table-wrapper">
 	        <div class="webhookCounts">
 		        <div class="webhookOkCount webhookCount">
 		        	<span class="count">${okCount}</span>
@@ -29,6 +30,7 @@
 		        	<span class="count">${totalCount}</span>
 		        	<span class="description">Total WebHook Events</span>
 		        </div>
+	        </div>
 	        </div>
 	        <hr>
 	        <p>
