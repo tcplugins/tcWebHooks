@@ -6,9 +6,6 @@ import lombok.Getter;
 public class WebHookHttpExecutionException extends WebHookExecutionException {
 	
 	private static final long serialVersionUID = 2824659645558904102L;
-	protected static final int WEBHOOK_EXECUTION_ERROR_CODE = 801;
-	
-	
 	public WebHookHttpExecutionException(String message) {
 		super(message, WEBHOOK_EXECUTION_ERROR_CODE);
 	}

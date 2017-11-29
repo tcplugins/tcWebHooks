@@ -21,6 +21,7 @@ import webhook.WebHook;
 import webhook.WebHookExecutionStats;
 import webhook.WebHookProxyConfig;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.settings.WebHookFilterConfig;
@@ -396,6 +397,14 @@ public class WebHookHistoryRepositoryImplTest {
 		
 		private void notImplemented() {
 			throw new RuntimeException("I'm a mock");
+		}
+
+		@Override
+		public void setEnabledForBuildState(BuildStateEnum buildState, boolean enabled) {
+			this.setEnabled(enabled);
+			if (! enabled) {
+				this.getExecutionStats().setStatusReason(buildState.getShortDescription());
+			}
 		}
 		
 	}

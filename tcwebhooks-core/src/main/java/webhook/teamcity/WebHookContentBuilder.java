@@ -37,7 +37,7 @@ public class WebHookContentBuilder {
 		wh.setContentType(payloadFormat.getContentType());
 		
 		if (state.equals(BuildStateEnum.BUILD_STARTED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
+			wh.setEnabledForBuildState(BuildStateEnum.BUILD_STARTED, whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
 			if (wh.isEnabled()){
 				Loggers.SERVER.debug("WebHookContentBuilder::buildWebHookContent BUILD_STARTED ** 01 ** ID: " + sBuild.getBuildId());
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
@@ -50,7 +50,7 @@ public class WebHookContentBuilder {
 				Loggers.SERVER.debug("WebHookContentBuilder::buildWebHookContent BUILD_STARTED ** 05 ** ID: " + sBuild.getBuildId());
 			}
 		} else if (state.equals(BuildStateEnum.CHANGES_LOADED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.CHANGES_LOADED));
+			wh.setEnabledForBuildState(BuildStateEnum.CHANGES_LOADED, whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.CHANGES_LOADED));
 			if (wh.isEnabled()){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
 				wh.setPayload(payloadFormat.changesLoaded(sBuild, getPreviousNonPersonalBuild(wh, sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
@@ -58,7 +58,7 @@ public class WebHookContentBuilder {
 				wh.checkFilters(getVariableResolver(wh, state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
+			wh.setEnabledForBuildState(BuildStateEnum.BUILD_INTERRUPTED, whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED));
 			if (wh.isEnabled()){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
 				wh.setPayload(payloadFormat.buildInterrupted(sBuild, getPreviousNonPersonalBuild(wh, sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
@@ -66,7 +66,7 @@ public class WebHookContentBuilder {
 				wh.checkFilters(getVariableResolver(wh, state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
-			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
+			wh.setEnabledForBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED));
 			if (wh.isEnabled()){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
 				wh.setPayload(payloadFormat.beforeBuildFinish(sBuild, getPreviousNonPersonalBuild(wh, sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
@@ -74,7 +74,7 @@ public class WebHookContentBuilder {
 				wh.checkFilters(getVariableResolver(wh, state, sBuild, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates()));
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_FINISHED) || state.equals(BuildStateEnum.BUILD_SUCCESSFUL) || state.equals(BuildStateEnum.BUILD_FAILED) || state.equals(BuildStateEnum.BUILD_FIXED) || state.equals(BuildStateEnum.BUILD_BROKEN)){
-			wh.setEnabled(whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(
+			wh.setEnabledForBuildState(BuildStateEnum.BUILD_FINISHED, whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(
 					BuildStateEnum.BUILD_FINISHED, 
 					sBuild.getStatusDescriptor().isSuccessful(),
 					hasBuildChangedHistoricalState(sBuild, getPreviousNonPersonalBuild(wh, sBuild))));

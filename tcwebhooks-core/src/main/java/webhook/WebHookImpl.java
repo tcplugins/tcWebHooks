@@ -21,6 +21,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import lombok.Getter;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
@@ -266,6 +267,15 @@ public class WebHookImpl implements WebHook {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 		this.getExecutionStats().setEnabled(enabled);
+	}
+	
+
+	@Override
+	public void setEnabledForBuildState(BuildStateEnum buildState, boolean enabled) {
+		this.setEnabled(enabled);
+		if (!enabled) {
+			this.getExecutionStats().setStatusReason("WebHook not enabled for buildState '" + buildState.getShortName() + "'");
+		}
 	}
 
 	@Override

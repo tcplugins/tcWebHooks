@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.NameValuePair;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.settings.WebHookFilterConfig;
@@ -107,5 +108,6 @@ public interface WebHook {
 
 	public abstract void setResponseTimeOut(int httpResponseTimeout);
 
+	public abstract void setEnabledForBuildState(BuildStateEnum buildState, boolean enabled);
 
 }
