@@ -38,7 +38,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
  */
 public class WebHookListener extends BuildServerAdapter {
     
-    private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
+	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	private static final String WEBHOOKS_SETTINGS_ATTRIBUTE_NAME = "webhooks";
 	private final SBuildServer myBuildServer;
@@ -102,6 +102,17 @@ public class WebHookListener extends BuildServerAdapter {
 									sRunningBuild,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
+				} catch (Exception ex){
+					wh.getExecutionStats().setErrored(true);
+					wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh.getExecutionStats(), 
+									sRunningBuild,
+									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
+							);
 				}
 	    	}
 	}
@@ -198,7 +209,7 @@ public class WebHookListener extends BuildServerAdapter {
 										null)
 							);
 					} catch (WebHookExecutionException ex){
-						wh.setErrored(true);
+						wh.getExecutionStats().setErrored(true);
 						wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 						Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 						Loggers.SERVER.debug(ex);
@@ -208,7 +219,18 @@ public class WebHookListener extends BuildServerAdapter {
 										project,
 										new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 							);
-					}						
+					} catch (Exception ex){
+						wh.getExecutionStats().setErrored(true);
+						wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
+						Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+						Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
+						webHookHistoryRepository.addHistoryItem(
+								new WebHookHistoryItem(
+										wh.getExecutionStats(), 
+										project,
+										new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
+								);					
+					}
 
      	}
 	}
@@ -237,7 +259,7 @@ public class WebHookListener extends BuildServerAdapter {
 										null)
 							);
 				} catch (WebHookExecutionException ex){
-					wh.setErrored(true);
+					wh.getExecutionStats().setErrored(true);
 					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
@@ -247,6 +269,17 @@ public class WebHookListener extends BuildServerAdapter {
 									project,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
+				} catch (Exception ex){
+					wh.getExecutionStats().setErrored(true);
+					wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh.getExecutionStats(), 
+									project,
+									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
+							);					
 				}
      	}
 	}
@@ -288,7 +321,7 @@ public class WebHookListener extends BuildServerAdapter {
 										null)
 							);
 				} catch (WebHookExecutionException ex){
-					wh.setErrored(true);
+					wh.getExecutionStats().setErrored(true);
 					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
@@ -298,8 +331,18 @@ public class WebHookListener extends BuildServerAdapter {
 									sBuildType,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
+				} catch (Exception ex){
+					wh.getExecutionStats().setErrored(true);
+					wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
+					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
+					webHookHistoryRepository.addHistoryItem(
+							new WebHookHistoryItem(
+									wh.getExecutionStats(), 
+									sBuildType,
+									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
+							);					
 				}
-						
      	}
 	}
 	
