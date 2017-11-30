@@ -37,11 +37,12 @@
 	        <h2 class="noBorder">Recent WebHook Errors</h2>
 	        The following table shows the 20 most recent webhook errors.
 	        <table class="settings">
-	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>URL</th><th>Error</th></tr>
+	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>URL</th><th>Build Event</th><th>Error</th></tr>
 	        <c:forEach items="${history}" var="historyItem">
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
 					<td>${historyItem.webHookExecutionStats.url}</td>
+					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}">undefined</c:out></td>
 					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
 	   				</tr>
 	        	

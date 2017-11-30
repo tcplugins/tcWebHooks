@@ -273,6 +273,7 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setEnabledForBuildState(BuildStateEnum buildState, boolean enabled) {
 		this.setEnabled(enabled);
+		this.getExecutionStats().setBuildState(buildState);
 		if (!enabled) {
 			this.getExecutionStats().setStatusReason("WebHook not enabled for buildState '" + buildState.getShortName() + "'");
 		}

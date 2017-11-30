@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.Header;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import webhook.teamcity.BuildStateEnum;
 
 @Data @NoArgsConstructor
 public class WebHookExecutionStats {
@@ -25,6 +26,7 @@ public class WebHookExecutionStats {
 	Header[] responseHeaders;
 	boolean errored = false;
 	boolean enabled = true;
+	BuildStateEnum buildState;
 	
 	public WebHookExecutionStats(String url) {
 		this.url = url;
