@@ -8,7 +8,7 @@
 	        <div class="repoList">
 	        <h2 class="noBorder">WebHooks</h2>
 	        
-	        <p>The most recent 50,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
+	        <p>The most recent 10,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">
 	        <div class="webhookCounts">
 		        <div class="webhookOkCount webhookCount">
