@@ -32,7 +32,7 @@ public class WebHookTemplateFormatMigrationTest {
 	@Test
 	public void testLoadOfOldFormatsListDoesNotContainFormatsTagWhenSerialised() throws JAXBException, FileNotFoundException {
 		ByteArrayOutputStream outputXml = new ByteArrayOutputStream();
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -47,7 +47,7 @@ public class WebHookTemplateFormatMigrationTest {
 	@Test
 	public void testLoadOfNewFormatDoesNotContainFormatsTagWhenSerialised() throws JAXBException, FileNotFoundException {
 		ByteArrayOutputStream outputXml = new ByteArrayOutputStream();
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -62,7 +62,7 @@ public class WebHookTemplateFormatMigrationTest {
 	@Test
 	public void testLoadOfOldNameDoesNotContainNameAttributeWhenSerialised() throws JAXBException, FileNotFoundException {
 		ByteArrayOutputStream outputXml = new ByteArrayOutputStream();
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -78,7 +78,7 @@ public class WebHookTemplateFormatMigrationTest {
 	@Test
 	public void testLoadOfNewIdDoesNotContainNameAttributeWhenSerialised() throws JAXBException, FileNotFoundException {
 		ByteArrayOutputStream outputXml = new ByteArrayOutputStream();
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

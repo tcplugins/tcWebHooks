@@ -99,7 +99,7 @@ public class WebHookTemplateManager {
 				templates.addWebHookTemplate(xmlConfig.getAsEntity());
 			}
 			try {
-				webHookTemplateJaxHelper.write(templates, configFilePath);
+				webHookTemplateJaxHelper.writeTemplates(templates, configFilePath);
 				return true;
 			} catch (JAXBException jaxbException){
 				Loggers.SERVER.debug(jaxbException);

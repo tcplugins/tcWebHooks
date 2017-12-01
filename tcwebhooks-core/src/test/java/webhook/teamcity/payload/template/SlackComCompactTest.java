@@ -37,7 +37,7 @@ public class SlackComCompactTest {
 		slackCompact.register();
 		framework.getWebHookTemplateManager().registerTemplateFormatFromSpring(slackCompact);
 		
-		WebHookTemplates templatesList =  framework.getWebHookTemplateJaxHelper().read("src/test/resources/testSlackCompactOverriden/webhook-templates.xml");
+		WebHookTemplates templatesList =  framework.getWebHookTemplateJaxHelper().readTemplates("src/test/resources/testSlackCompactOverriden/webhook-templates.xml");
 		framework.getWebHookTemplateManager().registerAllXmlTemplates(templatesList);		
 		
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-slackcompact-jsonTemplate-AllEnabled.xml"));

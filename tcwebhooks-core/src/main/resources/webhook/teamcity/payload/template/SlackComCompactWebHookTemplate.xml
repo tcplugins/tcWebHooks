@@ -1,84 +1,219 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<webhook-templates>
-	<webhook-template enabled="true" name="slack.com-compact" rank="20">
-		<template-description>Slack.com Compact Notification</template-description>
-		<template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip>
-		<formats>
-			<format name="jsonTemplate" enabled="true" />
-		</formats>
-		<templates>
-			<template>
-				<!--  Additional Template is only for successful builds -->
-				<states>
-					<state type="buildSuccessful" enabled="true" />
-					<state type="buildFixed" enabled="true" />
-				</states>
-				<!--  Additional Template (non-branch) for successful builds -->
-				<template-text><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<webhook-template id="slack.com-compact" enabled="true" rank="20" format="jsonTemplate">
+	<template-description>Slack.com Compact Notification</template-description>
+	<template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip>
+	<preferred-date-format></preferred-date-format>
+	<templates>
+		<template>
+			<template-text use-for-branch-template="false">
 {
     "text" : "${buildName} SUCCESS",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} SUCCESS",
             "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
             "color" : "good"
         }
     ]
 }
-				]]></template-text>
-				
-				<!--  Additional Template (branch) for successful builds -->
-				<branch-template-text><![CDATA[
+			</template-text>
+			<branch-template-text>
 {
     "text" : "${buildName} SUCCESS",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} SUCCESS",
             "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
             "color" : "good"
         }
     ]
 }
-				]]></branch-template-text>
-			</template>
-			<template>
-				<!--  Additional Template is only for failed builds -->
-				<states>
-					<state type="buildFailed" enabled="true" />
-					<state type="buildBroken" enabled="true" />
-				</states>
-				<!--  Additional Template (non-branch) for failed builds -->
-				<template-text><![CDATA[
+			</branch-template-text>
+			<states>
+				<state type="buildSuccessful" enabled="true"/>
+				<state type="buildFixed" enabled="true"/>
+			</states>
+		</template>
+		<template>
+			<template-text use-for-branch-template="false">
 {
     "text" : "${buildName} FAILURE",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} SUCCESS",
+            "fallback" : "${buildName} FAILURE",
             "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
             "color" : "danger"
         }
     ]
 }
-				]]></template-text>
-				
-				<!--  Additional Template (branch) for failed builds -->
-				<branch-template-text><![CDATA[
+			</template-text>
+			<branch-template-text>
 {
     "text" : "${buildName} FAILURE",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} FAILED",
             "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&tab=buildLog",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
             "color" : "danger"
         }
     ]
 }
-				]]></branch-template-text>
-			</template>
-		</templates>
-	</webhook-template>
-</webhook-templates>
+			</branch-template-text>
+			<states>
+				<state type="buildFailed" enabled="true"/>
+				<state type="buildBroken" enabled="true"/>
+			</states>
+		</template>
+		<template>
+			<template-text use-for-branch-template="false">
+{
+    "text" : "${buildName} STARTED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} STARTED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
+        }
+    ]
+}
+			</template-text>
+			<branch-template-text>
+{
+    "text" : "${buildName} STARTED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} STARTED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
+        }
+    ]
+}
+			</branch-template-text>
+			<states>
+				<state type="buildStarted" enabled="true"/>
+			</states>
+		</template>
+		<template>
+			<template-text use-for-branch-template="false">
+{
+    "text" : "${buildName} CHANGES LOADED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} CHANGES LOADED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
+        }
+    ]
+}
+			</template-text>
+			<branch-template-text>
+{
+    "text" : "${buildName} CHANGES LOADED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} CHANGES LOADED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
+        }
+    ]
+}
+			</branch-template-text>
+			<states>
+				<state type="changesLoaded" enabled="true"/>
+			</states>
+		</template>
+		<template>
+			<template-text use-for-branch-template="false">
+{
+    "text" : "${buildName} INTERRUPTED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} INTERRUPTED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
+            "color" : "danger"
+        }
+    ]
+}
+			</template-text>
+			<branch-template-text>
+{
+    "text" : "${buildName} INTERRUPTED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} INTERRUPTED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
+            "color" : "warning"
+        }
+    ]
+}
+			</branch-template-text>
+			<states>
+				<state type="buildInterrupted" enabled="true"/>
+			</states>
+		</template>
+		<template>
+			<template-text use-for-branch-template="false">
+{
+    "text" : "${buildName} ALMOST COMPLETED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} ALMOST COMPLETED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
+        }
+    ]
+}
+			</template-text>
+			<branch-template-text>
+{
+    "text" : "${buildName} ALMOST COMPLETED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} ALMOST COMPLETED",
+            "title" : "Build Log #${buildNumber}",
+            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
+        }
+    ]
+}
+			</branch-template-text>
+			<states>
+				<state type="beforeBuildFinish" enabled="true"/>
+			</states>
+		</template>
+		<template>
+			<template-text use-for-branch-template="false">{
+    "text" : "${buildName} RESPONSIBILTY CHANGED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId}",
+            "fallback" : "${buildName} SUCCESS",
+            "title" : "From ${responsibilityUserOld} to ${responsibilityUserNew}",
+            "title_link" : "${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}",
+            "color" : "#439FE0"
+        }
+    ]
+}
+			</template-text>
+			<branch-template-text>{
+    "text" : "${buildName} RESPONSIBILTY CHANGED",
+    "attachments" : [{
+            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
+            "fallback" : "${buildName} SUCCESS",
+            "title" : "From ${responsibilityUserOld} to ${responsibilityUserNew}",
+            "title_link" : "${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}",
+            "color" : "#439FE0"
+        }
+    ]
+}
+			</branch-template-text>
+			<states>
+				<state type="responsibilityChanged" enabled="true"/>
+			</states>
+		</template>
+	</templates>
+</webhook-template>

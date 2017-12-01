@@ -39,7 +39,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	@Override
 	public void register() {
 		
-		template = (WebHookTemplateFromXml) WebHookTemplateFromXml.build(loadFirstTemplateFromXmlFile(), payloadManager);
+		template = (WebHookTemplateFromXml) WebHookTemplateFromXml.build(loadTemplateFromXmlFile(), payloadManager);
 		
 		// Is rank is set by spring initialisation then use that value
 		// rather than the one in the XML file.
@@ -79,19 +79,20 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	}
 
 	/**
-	 * Loads only the first template from an XML file. This means we can 
-	 * use the webhook-templates.xml file format rather than declaring the 
+	 * Loads the template from an XML file. This means we can 
+	 * use the <webhook-template> entity from the file format rather than declaring the 
 	 * template strings in this class which would then require doing silly 
 	 * string escaping in java.<br>
+	 * This file must be in the format returned by the .../rawConfig REST API method. 
 	 * Calls getXmlFileName() which must be implemented in subclass.
 	 */
-	private WebHookTemplateEntity loadFirstTemplateFromXmlFile() {
+	private WebHookTemplateEntity loadTemplateFromXmlFile() {
 		WebHookTemplateEntity webhookEntity = null;
 		URL url = findXmlFileUrlInVariousClassloaders(getXmlFileName());
 	    if (url != null) {
 	        try {
 	            InputStream in = url.openStream();
-	            webhookEntity = webHookTemplateJaxHelper.read(in).getWebHookTemplateList().get(0);
+	            webhookEntity = webHookTemplateJaxHelper.readTemplate(in);
 	            webhookEntity.fixTemplateIds();
 	        } catch (IOException | JAXBException e) {
 	        	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ".");

@@ -21,7 +21,7 @@ public class WebHookTemplateJaxHelperTest {
 
 	@Test
 	public void testReadString() throws FileNotFoundException, JAXBException {
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -36,7 +36,7 @@ public class WebHookTemplateJaxHelperTest {
 	
 	@Test
 	public void testReadStringAndOutputWithCData() throws FileNotFoundException, JAXBException, ParserConfigurationException, TransformerException {
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

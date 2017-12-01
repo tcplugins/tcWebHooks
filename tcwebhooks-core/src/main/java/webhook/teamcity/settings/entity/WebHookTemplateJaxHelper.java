@@ -14,7 +14,7 @@ public interface WebHookTemplateJaxHelper {
 	 * @throws JAXBException
 	 * @throws FileNotFoundException
 	 */
-	public abstract WebHookTemplates read(String configFilePath)
+	public abstract WebHookTemplateEntity readTemplate(String configFilePath)
 			throws JAXBException, FileNotFoundException;
 
 	/**
@@ -23,7 +23,7 @@ public interface WebHookTemplateJaxHelper {
 	 * @return Suppliers bean
 	 * @throws JAXBException
 	 */
-	public abstract WebHookTemplates read(InputStream stream)
+	public abstract WebHookTemplateEntity readTemplate(InputStream stream)
 			throws JAXBException;
 
 	/**
@@ -31,7 +31,34 @@ public interface WebHookTemplateJaxHelper {
 	 * 
 	 * @throws JAXBException
 	 */
-	public abstract void write(WebHookTemplates templates, String configFilePath)
+	public abstract void writeTemplate(WebHookTemplateEntity templates, String configFilePath)
+			throws JAXBException;
+	
+	/**
+	 * Read saved configuration from file
+	 * 
+	 * @return {@link WebHookTemplates} bean
+	 * @throws JAXBException
+	 * @throws FileNotFoundException
+	 */
+	public abstract WebHookTemplates readTemplates(String configFilePath)
+			throws JAXBException, FileNotFoundException;
+	
+	/**
+	 * Read saved configuration from stream
+	 * 
+	 * @return Suppliers bean
+	 * @throws JAXBException
+	 */
+	public abstract WebHookTemplates readTemplates(InputStream stream)
+			throws JAXBException;
+	
+	/**
+	 * Write suppliers bean to configuration file
+	 * 
+	 * @throws JAXBException
+	 */
+	public abstract void writeTemplates(WebHookTemplates templates, String configFilePath)
 			throws JAXBException;
 
 }

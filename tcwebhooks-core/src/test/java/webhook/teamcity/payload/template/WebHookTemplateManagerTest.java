@@ -2,6 +2,7 @@ package webhook.teamcity.payload.template;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,17 +27,15 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateBranchText;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateFormat;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateItems;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity.WebHookTemplateText;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 
 public class WebHookTemplateManagerTest {
 	
 	SBuildServer mockServer = mock(SBuildServer.class);
 	WebHookTemplateManager wtm;
-	WebHookPayloadManager wpm;
+	WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
+	WebHookTemplateJaxHelperImpl webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 	
 	@Before
 	public void setup(){
@@ -46,18 +45,18 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestSlackComTemplateRegistration(){
 		wtm = mock(WebHookTemplateManager.class);
-		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
+		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper);
 		wht.register();
-		verify(wtm).registerTemplateFormatFromSpring(wht);
+		verify(wtm).registerTemplateFormatFromSpring(any(WebHookTemplateFromXml.class));
 	}
 	
 	@Test
 	public void TestSlackComTemplate(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wtm = new WebHookTemplateManager(null, new WebHookTemplateJaxHelperImpl());
-		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
+		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper);
 		wht.register();
-		assertTrue(wtm.getRegisteredTemplates().contains(wht));
+		assertEquals(wht.getTemplateId(), wtm.getTemplate(wht.getTemplateId()).getTemplateId());
 	}
 	
 	@Test
@@ -68,7 +67,7 @@ public class WebHookTemplateManagerTest {
 		
 		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
 		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplate"));
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, webHookTemplateJaxHelper);
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 
@@ -85,7 +84,7 @@ public class WebHookTemplateManagerTest {
 		
 		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
 		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplateWithTemplateIds"));
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, webHookTemplateJaxHelper);
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		
@@ -102,12 +101,12 @@ public class WebHookTemplateManagerTest {
 		
 		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
 		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testCDataTemplate"));
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, webHookTemplateJaxHelper);
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		
 		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
-		assertTrue(regsiteredTemplates.size() == 1);
+		assertEquals(1, regsiteredTemplates.size());
 		assertTrue(regsiteredTemplates.get(0).getTemplateId().equals("testXMLtemplate"));
 		System.out.println("###########################");
 		System.out.println(regsiteredTemplates.get(0).getTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText());
@@ -117,8 +116,8 @@ public class WebHookTemplateManagerTest {
 	@Test
 	public void TestFindMatchingTemplates(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(null, new WebHookTemplateJaxHelperImpl());
-		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
+		wtm = new WebHookTemplateManager(null, webHookTemplateJaxHelper);
+		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper);
 		wht.register();
 		TestWebHookTemplate wht2 = new TestWebHookTemplate(wtm);
 		wht2.register();
@@ -126,7 +125,6 @@ public class WebHookTemplateManagerTest {
 		wht3.register();
 		BbbTestWebHookTemplate wht4 = new BbbTestWebHookTemplate(wtm);
 		wht4.register();
-		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME).contains(wht));
 		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME).contains(wht2));
 		System.out.println(wht.getTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText());
 	}

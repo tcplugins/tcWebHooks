@@ -46,7 +46,7 @@ public class WebHookTemplateEntityTest {
 	@Test
 	public void testLoad() throws JAXBException, FileNotFoundException {
 		
-		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().read("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
+		WebHookTemplates templatesList =  new WebHookTemplateJaxHelperImpl().readTemplates("src/test/resources/testXmlTemplateWithTemplateIds/config/webhook-templates.xml");
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(WebHookTemplates.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

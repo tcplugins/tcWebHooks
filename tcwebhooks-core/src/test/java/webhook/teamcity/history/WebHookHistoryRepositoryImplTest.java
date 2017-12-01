@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
 
 public class WebHookHistoryRepositoryImplTest {
@@ -33,6 +35,9 @@ public class WebHookHistoryRepositoryImplTest {
 
 	@Mock
 	SBuild sBuild02;
+	
+	WebHookConfig whc1;
+	WebHookConfig whc2;
 	
 	WebHookExecutionStats stats01 = new WebHookExecutionStats("url");
 	WebHookExecutionStats stats02 = new WebHookExecutionStats("url");
@@ -130,9 +135,12 @@ public class WebHookHistoryRepositoryImplTest {
 		when(sBuild01.getBuildId()).thenReturn(01L);
 		when(sBuild02.getBuildId()).thenReturn(02L);
 		
+		whc1 = new WebHookConfig("http://url/1", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
+		whc2 = new WebHookConfig("http://url/2", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
+		
 		WebHookHistoryRepository historyRepository = new WebHookHistoryRepositoryImpl();
-		historyRepository.addHistoryItem(new WebHookHistoryItem(webhook01.getExecutionStats(), sBuild01, null));
-		historyRepository.addHistoryItem(new WebHookHistoryItem(webhook02.getExecutionStats(), sBuild02, null));
+		historyRepository.addHistoryItem(new WebHookHistoryItem(whc1, webhook01.getExecutionStats(), sBuild01, null));
+		historyRepository.addHistoryItem(new WebHookHistoryItem(whc2, webhook02.getExecutionStats(), sBuild02, null));
 		return historyRepository;
 	}
 

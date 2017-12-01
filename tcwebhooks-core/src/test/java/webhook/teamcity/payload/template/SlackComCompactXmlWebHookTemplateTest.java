@@ -42,8 +42,8 @@ public class SlackComCompactXmlWebHookTemplateTest {
 
 	private WebHookPayload payloadFormat;
 	
-	@Test(expected=UnSupportedBuildStateException.class)
-	public void testLoadDefaultCompactSlackTemplateAndVerifyThatThereIsNoTemplateForBuildStarted() {
+	@Test
+	public void testLoadDefaultCompactSlackTemplateAndVerifyThatThereIsATemplateForChangesLoaded() {
 		
 		setup();
 		
@@ -53,15 +53,15 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		
 		WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver);
 		
-		WebHookTemplateContent webHookTemplateContentStarted = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.BUILD_STARTED, slackCompact.getTemplateId(), payloadFormat);
-		assertNull(webHookTemplateContentStarted);
+		WebHookTemplateContent webHookTemplateContentChangesLoaded = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.CHANGES_LOADED, slackCompact.getTemplateId(), payloadFormat);
+		assertNotNull(webHookTemplateContentChangesLoaded);
 		
 		WebHookTemplateContent webHookTemplateContentSuccessful = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.BUILD_SUCCESSFUL, slackCompact.getTemplateId(), payloadFormat);
 		assertNotNull(webHookTemplateContentSuccessful);
 	}
 	
-	@Test
-	public void testLoadDefaultCompactSlackTemplateAndThenOverideItAndVerifyThatThereIsATemplateForBuildStarted() throws FileNotFoundException, JAXBException {
+	@Test(expected=UnSupportedBuildStateException.class)
+	public void testLoadDefaultCompactSlackTemplateAndThenOverideItAndVerifyThatThereIsNoTemplateForChangesLoaded() throws FileNotFoundException, JAXBException {
 		
 		setup();
 		
@@ -69,13 +69,13 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		slackCompact.register();
 		webHookTemplateManager.registerTemplateFormatFromSpring(slackCompact);
 		
-    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.read("src/test/resources/testSlackCompactOverriden/webhook-templates.xml");
+    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates("src/test/resources/testSlackCompactOverriden/webhook-templates.xml");
 		webHookTemplateManager.registerAllXmlTemplates(templatesList);
 		
 		WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver);
 		
-		WebHookTemplateContent webHookTemplateContentStarted = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.BUILD_STARTED, slackCompact.getTemplateId(), payloadFormat);
-		assertNotNull(webHookTemplateContentStarted);
+		WebHookTemplateContent webHookTemplateContentChangesLoaded = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.CHANGES_LOADED, slackCompact.getTemplateId(), payloadFormat);
+		assertNull(webHookTemplateContentChangesLoaded);
 		
 		WebHookTemplateContent webHookTemplateContentSuccessful = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.BUILD_SUCCESSFUL, slackCompact.getTemplateId(), payloadFormat);
 		assertNotNull(webHookTemplateContentSuccessful);

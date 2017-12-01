@@ -11,10 +11,8 @@ import org.mockito.MockitoAnnotations;
 
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.template.AbstractPropertiesBasedWebHookTemplate;
 import webhook.teamcity.payload.template.AbstractXmlBasedWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
-import webhook.teamcity.payload.template.SlackComWebHookTemplate;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 

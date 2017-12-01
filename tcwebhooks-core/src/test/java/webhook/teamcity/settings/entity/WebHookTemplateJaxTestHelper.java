@@ -10,7 +10,12 @@ public class WebHookTemplateJaxTestHelper extends WebHookTemplateJaxHelperImpl i
 
 
 	@Override
-	public void write(WebHookTemplates templates, String configFilePath) throws JAXBException {
+	public void writeTemplate(WebHookTemplateEntity templates, String configFilePath) throws JAXBException {
+		
+	}
+	
+	@Override
+	public void writeTemplates(WebHookTemplates templates, String configFilePath) throws JAXBException {
 		
 	}
 

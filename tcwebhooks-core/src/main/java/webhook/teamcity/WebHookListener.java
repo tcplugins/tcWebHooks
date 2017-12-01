@@ -87,6 +87,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									sRunningBuild,
 									null)
@@ -98,6 +99,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									sRunningBuild,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
@@ -109,6 +111,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									sRunningBuild,
 									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
@@ -204,6 +207,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
+										whc,
 										wh.getExecutionStats(), 
 										project,
 										null)
@@ -215,6 +219,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.SERVER.debug(ex);
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
+										whc,
 										wh.getExecutionStats(), 
 										project,
 										new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
@@ -226,6 +231,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
+										whc,
 										wh.getExecutionStats(), 
 										project,
 										new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
@@ -254,6 +260,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
+										whc,
 										wh.getExecutionStats(), 
 										project,
 										null)
@@ -265,6 +272,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									project,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
@@ -276,6 +284,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									project,
 									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
@@ -316,6 +325,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
 								new WebHookHistoryItem(
+										whc,
 										wh.getExecutionStats(), 
 										sBuildType,
 										null)
@@ -327,6 +337,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									sBuildType,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
@@ -338,6 +349,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
 							new WebHookHistoryItem(
+									whc,
 									wh.getExecutionStats(), 
 									sBuildType,
 									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))

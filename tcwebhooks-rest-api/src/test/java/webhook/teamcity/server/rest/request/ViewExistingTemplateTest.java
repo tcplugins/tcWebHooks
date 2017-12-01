@@ -59,21 +59,21 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     public void testXmlTemplatesRequest() {
         WebResource webResource = resource();
         Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_XML_TYPE).get(Templates.class);
-        assertTrue(responseMsg.count == 0);
+        assertEquals(0, (int)responseMsg.count);
     }
     
     @Test
     public void testJsonTemplatesRequest() {
         WebResource webResource = resource();
         Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
-        assertTrue(responseMsg.count == 0);
+        assertEquals(0, (int)responseMsg.count);
     }
     
     @Test
     public void testJsonTemplatesRequestUsingRegisteredTemplate() throws FileNotFoundException, JAXBException {
     	
     	WebResource webResource = resource();
-    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.read("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
+    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
     	WebHookTemplateConfig templateEntity = WebHookTemplateConfigBuilder.buildConfig(templatesList.getWebHookTemplateList().get(0));
     	webHookTemplateManager.registerTemplateFormatFromXmlConfig(templateEntity);
     	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
@@ -88,7 +88,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     public void testJsonTemplatesRequestUsingLotsOfRegisteredTemplates() throws FileNotFoundException, JAXBException {
      	
     	WebResource webResource = resource();
-    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.read("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
+    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
     	for (WebHookTemplateEntity templateEntity : templatesList.getWebHookTemplateList()){
     		webHookTemplateManager.registerTemplateFormatFromXmlEntity(templateEntity);
     	}
@@ -103,7 +103,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     public void testJsonTemplatesRequestUsingLotsOfRegisteredTemplatesButOnlyReturningOne() throws FileNotFoundException, JAXBException {
     	
     	WebResource webResource = resource();
-    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.read("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
+    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
     	assertEquals("There should be 3 templates loaded from file", 3, templatesList.getWebHookTemplateList().size());
     	
     	for (WebHookTemplateEntity templateEntity : templatesList.getWebHookTemplateList()){
@@ -324,7 +324,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	
-    	assertEquals(2, responseMsg.getTemplates().size());
+    	assertEquals(7, responseMsg.getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.id);
     	prettyPrint(responseMsg);
     }
@@ -337,7 +337,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_XML_TYPE).get(Template.class);
     	
-    	assertEquals(2, responseMsg.getTemplates().size());
+    	assertEquals(7, responseMsg.getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.id);
     	//prettyPrint(responseMsg);
     }
@@ -350,7 +350,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	WebHookTemplateConfig responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/fullConfig").accept(MediaType.APPLICATION_XML_TYPE).get(WebHookTemplateConfig.class);
     	
-    	assertEquals(2, responseMsg.getTemplates().getTemplates().size());
+    	assertEquals(7, responseMsg.getTemplates().getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.getId());
     	//prettyPrint(responseMsg);
     }  

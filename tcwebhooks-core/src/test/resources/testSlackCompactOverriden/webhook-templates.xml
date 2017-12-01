@@ -92,7 +92,7 @@
         }
     ]
 }
-				</branch-template-text><states><state type="changesLoaded" enabled="true"/></states></template><template id="5"><template-text use-for-branch-template="false">
+				</branch-template-text><states><state type="changesLoaded" enabled="false"/></states></template><template id="5"><template-text use-for-branch-template="false">
 {
     "text" : "${buildName} INTERRUPTED",
     "attachments" : [{

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<webhook-templates>
 	<webhook-template enabled="true" name="slack.com" rank="20">
 		<template-description>Slack.com JSON templates</template-description>
 		<template-tool-tip>Supports the slack.com JSON webhooks endpoint</template-tool-tip>
@@ -39,4 +38,3 @@
 			</template>
 		</templates>
 	</webhook-template>
-</webhook-templates>

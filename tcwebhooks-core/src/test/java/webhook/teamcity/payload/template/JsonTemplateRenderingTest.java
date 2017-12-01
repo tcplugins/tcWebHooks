@@ -23,18 +23,21 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
+import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 
 public class JsonTemplateRenderingTest {
 
 	SBuildServer mockServer = mock(SBuildServer.class);
 	WebHookTemplateManager wtm;
-	WebHookPayloadManager wpm;
+	WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
+	WebHookTemplateJaxHelperImpl webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 	
 	@Test
 	public void TestJsonTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException, WebHookPayloadContentAssemblyException {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wtm = new WebHookTemplateManager(null, null);
-		AbstractPropertiesBasedWebHookTemplate wht = new SlackComWebHookTemplate(wtm);
+		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper);
 		wht.register();
 
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
