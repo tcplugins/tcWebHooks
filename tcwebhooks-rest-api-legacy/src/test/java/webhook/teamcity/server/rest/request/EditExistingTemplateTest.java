@@ -1,6 +1,8 @@
 package webhook.teamcity.server.rest.request;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES_URL;
 
 import java.io.FileNotFoundException;
@@ -56,13 +58,26 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	assertEquals("slack.com-compact", responseMsg.parentTemplate.getId());
     	prettyPrint(responseMsg);
     	
-    	responseMsg.findConfigForBuildState("beforeBuildFinish").setEnabled(true);
+    	// templateItem "id:1" is for buildFixed and buildSuccessful
+    	// disable buildSuccessful
+    	responseMsg.findConfigForBuildState("buildSuccessful").setEnabled(false);
 		Template.TemplateItem responseMsg2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg);
+		
+		// check that the response back is false
+    	assertFalse("buildSuccessful should now be false for template id:1", responseMsg2.findConfigForBuildState("buildSuccessful").isEnabled());
 		prettyPrint(responseMsg2);
 		
-    	Template.TemplateItem responseMsg3 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
-    	assertEquals(true, responseMsg3.findConfigForBuildState("beforeBuildFinish").isEnabled());
-    	prettyPrint(responseMsg3);
+		// Get it again (and check it again just for an extra check)
+		Template.TemplateItem responseMsg3 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplateName,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
+		assertFalse("buildSuccessful should now be false for template id:1", responseMsg2.findConfigForBuildState("buildSuccessful").isEnabled());
+		
+		// Now update the value and PUT it back
+		responseMsg3.findConfigForBuildState("buildSuccessful").setEnabled(true);
+		Template.TemplateItem responseMsg4 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).put(Template.TemplateItem.class, responseMsg3);
+
+		// Check the response now has it set to true again.
+		assertTrue("buildSuccessful should now be false for template id:1", responseMsg4.findConfigForBuildState("buildSuccessful").isEnabled());    	
+    	prettyPrint(responseMsg4);
     }
     
     @Test(expected=UniformInterfaceException.class)

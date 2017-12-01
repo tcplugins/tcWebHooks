@@ -81,7 +81,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	assertEquals("slack.com-compact", responseTemplateItem.parentTemplate.getId());
     	prettyPrint(responseTemplateItem);
     	
-    	assertEquals(2, responseTemplate.getTemplates().size());
+    	assertEquals(7, responseTemplate.getTemplates().size());
     	
     	ClientResponse deleteResponse = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).delete(ClientResponse.class);
     	assertEquals(204, deleteResponse.getStatus());
@@ -92,7 +92,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	assertEquals(500, getResponse.getStatus());
     	
     	Template responseTemplate2 = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
-    	assertEquals(1, responseTemplate2.getTemplates().size());
+    	assertEquals(6, responseTemplate2.getTemplates().size());
     	
     }
     
