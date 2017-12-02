@@ -1,13 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<webhook-template id="slack.com-compact" enabled="true" rank="20" format="jsonTemplate">
-	<template-description>Slack.com Compact Notification</template-description>
-	<template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip>
-	<preferred-date-format></preferred-date-format>
-	<templates>
-		<template>
-			<template-text use-for-branch-template="false">
-{
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="20" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="7"><template id="1"><template-text use-for-branch-template="false">{
     "text" : "${buildName} SUCCESS",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} SUCCESS",
@@ -16,11 +10,10 @@
             "color" : "good"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>
-{
+}</template-text><branch-template-text>{
     "text" : "${buildName} SUCCESS",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} SUCCESS",
@@ -29,17 +22,10 @@
             "color" : "good"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="buildSuccessful" enabled="true"/>
-				<state type="buildFixed" enabled="true"/>
-			</states>
-		</template>
-		<template>
-			<template-text use-for-branch-template="false">
-{
+}</branch-template-text><states><state type="buildSuccessful" enabled="true"/><state type="buildFixed" enabled="true"/></states></template><template id="2"><template-text use-for-branch-template="false">{
     "text" : "${buildName} FAILURE",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} FAILURE",
@@ -48,11 +34,10 @@
             "color" : "danger"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>
-{
+}</template-text><branch-template-text>{
     "text" : "${buildName} FAILURE",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} FAILED",
@@ -61,17 +46,10 @@
             "color" : "danger"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="buildFailed" enabled="true"/>
-				<state type="buildBroken" enabled="true"/>
-			</states>
-		</template>
-		<template>
-			<template-text use-for-branch-template="false">
-{
+}</branch-template-text><states><state type="buildFailed" enabled="true"/><state type="buildBroken" enabled="true"/></states></template><template id="3"><template-text use-for-branch-template="false">{
     "text" : "${buildName} STARTED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} STARTED",
@@ -79,11 +57,10 @@
             "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>
-{
+}</template-text><branch-template-text>{
     "text" : "${buildName} STARTED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} STARTED",
@@ -91,16 +68,10 @@
             "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="buildStarted" enabled="true"/>
-			</states>
-		</template>
-		<template>
-			<template-text use-for-branch-template="false">
-{
+}</branch-template-text><states><state type="buildStarted" enabled="true"/></states></template><template id="4"><template-text use-for-branch-template="false">{
     "text" : "${buildName} CHANGES LOADED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} CHANGES LOADED",
@@ -108,11 +79,10 @@
             "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>
-{
+}</template-text><branch-template-text>{
     "text" : "${buildName} CHANGES LOADED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} CHANGES LOADED",
@@ -120,16 +90,10 @@
             "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="changesLoaded" enabled="true"/>
-			</states>
-		</template>
-		<template>
-			<template-text use-for-branch-template="false">
-{
+}</branch-template-text><states><state type="changesLoaded" enabled="true"/></states></template><template id="5"><template-text use-for-branch-template="false">{
     "text" : "${buildName} INTERRUPTED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} INTERRUPTED",
@@ -138,11 +102,10 @@
             "color" : "danger"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>
-{
+}</template-text><branch-template-text>{
     "text" : "${buildName} INTERRUPTED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} INTERRUPTED",
@@ -151,16 +114,10 @@
             "color" : "warning"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="buildInterrupted" enabled="true"/>
-			</states>
-		</template>
-		<template>
-			<template-text use-for-branch-template="false">
-{
+}</branch-template-text><states><state type="buildInterrupted" enabled="true"/></states></template><template id="6"><template-text use-for-branch-template="false">{
     "text" : "${buildName} ALMOST COMPLETED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} ALMOST COMPLETED",
@@ -168,11 +125,10 @@
             "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>
-{
+}</template-text><branch-template-text>{
     "text" : "${buildName} ALMOST COMPLETED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} ALMOST COMPLETED",
@@ -180,15 +136,10 @@
             "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="beforeBuildFinish" enabled="true"/>
-			</states>
-		</template>
-		<template>
-			<template-text use-for-branch-template="false">{
+}</branch-template-text><states><state type="beforeBuildFinish" enabled="true"/></states></template><template id="7"><template-text use-for-branch-template="false">{
     "text" : "${buildName} RESPONSIBILTY CHANGED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId}",
             "fallback" : "${buildName} SUCCESS",
@@ -197,10 +148,10 @@
             "color" : "#439FE0"
         }
     ]
-}
-			</template-text>
-			<branch-template-text>{
+}</template-text><branch-template-text>{
     "text" : "${buildName} RESPONSIBILTY CHANGED",
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
             "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
             "fallback" : "${buildName} SUCCESS",
@@ -209,11 +160,4 @@
             "color" : "#439FE0"
         }
     ]
-}
-			</branch-template-text>
-			<states>
-				<state type="responsibilityChanged" enabled="true"/>
-			</states>
-		</template>
-	</templates>
-</webhook-template>
+}</branch-template-text><states><state type="responsibilityChanged" enabled="true"/></states></template></templates></webhook-template>
