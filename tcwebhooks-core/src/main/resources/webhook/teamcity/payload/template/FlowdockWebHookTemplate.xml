@@ -21,7 +21,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildFailed%402x.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildFailed%402x.png"
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}",
@@ -49,7 +49,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildFailed%402x.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildFailed%402x.png"
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
@@ -84,7 +84,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/FFFFFF-0.png"
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}",
@@ -112,7 +112,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/FFFFFF-0.png"
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
@@ -148,7 +148,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildSuccessful%402x.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildSuccessful%402x.png"
   },
   "title": "updated build status to ${buildResult}",
   "external_thread_id": "teamcity-${buildName}",
@@ -176,7 +176,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/buildSuccessful%402x.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildSuccessful%402x.png"
   },
   "title": "updated build status to ${buildResult}",
   "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
@@ -211,7 +211,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/FFFFFF-0.png"
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}",
@@ -239,7 +239,7 @@
   "event": "activity",
   "author": {
     "name": "TeamCity",
-    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/custom-templates/tcwebhooks-core/src/docs/images/FFFFFF-0.png"
+    "avatar": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/FFFFFF-0.png"
   },
   "title": "updated build status to ${notifyType}",
   "external_thread_id": "teamcity-${buildName}-${sanitize(branchName)}",
