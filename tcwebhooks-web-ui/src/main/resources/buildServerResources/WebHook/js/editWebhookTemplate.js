@@ -231,6 +231,15 @@ WebHooksPlugin = {
 									]					
 					};
 					
+					// If we have the pluralised name, pass the reference to a singular form.
+					// This works around Jackson 2.x using singular names, and Jackson 1.x using plural.
+					if (typeof myJson.parentTemplate.templateItems !== 'undefined' 
+						&& myJson.parentTemplate.templateItems != null 
+						&& myJson.parentTemplate.templateItems.length > 0) 
+					{
+						myJson.parentTemplate.templateItem = myJson.parentTemplate.templateItems;
+					}
+					
 					if (typeof myJson.parentTemplate.templateItem !== 'undefined' 
 						&& myJson.parentTemplate.templateItem != null 
 						&& myJson.parentTemplate.templateItem.length > 0) 
@@ -238,6 +247,12 @@ WebHooksPlugin = {
 						$j(myJson.parentTemplate.templateItem).each(function(thing, templateItem) {
 							//console.log(templateItem);
 							//console.log(templateItem.enabled);
+							if (typeof templateItem.buildStates !== 'undefined' 
+								&& templateItem.buildStates != null 
+								&& templateItem.buildStates > 0)
+							{
+								templateItem.buildState = templateItem.buildStates;
+							}
 							$j(templateItem.buildState).each(function(index, itembuildState){
 								if (itembuildState.enabled) {
 									$j(myJson.buildState).each(function(thang, buildState) {
@@ -251,7 +266,7 @@ WebHooksPlugin = {
 							});
 						});
 					}
-
+					
 					//console.log(myJson);
 					dialog.handleGetSuccess(action);
 				}
@@ -298,6 +313,20 @@ WebHooksPlugin = {
 		}, 
 		handleGetSuccess: function (action) {
 			$j("#templateHeading").html(myJson.parentTemplate.description);
+			// If we have the pluralised name, pass the reference to a singular form.
+			// This works around Jackson 2.x using singular names, and Jackson 1.x using plural.
+			if (typeof myJson.parentTemplate.templateItems !== 'undefined' 
+				&& myJson.parentTemplate.templateItems != null 
+				&& myJson.parentTemplate.templateItems.length > 0) 
+			{
+				myJson.parentTemplate.templateItem = myJson.parentTemplate.templateItems;
+			}			
+			if (typeof myJson.buildStates !== 'undefined' 
+				&& myJson.buildStates != null 
+				&& myJson.buildStates.length > 0) 
+			{
+				myJson.buildState = myJson.buildStates;
+			}			
 			this.updateCheckboxes(action);
 			this.updateEditor(action);
 		},
