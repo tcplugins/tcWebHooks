@@ -83,5 +83,26 @@ public class VariableMessageBuilderTest extends VariableMessageBuilderTestBase {
 		System.out.println(builder.build());
 		assertEquals("{ \"myJson\": \" \\\" Some string that shouldn't be used\\\"\" }", builder.build());
 	}
+	
+	@Test
+	public void testSubString(){
+		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		VariableMessageBuilder builder = VariableMessageBuilder.create("build.vcs.number ${substr(build.vcs.number,0,7,32)}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		assertEquals("build.vcs.number 3b0a11e", builder.build());
+	}
+	
+	@Test
+	public void testSubCapitilise(){
+		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		VariableMessageBuilder builder = VariableMessageBuilder.create("blah ${capitalise(lowercaseString)}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		assertEquals("blah Yes, We Are All Lowercase", builder.build());
+	}
+	
+	@Test
+	public void testSubCapitilize(){
+		WebHookPayloadContent content = new WebHookPayloadContent(sBuildServer, sRunningBuild, previousSuccessfulBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		VariableMessageBuilder builder = VariableMessageBuilder.create("blah ${capitalize(lowercaseString)}", new WebHooksBeanUtilsVariableResolver(content, allProperties));
+		assertEquals("blah Yes, We Are All Lowercase", builder.build());
+	}
 
 }

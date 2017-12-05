@@ -39,6 +39,7 @@ public class VariableMessageBuilderTestBase {
 		extraParameters.put("body2", "${body.failed}");
 		extraParameters.put("sha", "${build.vcs.number}");
 		teamcityProperties = new TreeMap<>();
+		teamcityProperties.put("lowercaseString", "yes, we are all lowercase");
 		teamcityProperties.put("env.isInATest", "Yes, we are in a test");
 		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
 		teamcityProperties.put("buildFullName", "Hopefully will never see this.");
