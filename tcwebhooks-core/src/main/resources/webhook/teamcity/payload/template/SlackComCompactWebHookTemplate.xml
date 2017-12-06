@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="21" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a small slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="8"><template id="0"><template-text use-for-branch-template="false">{
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="21" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates><template><template-text use-for-branch-template="false">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
@@ -15,7 +15,7 @@
             "color" : "good"
         }
     ]
-}</branch-template-text><states><state type="buildSuccessful" enabled="true"/><state type="buildFixed" enabled="true"/></states></template><template id="7"><template-text use-for-branch-template="false">{
+}</branch-template-text><states><state type="buildSuccessful" enabled="true"/><state type="buildFixed" enabled="true"/></states></template><template><template-text use-for-branch-template="false">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
@@ -31,7 +31,7 @@
         "text" : "${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
         "color" : "danger"
     }]
-}</branch-template-text><states><state type="buildFailed" enabled="true"/><state type="buildBroken" enabled="true"/></states></template><template id="8"><template-text use-for-branch-template="false">{
+}</branch-template-text><states><state type="buildFailed" enabled="true"/><state type="buildBroken" enabled="true"/></states></template><template><template-text use-for-branch-template="false">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
