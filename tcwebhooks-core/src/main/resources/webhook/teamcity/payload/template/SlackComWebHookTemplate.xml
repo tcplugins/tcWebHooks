@@ -1,40 +1,219 @@
-<?xml version="1.0" encoding="UTF-8"?>
-	<webhook-template enabled="true" name="slack.com" rank="20">
-		<template-description>Slack.com JSON templates</template-description>
-		<template-tool-tip>Supports the slack.com JSON webhooks endpoint</template-tool-tip>
-		<formats>
-			<format name="jsonTemplate" enabled="true" />
-		</formats>
-		<templates>
-			<template>
-				<!--  Additional Template is only for failed builds -->
-				<states>
-					<state type="buildFailed" enabled="true" />
-				</states>
-				<!--  Additional Template (non-branch) for failed builds -->
-				<template-text><![CDATA[
-{ "text": "All your build failures are belong to us", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "color": "danger" }]}
-				]]></template-text>
-				
-				<!--  Additional Template (branch) for failed builds -->
-				<branch-template-text><![CDATA[
-{ "text": "All your build failures are belong to us", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "color": "danger" }]}
-				]]></branch-template-text>
-			</template>
-			<template>
-				<!--  Additional Template is only for successful builds -->
-				<states>
-					<state type="buildSuccessful" enabled="true" />
-				</states>
-				<!--  Additional Template (non-branch) for successful builds -->
-				<template-text><![CDATA[
-{  "text": "All your build successes should to be celebrated", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> triggered by ${triggeredBy} has a status of ${buildResult}", "color": "good" } ] }
-				]]></template-text>
-				
-				<!--  Additional Template (branch) for successful builds -->
-				<branch-template-text><![CDATA[
-{  "text": "All your build successes should to be celebrated", "attachments": [ { "fallback": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "text": "${buildName} <${buildStatusUrl}|build #${buildNumber}> branch: ${branchName} triggered by ${triggeredBy} has a status of ${buildResult}", "color": "good" } ] }
-				]]></branch-template-text>
-			</template>
-		</templates>
-	</webhook-template>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com" enabled="true" rank="20" format="jsonTemplate"><default-template use-for-branch-template="false">{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "${capitalise(buildStateDescription)} : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "${capitalise(buildStateDescription)} : ${buildName} build #${buildNumber}", 
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;" },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</default-template><default-branch-template>{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</default-branch-template><template-description>Slack.com JSON templates</template-description><template-tool-tip>Supports the slack.com JSON webhooks endpoint</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="5"><template id="1"><template-text use-for-branch-template="false">{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "${capitalise(buildStateDescription)} : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "${capitalise(buildStateDescription)} : ${buildName} build #${buildNumber}",
+            "color": "danger",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</template-text><branch-template-text>{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "color": "danger",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</branch-template-text><states><state type="buildBroken" enabled="true"/></states></template><template id="2"><template-text use-for-branch-template="false">{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "Success (fixed) : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;", 
+            "fallback": "Success (fixed) : ${buildName} build #${buildNumber}", 
+            "color": "good",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</template-text><branch-template-text>{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "Success (fixed) : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "Success (fixed) : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "color": "good",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</branch-template-text><states><state type="buildFixed" enabled="true"/></states></template><template id="3"><template-text use-for-branch-template="false">{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "${capitalise(buildStateDescription)} : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "${capitalise(buildStateDescription)} : ${buildName} build #${buildNumber}", 
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</template-text><branch-template-text>{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</branch-template-text><states><state type="beforeBuildFinish" enabled="true"/></states></template><template id="4"><template-text use-for-branch-template="false">{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "Failed : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "Failed : ${buildName} build #${buildNumber}",
+            "color": "danger",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</template-text><branch-template-text>{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "Failed : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "Failed : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "color": "danger",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</branch-template-text><states><state type="buildFailed" enabled="true"/></states></template><template id="5"><template-text use-for-branch-template="false">{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "Success : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;", 
+            "fallback": "Success : ${buildName} build #${buildNumber}", 
+            "color": "good",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</template-text><branch-template-text>{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "Success : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "Success : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "color": "good",
+            "fields" : [
+                { "title" : "Status", "value" : "${buildStatus}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
+                { "title" : "Agent", "value" : "${agentName}", "short" : true }
+            ]
+        }
+    ]
+}</branch-template-text><states><state type="buildSuccessful" enabled="true"/></states></template></templates></webhook-template>

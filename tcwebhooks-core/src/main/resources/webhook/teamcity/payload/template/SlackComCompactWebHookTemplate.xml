@@ -1,163 +1,48 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="20" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="7"><template id="1"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} SUCCESS",
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="21" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a small slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="8"><template id="0"><template-text use-for-branch-template="false">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} SUCCESS",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
+        "fallback" : "${buildResult} - ${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+        "text" : "${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+        "color" : "good"
+    }]
+}</template-text><branch-template-text>{
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments" : [{
+            "fallback" : "${buildResult} - ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+            "text" : "${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
             "color" : "good"
         }
     ]
+}</branch-template-text><states><state type="buildSuccessful" enabled="true"/><state type="buildFixed" enabled="true"/></states></template><template id="7"><template-text use-for-branch-template="false">{
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments" : [{
+        "fallback" : "${buildResult} - ${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+        "text" : "${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+        "color" : "danger"
+    }]
 }</template-text><branch-template-text>{
-    "text" : "${buildName} SUCCESS",
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} SUCCESS",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
-            "color" : "good"
-        }
-    ]
-}</branch-template-text><states><state type="buildSuccessful" enabled="true"/><state type="buildFixed" enabled="true"/></states></template><template id="2"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} FAILURE",
+        "fallback" : "${buildResult} - ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+        "text" : "${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStatus}",
+        "color" : "danger"
+    }]
+}</branch-template-text><states><state type="buildFailed" enabled="true"/><state type="buildBroken" enabled="true"/></states></template><template id="8"><template-text use-for-branch-template="false">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} FAILURE",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
-            "color" : "danger"
-        }
-    ]
+        "fallback" : "${buildStateDescription} - ${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}",
+        "text" : "${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}"
+    }]
 }</template-text><branch-template-text>{
-    "text" : "${buildName} FAILURE",
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} FAILED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
-            "color" : "danger"
-        }
-    ]
-}</branch-template-text><states><state type="buildFailed" enabled="true"/><state type="buildBroken" enabled="true"/></states></template><template id="3"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} STARTED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} STARTED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
-        }
-    ]
-}</template-text><branch-template-text>{
-    "text" : "${buildName} STARTED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} STARTED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
-        }
-    ]
-}</branch-template-text><states><state type="buildStarted" enabled="true"/></states></template><template id="4"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} CHANGES LOADED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} CHANGES LOADED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
-        }
-    ]
-}</template-text><branch-template-text>{
-    "text" : "${buildName} CHANGES LOADED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} CHANGES LOADED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
-        }
-    ]
-}</branch-template-text><states><state type="changesLoaded" enabled="true"/></states></template><template id="5"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} INTERRUPTED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} INTERRUPTED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
-            "color" : "danger"
-        }
-    ]
-}</template-text><branch-template-text>{
-    "text" : "${buildName} INTERRUPTED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} INTERRUPTED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog",
-            "color" : "warning"
-        }
-    ]
-}</branch-template-text><states><state type="buildInterrupted" enabled="true"/></states></template><template id="6"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} ALMOST COMPLETED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} ALMOST COMPLETED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
-        }
-    ]
-}</template-text><branch-template-text>{
-    "text" : "${buildName} ALMOST COMPLETED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} ALMOST COMPLETED",
-            "title" : "Build Log #${buildNumber}",
-            "title_link" : "${buildStatusUrl}&amp;tab=buildLog"
-        }
-    ]
-}</branch-template-text><states><state type="beforeBuildFinish" enabled="true"/></states></template><template id="7"><template-text use-for-branch-template="false">{
-    "text" : "${buildName} RESPONSIBILTY CHANGED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId}",
-            "fallback" : "${buildName} SUCCESS",
-            "title" : "From ${responsibilityUserOld} to ${responsibilityUserNew}",
-            "title_link" : "${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}",
-            "color" : "#439FE0"
-        }
-    ]
-}</template-text><branch-template-text>{
-    "text" : "${buildName} RESPONSIBILTY CHANGED",
-    "username": "TeamCity",
-    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
-    "attachments" : [{
-            "pretext" : "${buildName} ${projectId} ${branchDisplayName}",
-            "fallback" : "${buildName} SUCCESS",
-            "title" : "From ${responsibilityUserOld} to ${responsibilityUserNew}",
-            "title_link" : "${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}",
-            "color" : "#439FE0"
-        }
-    ]
-}</branch-template-text><states><state type="responsibilityChanged" enabled="true"/></states></template></templates></webhook-template>
+        "fallback" : "${buildStateDescription} - ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}",
+        "text" : "${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}"
+    }]
+}</branch-template-text><states><state type="buildStarted" enabled="true"/><state type="changesLoaded" enabled="true"/><state type="buildInterrupted" enabled="true"/><state type="beforeBuildFinish" enabled="true"/></states></template></templates></webhook-template>
