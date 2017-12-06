@@ -38,8 +38,8 @@
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments": [ 
         { 
-            "title": "${capitalise(buildStateDescription)} : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
-            "fallback": "${capitalise(buildStateDescription)} : ${buildName} build #${buildNumber}",
+            "title": "Failed (broken) : ${buildName} &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "Failed (broken) : ${buildName} build #${buildNumber}",
             "color": "danger",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
@@ -56,8 +56,8 @@
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments": [ 
         { 
-            "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
-            "fallback": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
+            "title": "Failed (broken) : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildNumber}&gt;",
+            "fallback": "Failed (broken) : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
             "color": "danger",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
