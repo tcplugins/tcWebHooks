@@ -19,7 +19,7 @@ Typical use cases include:
 - Can be triggered from many different events in the build lifecycle
 - [WebHook Templates](https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction), for specification of a payload format once and re-use across multiple webhook configurations
 - A set of templates for common services. Eg, Slack and MatterMost, Flowdock, ElasticSearch
-- A standard list of [variables](https://github.com/tcplugins/tcWebHooks/wiki/Example-Webhook-output "Example Webhook output") variables which can be used for assembling a custom payload (eg, `${buildStatusUrl}`), as well as access to the TeamCity build properties (eg, `${teamcity.agent.jvm.os.name}`).
+- A standard list of [variables](https://github.com/tcplugins/tcWebHooks/wiki/Example-Webhook-output "Example Webhook output") which can be used for assembling a custom payload (eg, `${buildStatusUrl}`), as well as access to the TeamCity build properties (eg, `${teamcity.agent.jvm.os.name}`).
 
 ### Advanced Features
 - Support for [using a proxy](https://github.com/tcplugins/tcWebHooks/wiki/Using-a-proxy-server "Using a proxy server")  for outbound requests.
