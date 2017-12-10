@@ -22,6 +22,11 @@
         init-method="register" 
         />
   
+	<bean id="WebHookProjectSettingsTab"
+        class="webhook.teamcity.extension.project.WebHookProjectSettingsTab"
+        init-method="register" 
+        />
+  
 	<bean id="webHookProjectTabExtension"
         class="webhook.teamcity.extension.WebHookProjectTabExtension"
         init-method="register" 
