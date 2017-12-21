@@ -19,7 +19,8 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("src/test/resources/catalina_home"), "somefile.zip");
 		assertEquals(1, filesFound.size());
-		assertEquals("src/test/resources/catalina_home/webapps/ROOT/WEB-INF/plugins/somefile.zip", filesFound.get(0).toString());
+		String path = "src/test/resources/catalina_home/webapps/ROOT/WEB-INF/plugins/somefile.zip";
+		assertTrue(path.equals(filesFound.get(0).toString()) || path.replace("/","\\").equals(filesFound.get(0).toString()));
 	}
 
 	@Test

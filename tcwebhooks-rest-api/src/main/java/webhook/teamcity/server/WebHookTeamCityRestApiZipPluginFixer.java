@@ -5,11 +5,14 @@ import static java.nio.file.FileVisitResult.CONTINUE;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -192,10 +195,15 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         Map<String, String> zip_properties = new HashMap<>(); 
         /* We want to read an existing ZIP File, so we set this to False */
         zip_properties.put("create", "false"); 
-        
+
         /* Specify the path to the ZIP File that you want to read as a File System */
-        URI zip_disk = URI.create("jar:file:" + restApiZip.getAbsolutePath());
-        
+        URI zip_disk = null;
+        try {
+        	Path path = Paths.get(restApiZip.getAbsolutePath());
+        	zip_disk = new URI("jar",path.toUri().toString(), null);
+    	} catch(URISyntaxException e) {
+    		
+    	}
         boolean fileFoundInZip = false;
         
         /* Create ZIP file System */
@@ -207,6 +215,8 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         			fileFoundInZip = true;
         		}
         	}
+        } catch(IllegalArgumentException e) {
+        	Loggers.SERVER.error("Could not create filesystem: " + e.getMessage());
         }
         return fileFoundInZip;
 	}
@@ -219,7 +229,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		
 		if (restPluginUnpackedDir.exists() && restPluginUnpackedDir.isDirectory()) {
 			for (String filename : filenames) {
-				File jaxbjar = new File(restPluginUnpackedDir + File.separator + filename.replaceAll("/", File.separator));
+				File jaxbjar = new File(restPluginUnpackedDir + File.separator + filename.replace("/", File.separator));
 				if (jaxbjar.exists()) {
 					fileExists = true;
 				}
@@ -239,7 +249,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		
 		if (restPluginUnpackedDir.exists() && restPluginUnpackedDir.isDirectory()) {
 			for (String filename : filenames) {
-				File jaxbjar = new File(restPluginUnpackedDir + File.separator + filename.replaceAll("/", File.separator));
+				File jaxbjar = new File(restPluginUnpackedDir + File.separator + filename.replace("/", File.separator));
 				if (jaxbjar.exists()) {
 					if (jaxbjar.delete()) {
 						fileDeletedFromDir = true;
@@ -257,8 +267,14 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		zip_properties.put("create", "false"); 
 		
 		/* Specify the path to the ZIP File that you want to read as a File System */
-		URI zip_disk = URI.create("jar:file:" + restApiZip.getAbsolutePath());
-		
+		//URI zip_disk = URI.create("jar:file:" + restApiZip.getAbsolutePath().replace("\\", "/"));
+		URI zip_disk = null;
+        try {
+        	Path path = Paths.get(restApiZip.getAbsolutePath());
+        	zip_disk = new URI("jar",path.toUri().toString().replace("\\","/"), null);
+    	} catch(URISyntaxException e) {
+    		
+    	}
 		boolean fileDeletedInZip = false;
 		
 		/* Create ZIP file System */
