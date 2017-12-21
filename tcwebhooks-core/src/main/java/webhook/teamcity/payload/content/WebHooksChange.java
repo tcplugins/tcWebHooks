@@ -12,6 +12,7 @@ public class WebHooksChange {
 	public static WebHooksChange build(SVcsModification modification) {
 		WebHooksChange change = new WebHooksChange();
 		change.setComment(modification.getDescription());
+		change.setUsername(modification.getUserName());
 		change.setVcsRoot(modification.getVcsRoot().getName());
 		for (VcsFileModification fileModification: modification.getChanges()){
 			change.files.add(fileModification.getRelativeFileName());
@@ -22,6 +23,7 @@ public class WebHooksChange {
 
 	private List<String> files = new ArrayList<>();
 	private String comment;
+	private String username;
 	private String vcsRoot;
 	
 	private void setVcsRoot(String name) {
@@ -30,6 +32,14 @@ public class WebHooksChange {
 	
 	public String getVcsRoot() {
 		return vcsRoot;
+	}
+	
+	private void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public String getUsername() {
+		return this.username;
 	}
 	
 	private void setComment(String description) {
