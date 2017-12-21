@@ -217,6 +217,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         	}
         } catch(IllegalArgumentException e) {
         	Loggers.SERVER.error("WebHookTeamCityRestApiZipPluginFixer :: Could not create filesystem: " + e.getMessage());
+        	Loggers.SERVER.debug(e);
         }
         return fileFoundInZip;
 	}
