@@ -21,21 +21,25 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class ProjectWebHooksBean {
 	@Getter private String projectId;
 	@Getter private String externalProjectId;
-	@Getter WebHookProjectSettings webHookProjectSettings;
-	Map<String, WebhookConfigAndBuildTypeListHolder> webHookList;
+	@Getter private WebHookProjectSettings webHookProjectSettings;
+	@Getter private String 	sensibleProjectName;
+	private Map<String, WebhookConfigAndBuildTypeListHolder> webHookList;
 	
 	public Collection<WebhookConfigAndBuildTypeListHolder> getWebHookList(){
 		return webHookList.values();
 	}
 	
+	private ProjectWebHooksBean(WebHookProjectSettings projSettings, SProject project) {
+		projectId = TeamCityIdResolver.getInternalProjectId(project);
+		externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
+		webHookProjectSettings = projSettings;
+		webHookList = new LinkedHashMap<>();
+		sensibleProjectName = getSensibleProjectName(project);
+	}
+	
 	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
-		ProjectWebHooksBean bean = new ProjectWebHooksBean();
+		ProjectWebHooksBean bean = new ProjectWebHooksBean(projSettings, project);
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
-		
-		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
-		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
-		bean.webHookProjectSettings = projSettings;
-		bean.webHookList = new LinkedHashMap<>();
 		
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
 		for (WebHookConfig config : projSettings.getWebHooksAsList()){
@@ -47,13 +51,8 @@ public class ProjectWebHooksBean {
 	}
 	
 	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
-		ProjectWebHooksBean bean = new ProjectWebHooksBean();
+		ProjectWebHooksBean bean = new ProjectWebHooksBean(projSettings, project);
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
-		
-		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
-		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
-		bean.webHookProjectSettings = projSettings;
-		bean.webHookList = new LinkedHashMap<>();
 
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
 		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, null, true, true, null, null);
@@ -71,15 +70,10 @@ public class ProjectWebHooksBean {
 	}
 	
 	public static ProjectWebHooksBean build(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
-		ProjectWebHooksBean bean = new ProjectWebHooksBean();
+		ProjectWebHooksBean bean = new ProjectWebHooksBean(projSettings, project);
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		Set<String> enabledBuildTypes = new HashSet<>();
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
-		
-		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
-		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
-		bean.webHookProjectSettings = projSettings;
-		bean.webHookList = new LinkedHashMap<>();
 		
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
 		WebHookConfig newBlankConfig = new WebHookConfig("", true, new BuildState().setAllEnabled(), null, null, false, false, enabledBuildTypes, null);
@@ -97,15 +91,10 @@ public class ProjectWebHooksBean {
 	}
 	
 	public static ProjectWebHooksBean buildWithoutNew(WebHookProjectSettings projSettings, SBuildType sBuildType, SProject project, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList){
-		ProjectWebHooksBean bean = new ProjectWebHooksBean();
+		ProjectWebHooksBean bean = new ProjectWebHooksBean(projSettings, project);
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		Set<String> enabledBuildTypes = new HashSet<>();
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
-		
-		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
-		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
-		bean.webHookProjectSettings = projSettings;
-		bean.webHookList = new LinkedHashMap<>();
 		
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
 		for (WebHookConfig config : projSettings.getBuildWebHooksAsList(sBuildType)){
@@ -129,5 +118,12 @@ public class ProjectWebHooksBean {
 										);
 		}
 		bean.webHookList.put(holder.getUniqueKey(), holder);
+	}
+	
+	private String getSensibleProjectName(SProject project){
+		if (project.getProjectId().equals("_Root")) {
+			return project.getProjectId();
+		}
+		return project.getName();
 	}
 }
