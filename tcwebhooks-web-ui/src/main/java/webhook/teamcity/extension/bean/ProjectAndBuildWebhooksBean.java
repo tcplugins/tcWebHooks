@@ -56,5 +56,16 @@ public class ProjectAndBuildWebhooksBean {
 	public String getExternalProjectId(){
 		return TeamCityIdResolver.getExternalProjectId(project);
 	}
+	
+	public String getExternalId(){
+		return TeamCityIdResolver.getExternalProjectId(project);
+	}
+	
+	public String getSensibleProjectName(){
+		if (project.getProjectId().equals("_Root")) {
+			return project.getProjectId();
+		}
+		return project.getName();
+	}
 
 }

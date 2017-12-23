@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import lombok.Getter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
@@ -16,8 +17,11 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
+
 public class ProjectWebHooksBean {
-	String projectId;
+	@Getter private String projectId;
+	@Getter private String externalProjectId;
+	@Getter WebHookProjectSettings webHookProjectSettings;
 	Map<String, WebhookConfigAndBuildTypeListHolder> webHookList;
 	
 	public Collection<WebhookConfigAndBuildTypeListHolder> getWebHookList(){
@@ -29,6 +33,8 @@ public class ProjectWebHooksBean {
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		
 		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
+		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
+		bean.webHookProjectSettings = projSettings;
 		bean.webHookList = new LinkedHashMap<>();
 		
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
@@ -45,6 +51,8 @@ public class ProjectWebHooksBean {
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 		
 		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
+		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
+		bean.webHookProjectSettings = projSettings;
 		bean.webHookList = new LinkedHashMap<>();
 
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
@@ -69,6 +77,8 @@ public class ProjectWebHooksBean {
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
 		
 		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
+		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
+		bean.webHookProjectSettings = projSettings;
 		bean.webHookList = new LinkedHashMap<>();
 		
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
@@ -93,6 +103,8 @@ public class ProjectWebHooksBean {
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
 		
 		bean.projectId = TeamCityIdResolver.getInternalProjectId(project);
+		bean.externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
+		bean.webHookProjectSettings = projSettings;
 		bean.webHookList = new LinkedHashMap<>();
 		
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */ 
