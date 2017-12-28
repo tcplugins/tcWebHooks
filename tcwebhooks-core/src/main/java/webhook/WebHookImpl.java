@@ -161,7 +161,7 @@ public class WebHookImpl implements WebHook {
 		    	Loggers.SERVER.debug("WebHookImpl::  Connect timeout(millis): " + this.client.getHttpConnectionManager().getParams().getConnectionTimeout());
 		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.client.getHttpConnectionManager().getParams().getSoTimeout());
 		        client.executeMethod(httppost);
-		        this.webhookStats.setRequestCompleted(httppost.getStatusCode());
+		        this.webhookStats.setRequestCompleted(httppost.getStatusCode(), httppost.getStatusText());
 		        this.content = httppost.getResponseBodyAsString();
 		        this.webhookStats.setResponseHeaders(httppost.getResponseHeaders());
 		    } finally {
