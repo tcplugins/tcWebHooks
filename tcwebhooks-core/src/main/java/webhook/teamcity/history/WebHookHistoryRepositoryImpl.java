@@ -67,6 +67,21 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 		Collections.sort(disabledItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, disabledItems);
 	}
+	
+	@Override
+	public PagedList<WebHookHistoryItem> findHistoryOkItems(int pageNumber, int pageSize) {
+		List<WebHookHistoryItem> okItems =  findAllHistoryItemsOK();
+		Collections.sort(okItems, reverseChronComparator);
+		return PagedList.build(pageNumber, pageSize, okItems);
+	}
+
+	@Override
+	public PagedList<WebHookHistoryItem> findHistoryAllItems(int pageNumber, int pageSize) {
+		List<WebHookHistoryItem> allitems = new ArrayList<>();
+		allitems.addAll(webHookHistoryItems.values());
+		Collections.sort(allitems, reverseChronComparator);
+		return PagedList.build(pageNumber, pageSize, allitems);
+	}	
 
 	private List<WebHookHistoryItem> findAllHistoryItemsInError() {
 		List<WebHookHistoryItem> errorItems = new ArrayList<>();
@@ -86,6 +101,16 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 			}
 		}
 		return disabledItems;
+	}
+	
+	private List<WebHookHistoryItem> findAllHistoryItemsOK() {
+		List<WebHookHistoryItem> okItems = new ArrayList<>();
+		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
+			if (item.getWebHookExecutionStats().isEnabled()  && ! item.getWebHookExecutionStats().isErrored()) {
+				okItems.add(item);
+			}
+		}
+		return okItems;
 	}
 	
 	@Override

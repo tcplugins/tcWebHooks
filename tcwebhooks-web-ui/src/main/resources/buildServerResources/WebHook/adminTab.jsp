@@ -11,25 +11,25 @@
 	        <p>The most recent 10,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">
 	        <div class="webhookCounts">
-		        <div class="webhookOkCount webhookCount">
+		        <div class="webhookOkCount webhookCount"><a href="../webhooks/history.html?view=ok">
 		        	<span class="count">${okCount}</span>
-		        	<span class="description">Successful WebHook Events</span>
-		        </div>
+		        	<span class="description">Successful Events</span>
+		        </a></div>
 		        <div class="spacer"></div>
-		        <div class="webhookErrorCount webhookCount">
+		        <div class="webhookErrorCount webhookCount"><a href="../webhooks/history.html?view=errors">
 		        	<span class="count">${errorCount}</span>
-		        	<span class="description">Errored WebHook Events</span>	        
-		        </div>
+		        	<span class="description">Errored Events</span>	        
+		        </a></div>
 		        <div class="spacer"></div>
-		        <div class="webhookSkippedCount webhookCount">
+		        <div class="webhookSkippedCount webhookCount"><a href="../webhooks/history.html?view=skipped">
 		        	<span class="count">${skippedCount}</span>
-		        	<span class="description">Skipped WebHook Events</span>	        
-		        </div>
+		        	<span class="description">Skipped Events</span>	        
+		        </a></div>
 		        <div class="spacer"></div>
-		        <div class="webhookTotalCount webhookCount">
+		        <div class="webhookTotalCount webhookCount"><a href="../webhooks/history.html?view=all">
 		        	<span class="count">${totalCount}</span>
-		        	<span class="description">Total WebHook Events</span>
-		        </div>
+		        	<span class="description">Total Events</span>
+		        </a></div>
 	        </div>
 	        </div>
 	        <hr>

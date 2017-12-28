@@ -5,8 +5,9 @@ import lombok.Getter;
 @Getter
 public class WebHookExecutionException extends RuntimeException {
 	
-	public static final String WEBHOOK_DISABLED_ERROR_MESSAGE = "WebHook disabled";
-	public static final int    WEBHOOK_DISABLED_ERROR_CODE = 701;
+	public static final String WEBHOOK_DISABLED_INFO_MESSAGE = "WebHook disabled";
+	public static final int    WEBHOOK_DISABLED_INFO_CODE = 701;
+	public static final int    WEBHOOK_DISABLED_BY_FILTER_INFO_CODE = 702;
 	
 	public static final int    WEBHOOK_EXECUTION_ERROR_CODE = 801;
 	

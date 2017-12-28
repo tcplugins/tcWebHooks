@@ -23,6 +23,7 @@ import lombok.Getter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
@@ -275,6 +276,7 @@ public class WebHookImpl implements WebHook {
 		this.setEnabled(enabled);
 		this.getExecutionStats().setBuildState(buildState);
 		if (!enabled) {
+			this.getExecutionStats().setStatusCode(WebHookExecutionException.WEBHOOK_DISABLED_INFO_CODE);
 			this.getExecutionStats().setStatusReason("WebHook not enabled for buildState '" + buildState.getShortName() + "'");
 		}
 	}
@@ -391,6 +393,7 @@ public class WebHookImpl implements WebHook {
 			if (!p.matcher(variable).matches()){
 				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
 				this.setEnabled(false);
+				this.getExecutionStats().setStatusCode(WebHookExecutionException.WEBHOOK_DISABLED_BY_FILTER_INFO_CODE);
 				this.getExecutionStats().setStatusReason(disabledReason);
 				return false;
 			} else {

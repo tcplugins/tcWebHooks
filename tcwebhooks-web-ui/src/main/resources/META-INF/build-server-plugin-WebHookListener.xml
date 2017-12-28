@@ -59,6 +59,10 @@
      	class="webhook.teamcity.endpoint.WebHookEndPointViewerController" 
      	/>
      	
+    <bean id="webHookHistoryController" 
+     	class="webhook.teamcity.history.WebHookHistoryController"
+     	/>
+     	
     <bean id="webHookTemplateEditPageController" 
      	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
      	init-method="register" 
