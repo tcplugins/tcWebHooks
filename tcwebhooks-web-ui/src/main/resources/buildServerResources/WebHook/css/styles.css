@@ -558,3 +558,7 @@ div.webhookTotalCount span.description {
 	background-color: #000;
 	color: #fff;
 }
+
+span.lowercase {
+	text-transform:lowercase;
+}

@@ -2,10 +2,6 @@ package webhook.teamcity.reporting;
 
 import java.net.URL;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
-import lombok.Data;
-
 public interface WebAddressTransformer {
 	
 	/**
@@ -17,26 +13,4 @@ public interface WebAddressTransformer {
 	 */
 	public GeneralisedWebAddress getGeneralisedHostName(URL uri);
 	
-	@Data
-	public static class GeneralisedWebAddress {
-		private GeneralisedWebAddressType addressType;
-		private String hashedGeneralisedAddress;
-		private String generalisedAddress;
-		
-		public static GeneralisedWebAddress build(String generalisedAddress, GeneralisedWebAddressType type) {
-			GeneralisedWebAddress generalisedWebAddress = new GeneralisedWebAddress();
-			generalisedWebAddress.setGeneralisedAddress(generalisedAddress);
-			generalisedWebAddress.setAddressType(type);
-			generalisedWebAddress.setHashedGeneralisedAddress(DigestUtils.sha256Hex(generalisedAddress));
-			return generalisedWebAddress;
-		}
-	}
-	
-	public enum GeneralisedWebAddressType {
-		IPV4_ADDRESS, // Just the first 3 dotted quad and an x, eg 192.168.1.x
-		IPV6_ADDRESS, // TODO: Need to only return enough here that it is not identifiable
-		HOST_ADDRESS, // For things like "localhost" or "myserver"
-		DOMAIN_NAME;  // Domain name, like google.com, slack.com, etc.
-	}
-
 }

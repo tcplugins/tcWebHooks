@@ -146,6 +146,13 @@
 		</plugins>  
   </build>
   
+	<repositories>
+	  <repository>
+		<id>local-mvn-repo</id>
+		<url>file://${project.basedir}/local-mvn-repo</url>
+	  </repository>
+	</repositories>  
+  
   <dependencies>
 	  	<dependency>
 	  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
@@ -165,7 +172,14 @@
   		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>pl.pragmatists</groupId>
+			<artifactId>JUnitParams</artifactId>
+			<version>1.1.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -173,6 +187,14 @@
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
+			<version>${teamcityVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
+		<dependency>
+			<groupId>org.jetbrains.teamcity</groupId>
+			<artifactId>server</artifactId>
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
 		</dependency>

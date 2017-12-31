@@ -1,15 +1,16 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
-<%@ include file="/include.jsp" %>
-<c:set var="title" value="WebHooks" scope="request"/>
-<bs:page>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" 
+%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" 
+%><%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" 
+%><%@ include file="/include.jsp" 
+%><jsp:useBean id="historyPager" type="jetbrains.buildServer.util.Pager" scope="request"
+/><c:set var="title" value="WebHooks" scope="request"/><bs:page>
 
     <jsp:attribute name="head_include">
       <bs:linkCSS>
         /css/admin/adminMain.css
         /css/admin/projectConfig.css
         /css/forms.css
+        /css/pager.css
         /css/admin/vcsRootsTable.css
         
     /css/visibleProjects.css
@@ -54,6 +55,7 @@
 <bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
 
 	        <div class="repoList">
+	        <c:set var="pagerUrlPattern" value="history.html?view=${countContext}&page=[page]"/>
 	        
 	        <p>The most recent 10,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">
@@ -81,10 +83,12 @@
 	        </div>
 	        <hr>
 	        <p>
-	        <h2 class="noBorder">Recent WebHook Events</h2>
-	        The following table shows the 50 most recent webhook events .
+	        <h2 class="noBorder"><span class="sentenceCase">${countContext}</span> Recent WebHook Events - Page ${items.pageNumber} of ${items.totalPages} </h2>
+	        The following table shows the ${items.itemsOnThisPage} most recent <span class="lowercase">${countContext} webhook events</span>.
+	        <bs:pager place="top" urlPattern="${pagerUrlPattern}" pager="${historyPager}"/>
 	        <table class="settings">
 	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>URL</th><th>Build Event</th><th>Event Response</th></tr>
+
 	        <c:forEach items="${items.items}" var="historyItem">
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
@@ -96,7 +100,15 @@
 	        </c:forEach>
 	        
 		    </table>
-
+		    <bs:pager place="bottom" urlPattern="${pagerUrlPattern}" pager="${historyPager}"/>
+		    
+<ul>
+<li>pageNumber: ${items.pageNumber}</li>
+<li>pageSize: ${items.pageSize}</li>
+<li>totalItems: ${items.totalItems}</li>
+<li>totalPages: ${items.totalPages}</li>
+<li>itemsOnThisPage: ${items.itemsOnThisPage}</li>
+</ul>
 			</div>	        
 </bs:refreshable>	        
     </jsp:attribute>

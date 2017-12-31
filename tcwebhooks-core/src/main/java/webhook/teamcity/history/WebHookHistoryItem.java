@@ -10,6 +10,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import webhook.WebHookExecutionStats;
+import webhook.teamcity.reporting.GeneralisedWebAddress;
 import webhook.teamcity.settings.WebHookConfig;
 
 @Data @AllArgsConstructor
@@ -22,6 +23,7 @@ public class WebHookHistoryItem {
 	@NotNull  private final WebHookExecutionStats webHookExecutionStats;
 	@Nullable private final WebHookErrorStatus webhookErrorStatus;
 	@NotNull  private final LocalDateTime timestamp;
+	//@NotNull  private final GeneralisedWebAddress generalisedWebAddress;
 	
 	@Data @AllArgsConstructor
 	public static class WebHookErrorStatus {

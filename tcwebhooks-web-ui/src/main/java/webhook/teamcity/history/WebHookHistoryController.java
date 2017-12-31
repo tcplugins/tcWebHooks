@@ -11,13 +11,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.util.Pager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookHistoryController extends BaseController {
 	
-	private static final String ITEMS = "items";
+	private static final String PARAM_NAME_COUNT_CONTEXT = "countContext";
+	private static final String PARAM_NAME_ITEMS = "items";
 	private static final String PARAM_NAME_VIEW = "view";
 	private static final String MY_URL = "/webhooks/history.html";
 	private String myPluginPath;
@@ -39,7 +41,7 @@ public class WebHookHistoryController extends BaseController {
 
 	@Override
 	protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
+	
 		Map<String,Object> params = new HashMap<>(); 
 		
 		params.put("jspHome",this.myPluginPath);
@@ -54,22 +56,39 @@ public class WebHookHistoryController extends BaseController {
 		if (isGet(request) && request.getParameter(PARAM_NAME_VIEW) != null) {
 			int pageNumber = getPageNumber(request);
 			int pageSize = getPageSize(request);
+			params.put("page", pageNumber);
+			PagedList<WebHookHistoryItem> pagedList;
 			switch ( request.getParameter(PARAM_NAME_VIEW)) {
 				case "errors":
-					params.put(ITEMS, myWebHookHistoryRepository.findHistoryErroredItems(pageNumber, pageSize));
+				case "Errors":
+					pagedList = myWebHookHistoryRepository.findHistoryErroredItems(pageNumber, pageSize);
+					params.put(PARAM_NAME_COUNT_CONTEXT, "Errored");
 					break;
 				case "skipped":
-					params.put(ITEMS, myWebHookHistoryRepository.findHistoryDisabledItems(pageNumber, pageSize));
+				case "Skipped":
+					pagedList = myWebHookHistoryRepository.findHistoryDisabledItems(pageNumber, pageSize);
+					params.put(PARAM_NAME_COUNT_CONTEXT, "Skipped");
 					break;
 				case "ok":
-					params.put(ITEMS, myWebHookHistoryRepository.findHistoryOkItems(pageNumber, pageSize));
+				case "Ok":
+					pagedList = myWebHookHistoryRepository.findHistoryOkItems(pageNumber, pageSize);
+					params.put(PARAM_NAME_COUNT_CONTEXT, "OK");
 					break;
 				case "all":
+				case "All":
 				default:
-					params.put(ITEMS, myWebHookHistoryRepository.findHistoryAllItems(pageNumber, pageSize));
+					pagedList = myWebHookHistoryRepository.findHistoryAllItems(pageNumber, pageSize);
+					params.put(PARAM_NAME_COUNT_CONTEXT, "All");
 					break;
 			}
 			
+			params.put(PARAM_NAME_ITEMS, pagedList);
+			
+			Pager pager = new Pager(50);
+			pager.setNumberOfRecords(pagedList.getTotalItems());
+			pager.setRecordsPerPage(pageSize);
+			pager.setCurrentPage(pageNumber);
+			params.put("historyPager", pager);
 		}
 		
 		return new ModelAndView(myPluginPath + "WebHook/viewHistory.jsp", params); 
@@ -83,8 +102,8 @@ public class WebHookHistoryController extends BaseController {
 	}
 
 	private int getPageNumber(HttpServletRequest request) {
-		if (request.getParameter("pageNumber") != null) {
-			return Integer.valueOf(request.getParameter("pageNumber"));
+		if (request.getParameter("page") != null) {
+			return Integer.valueOf(request.getParameter("page"));
 		}
 		return 1;
 	}
