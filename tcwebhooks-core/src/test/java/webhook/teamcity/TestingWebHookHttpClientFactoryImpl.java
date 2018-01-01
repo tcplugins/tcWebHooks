@@ -2,9 +2,18 @@ package webhook.teamcity;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HttpContext;
 
 public class TestingWebHookHttpClientFactoryImpl implements WebHookHttpClientFactory {
 	
@@ -25,14 +34,16 @@ public class TestingWebHookHttpClientFactoryImpl implements WebHookHttpClientFac
 	}
 
 
-	public static class TestableHttpClient extends HttpClient implements InvocationCountable {
+	public static class TestableHttpClient extends DefaultHttpClient implements InvocationCountable {
 		
 		public int invocationCount = 0;
 		
 		@Override
-		public int executeMethod(HttpMethod method) throws IOException,	HttpException {
+		public CloseableHttpResponse execute(
+	            final HttpUriRequest request,
+	            final HttpContext context) throws IOException, ClientProtocolException {
 			invocationCount++;
-			return super.executeMethod(method);
+			return super.execute(request, context);
 		}
 
 		@Override

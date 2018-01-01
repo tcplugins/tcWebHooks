@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
@@ -238,17 +238,6 @@ public class WebHookHistoryRepositoryImplTest {
 
 		@Override
 		public String getParam(String key) {
-			notImplemented();
-			return null;
-		}
-
-		@Override
-		public void setFilename(String filename) {
-			notImplemented();
-		}
-
-		@Override
-		public String getFilename() {
 			notImplemented();
 			return null;
 		}

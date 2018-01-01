@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
@@ -44,10 +44,6 @@ public interface WebHook {
 	public abstract void addParams(Map<String, String> paramsList);
 
 	public abstract String getParam(String key);
-
-	public abstract void setFilename(String filename);
-
-	public abstract String getFilename();
 
 	public abstract String getContent();
 

@@ -10,13 +10,24 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.Consts;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import lombok.Getter;
@@ -50,6 +61,8 @@ public class WebHookImpl implements WebHook {
 	private List<WebHookFilterConfig> filters;
 	private WebHookExecutionStats webhookStats;
 	private SFinishedBuild previousSFinishedBuild;
+	private RequestConfig requestConfig= RequestConfig.custom().build();
+	private CredentialsProvider credentialsProvider;
 	
 	@Getter
 	private UUID requestId = UUID.randomUUID();
@@ -57,7 +70,7 @@ public class WebHookImpl implements WebHook {
 	
 	public WebHookImpl(){
 		this.webhookStats = new WebHookExecutionStats();
-		this.client = new HttpClient();
+		this.client = HttpClients.createDefault();
 		this.params = new ArrayList<>();
 	}
 	
@@ -102,7 +115,7 @@ public class WebHookImpl implements WebHook {
 		this.url = url;
 		this.client = client;
 		this.params = new ArrayList<>();
-		setProxy(proxyConfig);
+		this.setProxy(proxyConfig);
 	}
 
 	@Override
@@ -110,17 +123,27 @@ public class WebHookImpl implements WebHook {
 		if ((proxyConfig != null) && (proxyConfig.getProxyHost() != null) && (proxyConfig.getProxyPort() != null)){
 			this.setProxy(proxyConfig.getProxyHost(), proxyConfig.getProxyPort());
 			if (proxyConfig.getCreds() != null){
-				this.client.getState().setProxyCredentials(AuthScope.ANY, proxyConfig.getCreds());
+				getCredentialsProvider().setCredentials(
+							new AuthScope(proxyConfig.getProxyHost(), proxyConfig.getProxyPort()), 
+							proxyConfig.getCreds()
+					);
 			}
 		}
 	}
 	
+	private CredentialsProvider getCredentialsProvider() {
+		if (this.credentialsProvider == null) {
+			this.credentialsProvider = new BasicCredentialsProvider();
+		}
+		return this.credentialsProvider;
+	}
+
 	@Override
 	public void setProxy(String proxyHost, Integer proxyPort) {
 		this.proxyHost = proxyHost;
 		this.proxyPort = proxyPort;
 		if (this.proxyHost.length() > 0 && !this.proxyPort.equals(0)) {
-			this.client.getHostConfiguration().setProxy(this.proxyHost, this.proxyPort);
+			this.requestConfig = RequestConfig.copy(this.requestConfig).setProxy(new HttpHost(this.proxyHost, this.proxyPort)).build();
 		}
 	}
 
@@ -129,44 +152,55 @@ public class WebHookImpl implements WebHook {
 		this.proxyUsername = username;
 		this.proxyPassword = password;
 		if (this.proxyUsername.length() > 0 && this.proxyPassword.length() > 0) {
-			this.client.getState().setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+			getCredentialsProvider().setCredentials(
+					new AuthScope(this.getProxyHost(), this.getProxyPort()), 
+					new UsernamePasswordCredentials(username, password)
+			);
 		}
 	}
 	
 	@Override
 	public void post() throws IOException {
 		if ((this.enabled) && (!this.getExecutionStats().isErrored())){
-			PostMethod httppost = new PostMethod(this.url);
-			httppost.addRequestHeader("X-tcwebhooks-request-id", this.getExecutionStats().getTrackingIdAsString());
-			if (this.filename.length() > 0){
-				File file = new File(this.filename);
-			    httppost.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(file)));
-			    httppost.setContentChunked(true);
-			}
+			HttpPost httppost = new HttpPost(this.url);
+			HttpClientContext context = HttpClientContext.create();
+			httppost.addHeader("X-tcwebhooks-request-id", this.getExecutionStats().getTrackingIdAsString());
 			if (   this.payload != null && this.payload.length() > 0 
 				&& this.contentType != null && this.contentType.length() > 0){
-				httppost.setRequestEntity(new StringRequestEntity(this.payload, this.contentType, this.charset));
+				httppost.setEntity(new StringEntity(this.payload, this.contentType, this.charset));
 			} else if ( ! this.params.isEmpty()){
-				NameValuePair[] paramsArray = this.params.toArray(new NameValuePair[this.params.size()]);
-				httppost.setRequestBody(paramsArray);
+				UrlEncodedFormEntity entity = new UrlEncodedFormEntity(this.params, Consts.UTF_8);
+				httppost.setEntity(entity);
 			}
 			if(authenticator != null){
-				authenticator.addAuthentication(httppost, client, url);
+				authenticator.addAuthentication(getCredentialsProvider(), context, url);
 			}
 			
-			this.webhookStats.setUrl(this.url);
+			if (this.credentialsProvider != null) {
+				context.setCredentialsProvider(getCredentialsProvider());
+			}
+
+			context.setRequestConfig(requestConfig);
 			
+			this.webhookStats.setUrl(this.url);
+			HttpResponse httpResponse = null;
 		    try {
 		    	this.webhookStats.setRequestStarting();
-		    	Loggers.SERVER.debug("WebHookImpl::  Connect timeout(millis): " + this.client.getHttpConnectionManager().getParams().getConnectionTimeout());
-		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.client.getHttpConnectionManager().getParams().getSoTimeout());
-		        client.executeMethod(httppost);
-		        this.webhookStats.setRequestCompleted(httppost.getStatusCode(), httppost.getStatusText());
-		        this.content = httppost.getResponseBodyAsString();
-		        this.webhookStats.setResponseHeaders(httppost.getResponseHeaders());
+		    	Loggers.SERVER.debug("WebHookImpl::  Connect timeout(millis): " + this.requestConfig.getConnectTimeout());
+		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.requestConfig.getSocketTimeout());
+		    	httpResponse = client.execute(httppost, context);
+		        this.webhookStats.setRequestCompleted(httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
+		        //TODO: Fix this; this.content = httpResponse.getResponseBodyAsString();
+		        this.webhookStats.setResponseHeaders(httpResponse.getAllHeaders());
 		    } finally {
 		        httppost.releaseConnection();
 		        this.webhookStats.setTeardownCompleted();
+		        if (this.client instanceof CloseableHttpClient) {
+		        	((CloseableHttpClient)this.client).close();
+		        }
+		        if (httpResponse != null && httpResponse instanceof CloseableHttpResponse) {
+		        	((CloseableHttpResponse)httpResponse).close();
+		        }
 		    }   
 		}
 	}
@@ -216,7 +250,7 @@ public class WebHookImpl implements WebHook {
 	
 	@Override
 	public void addParam(String key, String value){
-		this.params.add(new NameValuePair(key, value));
+		this.params.add(new BasicNameValuePair(key, value));
 	}
 
 	@Override
@@ -242,16 +276,6 @@ public class WebHookImpl implements WebHook {
 			}
 		}		
 		return "";
-	}
-	
-	@Override
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	@Override
-	public String getFilename() {
-		return filename;
 	}
 
 	@Override
@@ -429,12 +453,12 @@ public class WebHookImpl implements WebHook {
 
 	@Override
 	public void setConnectionTimeOut(int httpConnectionTimeout) {
-		this.client.getHttpConnectionManager().getParams().setConnectionTimeout(httpConnectionTimeout * 1000); 
+		RequestConfig.copy(this.requestConfig).setConnectTimeout(httpConnectionTimeout * 1000).build();
 	}
 
 	@Override
 	public void setResponseTimeOut(int httpResponseTimeout) {
-		this.client.getHttpConnectionManager().getParams().setSoTimeout(httpResponseTimeout * 1000); 
+		RequestConfig.copy(this.requestConfig).setSocketTimeout(httpResponseTimeout* 1000).build();
 	}
 	
 }

@@ -3,7 +3,7 @@ package webhook;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.commons.httpclient.Header;
+import org.apache.http.Header;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -81,5 +81,10 @@ public class WebHookExecutionStats {
 	
 	public String getTrackingIdAsString() {
 		return this.trackingId.toString();
+	}
+
+	public void setResponseHeaders(Header[] allHeaders) {
+		// TODO Auto-generated method stub
+		
 	}
 }

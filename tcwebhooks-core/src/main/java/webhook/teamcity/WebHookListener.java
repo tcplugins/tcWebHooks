@@ -16,7 +16,8 @@ import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.tests.TestName;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
+import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.WebHook;
@@ -386,7 +387,7 @@ public class WebHookListener extends BuildServerAdapter {
 					throw new WebHookHttpExecutionException("WebHook endpoint returned null response code");
 				} else if (wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES) {
 					Loggers.SERVER.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
-					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response (" + HttpStatus.getStatusText(wh.getStatus()) +")", wh.getStatus());
+					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response (" + EnglishReasonPhraseCatalog.INSTANCE.getReason(wh.getStatus(), null) +")", wh.getStatus());
 				}
 			} else {
 				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	

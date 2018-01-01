@@ -2,11 +2,15 @@ package webhook.teamcity.auth;
 
 import java.net.URI;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.jetbrains.annotations.NotNull;
 
 public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
@@ -18,7 +22,7 @@ public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
 		WebHookAuthConfig config;
 		
 		@Override
-		public void addAuthentication(PostMethod method, HttpClient client, String url) {
+		public void addAuthentication(CredentialsProvider credentialsProvider, HttpClientContext httpClientContext, String url) {
 			if (config.getParameters().containsKey(KEY_USERNAME) && config.getParameters().containsKey(KEY_PASS)){
 					URI uri = URI.create(url);
 					AuthScope scope;
@@ -28,8 +32,18 @@ public class UsernamePasswordAuthenticator implements WebHookAuthenticator {
 						scope = new AuthScope(uri.getHost(), uri.getPort());
 					}
 					Credentials creds = new UsernamePasswordCredentials(config.getParameters().get(KEY_USERNAME), config.getParameters().get(KEY_PASS));
-					client.getState().setCredentials(scope, creds);
-					client.getParams().setAuthenticationPreemptive(config.getPreemptive());
+					credentialsProvider.setCredentials(scope, creds);
+					if (config.getPreemptive()) {
+				           // Create AuthCache instance
+			            AuthCache authCache = new BasicAuthCache();
+			            // Generate BASIC scheme object and add it to the local
+			            // auth cache
+			            BasicScheme basicAuth = new BasicScheme();
+			            authCache.put(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), basicAuth);
+
+			            // Add AuthCache to the execution context
+			            httpClientContext.setAuthCache(authCache);
+					}
 			}
 		}
 

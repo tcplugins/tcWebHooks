@@ -12,8 +12,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
+import org.apache.http.impl.client.HttpClients;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -118,7 +118,7 @@ public class WebHookSettingsTest {
 		mainConfig.setProxyPort(test.proxyPort);
 		mainConfig.setProxyShortNames(true);
 		String url = "http://localhost:" + test.webserverPort + "/200";
-		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), new HttpClient());
+		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), HttpClients.createDefault());
 		WebHookTestServer s = test.startWebServer();
 		WebHookTestProxyServer p = test.startProxyServer();
 		w.setEnabled(true);
@@ -136,7 +136,7 @@ public class WebHookSettingsTest {
 		mainConfig.setProxyPort(test.proxyPort);
 		mainConfig.setProxyShortNames(true);
 		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";
-		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), new HttpClient());
+		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), HttpClients.createDefault());
 		w.setProxyUserAndPass("somethingIncorrect", "somethingIncorrect");
 		WebHookTestServer s = test.startWebServer();
 		WebHookTestProxyServer p = test.startProxyServerAuth("somthingCorrect", "somethingCorrect");
@@ -155,7 +155,7 @@ public class WebHookSettingsTest {
 		mainConfig.setProxyPort(test.proxyPort);
 		mainConfig.setProxyShortNames(true);
 		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";
-		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), new HttpClient());
+		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), HttpClients.createDefault());
 		w.setProxyUserAndPass("somethingIncorrect", "somethingIncorrect");
 		WebHookTestServer s = test.startWebServer();
 		WebHookTestProxyServer p = test.startProxyServerAuth("somethingCorrect", "somethingCorrect");
@@ -174,7 +174,7 @@ public class WebHookSettingsTest {
 		mainConfig.setProxyPort(test.proxyPort);
 		mainConfig.setProxyShortNames(true);
 		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";
-		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), new HttpClient());
+		WebHook w = new WebHookImpl(url, mainConfig.getProxyConfigForUrl(url), HttpClients.createDefault());
 		WebHookTestServer s = test.startWebServer();
 		WebHookTestProxyServer p = test.startProxyServer();
 		w.setEnabled(true);
@@ -207,7 +207,7 @@ public class WebHookSettingsTest {
 
 		
 		for (WebHookConfig c : configs){
-			WebHook wh = new WebHookImpl(c.getUrl(), new HttpClient());
+			WebHook wh = new WebHookImpl(c.getUrl(), HttpClients.createDefault());
 			wh.setEnabled(c.getEnabled());
 			//wh.addParams(c.getParams());
 			System.out.println(wh.getUrl());

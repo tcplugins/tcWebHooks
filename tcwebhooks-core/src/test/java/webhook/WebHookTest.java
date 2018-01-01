@@ -8,8 +8,8 @@ import java.net.ConnectException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
@@ -59,16 +59,6 @@ public class WebHookTest{
 	public void test_URL() {
 		WebHook W = factory.getWebHook(url, proxy, proxyPort);
 		assertTrue(W.getUrl() == url);
-	}
-
-	@Test(expected=java.io.FileNotFoundException.class)
-	public void test_FileNotFoundExeption() throws FileNotFoundException, IOException{
-		System.out.print("Testing for FileNotFound exception");
-		WebHook w = factory.getWebHook(url, proxy, proxyPort);
-		w.setFilename("WebHooks/src/test/resources/fileWithDoesNotExist.txt");
-		w.setEnabled(true);
-		w.post();
-		System.out.print(".. done");
 	}
 
 	@Test(expected=java.net.ConnectException.class)
@@ -238,32 +228,6 @@ public class WebHookTest{
 		assertTrue(w.getStatus() == HttpStatus.SC_OK);
 	}
 
-	
-	@Test
-	public void test_200WithFilename() throws FileNotFoundException, IOException, Exception {
-		WebHookTestServer s = startWebServer();
-		WebHook w = factory.getWebHook(url + "/200");
-		w.setFilename("src/test/resources/FileThatDoesExist.txt");
-		w.setEnabled(true);
-		w.post();
-		stopWebServer(s);
-		assertTrue(w.getStatus() == HttpStatus.SC_OK);
-	}
-
-	@Test
-	public void test_200WithFilenameWithProxy() throws FileNotFoundException, IOException, Exception {
-		WebHookTestServer s = startWebServer();
-		WebHookTestProxyServer p = startProxyServer();
-		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
-		w.setFilename("src/test/resources/FileThatDoesExist.txt");
-		w.setEnabled(true);
-		w.post();
-		stopWebServer(s);
-		stopProxyServer(p);
-		assertTrue(w.getStatus() == HttpStatus.SC_OK);
-
-	}
-
 	@Test
 	public void test_302() throws FileNotFoundException, IOException, Exception {
 		WebHookTestServer s = startWebServer();
@@ -345,32 +309,6 @@ public class WebHookTest{
 		assertTrue(w.getStatus() == HttpStatus.SC_NOT_FOUND);
 	}
 	
-	@Test
-	public void test_302WithFilename() throws FileNotFoundException, IOException, Exception {
-		WebHookTestServer s = startWebServer();
-		WebHook w = factory.getWebHook(url + "/302");
-		w.setFilename("src/test/resources/FileThatDoesExist.txt");
-		w.setEnabled(true);
-		w.post();
-		stopWebServer(s);
-		assertTrue(w.getStatus() == HttpStatus.SC_MOVED_TEMPORARILY);
-
-	}
-	
-	@Test
-	public void test_302WithFilenameWithProxy() throws FileNotFoundException, IOException, Exception {
-		WebHookTestServer s = startWebServer();
-		WebHookTestProxyServer p = startProxyServer();
-		WebHook w = factory.getWebHook(url + "/302", proxy, proxyPort);
-		w.setFilename("src/test/resources/FileThatDoesExist.txt");
-		w.setEnabled(true);
-		w.post();
-		stopWebServer(s);
-		stopProxyServer(p);
-		assertTrue(w.getStatus() == HttpStatus.SC_MOVED_TEMPORARILY);
-
-	}
-	
 	public WebHookTestServer startWebServer(){
 		try {
 			WebHookTestServer s = new WebHookTestServer(webserverHost, webserverPort);
@@ -432,18 +370,18 @@ public class WebHookTest{
 		}
 
 		public WebHook getWebHook(String url, String proxy, Integer proxyPort) {
-			return new WebHookImpl(url, proxy, proxyPort, new HttpClient());
+			return new WebHookImpl(url, proxy, proxyPort, HttpClients.createDefault());
 		}
 
 		public WebHook getWebHook(String url) {
-			return new WebHookImpl(url, new HttpClient());
+			return new WebHookImpl(url, HttpClients.createDefault());
 		}
 
 		public WebHook getWebHook(String url, String proxy, String proxyPort) {
-			return new WebHookImpl(url, proxy, proxyPort, new HttpClient());
+			return new WebHookImpl(url, proxy, proxyPort, HttpClients.createDefault());
 		}
 		public WebHook getWebHook(String url, WebHookProxyConfig proxyConfig) {
-			return new WebHookImpl(url, proxyConfig, new HttpClient());
+			return new WebHookImpl(url, proxyConfig, HttpClients.createDefault());
 		}
 	}
 }
