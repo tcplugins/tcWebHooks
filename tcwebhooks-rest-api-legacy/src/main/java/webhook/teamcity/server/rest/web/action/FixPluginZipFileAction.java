@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import jetbrains.buildServer.controllers.ActionMessages;
 import jetbrains.buildServer.web.openapi.ControllerAction;
+import webhook.teamcity.server.RestApiFixFailureExeception;
 import webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer;
 import webhook.teamcity.server.rest.web.WebHookRestApiActionController;
 
@@ -63,21 +64,39 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 		}
 
 		boolean hasDoneCleanup = false;
+		boolean errored = false;
 		
 		for (Path p : myPluginFixer.getFoundApiZipFilesContainingJaxbJars()) {
 			if (p.toString().equals(path)) {
-				myPluginFixer.fixRestApiZipPlugin(p);
+				try {
+					myPluginFixer.fixRestApiZipPlugin(p);
+					break;
+				} catch (RestApiFixFailureExeception e) {
+					ajaxResponse.setAttribute("error", e.getMessage());
+					errored = true;
+				}
 				hasDoneCleanup = true;
-				break;
 			}
 		}
 
 		for (Path p : myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars()) {
 			if (p.toString().equals(path)) {
-				myPluginFixer.fixRestApiZipPlugin(p);
+				try {
+					myPluginFixer.fixRestApiZipPlugin(p);
+					break;
+				} catch (RestApiFixFailureExeception e) {
+					ajaxResponse.setAttribute("error", e.getMessage());
+					errored = true;
+				}
 				hasDoneCleanup = true;
-				break;
 			}
+		}
+		
+		myPluginFixer.findRestApiZipPlugins();
+		
+		if (errored) {
+			ActionMessages.getOrCreateMessages(request).addMessage("apiFixResult", ajaxResponse.getAttribute("error").getValue());
+			return;
 		}
 		
 		if (! hasDoneCleanup) {
@@ -87,7 +106,6 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 			return;
 		}
 		
-		myPluginFixer.findRestApiZipPlugins();
 		
 		String errorMsg = "The file you asked to clean does not appear to have been successfully cleaned. Please see the GitHub issue linked on this page for more information.";
 		for (Path p : myPluginFixer.getFoundApiZipFilesContainingJaxbJars()) {

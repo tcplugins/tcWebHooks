@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
+<%@ taglib prefix="util" uri="/WEB-INF/functions/util" %>
 <%@ include file="/include-internal.jsp" %>
 
 <bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
@@ -39,7 +40,7 @@
 	        	<c:choose>
 	        		<c:when test="${foundJar.jarInZip}">
 						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td>
-						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${foundJar.path.toString()}')">Fix</a></td>
+						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${util:forJS(foundJar.path.toString(), false, false)}')">Fix</a></td>
 					</c:when>
 					<c:otherwise>
 						<td colspan="2" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
@@ -48,7 +49,7 @@
 				<c:choose>
 	        		<c:when test="${foundJar.jarInUnpacked}">
 						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td>
-						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${foundJar.path.toString()}')">Fix</a></td>
+						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${util:forJS(foundJar.path.toString(), false, false)}')">Fix</a></td>
 					</c:when>
 					<c:otherwise>
 						<td colspan="2" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
