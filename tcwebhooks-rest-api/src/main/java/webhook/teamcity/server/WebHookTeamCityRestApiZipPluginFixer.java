@@ -11,6 +11,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.PathMatcher;
@@ -96,7 +97,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		}
 	}
 	
-	public synchronized void fixRestApiZipPlugin(Path p) {
+	public synchronized void fixRestApiZipPlugin(Path p) throws RestApiFixFailureExeception {
 		try {
 				if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames)) {
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. Attempting to remove them from: " + p.toFile().getAbsolutePath());
@@ -128,6 +129,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 				}
 		} catch (IOException e) {
 			Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not remove files from rest-api.zip", e);
+			throw new RestApiFixFailureExeception(e);
 		}
 	}
 	
@@ -250,9 +252,10 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		
 		if (restPluginUnpackedDir.exists() && restPluginUnpackedDir.isDirectory()) {
 			for (String filename : filenames) {
-				File jaxbjar = new File(restPluginUnpackedDir + File.separator + filename.replace("/", File.separator));
-				if (jaxbjar.exists()) {
-					if (jaxbjar.delete()) {
+				Path jaxbjar = new File(restPluginUnpackedDir + File.separator + filename.replace("/", File.separator)).toPath();
+				if (Files.exists(jaxbjar)) {
+					Files.delete(jaxbjar);
+					if (Files.notExists(jaxbjar)) {
 						fileDeletedFromDir = true;
 					}
 				}
