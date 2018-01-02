@@ -75,6 +75,7 @@ WebHookRestApiHealthStatus = {
     						var responseTag = response[0];
     						var error = responseTag.getAttribute("error");
     						if (error != null) {
+    							$("healthReportContainer").refresh();
     							shouldClose = false;
     							dialog.ajaxError(error);
     						} else if (responseTag.getAttribute("status") == "OK") {
