@@ -17,6 +17,7 @@ package webhook.teamcity.server.rest.web;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -32,6 +33,7 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
 import lombok.Data;
 import webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer;
+import webhook.teamcity.server.pluginfixer.JarReport;
 
 public class WebHookRestApiAdminPage extends AdminPage {
 	public static final String TC_WEB_HOOK_REST_API_ADMIN_ID = "tcWebHooksRestApi";
@@ -66,43 +68,48 @@ public class WebHookRestApiAdminPage extends AdminPage {
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
 		Map<String, PluginResultBean> fileResults = new TreeMap<>();
 		Set<Path> allPaths = new TreeSet<>();
-		allPaths.addAll(myPluginFixer.getFoundApiZipFilesContainingJaxbJars());
-		allPaths.addAll(myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars());
-		allPaths.addAll(myPluginFixer.getFoundApiZipFilesNotContainingJaxbJars());
-		allPaths.addAll(myPluginFixer.getFoundUnpackedApiZipFilesNotContainingJaxbJars());
-		for (Path p : allPaths) {
-			updatePluginBean(fileResults, p, 
-					! myPluginFixer.getFoundApiZipFilesNotContainingJaxbJars().contains(p),
-					! myPluginFixer.getFoundUnpackedApiZipFilesNotContainingJaxbJars().contains(p));
+		
+		for (Entry<Path, JarReport> e : myPluginFixer.getJarReports().entrySet()) {
+			updatePluginBean(fileResults, e.getKey(), e.getValue());
 		}
-		for (Path p : allPaths) {
-			updatePluginBean(fileResults, p, 
-					myPluginFixer.getFoundApiZipFilesContainingJaxbJars().contains(p),
-					myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars().contains(p));
-		}
+//		allPaths.addAll(myPluginFixer.getFoundApiZipFilesContainingJaxbJars());
+//		allPaths.addAll(myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars());
+//		allPaths.addAll(myPluginFixer.getFoundApiZipFilesNotContainingJaxbJars());
+//		allPaths.addAll(myPluginFixer.getFoundUnpackedApiZipFilesNotContainingJaxbJars());
+//		for (Path p : allPaths) {
+//			updatePluginBean(fileResults, p, 
+//					! myPluginFixer.getFoundApiZipFilesNotContainingJaxbJars().contains(p),
+//					! myPluginFixer.getFoundUnpackedApiZipFilesNotContainingJaxbJars().contains(p));
+//		}
+//		for (Path p : allPaths) {
+//			updatePluginBean(fileResults, p, 
+//					myPluginFixer.getFoundApiZipFilesContainingJaxbJars().contains(p),
+//					myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars().contains(p));
+//		}
 		
 		model.put("hasFoundIssues", myPluginFixer.foundApiZipFilesContainingJaxbJars());
 		model.put("fileResults", fileResults);
 		model.put("restartRequired", myPluginFixer.isHaveFilesBeenCleanedSinceBoot());
-		model.put("apiZipFilesContainingJars", myPluginFixer.getFoundApiZipFilesContainingJaxbJars());
-		model.put("unpackedApiFilesContainingJars", myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars());
-		model.put("apiZipFilesNotContainingJars", myPluginFixer.getFoundApiZipFilesNotContainingJaxbJars());
-		model.put("unpackedApiFilesNotContainingJars", myPluginFixer.getFoundUnpackedApiZipFilesNotContainingJaxbJars());
+//		model.put("apiZipFilesContainingJars", myPluginFixer.getFoundApiZipFilesContainingJaxbJars());
+//		model.put("unpackedApiFilesContainingJars", myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars());
+//		model.put("apiZipFilesNotContainingJars", myPluginFixer.getFoundApiZipFilesNotContainingJaxbJars());
+//		model.put("unpackedApiFilesNotContainingJars", myPluginFixer.getFoundUnpackedApiZipFilesNotContainingJaxbJars());
 	}
 	
-	private void updatePluginBean(Map<String, PluginResultBean> resultsMap, Path path, boolean isInZip, boolean isInUnpacked) {
+	private void updatePluginBean(Map<String, PluginResultBean> resultsMap, Path path, JarReport jarReport) {
 		PluginResultBean bean = new PluginResultBean();
 		bean.setPath(path);
-		bean.setJarInZip(isInZip);
-		bean.setJarInUnpacked(isInUnpacked);
+		bean.setJarReport(jarReport);
 		resultsMap.put(path.toString(), bean);
 	}
 	
 	@Data
 	public static class PluginResultBean {
 		Path path;
-		boolean jarInZip = false;
-		boolean jarInUnpacked = false;
+		JarReport jarReport;
+		public int getFileListSize() {
+			return jarReport.getJarsInZipFile().size() + jarReport.getJarsInUnpackedLocation().size();
+		}
 	}
 
 }

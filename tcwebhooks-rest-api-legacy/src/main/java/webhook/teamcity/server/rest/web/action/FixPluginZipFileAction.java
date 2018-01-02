@@ -30,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
 
 import jetbrains.buildServer.controllers.ActionMessages;
 import jetbrains.buildServer.web.openapi.ControllerAction;
-import webhook.teamcity.server.RestApiFixFailureExeception;
 import webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer;
+import webhook.teamcity.server.pluginfixer.JarReport;
 import webhook.teamcity.server.rest.web.WebHookRestApiActionController;
 
 public class FixPluginZipFileAction extends WebHooksApiAction implements ControllerAction {
@@ -66,32 +66,17 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 		boolean hasDoneCleanup = false;
 		boolean errored = false;
 		
-		for (Path p : myPluginFixer.getFoundApiZipFilesContainingJaxbJars()) {
+		for (Path p : myPluginFixer.getFoundApiZipFiles()) {
 			if (p.toString().equals(path)) {
-				try {
-					myPluginFixer.fixRestApiZipPlugin(p);
-					break;
-				} catch (RestApiFixFailureExeception e) {
-					ajaxResponse.setAttribute("error", e.getMessage());
+				JarReport report = myPluginFixer.fixRestApiZipPlugin(p);
+				if (report.isErrored()) {
+					ajaxResponse.setAttribute("error", String.join("\n", report.getFailureMessageList()));
 					errored = true;
 				}
 				hasDoneCleanup = true;
 			}
 		}
 
-		for (Path p : myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars()) {
-			if (p.toString().equals(path)) {
-				try {
-					myPluginFixer.fixRestApiZipPlugin(p);
-					break;
-				} catch (RestApiFixFailureExeception e) {
-					ajaxResponse.setAttribute("error", e.getMessage());
-					errored = true;
-				}
-				hasDoneCleanup = true;
-			}
-		}
-		
 		myPluginFixer.findRestApiZipPlugins();
 		
 		if (errored) {
@@ -107,6 +92,8 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 		}
 		
 		
+		
+		
 		String errorMsg = "The file you asked to clean does not appear to have been successfully cleaned. Please see the GitHub issue linked on this page for more information.";
 		for (Path p : myPluginFixer.getFoundApiZipFilesContainingJaxbJars()) {
 			if (p.toString().equals(path)) {
@@ -115,15 +102,6 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 				return;
 			}
 		}
-		
-		for (Path p : myPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars()) {
-			if (p.toString().equals(path)) {
-				ajaxResponse.setAttribute("error", errorMsg);
-				ActionMessages.getOrCreateMessages(request).addMessage("apiFixResult", errorMsg);
-				return;
-			}
-		}
-		
 		
 		ActionMessages.getOrCreateMessages(request).addMessage("apiFixResult", "API ZIP and/or unpacked jars cleaned. You MUST now restart TeamCity");
 		ajaxResponse.setAttribute("status", "OK");

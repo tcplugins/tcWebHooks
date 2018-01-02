@@ -7,7 +7,6 @@
 <bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
 
 	        <div class="repoList">
-	        <h2 class="noBorder">WebHook REST API</h2>
 	        <h3>Health Report</h3>
 	        
 	        <bs:messages key="apiFixResult"/>
@@ -32,30 +31,79 @@
 	        <p>This page gives you an indication on whether this problem is present on your TeamCity installation. It also has a tool which attempts to fix any problematic REST API installations.</p>
 	        
 	        <table class="settings">
-	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Plugin file</th><th colspan=2>ZIP File status</th><th colspan=2>Unpacked status</th></tr>
 	        <c:forEach items="${fileResults.values()}" var="foundJar">
-	        		<tr><td>
-	        			${foundJar.path.toString()}
+	        		<tr><td colspan="4" style="text-align: left;padding:0.5em;"><strong>Plugin file found in <em>${foundJar.path.toString()}</em></strong></td></tr>
+	        		<tr><td><strong>Plugin ZIP file</strong></td>
+	        			<td colspan=2>${foundJar.path.toString()}</td>
+	        			<c:set var="colspan" value="${foundJar.fileListSize} + 2"/>
+	        			<td rowspan="${colspan}">
+	        				<c:choose>
+			        			<c:when test="${foundJar.jarReport.jarFileFound}">
+									<a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${util:forJS(foundJar.path.toString(), false, false)}')">Fix the ZIP<br>file and cleanup<br>the unpacked jars</a>
+								</c:when>
+			        			<c:when test="${foundJar.jarReport.rebootRequired}">
+									Please restart TeamCity 
+								</c:when>
+								<c:otherwise>
+									No action required
+								</c:otherwise>
+							</c:choose>
 	        			</td>
-	        	<c:choose>
-	        		<c:when test="${foundJar.jarInZip}">
-						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td>
-						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${util:forJS(foundJar.path.toString(), false, false)}')">Fix</a></td>
-					</c:when>
-					<c:otherwise>
-						<td colspan="2" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
-					</c:otherwise>
-				</c:choose>
-				<c:choose>
-	        		<c:when test="${foundJar.jarInUnpacked}">
-						<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Not cool</td>
-						<td><a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${util:forJS(foundJar.path.toString(), false, false)}')">Fix</a></td>
-					</c:when>
-					<c:otherwise>
-						<td colspan="2" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
-					</c:otherwise>
-	        	</c:choose>
-	        	
+	        		</tr>
+	        			
+	        		<c:forEach items="${foundJar.jarReport.filesInZip}" var="file">
+	        			<tr><td>Jar File</td>	
+			        	<c:choose>
+			        		<c:when test="${file.errored}">
+	        					<td>${file.filename} was NOT removed from API zip file. The following error occurred:
+	        					<p>${file.failureMessage}</p>
+	        					</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Manual intervention required</td>
+							</c:when>
+			        		<c:when test="${file.removed}">
+	        					<td>${file.filename} successfully removed from API zip file. TeamCity restart required</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Restart Required</td>
+							</c:when>
+			        		<c:when test="${file.found}">
+	        					<td>${file.filename} found inside API zip file</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Found in ZIP</td>
+							</c:when>
+							<c:otherwise>
+	        					<td>${file.filename} is not present in API zip file</td>
+								<td colspan="1" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
+							</c:otherwise>
+						</c:choose>
+						</tr>
+	        		</c:forEach>
+	        		
+	        		<tr>
+	        		<td><strong>Unpacked Location</strong></td><td colspan=2>${foundJar.jarReport.apiZipFileUnpackedLocation}</td>
+	        		</tr>
+	        		
+	        		<c:forEach items="${foundJar.jarReport.filesInUnpackedLocation}" var="file">
+	        			<tr><td>Jar File</td>	
+			        	<c:choose>
+			        		<c:when test="${file.errored}">
+	        					<td>${file.filename} was NOT removed from unpacked location. The following error occurred:
+	        					<p>${file.failureMessage}</p>
+	        					</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Manual intervention required</td>
+							</c:when>
+			        		<c:when test="${file.removed}">
+	        					<td>${file.filename} successfully removed from unpacked location.</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Restart Required</td>
+							</c:when>
+			        		<c:when test="${file.found}">
+	        					<td>${file.filename} found in unpacked location</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Found in unpacked location</td>
+							</c:when>
+							<c:otherwise>
+	        					<td>${file.filename} is not present in unpacked location</td>
+								<td colspan="1" class="icon_before icon16" style="border-color: #ccc; background-color:white;">&nbsp;Cool</td>
+							</c:otherwise>
+						</c:choose>
+						</tr>
+	        		</c:forEach>
 	        </c:forEach>
 	        
 		    </table>

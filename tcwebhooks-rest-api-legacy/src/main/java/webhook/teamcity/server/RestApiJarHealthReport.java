@@ -89,7 +89,7 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 	@Override
 	public void report(HealthStatusScope scope, HealthStatusItemConsumer resultConsumer) {
 		Map<String,Object> params = new HashMap<>();
-		params.put("possibleProblemFilesCount", myWebHookTeamCityRestApiZipPluginFixer.getFoundApiZipFilesContainingJaxbJars().size() + myWebHookTeamCityRestApiZipPluginFixer.getFoundUnpackedApiZipFilesContainingJaxbJars().size());
+		params.put("possibleProblemFilesCount", myWebHookTeamCityRestApiZipPluginFixer.getFoundApiZipFilesContainingJaxbJars().size());
 		params.put("adminUrl", stripTrailingSlash(mySBuildServer.getRootUrl()) + "/admin/admin.html?item=" + WebHookRestApiAdminPage.TC_WEB_HOOK_REST_API_ADMIN_ID);
 	    final HealthStatusItem item = new HealthStatusItem("webhook-api-jar-conflict", myCategory, params);
 	    resultConsumer.consumeGlobal(item);
