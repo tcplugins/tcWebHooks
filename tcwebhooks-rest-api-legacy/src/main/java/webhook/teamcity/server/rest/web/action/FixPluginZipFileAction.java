@@ -70,7 +70,11 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 			if (p.toString().equals(path)) {
 				JarReport report = myPluginFixer.fixRestApiZipPlugin(p);
 				if (report.isErrored()) {
-					ajaxResponse.setAttribute("error", String.join("\n", report.getFailureMessageList()));
+					StringBuilder sb = new StringBuilder();
+					for (String message : report.getFailureMessageList()) {
+						sb.append(message).append("\n");
+					}
+					ajaxResponse.setAttribute("error", sb.toString());
 					errored = true;
 				}
 				hasDoneCleanup = true;
