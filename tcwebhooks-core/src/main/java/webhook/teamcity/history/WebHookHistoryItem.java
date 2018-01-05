@@ -16,14 +16,17 @@ import webhook.teamcity.settings.WebHookConfig;
 @Data @AllArgsConstructor
 public class WebHookHistoryItem {
 	
-	@Nullable private String projectId;
+	@NotNull  private final String projectId;
+	@Nullable private SProject sProject;
 	@Nullable private String buildTypeId;
+	@NotNull  private String buildTypeName;
+	@NotNull  private String buildTypeExternalId;
 	@Nullable private Long buildId;
 	@NotNull  private final WebHookConfig webHookConfig;
 	@NotNull  private final WebHookExecutionStats webHookExecutionStats;
 	@Nullable private final WebHookErrorStatus webhookErrorStatus;
 	@NotNull  private final LocalDateTime timestamp;
-	//@NotNull  private final GeneralisedWebAddress generalisedWebAddress;
+	@Nullable private GeneralisedWebAddress generalisedWebAddress;
 	
 	@Data @AllArgsConstructor
 	public static class WebHookErrorStatus {
@@ -32,7 +35,21 @@ public class WebHookHistoryItem {
 		int errorCode;
 	}
 	
-	public WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SBuild sBuild, WebHookErrorStatus errorStatus) {
+	public String getUrl() {
+		if (generalisedWebAddress != null) {
+			return generalisedWebAddress.getGeneralisedAddress();
+		}
+		return "unknown";
+	}
+	
+	public String getUrlHash() {
+		if (generalisedWebAddress != null) {
+			return generalisedWebAddress.getHashedGeneralisedAddress();
+		}
+		return "unknown";
+	}
+	
+	protected WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SBuild sBuild, WebHookErrorStatus errorStatus) {
 		this.projectId = sBuild.getProjectId();
 		this.buildTypeId = sBuild.getBuildTypeId();
 		this.buildId = sBuild.getBuildId();
@@ -42,7 +59,7 @@ public class WebHookHistoryItem {
 		this.webhookErrorStatus = checkAndSetHttpStatusInfo(errorStatus);
 	}
 	
-	public WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SBuildType sBuildType, WebHookErrorStatus errorStatus) {
+	protected WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SBuildType sBuildType, WebHookErrorStatus errorStatus) {
 		this.projectId = sBuildType.getProjectId();
 		this.buildTypeId = sBuildType.getBuildTypeId();
 		this.webHookConfig = whc;
@@ -51,7 +68,7 @@ public class WebHookHistoryItem {
 		this.webhookErrorStatus = checkAndSetHttpStatusInfo(errorStatus);
 	}
 	
-	public WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SProject project, WebHookErrorStatus errorStatus) {
+	protected WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SProject project, WebHookErrorStatus errorStatus) {
 		this.projectId = project.getProjectId();
 		this.webHookConfig = whc;
 		this.webHookExecutionStats = webHookExecutionStats;

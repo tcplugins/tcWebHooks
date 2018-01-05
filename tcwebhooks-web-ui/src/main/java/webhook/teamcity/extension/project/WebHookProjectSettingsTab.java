@@ -10,15 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.controllers.admin.projects.EditProjectTab;
 import jetbrains.buildServer.log.Loggers;
-import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.auth.AuthUtil;
-import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import webhook.teamcity.TeamCityIdResolver;
-import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -27,7 +23,6 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class WebHookProjectSettingsTab extends EditProjectTab {
 	private static final String WEBHOOKS = "webhooks";
 	private static final String TAB_TITLE = "WebHooks";
-	private SecurityContext mySecurityContext;
 	ProjectSettingsManager projSettings;
 	private final WebHookPayloadManager myManager;
 	private final WebHookTemplateResolver myTemplateResolver;
@@ -36,16 +31,12 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 	public WebHookProjectSettingsTab(@NotNull PagePlaces pagePlaces,
 									@NotNull ProjectSettingsManager settings,
 									@NotNull PluginDescriptor pluginDescriptor,
-									@NotNull SecurityContext securityContext,
 									@NotNull WebHookPayloadManager payloadManager,
 									@NotNull WebHookTemplateResolver templateResolver) {
 		super(pagePlaces, pluginDescriptor.getPluginName(), "WebHook/webHookProjectSettingsTab.jsp", TAB_TITLE);
 		this.projSettings = settings;
-        this.mySecurityContext = securityContext;
         this.myManager = payloadManager;
         this.myTemplateResolver = templateResolver;
-        //addCssFile(pluginDescriptor.getPluginResourcesPath("debRepository/css/debRepository.css"));
-        //addJsFile(pluginDescriptor.getPluginResourcesPath("debRepository/projectConfigSettings.js"));
     }
 
     @NotNull

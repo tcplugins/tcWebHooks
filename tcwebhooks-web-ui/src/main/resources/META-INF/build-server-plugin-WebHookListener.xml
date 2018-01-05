@@ -63,6 +63,14 @@
      	class="webhook.teamcity.history.WebHookHistoryController"
      	/>
      	
+    <bean id="webHookHistoryItemFactory" 
+     	class="webhook.teamcity.history.WebHookHistoryItemFactoryImpl"
+     	/>
+     	
+    <bean id="webAddressTransformer" 
+     	class="webhook.teamcity.reporting.WebAddressTransformerImpl"
+     	/>
+     	
     <bean id="webHookTemplateEditPageController" 
      	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
      	init-method="register" 

@@ -87,12 +87,26 @@
 	        The following table shows the ${items.itemsOnThisPage} most recent <span class="lowercase">${countContext} webhook events</span>.
 	        <bs:pager place="top" urlPattern="${pagerUrlPattern}" pager="${historyPager}"/>
 	        <table class="settings">
-	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>URL</th><th>Build Event</th><th>Event Response</th></tr>
+	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>Build</th><th>URL (some URLs may be partially hidden)</th><th>Build Event</th><th>Event Response</th></tr>
 
 	        <c:forEach items="${items.items}" var="historyItem">
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
-					<td>${historyItem.webHookExecutionStats.url}</td>
+					<c:if test="${not empty historyItem.buildId}">
+					    <td><a href="../viewLog.html?buildId=${historyItem.buildId}">${historyItem.buildTypeName} #${historyItem.buildId}</a></td>
+					</c:if>
+					<c:if test="${empty historyItem.buildId}">
+					    <td><a href="../viewType.html?buildTypeId=${historyItem.buildTypeExternalId}">${historyItem.buildTypeName}</a></td>
+					</c:if>
+					
+					<c:if test="${afn:permissionGrantedForProject(historyItem.SProject, 'EDIT_PROJECT')}">
+						<td>${historyItem.webHookExecutionStats.url}</td>
+					</c:if>
+					
+					<c:if test="${not afn:permissionGrantedForProject(historyItem.SProject, 'EDIT_PROJECT')}">
+						<td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** ${historyItem.url}</span></td>
+					</c:if>
+					
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}">undefined</c:out></td>
 					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
 	   				</tr>
@@ -102,13 +116,6 @@
 		    </table>
 		    <bs:pager place="bottom" urlPattern="${pagerUrlPattern}" pager="${historyPager}"/>
 		    
-<ul>
-<li>pageNumber: ${items.pageNumber}</li>
-<li>pageSize: ${items.pageSize}</li>
-<li>totalItems: ${items.totalItems}</li>
-<li>totalPages: ${items.totalPages}</li>
-<li>itemsOnThisPage: ${items.itemsOnThisPage}</li>
-</ul>
 			</div>	        
 </bs:refreshable>	        
     </jsp:attribute>

@@ -1,7 +1,5 @@
 package webhook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,6 @@ public class WebHookImpl implements WebHook {
 	private String charset;
 	private String payload;
 	private HttpClient client;
-	private String filename = "";
 	private boolean enabled = false;
 	private String disabledReason = "";
 	private List<NameValuePair> params;

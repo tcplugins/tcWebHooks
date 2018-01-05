@@ -30,7 +30,7 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("src/test/resources/catalina_home"), "rest-api.zip");
 		assertEquals(1, filesFound.size());
-		String restApiUnpackedDir = filesFound.get(0).toFile().getParent() + WebHookTeamCityRestApiZipPluginFixer.unpackedLocation;
+		String restApiUnpackedDir = filesFound.get(0).toFile().getParent() + WebHookTeamCityRestApiZipPluginFixer.UNPACKED_LOCATION;
 		JarReport jarReport = new JarReport(filesFound.get(0), restApiUnpackedDir, WebHookTeamCityRestApiZipPluginFixer.getFilenames());
 		boolean fileContainsJars = fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames(), jarReport);
 		assertTrue(fileContainsJars);
@@ -41,7 +41,7 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("src/test/resources/catalina_home"), "somefile.zip");
 		assertEquals(1, filesFound.size());
-		String restApiUnpackedDir = filesFound.get(0).toFile().getParent() + WebHookTeamCityRestApiZipPluginFixer.unpackedLocation;
+		String restApiUnpackedDir = filesFound.get(0).toFile().getParent() + WebHookTeamCityRestApiZipPluginFixer.UNPACKED_LOCATION;
 		JarReport jarReport = new JarReport(filesFound.get(0), restApiUnpackedDir, WebHookTeamCityRestApiZipPluginFixer.getFilenames());
 		boolean fileContainsJars = fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames(), jarReport);
 		assertFalse(fileContainsJars);
@@ -54,7 +54,7 @@ public class WebHookTeamCityRestApiZipPluginFixerTest {
 		WebHookTeamCityRestApiZipPluginFixer fixer = new WebHookTeamCityRestApiZipPluginFixer();
 		List<Path> filesFound = fixer.findRestApiZipFileInTomcatDir(new File("target/catalina_home"), "rest-api.zip");
 		assertEquals(1, filesFound.size());
-		String restApiUnpackedDir = filesFound.get(0).toFile().getParent() + WebHookTeamCityRestApiZipPluginFixer.unpackedLocation;
+		String restApiUnpackedDir = filesFound.get(0).toFile().getParent() + WebHookTeamCityRestApiZipPluginFixer.UNPACKED_LOCATION;
 		JarReport jarReport = new JarReport(filesFound.get(0), restApiUnpackedDir, WebHookTeamCityRestApiZipPluginFixer.getFilenames());
 		assertTrue(fixer.doesRestApiZipFileContainJaxJars(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames(), jarReport));
 		fixer.deleteFilesFromRestApiZipFile(filesFound.get(0).toFile(), WebHookTeamCityRestApiZipPluginFixer.getFilenames(), jarReport);

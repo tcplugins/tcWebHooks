@@ -14,13 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import jetbrains.buildServer.messages.Status;
-import jetbrains.buildServer.serverSide.BuildHistory;
-import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -28,10 +21,18 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.serverSide.BuildHistory;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.history.WebHookHistoryItemFactory;
+import webhook.teamcity.history.WebHookHistoryItemFactoryImpl;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.history.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.payload.WebHookPayload;
@@ -39,6 +40,8 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
+import webhook.teamcity.reporting.WebAddressTransformer;
+import webhook.teamcity.reporting.WebAddressTransformerImpl;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -53,6 +56,8 @@ public class WebHookListenerTest {
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
 	WebHookTemplateResolver templateResolver = mock(WebHookTemplateResolver.class);
 	WebHookHistoryRepository historyRepository = new WebHookHistoryRepositoryImpl();
+	WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
+	WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	WebHookContentBuilder contentBuilder;
 	WebHookAuthenticatorProvider authenticatorProvider = mock(WebHookAuthenticatorProvider.class);
 	WebHookPayload payload = new WebHookPayloadJson(manager);
@@ -89,7 +94,7 @@ public class WebHookListenerTest {
 		spyWebHook = spy(webHookImpl);   
 		webHookConfig = mock(WebHookConfig.class);
 		contentBuilder = new WebHookContentBuilder(manager, templateResolver);
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver, contentBuilder, historyRepository);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
@@ -119,12 +124,12 @@ public class WebHookListenerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testWebHookListener() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, historyRepository);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory);
 	}
 
 	@Test
 	public void testRegister() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, historyRepository);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory);
 		whl.register();
 		verify(sBuildServer).addListener(whl);
 	}
@@ -217,7 +222,7 @@ public class WebHookListenerTest {
 		
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, historyRepository);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, manager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory);
 		Status oldStatus = Status.NORMAL;
 		Status newStatus = Status.FAILURE;
 		whl.register();

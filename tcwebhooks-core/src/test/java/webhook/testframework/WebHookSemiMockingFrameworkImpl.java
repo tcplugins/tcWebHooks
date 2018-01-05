@@ -31,6 +31,8 @@ import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.history.WebHookHistoryItemFactory;
+import webhook.teamcity.history.WebHookHistoryItemFactoryImpl;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.history.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.payload.WebHookPayload;
@@ -42,6 +44,8 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
+import webhook.teamcity.reporting.WebAddressTransformer;
+import webhook.teamcity.reporting.WebAddressTransformerImpl;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -91,6 +95,8 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private WebHookAuthenticatorProvider authenticatorProvider;
 	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
+	private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
+	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	
 	
 	public static WebHookSemiMockingFrameworkImpl create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
@@ -115,9 +121,10 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		
 		authenticatorProvider = setupAuthenticatorProviderAndRegisterFactories();
 		
-		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookPayloadManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository);
+		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookPayloadManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory);
 	
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
+		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
 		when(sBuildServer.getRootUrl()).thenReturn("http://test.server");
 		when(sBuildServer.getProjectManager()).thenReturn(projectManager);

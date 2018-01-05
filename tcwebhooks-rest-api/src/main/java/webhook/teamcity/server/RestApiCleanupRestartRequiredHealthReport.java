@@ -60,7 +60,6 @@ public class RestApiCleanupRestartRequiredHealthReport extends HealthStatusRepor
 			} 
 	    }; 
 	    myPEx.setIncludeUrl(pluginDescriptor.getPluginResourcesPath("WebHookRestApi/restApiHealthRestartStatus.jsp")); 
-	    //myPEx.addJsFile(pluginDescriptor.getPluginResourcesPath("/js/QueueStateActions.js")); 
 	    myPEx.setVisibleOutsideAdminArea(true); 
 	    myPEx.register(); 
 	}

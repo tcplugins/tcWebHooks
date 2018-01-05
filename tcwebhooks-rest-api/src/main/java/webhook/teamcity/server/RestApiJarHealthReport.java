@@ -50,7 +50,7 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 			public boolean isAvailable(@NotNull final HttpServletRequest request) { 
 				String pageUrl = (String)request.getAttribute("pageUrl");
 				return myWebHookTeamCityRestApiZipPluginFixer.foundApiZipFilesContainingJaxbJars()
-					  && myWebHookTeamCityRestApiZipPluginFixer.getFoundApiZipFiles().size() > 0
+					  && ! myWebHookTeamCityRestApiZipPluginFixer.getFoundApiZipFiles().isEmpty()
 					  && isAdminPageOrTemplateEditPage(pageUrl)
 					  && super.isAvailable(request); 
 			}
@@ -61,7 +61,6 @@ public class RestApiJarHealthReport extends HealthStatusReport {
 			} 
 	    }; 
 	    myPEx.setIncludeUrl(pluginDescriptor.getPluginResourcesPath("WebHookRestApi/restApiHealthStatus.jsp")); 
-	    //myPEx.addJsFile(pluginDescriptor.getPluginResourcesPath("/js/QueueStateActions.js")); 
 	    myPEx.setVisibleOutsideAdminArea(true); 
 	    myPEx.register(); 
 	}

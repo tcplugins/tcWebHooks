@@ -30,7 +30,7 @@ public class WebHookAdminPage extends AdminPage {
         addJsFile(descriptor.getPluginResourcesPath("WebHook/js/Chart.bundle.min.js"));
         addJsFile(descriptor.getPluginResourcesPath("WebHook/js/admin-chart.js"));
 		setTabTitle("WebHooks");
-		setPosition(PositionConstraint.after("clouds", "email", "jabber", "plugins"));
+		setPosition(PositionConstraint.after("clouds", "email", "jabber", "plugins", "tcDebRepository"));
 		register();
 	}
 

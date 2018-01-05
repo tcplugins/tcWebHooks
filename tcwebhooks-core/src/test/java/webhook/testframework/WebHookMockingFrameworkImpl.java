@@ -37,6 +37,8 @@ import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.history.WebHookHistoryItemFactory;
+import webhook.teamcity.history.WebHookHistoryItemFactoryImpl;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.history.WebHookHistoryRepositoryImpl;
 import webhook.teamcity.payload.WebHookPayload;
@@ -52,6 +54,8 @@ import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.format.WebHookPayloadXml;
+import webhook.teamcity.reporting.WebAddressTransformer;
+import webhook.teamcity.reporting.WebAddressTransformerImpl;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -111,11 +115,13 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	List<WebHookPayloadTemplate> templateList = new ArrayList<>();
 	List<WebHookPayload> formatList = new ArrayList<>();
 	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
+	private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
+	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new WebHookImpl();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository, historyItemFactory);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
@@ -135,6 +141,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		formatList.add(payloadJsonTemplate);
 		when(manager.getRegisteredFormats()).thenReturn(formatList);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
+		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
 		when(sBuildServer.getRootUrl()).thenReturn("http://test.server");
 		when(sBuildServer.getProjectManager()).thenReturn(projectManager);

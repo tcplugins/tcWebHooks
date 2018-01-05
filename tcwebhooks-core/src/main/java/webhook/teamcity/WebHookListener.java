@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import webhook.WebHook;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
+import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -50,12 +51,14 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookTemplateResolver webHookTemplateResolver;
     private final WebHookContentBuilder webHookContentBuilder;
     private final WebHookHistoryRepository webHookHistoryRepository;
+    private final WebHookHistoryItemFactory webHookHistoryItemFactory;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
-    						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository) {
+    						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
+    						WebHookHistoryItemFactory historyItemFactory) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
@@ -65,6 +68,7 @@ public class WebHookListener extends BuildServerAdapter {
         webHookTemplateResolver = resolver;
         webHookContentBuilder = contentBuilder;
         webHookHistoryRepository = historyRepository;
+        webHookHistoryItemFactory = historyItemFactory;
         
         Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Starting");
     }
@@ -87,7 +91,7 @@ public class WebHookListener extends BuildServerAdapter {
 					doPost(wh, whc.getPayloadFormat());
 					Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									sRunningBuild,
@@ -99,7 +103,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									sRunningBuild,
@@ -111,7 +115,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									sRunningBuild,
@@ -207,7 +211,7 @@ public class WebHookListener extends BuildServerAdapter {
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
-								new WebHookHistoryItem(
+								webHookHistoryItemFactory.getWebHookHistoryItem(
 										whc,
 										wh.getExecutionStats(), 
 										project,
@@ -219,7 +223,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 						Loggers.SERVER.debug(ex);
 						webHookHistoryRepository.addHistoryItem(
-								new WebHookHistoryItem(
+								webHookHistoryItemFactory.getWebHookHistoryItem(
 										whc,
 										wh.getExecutionStats(), 
 										project,
@@ -231,7 +235,7 @@ public class WebHookListener extends BuildServerAdapter {
 						Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 						Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 						webHookHistoryRepository.addHistoryItem(
-								new WebHookHistoryItem(
+								webHookHistoryItemFactory.getWebHookHistoryItem(
 										whc,
 										wh.getExecutionStats(), 
 										project,
@@ -260,7 +264,7 @@ public class WebHookListener extends BuildServerAdapter {
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
-								new WebHookHistoryItem(
+								webHookHistoryItemFactory.getWebHookHistoryItem(
 										whc,
 										wh.getExecutionStats(), 
 										project,
@@ -272,7 +276,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									project,
@@ -284,7 +288,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									project,
@@ -325,7 +329,7 @@ public class WebHookListener extends BuildServerAdapter {
 						doPost(wh, whc.getPayloadFormat());
 						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
 						webHookHistoryRepository.addHistoryItem(
-								new WebHookHistoryItem(
+								webHookHistoryItemFactory.getWebHookHistoryItem(
 										whc,
 										wh.getExecutionStats(), 
 										sBuildType,
@@ -337,7 +341,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
 					Loggers.SERVER.debug(ex);
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									sBuildType,
@@ -349,7 +353,7 @@ public class WebHookListener extends BuildServerAdapter {
 					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
 					webHookHistoryRepository.addHistoryItem(
-							new WebHookHistoryItem(
+							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
 									sBuildType,
