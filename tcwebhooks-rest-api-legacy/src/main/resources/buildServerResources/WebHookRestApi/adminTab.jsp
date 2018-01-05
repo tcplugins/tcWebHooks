@@ -17,7 +17,7 @@
 					<div class="icon_before icon16 attentionRed">Health Status: WARNING. TeamCity REST API plugin files contain JAXB jars.</div>
 	         	</c:when>  
 	    		<c:when test="${restartRequired}"> 
-					<div class="icon_before icon16 attentionRed">Health Status: WARNING. TeamCity restart required after Plugin file cleaning.</div>
+					<div class="icon_before icon16 attentionRed">Health Status: WARNING. TeamCity </a> required after Plugin file cleaning.</div>
 	         	</c:when>  
 	         	<c:otherwise>  
 					<div>Health Status: PASSED. No problematic TeamCity REST API plugin files have been found.</div>
@@ -42,7 +42,7 @@
 									<a href="#" onclick="WebHookRestApiHealthStatus.fixPluginFile('${util:forJS(foundJar.path.toString(), false, false)}')">Fix the ZIP<br>file and cleanup<br>the unpacked jars</a>
 								</c:when>
 			        			<c:when test="${foundJar.jarReport.rebootRequired}">
-									Please restart TeamCity 
+									Please <a href="#" onclick="BS.ServerRestarter.restartServer(); return false;">restart</a> TeamCity 
 								</c:when>
 								<c:otherwise>
 									No action required
@@ -61,8 +61,8 @@
 								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Manual intervention required</td>
 							</c:when>
 			        		<c:when test="${file.removed}">
-	        					<td>${file.filename} successfully removed from API zip file. TeamCity restart required</td>
-								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Restart Required</td>
+	        					<td>${file.filename} successfully removed from API zip file. TeamCity <a href="#" onclick="BS.ServerRestarter.restartServer(); return false;">restart</a> required</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;<a href="#" onclick="BS.ServerRestarter.restartServer(); return false;">Restart Required</a></td>
 							</c:when>
 			        		<c:when test="${file.found}">
 	        					<td>${file.filename} found inside API zip file</td>

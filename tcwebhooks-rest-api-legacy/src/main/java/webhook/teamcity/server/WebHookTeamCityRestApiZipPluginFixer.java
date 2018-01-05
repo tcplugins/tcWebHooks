@@ -29,7 +29,7 @@ import webhook.teamcity.server.pluginfixer.JarReport;
 public class WebHookTeamCityRestApiZipPluginFixer {
 	
 	private static final String[] filenames = { "server/jaxb-api-2.2.5.jar", "server/jaxb-impl-2.2.5.jar"};
-	public static final String unpackedLocation = File.separator + ".unpacked" + File.separator + "rest-api";
+	public static final String UNPACKED_LOCATION = File.separator + ".unpacked" + File.separator + "rest-api";
 	
 	@Getter
 	private boolean haveFilesBeenCleanedSinceBoot = false;
@@ -39,18 +39,6 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	
 	@Getter
 	private Map<Path,JarReport> jarReports = new HashMap<>(); 
-	
-//	@Getter
-//	private List<Path> foundApiZipFilesContainingJaxbJars = new ArrayList<>();
-//	
-//	@Getter
-//	private List<Path> foundApiZipFilesNotContainingJaxbJars = new ArrayList<>();
-//	
-//	@Getter
-//	private List<Path> foundUnpackedApiZipFilesContainingJaxbJars = new ArrayList<>();
-//	
-//	@Getter
-//	private List<Path> foundUnpackedApiZipFilesNotContainingJaxbJars = new ArrayList<>();
 	
 	public List<Path> getFoundApiZipFilesContainingJaxbJars() {
 		List<Path> foundPaths = new ArrayList<>();
@@ -79,10 +67,6 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Starting to check if rest-api.zip has jaxb jars");
 		File possibleLocation = findTeamCityBaseLocation();
 		this.foundApiZipFiles = new ArrayList<>();
-//		this.foundApiZipFilesContainingJaxbJars = new ArrayList<>();
-//		this.foundApiZipFilesNotContainingJaxbJars = new ArrayList<>();
-//		this.foundUnpackedApiZipFilesContainingJaxbJars  = new ArrayList<>();
-//		this.foundUnpackedApiZipFilesNotContainingJaxbJars = new ArrayList<>();
 		
 		if (possibleLocation != null) {
 			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for teamcity in: " + possibleLocation.getAbsolutePath());
@@ -90,7 +74,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 				foundApiZipFiles.addAll(findRestApiZipFileInTomcatDir(possibleLocation, "rest-api.zip")); 
 				
 				for (Path p : foundApiZipFiles){
-					String restApiUnpackedDir = p.toFile().getParent() + unpackedLocation;
+					String restApiUnpackedDir = p.toFile().getParent() + UNPACKED_LOCATION;
 					if (! jarReports.containsKey(p)) {
 						jarReports.put(p, new JarReport(p, restApiUnpackedDir, filenames));
 					}
@@ -129,11 +113,11 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 				} else {
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
 				}
-				String restApiUnpackedDir = p.toFile().getParent() + unpackedLocation;
+				String restApiUnpackedDir = p.toFile().getParent() + UNPACKED_LOCATION;
 				Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
 				if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames, jarReports.get(p))) {
 					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars. Attempting to remove them from: " + restApiUnpackedDir);
-					deleteFilesFromPluginsUnpackedDir(p.toFile().getParent(), filenames, jarReports.get(p));
+					deleteFilesFromPluginsUnpackedDir(filenames, jarReports.get(p));
 					if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames, jarReports.get(p))) {
 						Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir still contains jars. It was not possible to remove them from: " + restApiUnpackedDir);
 					} else {
@@ -184,9 +168,9 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	}
 	
 	private File getCatalinaHomeDir(Map<String, String> env) {
-        for (String envName : env.keySet()) {
-        	if ("CATALINA_HOME".equals(envName)){
-        		File catalinaHome = new File(env.get(envName));
+        for (Entry<String,String> envName : env.entrySet()) {
+        	if ("CATALINA_HOME".equals(envName.getKey())){
+        		File catalinaHome = new File(envName.getValue());
         		if (catalinaHome.exists() && catalinaHome.isDirectory()) {
         			return catalinaHome;
         		}
@@ -211,22 +195,22 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	
 	protected boolean doesRestApiZipFileContainJaxJars(File restApiZip, String[] filenames, JarReport jarReport) throws IOException {
         /* Define ZIP File System Properies in HashMap */    
-        Map<String, String> zip_properties = new HashMap<>(); 
+        Map<String, String> zipProperties = new HashMap<>(); 
         /* We want to read an existing ZIP File, so we set this to False */
-        zip_properties.put("create", "false"); 
+        zipProperties.put("create", "false"); 
 
         /* Specify the path to the ZIP File that you want to read as a File System */
-        URI zip_disk = null;
+        URI zipDisk = null;
         try {
         	Path path = Paths.get(restApiZip.getAbsolutePath());
-        	zip_disk = new URI("jar",path.toUri().toString(), null);
+        	zipDisk = new URI("jar",path.toUri().toString(), null);
     	} catch(URISyntaxException e) {
-    		
+    		Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Could not convert to JAR URI.", e);
     	}
         boolean fileFoundInZip = false;
         
         /* Create ZIP file System */
-        try (FileSystem zipfs = FileSystems.newFileSystem(zip_disk, zip_properties)) {
+        try (FileSystem zipfs = FileSystems.newFileSystem(zipDisk, zipProperties)) {
             /* Get the Path inside ZIP File*/
         	for (String filename : filenames) {
         		Path pathInZipfile = zipfs.getPath(filename);
@@ -244,9 +228,9 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         return fileFoundInZip;
 	}
 	
-	protected boolean doFilesExistInPluginsUnpackedDir(String pluginsDir, String[] filenames, JarReport jarReport) throws IOException {
+	protected boolean doFilesExistInPluginsUnpackedDir(String pluginsDir, String[] filenames, JarReport jarReport) {
 		
-		File restPluginUnpackedDir = new File(pluginsDir + unpackedLocation);
+		File restPluginUnpackedDir = new File(pluginsDir + UNPACKED_LOCATION);
 		
 		boolean fileExists = false;
 		
@@ -267,7 +251,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		return fileExists;
 	}
 	
-	protected boolean deleteFilesFromPluginsUnpackedDir(String pluginsDir, String[] filenames, JarReport jarReport) throws IOException {
+	protected boolean deleteFilesFromPluginsUnpackedDir(String[] filenames, JarReport jarReport) throws IOException {
 		
 		File restPluginUnpackedDir = new File(jarReport.getApiZipFileUnpackedLocation());
 		
@@ -295,22 +279,22 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	
 	protected boolean deleteFilesFromRestApiZipFile(File restApiZip, String[] filenames, JarReport jarReport) throws IOException {
 		/* Define ZIP File System Properies in HashMap */    
-		Map<String, String> zip_properties = new HashMap<>(); 
+		Map<String, String> zipProperties = new HashMap<>(); 
 		/* We want to read an existing ZIP File, so we set this to False */
-		zip_properties.put("create", "false"); 
+		zipProperties.put("create", "false"); 
 		
 		/* Specify the path to the ZIP File that you want to read as a File System */
-		URI zip_disk = null;
+		URI zipDisk = null;
         try {
         	Path path = Paths.get(restApiZip.getAbsolutePath());
-        	zip_disk = new URI("jar",path.toUri().toString().replace("\\","/"), null);
+        	zipDisk = new URI("jar",path.toUri().toString().replace("\\","/"), null);
     	} catch(URISyntaxException e) {
-    		
+    		Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Could not convert to JAR URI.", e);
     	}
 		boolean fileDeletedInZip = false;
 		
 		/* Create ZIP file System */
-		try (FileSystem zipfs = FileSystems.newFileSystem(zip_disk, zip_properties)) {
+		try (FileSystem zipfs = FileSystems.newFileSystem(zipDisk, zipProperties)) {
 			/* Get the Path inside ZIP File*/
 			for (String filename : filenames) {
 				Path pathInZipfile = zipfs.getPath(filename);
@@ -377,7 +361,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
     @Override
     public FileVisitResult visitFileFailed(Path file,
             IOException exc) {
-        System.err.println(exc);
+        Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer ::Visiting file failed", exc);
         return CONTINUE;
     	}
     }
