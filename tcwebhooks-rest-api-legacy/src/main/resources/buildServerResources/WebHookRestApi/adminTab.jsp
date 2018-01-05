@@ -58,7 +58,7 @@
 	        					<td>${file.filename} was NOT removed from API zip file. The following error occurred:
 	        					<p>${file.failureMessage}</p>
 	        					</td>
-								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Manual intervention required</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;<a href="https://github.com/tcplugins/tcWebHooks/wiki/Fixing-the-REST-API-Jar-Conflict#manual-intervention" target="_blank">Manual intervention required</a></td>
 							</c:when>
 			        		<c:when test="${file.removed}">
 	        					<td>${file.filename} successfully removed from API zip file. TeamCity <a href="#" onclick="BS.ServerRestarter.restartServer(); return false;">restart</a> required</td>
@@ -87,11 +87,11 @@
 	        					<td>${file.filename} was NOT removed from unpacked location. The following error occurred:
 	        					<p>${file.failureMessage}</p>
 	        					</td>
-								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Manual intervention required</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;<a href="https://github.com/tcplugins/tcWebHooks/wiki/Fixing-the-REST-API-Jar-Conflict#manual-intervention" target="_blank">Manual intervention required</a></td>
 							</c:when>
 			        		<c:when test="${file.removed}">
 	        					<td>${file.filename} successfully removed from unpacked location.</td>
-								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;Restart Required</td>
+								<td colspan="1" class="icon_before icon16 attentionRed" style="border-color: #ccc; background-color:white;">&nbsp;<a href="#" onclick="BS.ServerRestarter.restartServer(); return false;">Restart Required</a></td>
 							</c:when>
 			        		<c:when test="${file.found}">
 	        					<td>${file.filename} found in unpacked location</td>
