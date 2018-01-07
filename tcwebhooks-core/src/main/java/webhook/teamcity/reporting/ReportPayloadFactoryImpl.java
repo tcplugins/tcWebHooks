@@ -3,6 +3,7 @@ package webhook.teamcity.reporting;
 import java.util.List;
 
 import webhook.WebHookExecutionStats;
+import webhook.teamcity.history.WebAddressTransformer;
 
 public class ReportPayloadFactoryImpl implements ReportPayloadFactory {
 	

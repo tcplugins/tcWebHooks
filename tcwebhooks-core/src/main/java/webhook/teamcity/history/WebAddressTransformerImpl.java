@@ -1,4 +1,4 @@
-package webhook.teamcity.reporting;
+package webhook.teamcity.history;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

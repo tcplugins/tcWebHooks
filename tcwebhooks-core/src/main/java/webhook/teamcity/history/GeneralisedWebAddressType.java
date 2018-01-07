@@ -1,4 +1,4 @@
-package webhook.teamcity.reporting;
+package webhook.teamcity.history;
 
 public enum GeneralisedWebAddressType {
 	IPV4_ADDRESS, // Just the first 3 dotted quad and an x, eg 192.168.1.x

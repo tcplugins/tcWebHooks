@@ -13,7 +13,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import webhook.teamcity.reporting.GeneralisedWebAddress;
+import webhook.teamcity.history.GeneralisedWebAddress;
+import webhook.teamcity.history.WebAddressTransformer;
+import webhook.teamcity.history.WebAddressTransformerImpl;
 
 @RunWith(Parameterized.class)
 public class WebAddressTransformerImplTest {

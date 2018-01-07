@@ -9,7 +9,6 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
-import webhook.teamcity.reporting.WebAddressTransformer;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory {

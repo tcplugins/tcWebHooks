@@ -1,4 +1,4 @@
-package webhook.teamcity.reporting;
+package webhook.teamcity.history;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

@@ -10,7 +10,6 @@ import jetbrains.buildServer.serverSide.SProject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import webhook.WebHookExecutionStats;
-import webhook.teamcity.reporting.GeneralisedWebAddress;
 import webhook.teamcity.settings.WebHookConfig;
 
 @Data @AllArgsConstructor

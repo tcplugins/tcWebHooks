@@ -68,7 +68,7 @@
      	/>
      	
     <bean id="webAddressTransformer" 
-     	class="webhook.teamcity.reporting.WebAddressTransformerImpl"
+     	class="webhook.teamcity.history.WebAddressTransformerImpl"
      	/>
      	
     <bean id="webHookTemplateEditPageController" 
