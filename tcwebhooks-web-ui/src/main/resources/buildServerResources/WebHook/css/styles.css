@@ -16,7 +16,6 @@ input[type=checkbox], input[type=radio] {
 
 div#buildList{
 	padding: 1em;
-	overflow:scroll;
 }
 
 label {
@@ -228,7 +227,9 @@ div.endpointPayloadHeaders table tr :first-child {
     margin-left: 0px;
 }
 
-
+#buildPane {
+	overflow:auto;
+}
 
 /*
 span.templateRenderHeader {
