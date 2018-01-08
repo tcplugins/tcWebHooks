@@ -22,6 +22,8 @@ import java.util.TreeMap;
 
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import org.jdom.DataConversionException;
 import org.jdom.Element;
@@ -33,7 +35,7 @@ import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
-
+@Builder @AllArgsConstructor
 public class WebHookConfig {
 	private static final String EL_TRIGGER_FILTERS = "trigger-filters";
 	private static final String ATTR_PREEMPTIVE = "preemptive";
