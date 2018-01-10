@@ -79,7 +79,7 @@ public class WebHookEndPointController extends BaseController {
 			WebHookEndPointPayload payload;
 			
 			
-			if (request.getContentType().equalsIgnoreCase(WebHookPayloadNameValuePairs.FORMAT_CONTENT_TYPE)){
+			if (request.getContentType().toLowerCase().startsWith(WebHookPayloadNameValuePairs.FORMAT_CONTENT_TYPE)){
 				
 				payload = WebHookEndPointPayload.builder()
 						.date(new Date())

@@ -27,9 +27,9 @@ public class WebHookEndPointContentStore {
 	@Synchronized
 	public void put(WebHookEndPointPayload payload){
 		for (WebHookPayload format : webHookPayloadManager.getRegisteredFormats()){
-			if (format.getContentType().equalsIgnoreCase(payload.contentType)){
+			if (payload.getContentType().toLowerCase().startsWith(format.getContentType())){
 				try {
-					if (payload.contentType.equals(WebHookPayloadNameValuePairs.FORMAT_CONTENT_TYPE)) {
+					if (payload.contentType.toLowerCase().startsWith(WebHookPayloadNameValuePairs.FORMAT_CONTENT_TYPE)) {
 						payload.setPrettyPayload(format.getWebHookStringRenderer().render(payload.getParameters()));
 					} else {
 						payload.setPrettyPayload(format.getWebHookStringRenderer().render(payload.getPayload()));
