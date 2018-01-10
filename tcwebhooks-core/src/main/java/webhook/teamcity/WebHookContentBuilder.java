@@ -35,6 +35,7 @@ public class WebHookContentBuilder {
 		WebHookPayload payloadFormat = payloadManager.getFormat(whc.getPayloadFormat());
 		WebHookTemplateContent templateForThisBuild;
 		wh.setContentType(payloadFormat.getContentType());
+		wh.setCharset(payloadFormat.getCharset());
 		
 		if (state.equals(BuildStateEnum.BUILD_STARTED)){
 			wh.setEnabledForBuildState(BuildStateEnum.BUILD_STARTED, whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED));
