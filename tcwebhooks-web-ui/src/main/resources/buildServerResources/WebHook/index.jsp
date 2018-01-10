@@ -68,6 +68,7 @@
 				})
 				.done(function(data){
 					projectHistory = data;
+					populateBuildHistory();
 				});
 			</c:if>
 			<c:if test="${haveBuild}"> 
@@ -76,6 +77,7 @@
 				})
 				.done(function(data){
 					projectHistory = data;
+					populateBuildHistory();
 				});
 			</c:if>
 				jQueryWebhook('#payloadFormatHolder').change(function() {
@@ -109,23 +111,38 @@
 				jQueryWebhook('select.templateAjaxRefresh').change(function() {
 					var selectedBuildState = jQueryWebhook('#currentTemplateBuildEvent').val();
 					var selectedBuildId = jQueryWebhook('#currentTemplateBuildId').val();
-					jQueryWebhook.getJSON( "renderTemplate.html", {
-										projectId: "${projectExternalId}",
-										buildState: selectedBuildState,
-										buildId: selectedBuildId,
-										payloadTemplate: lookupTemplate(jQueryWebhook('#payloadFormatHolder').val()),
-										payloadFormat: lookupFormat(jQueryWebhook('#payloadFormatHolder').val())
-									})
-									.done(function(data){
-											jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
-											jQueryWebhook('#currentTemplateRendered').html(data.templatesOutput.webhookTemplateRendered);
-											
-											  jQueryWebhook('#currentTemplateRendered pre code').each(function(i, block) {
-											    hljs.highlightBlock(block);
-											  });
-									});
+					if (selectedBuildId === "") {
+						jQueryWebhook('#currentTemplateRaw').html("");
+						jQueryWebhook('#currentTemplateRendered').html("");
+					} else {
+						jQueryWebhook.getJSON( "renderTemplate.html", {
+											projectId: "${projectExternalId}",
+											buildState: selectedBuildState,
+											buildId: selectedBuildId,
+											payloadTemplate: lookupTemplate(jQueryWebhook('#payloadFormatHolder').val()),
+											payloadFormat: lookupFormat(jQueryWebhook('#payloadFormatHolder').val())
+										})
+										.done(function(data){
+												jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
+												jQueryWebhook('#currentTemplateRendered').html(data.templatesOutput.webhookTemplateRendered);
+												
+												  jQueryWebhook('#currentTemplateRendered pre code').each(function(i, block) {
+												    hljs.highlightBlock(block);
+												  });
+										});
+					}
 				});
 		});
+		
+		function populateBuildHistory() {
+			jQueryWebhook('#currentTemplateRaw').html("");
+			jQueryWebhook('#currentTemplateRendered').html("");
+			jQueryWebhook('#currentTemplateBuildId').empty();
+			jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val("").text("Choose a build..."));
+			jQueryWebhook.each(projectHistory.recentBuilds, function(thing, build) {
+				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
+			});
+		}
 		
 		function selectBuildState(){
 			doExtraCompleted();
@@ -310,11 +327,7 @@
 				}
 			});
 			updateSelectedBuildTypes();
-			jQueryWebhook('#currentTemplateBuildId').empty();
-			jQueryWebhook.each(projectHistory.recentBuilds, function(thing, build) {
-				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
-			});
-			
+			populateBuildHistory();
 		}
 
 		function lookupTemplate(templateFormatCombinationKey){
@@ -374,10 +387,7 @@
 				}
 			});
 			
-			jQueryWebhook('#currentTemplateBuildId').empty();
-			jQueryWebhook.each(projectHistory.recentBuilds, function(thing, build){
-				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
-			});
+			populateBuildHistory();
 		}
 
 		BS.EditWebHookDialog = OO.extend(BS.AbstractModalDialog, {
