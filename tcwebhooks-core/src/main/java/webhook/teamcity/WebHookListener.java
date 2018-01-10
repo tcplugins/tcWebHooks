@@ -21,7 +21,6 @@ import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.WebHook;
-import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
