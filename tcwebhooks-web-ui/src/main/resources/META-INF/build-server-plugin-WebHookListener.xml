@@ -32,8 +32,8 @@
         init-method="register" 
         />
 
-	<bean id="webHookBuildTabExtension"
-        class="webhook.teamcity.extension.WebHookBuildTabExtension"
+	<bean id="webHookBuildTypeTabExtension"
+        class="webhook.teamcity.extension.WebHookBuildTypeTabExtension"
         init-method="register" 
         />
  

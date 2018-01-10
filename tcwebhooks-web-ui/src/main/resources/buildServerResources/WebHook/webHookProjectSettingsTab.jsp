@@ -67,7 +67,6 @@
 						<p>There are no WebHooks configured for this specific build.</p> 
 						<a href="../webhooks/index.html?buildTypeId=${config.buildExternalId}">Add build WebHooks</a>.
 						</div>
-					</div>
 				</c:if>
 				<c:if test="${config.hasBuildWebHooks}" >
 						<div style='margin-left: 1em; margin-right:1em;'>
@@ -82,8 +81,8 @@
 							</tbody>
 						</table>
 						</div>
-					</div>
 				</c:if>
+				</div>
 				
 			</c:forEach>
 		</div>	

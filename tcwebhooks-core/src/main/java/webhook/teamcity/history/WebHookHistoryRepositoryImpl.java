@@ -29,6 +29,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 				projItems.add(item);
 			}
 		}
+		Collections.sort(projItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, projItems);
 	}
 
@@ -40,6 +41,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 				buildTypeItems.add(item);
 			}
 		}
+		Collections.sort(buildTypeItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, buildTypeItems);
 	}
 
@@ -51,6 +53,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 				buildItems.add(item);
 			}
 		}
+		Collections.sort(buildItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, buildItems);
 	}
 

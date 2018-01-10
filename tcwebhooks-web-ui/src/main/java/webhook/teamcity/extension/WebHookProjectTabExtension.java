@@ -19,21 +19,27 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
+import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
 
 public class WebHookProjectTabExtension extends ProjectTab {
 	
-	ProjectSettingsManager projSettings;
-	String myPluginPath;
+	private final ProjectSettingsManager myProjectSettingsManager;
+	private final String myPluginPath;
+	private final WebHookHistoryRepository myWebHookHistoryRepository;
 
 	protected WebHookProjectTabExtension(
-			PagePlaces pagePlaces, ProjectManager projectManager, 
-			ProjectSettingsManager settings, PluginDescriptor pluginDescriptor) {
+			@NotNull PagePlaces pagePlaces, 
+			@NotNull ProjectManager projectManager, 
+			@NotNull ProjectSettingsManager projectSettingsManager, 
+			@NotNull PluginDescriptor pluginDescriptor,
+			@NotNull WebHookHistoryRepository webHookHistoryRepository) {
 		super("webHooks", "WebHooks", pagePlaces, projectManager);
-		this.projSettings = settings;
+		this.myProjectSettingsManager = projectSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
+		myWebHookHistoryRepository = webHookHistoryRepository;
 	}
 
 	@Override
@@ -41,9 +47,8 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		return true;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	protected void fillModel(Map model, HttpServletRequest request,
+	protected void fillModel(Map<String,Object> model, HttpServletRequest request,
 			 @NotNull SProject project, SUser user) {
 		
 		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
@@ -61,7 +66,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
-							(WebHookProjectSettings) this.projSettings.getSettings(projectParent.getProjectId(), "webhooks"),
+							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
 							null
 							)
 					);
@@ -72,11 +77,12 @@ public class WebHookProjectTabExtension extends ProjectTab {
     	model.put("projectId", project.getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
     	model.put("projectName", project.getName());
+    	model.put("items", myWebHookHistoryRepository.findHistoryItemsForProject(project.getProjectId(), 1, 50));
 	}
 
 	@Override
 	public String getIncludeUrl() {
-		return myPluginPath+ "WebHook/webHookTab.jsp";
+		return myPluginPath+ "WebHook/webHookTabWithHistory.jsp";
 	}
 
 }

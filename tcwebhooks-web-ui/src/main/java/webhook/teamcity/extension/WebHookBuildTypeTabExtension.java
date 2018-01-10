@@ -19,22 +19,26 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
+import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
 
 
-public class WebHookBuildTabExtension extends BuildTypeTab {
-	WebHookProjectSettings settings;
-	ProjectSettingsManager projSettings;
-	String myPluginPath;
+public class WebHookBuildTypeTabExtension extends BuildTypeTab {
+	private final ProjectSettingsManager myProjectSettingsManager;
+	private final String myPluginPath;
+	private final WebHookHistoryRepository myWebHookHistoryRepository;
 
-	protected WebHookBuildTabExtension(
-			ProjectManager projectManager, 
-			ProjectSettingsManager settings, WebControllerManager manager,
-			PluginDescriptor pluginDescriptor) {
+	protected WebHookBuildTypeTabExtension(
+			@NotNull ProjectManager projectManager, 
+			@NotNull ProjectSettingsManager projectSettingsManager, 
+			@NotNull WebControllerManager manager,
+			@NotNull PluginDescriptor pluginDescriptor,
+			@NotNull WebHookHistoryRepository webHookHistoryRepository) {
 		super("webHooks", "WebHooks", manager, projectManager);
-		this.projSettings = settings;
+		myProjectSettingsManager = projectSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
+		myWebHookHistoryRepository = webHookHistoryRepository;
 	}
 
 	@Override
@@ -42,13 +46,9 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 		return true;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	protected void fillModel(Map model, HttpServletRequest request,
+	protected void fillModel(Map<String,Object> model, HttpServletRequest request,
 			 @NotNull SBuildType buildType, SUser user) {
-		this.settings = 
-			(WebHookProjectSettings)this.projSettings.getSettings(buildType.getProject().getProjectId(), "webhooks");
-		
 		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
 		List<SProject> parentProjects = buildType.getProject().getProjectPath();
 		if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
@@ -58,7 +58,7 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
-							(WebHookProjectSettings) this.projSettings.getSettings(projectParent.getProjectId(), "webhooks"),
+							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
 							buildType
 							)
 					);
@@ -73,11 +73,12 @@ public class WebHookBuildTabExtension extends BuildTypeTab {
     	model.put("buildTypeId", buildType.getBuildTypeId());
     	model.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(buildType));
     	model.put("buildName", buildType.getName());
+    	model.put("items", myWebHookHistoryRepository.findHistoryItemsForBuildType(buildType.getBuildTypeId(), 1, 50));
 	}
 
 	@Override
 	public String getIncludeUrl() {
-		return myPluginPath + "WebHook/webHookTab.jsp";
+		return myPluginPath + "WebHook/webHookTabWithHistory.jsp";
 	}
 
 
