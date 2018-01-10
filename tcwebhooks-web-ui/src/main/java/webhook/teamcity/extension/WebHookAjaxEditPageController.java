@@ -264,7 +264,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 																	myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																	),
-										ProjectHistoryResolver.getProjectHistory(project),
+										//ProjectHistoryResolver.getProjectHistory(project),
 										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 										)
 									)

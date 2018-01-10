@@ -32,7 +32,8 @@ public class ProjectWebHooksBeanTest {
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
-		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history, authBean)));
+		//System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, authBean)));
 	}
 	
 	@Test
@@ -43,7 +44,8 @@ public class ProjectWebHooksBeanTest {
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
-		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history, authBean)));
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, authBean)));
 	}
 	
 	@Test
@@ -54,8 +56,9 @@ public class ProjectWebHooksBeanTest {
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
 		System.out.println(RegisteredWebHookTemplateBeanGsonSerialiser.serialise(template));
-		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history, authBean)));
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, authBean)));
 	}
 	
 	@Test
@@ -66,8 +69,9 @@ public class ProjectWebHooksBeanTest {
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
 		System.out.println(RegisteredWebHookTemplateBeanGsonSerialiser.serialise(template));
-		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history, authBean)));
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, authBean)));
 	}
 	
 	@Test
@@ -78,8 +82,9 @@ public class ProjectWebHooksBeanTest {
 		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
 		System.out.println(RegisteredWebHookTemplateBeanGsonSerialiser.serialise(template));
-		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, history, authBean)));
+		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, authBean)));
 	}
 
 }

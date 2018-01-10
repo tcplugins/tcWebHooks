@@ -56,11 +56,28 @@
 		var webhookDialogWidth = -1;
 		var webhookDialogHeight = -1;
 		var templatePaneOuterHeight = -1;
+		var projectHistory = { "recentBuilds":[] };
 		jQueryWebhook(document).ready( function() {
 				jQueryWebhook('#tab-container').easytabs({
 					  animate: false,
 					  updateHash: false
 				});
+			<c:if test="${haveProject}"> 
+				jQueryWebhook.getJSON( "ajax/projectHistory.html", {
+					projectId: "${projectExternalId}"
+				})
+				.done(function(data){
+					projectHistory = data;
+				});
+			</c:if>
+			<c:if test="${haveBuild}"> 
+				jQueryWebhook.getJSON( "ajax/projectHistory.html", {
+					buildTypeId: "${buildExternalId}"
+				})
+				.done(function(data){
+					projectHistory = data;
+				});
+			</c:if>
 				jQueryWebhook('#payloadFormatHolder').change(function() {
 					var formatName = jQueryWebhook(this).val();
   					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, template){
@@ -294,11 +311,7 @@
 			});
 			updateSelectedBuildTypes();
 			jQueryWebhook('#currentTemplateBuildId').empty();
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build) {
-				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
-			});
-			
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build) {
+			jQueryWebhook.each(projectHistory.recentBuilds, function(thing, build) {
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 			
@@ -362,7 +375,7 @@
 			});
 			
 			jQueryWebhook('#currentTemplateBuildId').empty();
-			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectHistory.recentBuilds, function(thing, build){
+			jQueryWebhook.each(projectHistory.recentBuilds, function(thing, build){
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 		}

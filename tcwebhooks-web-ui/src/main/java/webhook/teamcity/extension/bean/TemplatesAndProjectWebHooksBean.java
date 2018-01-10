@@ -10,19 +10,19 @@ public class TemplatesAndProjectWebHooksBean {
 	RegisteredWebHookTemplateBean registeredTemplates;
 	Map<String,SimpleAuthType> registeredAuthTypes;
 	ProjectWebHooksBean projectWebhookConfig;
-	ProjectHistoryBean projectHistory;
+	//ProjectHistoryBean projectHistory;
 	
 	public static TemplatesAndProjectWebHooksBeanResponseWrapper build(
 													RegisteredWebHookTemplateBean templates, 
 													ProjectWebHooksBean projects, 
-													ProjectHistoryBean history, 
+													//ProjectHistoryBean history, 
 													RegisteredWebhookAuthenticationTypesBean authTypes) {
 		
 		TemplatesAndProjectWebHooksBean bean = new TemplatesAndProjectWebHooksBean();
 		bean.registeredTemplates = templates;
 		bean.registeredAuthTypes = authTypes.getAuthenticators();
 		bean.projectWebhookConfig = projects;
-		bean.projectHistory = history;
+		//bean.projectHistory = history;
 		return new TemplatesAndProjectWebHooksBeanResponseWrapper(bean);
 		
 	}

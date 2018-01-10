@@ -91,6 +91,11 @@
      	init-method="register" 
      	/>
 
+     <bean id="webHookProjectHistoryController" 
+     	class="webhook.teamcity.extension.WebHookProjectHistoryController" 
+     	init-method="register" 
+     	/>
+
      <bean id="webHookHttpClientFactory"
      	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
      	/>     	

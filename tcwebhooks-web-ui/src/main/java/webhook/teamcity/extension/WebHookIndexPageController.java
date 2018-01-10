@@ -122,7 +122,7 @@ public class WebHookIndexPageController extends BaseController {
 																	myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																),
-										ProjectHistoryResolver.getProjectHistory(project),
+										//ProjectHistoryResolver.getProjectHistory(project),
 										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 									)
 								)
@@ -149,7 +149,7 @@ public class WebHookIndexPageController extends BaseController {
 																	myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																),
-										ProjectHistoryResolver.getProjectHistory(project),
+										//ProjectHistoryResolver.getProjectHistory(project),
 										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 										)
 									)
@@ -200,7 +200,7 @@ public class WebHookIndexPageController extends BaseController {
 										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																	),
-										ProjectHistoryResolver.getBuildHistory(sBuildType),
+										//ProjectHistoryResolver.getBuildHistory(sBuildType),
 										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 										)
 									)

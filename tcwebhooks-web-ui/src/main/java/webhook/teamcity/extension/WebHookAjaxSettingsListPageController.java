@@ -76,7 +76,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    																						myManager.getRegisteredFormatsAsCollection(),
 		    																						myTemplateResolver.findWebHookTemplatesForProject(project)
 		    																						),
-		    															ProjectHistoryResolver.getProjectHistory(project),
+		    															//ProjectHistoryResolver.getProjectHistory(project),
 		    															RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 		    															)
 	        														)
@@ -98,7 +98,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 																			myManager.getRegisteredFormatsAsCollection(), 
 																			myTemplateResolver.findWebHookTemplatesForProject(project)
 																),
-										ProjectHistoryResolver.getBuildHistory(sBuildType),
+										//ProjectHistoryResolver.getBuildHistory(sBuildType),
 										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 									)
 								));
