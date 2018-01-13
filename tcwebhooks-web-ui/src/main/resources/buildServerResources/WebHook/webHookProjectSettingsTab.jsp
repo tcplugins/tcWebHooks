@@ -49,7 +49,14 @@
 					<c:forEach items="${projectBean.webHookList}" var="hook">
 						<tr>
 							<td><c:out value="${hook.url}" /></td>
-							<td><c:out value="${hook.payloadFormatForWeb}"/></td>
+							<c:choose>
+								<c:when test="${hook.payloadTemplate == 'none'}">
+									<td><c:out value="${hook.payloadFormatForWeb}"/></td>
+								</c:when>
+								<c:otherwise>
+									<td><a href="../webhooks/template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}"/></a></td>
+								</c:otherwise>
+							</c:choose>
 							<td><c:out value="${hook.enabledEventsListForWeb}"/></td>
 							<td><c:out value="${hook.enabledBuildsListForWeb}"/></td>
 						</tr>  

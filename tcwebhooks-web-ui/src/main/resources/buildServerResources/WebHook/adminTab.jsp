@@ -3,11 +3,13 @@
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
 <%@ include file="/include-internal.jsp" %>
 
-<bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
-
-	        <div class="repoList">
-	        <h2 class="noBorder">WebHooks</h2>
+		<div>
+	        <h2>WebHook Templates</h2>
+	        <p>There are ${webHookTemplatesCount} WebHook Templates installed in this TeamCity server.<p>
+	        <p><a href="../webhooks/templates.html">WebHook Templates</a> are a way of packaging up a set of payloads together. The template can then be re-used by any number of webhooks.</p>
+	        <p>Please see the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction">WebHook Templates wiki pages</a> for more information.</p>
 	        
+	        <h2>WebHook Execution History</h2>
 	        <p>The most recent 10,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">
 	        <div class="webhookCounts">
@@ -32,7 +34,6 @@
 		        </a></div>
 	        </div>
 	        </div>
-	        <hr>
 	        <p>
 	        <h2 class="noBorder">Recent WebHook Errors</h2>
 	        The following table shows the 20 most recent webhook errors.
@@ -50,7 +51,6 @@
 	        
 		    </table>
 
-			</div>	        
-</bs:refreshable>	        
+		</div>	        
 
 	        

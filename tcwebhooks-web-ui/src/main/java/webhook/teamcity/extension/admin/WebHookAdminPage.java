@@ -12,17 +12,21 @@ import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
 import webhook.teamcity.history.WebHookHistoryRepository;
+import webhook.teamcity.payload.WebHookTemplateManager;
 
 public class WebHookAdminPage extends AdminPage {
 	public static final String TC_WEB_HOOK_REST_API_ADMIN_ID = "tcWebHooks";
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
+	private final WebHookTemplateManager myWebHookTemplateManager;
 
 	public WebHookAdminPage(@NotNull PagePlaces pagePlaces, 
 								  @NotNull PluginDescriptor descriptor,
-								  @NotNull WebHookHistoryRepository webHookHistoryRepository
+								  @NotNull WebHookHistoryRepository webHookHistoryRepository,
+								  @NotNull WebHookTemplateManager webHookTemplateManager
 								  ) {
 		super(pagePlaces);
 		this.myWebHookHistoryRepository = webHookHistoryRepository;
+		this.myWebHookTemplateManager = webHookTemplateManager;
 		setPluginName(TC_WEB_HOOK_REST_API_ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/adminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
@@ -46,6 +50,7 @@ public class WebHookAdminPage extends AdminPage {
 	
 	@Override
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
+		model.put("webHookTemplatesCount", myWebHookTemplateManager.getRegisteredTemplates().size());
 		model.put("errorCount", myWebHookHistoryRepository.getErroredCount());
 		model.put("okCount", myWebHookHistoryRepository.getOkCount());
 		model.put("skippedCount", myWebHookHistoryRepository.getDisabledCount());

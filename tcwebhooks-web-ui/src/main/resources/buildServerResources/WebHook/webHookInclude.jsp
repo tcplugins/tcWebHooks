@@ -27,7 +27,17 @@
 				
 				<tr id="viewRow_${hook.uniqueKey}" class="webHookRow">
 					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.payloadFormatForWeb}" /></td>
+					
+							<c:choose>
+								<c:when test="${hook.payloadTemplate == 'none'}">
+					<td class="value highlight" style="width:15%;"><c:out value="${hook.payloadFormatForWeb}" /></td>
+								</c:when>
+								<c:otherwise>
+					<td class="value highlight" style="width:15%;"><a href="template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
+								</c:otherwise>
+							</c:choose>					
+					
+					
 					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
 					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.enabledBuildsListForWeb}" /></td>
 					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
