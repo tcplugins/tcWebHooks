@@ -15,7 +15,7 @@
 --%>
 <%@ include file="/include.jsp" %>
 
-<c:set var="pageTitle" value="Edit WebHook Payload Template" scope="request"/>
+<c:set var="pageTitle" value="Edit WebHook Template" scope="request"/>
 
 <bs:page>
   <jsp:attribute name="head_include">
@@ -29,7 +29,7 @@
     <script type="text/javascript">
       BS.Navigation.items = [
         {title: "Administration", url: '<c:url value="/admin/admin.html"/>'},
-        {title: "Webhook Payload Templates", url: '<c:url value="/webhooks/templates.html"/>'},
+        {title: "Webhook Templates", url: '<c:url value="/webhooks/templates.html"/>'},
         {title: '<c:out value="${webhookTemplateBean.templateDescription}"/>', selected: true}
       ];
     </script>

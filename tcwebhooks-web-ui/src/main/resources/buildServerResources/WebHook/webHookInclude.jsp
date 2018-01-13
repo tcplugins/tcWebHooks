@@ -68,7 +68,7 @@
 												   <li class='tab' id="hookPaneTab"><a href="#hookPane" class="active">WebHook Config</a></li>
 												   <li class='tab' id="buildPaneTab"><a href="#buildPane">Builds (<span id="selectedBuildCount">all</span>)</a></li>
 												   <li class='tab' id="extrasPaneTab"><a href="#extrasPane">Extra Config</a></li>
-												   <li class='tab' id="templatePaneTab"><a href="#templatePane">Payload Content</a></li>
+												   <li class='tab' id="templatePaneTab"><a href="#templatePane">Preview &amp; Test</a></li>
 								  </ul>
 						 <div class='panel-container'>
 									<div id='hookPane'>

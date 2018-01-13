@@ -40,13 +40,18 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
 	    		
     			String templateName = request.getParameter(GET_VARIABLE_NAME_TEMPLATE);
     			if (templateName != null) {
+    				
     				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
-    				params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId())));
+    				
+    				if (templateConfig != null) {
+    					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId())));
+    					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
+    				}
     			}
 	    		
 	    	}
+	    	return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEditNotFound.jsp", params);
 	    	
-	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
 	    }
 
 
