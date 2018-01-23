@@ -171,7 +171,7 @@ public class TemplateRequest {
 	}
 	
     if (newTemplate.defaultTemplate != null) {
-    	WebHookTemplateItem templateItemConfig = buildDeafultTemplateItem(newTemplate.defaultTemplate);
+    	WebHookTemplateItem templateItemConfig = buildDefaultTemplateItem(newTemplate.defaultTemplate);
     	template.setDefaultTemplate(templateItemConfig.getTemplateText());
     	template.setDefaultBranchTemplate(templateItemConfig.getBranchTemplateText());
     }
@@ -267,6 +267,14 @@ public class TemplateRequest {
 	  if (webHookTemplateConfig == null){
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
+
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(webHookTemplateConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId()), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
+	  
+	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfig, newTemplate, new ErrorResult());
+	  if (validationResult.isErrored()) {
+		  throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
+	  }	  
+	  
 	  // The above will throw errors if the template is not found, so let's attempt to update it.
 	  if (webHookTemplateConfig.getId().equals(rawConfig.getId())) {
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(rawConfig);
@@ -287,7 +295,7 @@ public class TemplateRequest {
 	  checkTemplateWritePermission();
 	  WebHookTemplateConfig webHookTemplateConfig = myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig();
 	  if (webHookTemplateConfig == null){
-		  throw new NotFoundException("No template found by that id");
+		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
 	  
 	  WebHookTemplateConfig newConfig = WebHookTemplateConfigBuilder.buildConfig(rawConfig);
@@ -509,7 +517,7 @@ public class TemplateRequest {
 	  }
 	  if(DEFAULT_TEMPLATE.equals(templateItemConfigWrapper.getTemplateItem().getId())) {
 		  
-		  TemplateItem previousDefaultTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+		  TemplateItem previousDefaultTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
 		  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousDefaultTemplateItem, templateItem, new ErrorResult());
 		  if (validationResult.isErrored()) {
 			  throw new UnprocessableEntityException(TEMPLATE_ITEM_CONTAINED_INVALID_DATA, validationResult);
@@ -537,7 +545,7 @@ public class TemplateRequest {
 		  }
 		  
 	  }
-	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
 	  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException(TEMPLATE_ITEM_CONTAINED_INVALID_DATA, validationResult);
@@ -596,7 +604,7 @@ public class TemplateRequest {
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
 	  
-	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
 	  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException(TEMPLATE_ITEM_CONTAINED_INVALID_DATA, validationResult);
@@ -729,7 +737,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  
 	  WebHookTemplateConfig templateConfig = templateConfigWrapper.getTemplateConfig();
 	  
-	  WebHookTemplateItem templateItemConfig = buildDeafultTemplateItem(templateItem);
+	  WebHookTemplateItem templateItemConfig = buildDefaultTemplateItem(templateItem);
 	  
 	  templateConfig.setDefaultTemplate(templateItemConfig.getTemplateText());
 	  templateConfig.setDefaultBranchTemplate(templateItemConfig.getBranchTemplateText());
@@ -755,7 +763,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  
   }
 
-	private WebHookTemplateItem buildDeafultTemplateItem(TemplateItem templateItem) {
+	private WebHookTemplateItem buildDefaultTemplateItem(TemplateItem templateItem) {
 		WebHookTemplateItem templateItemConfig = new WebHookTemplateItem();
 		  templateItemConfig.setTemplateText(new WebHookTemplateText(""));
 		  templateItemConfig.setBranchTemplateText(new WebHookTemplateBranchText(""));
