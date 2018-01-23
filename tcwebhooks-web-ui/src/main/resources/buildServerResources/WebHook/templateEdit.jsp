@@ -137,8 +137,9 @@
           </c:choose>          
         </tr>
       </table>
-      
-          <bs:dialog dialogId="editTemplateItemDialog"
+
+    </bs:refreshable>      
+    <bs:dialog dialogId="editTemplateItemDialog"
                dialogClass="editTemplateItemDialog"
                title="Edit Build Event Template"
                closeCommand="WebHooksPlugin.TemplateEditBuildEventDialog.close()">
@@ -214,8 +215,6 @@
         </forms:multipartForm>
     </bs:dialog>
       
-    </bs:refreshable>
-
 	<br>
  <div class="filterTableContainer">	
     <%@ include file="templateEditListBuildEventTemplates.jsp" %>
@@ -227,6 +226,7 @@
     var editor = ace.edit("editor");
     editor.session.setMode("ace/mode/json");
     editor.setTheme("ace/theme/xcode");
+    editor.$blockScrolling = Infinity;
     // enable autocompletion and snippets
     editor.setOptions({
         enableBasicAutocompletion: true,
@@ -237,6 +237,7 @@
     var editorBranch = ace.edit("editorBranch");
     editorBranch.session.setMode("ace/mode/json");
     editorBranch.setTheme("ace/theme/xcode");
+    editorBranch.$blockScrolling = Infinity;
     // enable autocompletion and snippets
     editorBranch.setOptions({
         enableBasicAutocompletion: true,

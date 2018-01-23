@@ -275,7 +275,7 @@ WebHooksPlugin = {
 		getTemplateData: function (templateId, buildTemplateId, action) {
 			var dialog = this;
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + buildTemplateId + '?fields=**',
     		    type: "GET",
     		    headers : {
     		        'Accept' : 'application/json'
@@ -290,7 +290,7 @@ WebHooksPlugin = {
 		getTemplateDataOrGetParentOnFailure: function (templateId, buildTemplateId, action) {
 			var dialog = this;
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + buildTemplateId + '?fields=$long,useTemplateTextForBranch,href,parentTemplate,content',
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId + '/templateItems/' + buildTemplateId + '?fields=**',
 				type: "GET",
 				headers : {
 					'Accept' : 'application/json'
@@ -677,7 +677,7 @@ WebHooksPlugin = {
 
 		getTemplateData: function (templateId, action) {
 			var dialog = this;
-			var URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$long,content';
+			var URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=**';
 			
 			if (action == "editTemplate") {
 				URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$short'
