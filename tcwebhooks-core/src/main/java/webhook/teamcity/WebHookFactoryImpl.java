@@ -40,7 +40,7 @@ public class WebHookFactoryImpl implements WebHookFactory {
 			}
 		}
 		
-		if (webHookConfig.getTriggerFilters() != null && webHookConfig.getTriggerFilters().size() > 0){
+		if (webHookConfig.getTriggerFilters() != null && ! webHookConfig.getTriggerFilters().isEmpty()){
 			for (WebHookFilterConfig filter : webHookConfig.getTriggerFilters()){
 				webHook.addFilter(WebHookFilterConfig.copy(filter));
 			}

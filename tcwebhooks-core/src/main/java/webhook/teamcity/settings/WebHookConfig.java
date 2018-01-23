@@ -39,6 +39,7 @@ import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 @Builder @AllArgsConstructor
 public class WebHookConfig {
 	private static final String EL_TRIGGER_FILTERS = "trigger-filters";
+	private static final String EL_HEADERS = "headers";
 	private static final String ATTR_PREEMPTIVE = "preemptive";
 	private static final String CHECKED = "checked ";
 	private static final String EL_CUSTOM_TEMPLATE = "custom-template";
@@ -74,6 +75,7 @@ public class WebHookConfig {
 	@Builder.Default private Map<String,String> authParameters = new LinkedHashMap<>();
 	@Builder.Default private Boolean authPreemptive = true;
 	private List<WebHookFilterConfig> filters;
+	private List<WebHookHeaderConfig> headers;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -90,6 +92,7 @@ public class WebHookConfig {
 		this.authParameters = new LinkedHashMap<>();
 		this.authPreemptive = true;
 		this.filters = new ArrayList<>();
+		this.headers = new ArrayList<>();
 		
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -257,6 +260,28 @@ public class WebHookConfig {
 			}
 		}
 		
+		/*
+		    <headers>
+	  			<header name="${someThing}" value="${branchDisplayName}" />
+	  		</trigger-filters>
+		 */
+		if(e.getChild(EL_HEADERS) != null){
+			Element eParams = e.getChild(EL_HEADERS);
+			List<Element> headerList = eParams.getChildren(WebHookHeaderConfig.XML_ELEMENT_NAME);
+			if (! headerList.isEmpty()){
+				for(Element eParam : headerList)
+				{
+					this.headers.add(
+							
+							WebHookHeaderConfig.create(
+									eParam.getAttributeValue(WebHookHeaderConfig.NAME),
+									eParam.getAttributeValue(WebHookHeaderConfig.VALUE)
+									)
+							);
+				}
+			}
+		}
+		
 	}
 	
 	private String getRandomKey() {
@@ -287,6 +312,7 @@ public class WebHookConfig {
 		this.authParameters = new LinkedHashMap<>();
 		this.authPreemptive = true;
 		this.filters = new ArrayList<>();
+		this.headers = new ArrayList<>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
@@ -379,6 +405,14 @@ public class WebHookConfig {
 			}
 			el.addContent(authEl);
 		}
+		
+		if (this.headers != null &&  ! this.headers.isEmpty()){
+			Element headersEl = new Element(EL_HEADERS);
+			for (WebHookHeaderConfig h : this.headers){
+				headersEl.addContent(h.getAsElement());
+			}
+			el.addContent(headersEl);
+		}	
 		
 		return el;
 	}
