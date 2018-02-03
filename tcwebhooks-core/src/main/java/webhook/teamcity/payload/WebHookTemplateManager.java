@@ -9,6 +9,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import webhook.teamcity.Loggers;
+import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
@@ -92,7 +93,7 @@ public class WebHookTemplateManager {
 			}
 	}
 	
-	public boolean persistAllXmlConfigTemplates(){
+	public boolean persistAllXmlConfigTemplates() throws ProbableJaxbJarConflictErrorException{
 		synchronized (orderedTemplateCollection) {
 			WebHookTemplates templates = new WebHookTemplates();
 			for (WebHookPayloadTemplate xmlConfig : xmlConfigTemplates.values()){
@@ -102,6 +103,9 @@ public class WebHookTemplateManager {
 				webHookTemplateJaxHelper.writeTemplates(templates, configFilePath);
 				return true;
 			} catch (JAXBException jaxbException){
+				if (jaxbException.getMessage().startsWith("ClassCastException")) {
+					throw new ProbableJaxbJarConflictErrorException(jaxbException);
+				}
 				Loggers.SERVER.debug(jaxbException);
 				return false;
 			} 
