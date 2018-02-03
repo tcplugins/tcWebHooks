@@ -24,6 +24,7 @@ import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
@@ -33,6 +34,7 @@ import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.data.WebHookTemplateStates;
 import webhook.teamcity.server.rest.errors.BadRequestException;
+import webhook.teamcity.server.rest.errors.JaxbClassCastException;
 import webhook.teamcity.server.rest.errors.TemplatePermissionException;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.model.template.Template;
@@ -186,7 +188,7 @@ public class TemplateRequest {
     }    
     
     myTemplateManager.registerTemplateFormatFromXmlConfig(template);
-    if (myTemplateManager.persistAllXmlConfigTemplates()){
+    if (persistAllXmlConfigTemplates("create Template")){
     	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
     } else {
     	throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -234,7 +236,7 @@ public class TemplateRequest {
 	  // The validator will have thrown an error above. 
 	  
 	  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
-	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+	  if (persistAllXmlConfigTemplates("update Template")){
 		  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
 	  } else {
 		  throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -278,7 +280,7 @@ public class TemplateRequest {
 	  // The above will throw errors if the template is not found, so let's attempt to update it.
 	  if (webHookTemplateConfig.getId().equals(rawConfig.getId())) {
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(rawConfig);
-		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  if (persistAllXmlConfigTemplates("update Template")){
 		  	return myTemplateManager.getTemplateConfig(rawConfig.getId());
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -308,7 +310,7 @@ public class TemplateRequest {
 
 	  if (webHookTemplateConfig.getId().equals(rawConfig.getId())) {
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(newConfig);
-		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  if (persistAllXmlConfigTemplates("update Template")){
 			  return WebHookTemplateConfigBuilder.buildEntity(myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig());
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -337,7 +339,7 @@ public class TemplateRequest {
 		  throw new OperationException("You cannot delete a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
 	  }
 	  if (myTemplateManager.removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getId())) {
-		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  if (persistAllXmlConfigTemplates("delete Template")){
 			  return;
 		  } else {
 			  throw new OperationException("There was an error deleting your template. It was possible persist the change.");
@@ -391,7 +393,7 @@ public class TemplateRequest {
 		  template.setDefaultTemplate(defaultTemplateText);
 		  
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
-		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  if (persistAllXmlConfigTemplates("update Default TemplateItem content")){
 		  	return template.getDefaultTemplate().getTemplateContent();
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -406,7 +408,7 @@ public class TemplateRequest {
 		  template.getDefaultBranchTemplate().setTemplateContent(templateText);
 		  
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
-		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  if (persistAllXmlConfigTemplates("update TemplateItem content")){
 		  	return template.getDefaultBranchTemplate().getTemplateContent();
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -492,7 +494,7 @@ public class TemplateRequest {
 		  templateConfig.getTemplateConfig().getTemplates().deleteTemplateItem(Integer.valueOf(template.getTemplateItem().getId()));
 	  }
 	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig.getTemplateConfig());
-	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+	  if (persistAllXmlConfigTemplates("delete TemplateItem")){
 		  return;
 	  } else {
 	   	throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -536,13 +538,14 @@ public class TemplateRequest {
 		  }
 		  
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
-		  if (myTemplateManager.persistAllXmlConfigTemplates()){
+		  if (persistAllXmlConfigTemplates("update Default TemplateItem")){
 			  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 			  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 			  return new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
+
 		  
 	  }
 	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
@@ -578,7 +581,7 @@ public class TemplateRequest {
 	  }
 	  
 	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
-	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+	  if (persistAllXmlConfigTemplates("update TemplateItem")) {
 		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
 		  return new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
@@ -587,6 +590,18 @@ public class TemplateRequest {
 	  }
 	  
   }
+
+	private boolean persistAllXmlConfigTemplates(String saveContext) {
+		try {
+			return myTemplateManager.persistAllXmlConfigTemplates();
+
+		} catch (ProbableJaxbJarConflictErrorException ex) {
+			ErrorResult er = new ErrorResult();
+			er.addError("unableToPersistTemplates",
+					"Unable to " + saveContext + ".  A ClassCastError occurred whilst invoking JAXB. This is probably due to a JAXB jar conflict. See https://github.com/tcplugins/tcWebHooks/wiki/Fixing-the-REST-API-Jar-Conflict");
+			throw new JaxbClassCastException("Unable to " + saveContext, ex, er);
+		}
+	}
   
   /**
    * Creates a new Build Event Template.
@@ -616,7 +631,7 @@ public class TemplateRequest {
 	  
 	  templateConfig.getTemplates().getTemplates().add(templateItemConfig);
 	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
-	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+	  if (persistAllXmlConfigTemplates("create TemplateItem")){
 		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemConfig.getId().toString());
 		  return Response.status(201)
@@ -743,7 +758,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  templateConfig.setDefaultBranchTemplate(templateItemConfig.getBranchTemplateText());
 	  
 	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
-	  if (myTemplateManager.persistAllXmlConfigTemplates()){
+	  if (persistAllXmlConfigTemplates("create Default TemplateItem")){
 		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  WebHookTemplateItemConfigWrapper templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, DEFAULT_TEMPLATE);
 		  return Response.status(201)
