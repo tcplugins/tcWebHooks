@@ -18,6 +18,8 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.vcs.SVcsModification;
+import lombok.Getter;
+import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
@@ -60,6 +62,9 @@ public class WebHookPayloadContent {
 		responsibilityUserOld,
 		responsibilityUserNew;
 		Boolean branchIsDefault;
+		
+		@Getter @Setter
+		Boolean buildIsPersonal;
 		
 		Branch branch;
 		List<String> buildRunners;
@@ -220,6 +225,7 @@ public class WebHookPayloadContent {
     		setBuildStateDescription(buildState.getDescriptionSuffix());
     		setRootUrl(server.getRootUrl());
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
+			setBuildIsPersonal(sRunningBuild.isPersonal());
 		}
 		
 		public List<String> getBuildTags() {
@@ -309,7 +315,7 @@ public class WebHookPayloadContent {
 		public void setBranchIsDefault(boolean branchIsDefault) {
 			this.branchIsDefault = branchIsDefault;
 		}
-
+		
 		/**
 		 * Determines a useful build result. The one from TeamCity can't be trusted because it
 		 * is not set until all the Notifiers have run, of which we are one. 
