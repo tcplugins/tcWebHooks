@@ -80,7 +80,15 @@ public class WebHookConfig {
 		
 		this.uniqueKey = "id_" + getRandomKey();
 		this.extraParameters = new TreeMap<>();
+		this.states = new BuildState();
 		this.templates = new TreeMap<>();
+		this.allBuildTypesEnabled = true;
+		this.subProjectsEnabled = true;
+		this.enabledBuildTypesSet = new HashSet<>();
+		this.authType = "";
+		this.authEnabled = false;
+		this.authParameters = new LinkedHashMap<>();
+		this.authPreemptive = true;
 		this.filters = new ArrayList<>();
 		
 		if (e.getAttribute("url") != null){
@@ -274,6 +282,10 @@ public class WebHookConfig {
 		this.uniqueKey = "id_" + getRandomKey();
 		this.extraParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
+		this.authType = "";
+		this.authEnabled = false;
+		this.authParameters = new LinkedHashMap<>();
+		this.authPreemptive = true;
 		this.filters = new ArrayList<>();
 		this.setUrl(url);
 		this.setEnabled(enabled);
