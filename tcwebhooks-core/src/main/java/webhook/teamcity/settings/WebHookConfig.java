@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -58,28 +59,26 @@ public class WebHookConfig {
 	private static final String ATTR_ENABLED_FOR_SUBPROJECTS = "enabled-for-subprojects";
 	private static final String LOG_PREFIX_WEB_HOOK_CONFIG = "WebHookConfig :: ";
 	private SortedMap<String,String> extraParameters;
-	private Boolean enabled = true;
-	private String uniqueKey = "";
+	@Builder.Default private Boolean enabled = true;
+	@Builder.Default private String uniqueKey = "";
 	private String url;
-	private String payloadFormat = null;
-	private String payloadTemplate = "none";
-	private BuildState states = new BuildState();
-	private SortedMap<String, CustomMessageTemplate> templates; 
-	private Boolean allBuildTypesEnabled = true;
-	private Boolean subProjectsEnabled = true;
-	private Set<String> enabledBuildTypesSet = new HashSet<>();
-	private String authType = "";
-	private Boolean authEnabled = false;
-	private Map<String,String> authParameters = new LinkedHashMap<>();
-	private Boolean authPreemptive = true;
+	@Builder.Default private String payloadFormat = null;
+	@Builder.Default private String payloadTemplate = "none";
+	@Builder.Default private BuildState states = new BuildState();
+	private SortedMap<String, CustomMessageTemplate> templates; // This defaults to null so that it's not in the XML if empty.
+	@Builder.Default private Boolean allBuildTypesEnabled = true;
+	@Builder.Default private Boolean subProjectsEnabled = true;
+	@Builder.Default private Set<String> enabledBuildTypesSet = new HashSet<>();
+	@Builder.Default private String authType = "";
+	@Builder.Default private Boolean authEnabled = false;
+	@Builder.Default private Map<String,String> authParameters = new LinkedHashMap<>();
+	@Builder.Default private Boolean authPreemptive = true;
 	private List<WebHookFilterConfig> filters;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
 		
-		int Min = 1000000, Max = 1000000000;
-		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		this.uniqueKey = "id_" + Rand.toString();
+		this.uniqueKey = "id_" + getRandomKey();
 		this.extraParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
 		this.filters = new ArrayList<>();
@@ -251,6 +250,13 @@ public class WebHookConfig {
 		}
 		
 	}
+	
+	private String getRandomKey() {
+		int min = 1000000;
+		int max = 1000000000;
+		Integer rand = min + new Random().nextInt((max - min) + 1);
+		return rand.toString();
+	}
 
 	/**
 	 * WebHooksConfig constructor. Unchecked version. Use with caution!!
@@ -265,9 +271,7 @@ public class WebHookConfig {
 	 * @param webHookAuthConfig 
 	 */
 	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
-		int Min = 1000000, Max = 1000000000;
-		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		this.uniqueKey = "id_" + Rand.toString();
+		this.uniqueKey = "id_" + getRandomKey();
 		this.extraParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
 		this.filters = new ArrayList<>();
@@ -349,12 +353,12 @@ public class WebHookConfig {
 			el.addContent(templatesEl);
 		}
 		
-		if (this.authType != ""){
+		if (! this.authType.isEmpty()){
 			Element authEl = new Element("auth");
 			authEl.setAttribute(ATTR_ENABLED, this.authEnabled.toString());
 			authEl.setAttribute(ATTR_TYPE, this.authType);
 			authEl.setAttribute(ATTR_PREEMPTIVE, this.authPreemptive.toString() );
-			if (this.authParameters.size() > 0){
+			if (! this.authParameters.isEmpty()){
 				Element paramsEl = new Element("auth-parameters");
 				for (String i : this.authParameters.keySet()){
 					paramsEl.addContent(this.getKeyAndValueAsElement(this.authParameters, i, ATTR_PARAM));
@@ -384,10 +388,10 @@ public class WebHookConfig {
 	}
 	
 	public String getBuildTypeCountAsFriendlyString(){
-		if (this.allBuildTypesEnabled  && !this.subProjectsEnabled){
+		if (this.allBuildTypesEnabled  && this.subProjectsEnabled){
+			return "All builds & Sub-Projects";
+		} else if (this.allBuildTypesEnabled){ // this.subProjectsEnabled is false
 			return "All builds";
-		} else if (this.allBuildTypesEnabled  && this.subProjectsEnabled){
-				return "All builds & Sub-Projects";
 		} else {
 			String subProjectsString = "";
 			if (this.subProjectsEnabled){
