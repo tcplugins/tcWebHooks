@@ -45,8 +45,6 @@ public interface WebHook {
 
 	public abstract String getParam(String key);
 
-	public abstract String getContent();
-
 	public abstract Boolean isEnabled();
 
 	public abstract void setEnabled(Boolean enabled);

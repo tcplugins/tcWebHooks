@@ -45,7 +45,6 @@ public class WebHookImpl implements WebHook {
 	private String proxyUsername;
 	private String proxyPassword;
 	private String url;
-	private String content;
 	private String contentType;
 	private String charset;
 	private String payload;
@@ -273,11 +272,6 @@ public class WebHookImpl implements WebHook {
 			}
 		}		
 		return "";
-	}
-
-	@Override
-	public String getContent() {
-		return content;
 	}
 
 	@Override

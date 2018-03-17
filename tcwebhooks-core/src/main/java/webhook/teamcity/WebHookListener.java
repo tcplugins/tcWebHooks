@@ -41,7 +41,7 @@ public class WebHookListener extends BuildServerAdapter {
     
 	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
-	private static final String WEBHOOKS_SETTINGS_ATTRIBUTE_NAME = "webhooks";
+	public static final String WEBHOOKS_SETTINGS_ATTRIBUTE_NAME = "webhooks";
 	private final SBuildServer myBuildServer;
     private final ProjectSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
@@ -372,15 +372,15 @@ public class WebHookListener extends BuildServerAdapter {
 	 * @param wh
 	 * @param payloadFormat
 	 */
-	private void doPost(WebHook wh, String payloadFormat) {
+	public static void doPost(WebHook wh, String payloadFormat) {
 		try {
 			if (wh.isEnabled()){
 				wh.post();
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: WebHook triggered : " 
+				Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: WebHook triggered : " 
 						+ wh.getUrl() + " using format " + payloadFormat 
 						+ " returned " + wh.getStatus() 
 						+ " " + wh.getErrorReason());	
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + ":doPost :: content dump: " + wh.getPayload());
+				Loggers.SERVER.debug(WEB_HOOK_LISTENER + ":doPost :: content dump: " + wh.getPayload());
 				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
 				if (wh.isErrored()){
 					Loggers.SERVER.error(wh.getErrorReason());
@@ -396,12 +396,12 @@ public class WebHookListener extends BuildServerAdapter {
 				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	
 			}
 		} catch (FileNotFoundException e) {
-			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
+			Loggers.SERVER.warn(WEB_HOOK_LISTENER + ":doPost :: " 
 					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
 			Loggers.SERVER.debug(e);
 			throw new WebHookHttpExecutionException("A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + ")", e);
 		} catch (IOException e) {
-			Loggers.SERVER.warn(this.getClass().getName() + ":doPost :: " 
+			Loggers.SERVER.warn(WEB_HOOK_LISTENER + ":doPost :: " 
 					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
 			Loggers.SERVER.debug(e);
 			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);

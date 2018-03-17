@@ -66,7 +66,6 @@ public class WebHookContentBuilderTest {
 		when(whc.getPayloadFormat()).thenReturn("JSON");
 		
 		wh = builder.buildWebHookContent(wh, whc, sRunningBuild, BuildStateEnum.BUILD_FINISHED, true);
-		System.out.println(wh.getContent());
 		fail("Not yet implemented");
 	}
 	

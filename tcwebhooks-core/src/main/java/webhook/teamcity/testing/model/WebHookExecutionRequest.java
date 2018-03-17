@@ -3,11 +3,12 @@ package webhook.teamcity.testing.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import lombok.Builder;
 import lombok.Data;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 
-@Data
+@Data @Builder
 public class WebHookExecutionRequest {
 
 	// These are obtained from the test request.
@@ -20,6 +21,7 @@ public class WebHookExecutionRequest {
 	private String uniqueKey;
 	private String url;
 	private String templateId;
+	private String payloadFormat;
 	private String authType;
 	private boolean authEnabled;
 	private Map<String,String> authParameters = new LinkedHashMap<>();

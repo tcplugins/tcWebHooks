@@ -674,4 +674,10 @@ public class WebHookConfig {
 	public List<WebHookFilterConfig> getTriggerFilters() {
 		return this.filters;
 	}
+
+	public WebHookConfig copy() {
+		WebHookConfig configCopy = new WebHookConfig(this.getAsElement()) ;
+		configCopy.setUniqueKey(this.getUniqueKey());
+		return configCopy;
+	}
 }

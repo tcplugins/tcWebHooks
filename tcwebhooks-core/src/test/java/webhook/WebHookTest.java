@@ -88,7 +88,6 @@ public class WebHookTest{
 		w.setEnabled(true);
 		w.post();
 		System.out.println(w.getUrl());
-		System.out.println(w.getContent());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_OK);
 	}
@@ -103,7 +102,7 @@ public class WebHookTest{
 		w.addParam("triggeredBy", "Subversion");
 		w.setEnabled(true);
 		w.post();
-		System.out.println(w.getContent());
+		System.out.println(w.getPayload());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_UNAUTHORIZED);
 	}
@@ -128,7 +127,7 @@ public class WebHookTest{
 		w.addParam("triggeredBy", "Subversion");
 		w.setEnabled(true);
 		w.post();
-		System.out.println(w.getContent());
+		System.out.println(w.getPayload());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_UNAUTHORIZED);
 	}
@@ -154,7 +153,7 @@ public class WebHookTest{
 		w.addParam("triggeredBy", "Subversion");
 		w.setEnabled(true);
 		w.post();
-		System.out.println(w.getContent());
+		System.out.println(w.getPayload());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_OK);
 	}
@@ -177,7 +176,7 @@ public class WebHookTest{
 		w.addParam("triggeredBy", "Subversion");
 		w.setEnabled(true);
 		w.post();
-		System.out.println(w.getContent());
+		System.out.println(w.getPayload());
 		stopWebServer(s);
 		assertTrue(w.getStatus() == HttpStatus.SC_OK);
 	}

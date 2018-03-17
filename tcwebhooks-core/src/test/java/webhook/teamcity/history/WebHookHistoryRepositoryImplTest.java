@@ -243,12 +243,6 @@ public class WebHookHistoryRepositoryImplTest {
 		}
 
 		@Override
-		public String getContent() {
-			notImplemented();
-			return null;
-		}
-
-		@Override
 		public Boolean isEnabled() {
 			return this.enabled;
 		}
