@@ -175,7 +175,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
 		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
-		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused occurred while attempting to execute WebHook"));
+		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
 	}
 	
 	@Test
@@ -247,7 +247,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
 		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
-		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused occurred while attempting to execute WebHook"));
+		Loggers.SERVER.debug("################# " + historyItem.getWebhookErrorStatus().getMessage());
+		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
 
 	}
 	
