@@ -20,12 +20,14 @@ Typical use cases include:
 - [WebHook Templates](https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction), for specification of a payload format once and re-use across multiple webhook configurations
 - A set of templates for common services. Eg, Slack and MatterMost, Flowdock, ElasticSearch
 - A standard list of [variables](https://github.com/tcplugins/tcWebHooks/wiki/Example-Webhook-output "Example Webhook output") which can be used for assembling a custom payload (eg, `${buildStatusUrl}`), as well as access to the TeamCity build properties (eg, `${teamcity.agent.jvm.os.name}`).
+- Basic Auth and Bearer Token [Authentication](https://github.com/tcplugins/tcWebHooks/wiki/Enabling-Authentication) 
 
 ### Advanced Features
 - Support for [using a proxy](https://github.com/tcplugins/tcWebHooks/wiki/Using-a-proxy-server "Using a proxy server")  for outbound requests.
 - Regular Expression [Filter support](https://github.com/tcplugins/tcWebHooks/wiki/Applying-Filtering-Criteria-To-WebHook-Execution "Applying Filtering Criteria To WebHook Execution") , which allows conditionally controlling an event based on text in the webhook properties 
 - A [REST API](https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API "WebHooks REST API")  for creating/modifying webhook templates (with a plan to support creating/editing webhooks in the future)
-- Import and export of webhook templates for sharing via REST API.
+- [Custom Headers](https://github.com/tcplugins/tcWebHooks/wiki/Custom-Headers) for when your endpoint just expects something specific in a header
+- Import and export of webhook templates for sharing via REST API
 - Control of [HTTP timeouts](https://github.com/tcplugins/tcWebHooks/wiki/Adjusting-HTTP-timeouts-on-a-webhook "Adjusting HTTP timeouts on a webhook") 
 
 ## Requesting Help
