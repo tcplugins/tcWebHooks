@@ -27,6 +27,7 @@ import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 
 public class WebHookHistoryRepositoryImplTest {
 	
@@ -396,6 +397,17 @@ public class WebHookHistoryRepositoryImplTest {
 			if (! enabled) {
 				this.getExecutionStats().setStatusReason(buildState.getShortDescription());
 			}
+		}
+
+		@Override
+		public void addHeaders(List<WebHookHeaderConfig> headers) {
+			notImplemented();
+			
+		}
+
+		@Override
+		public void resolveHeaders(VariableResolver variableResolver) {
+			notImplemented();
 		}
 		
 	}

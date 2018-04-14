@@ -1,7 +1,5 @@
 package webhook.teamcity.settings;
 
-import java.util.regex.Pattern;
-
 import lombok.Getter;
 
 import org.jdom.Element;

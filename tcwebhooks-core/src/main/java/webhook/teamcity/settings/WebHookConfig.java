@@ -263,7 +263,7 @@ public class WebHookConfig {
 		/*
 		    <headers>
 	  			<header name="${someThing}" value="${branchDisplayName}" />
-	  		</trigger-filters>
+	  		</headers>
 		 */
 		if(e.getChild(EL_HEADERS) != null){
 			Element eParams = e.getChild(EL_HEADERS);
@@ -322,6 +322,8 @@ public class WebHookConfig {
 		this.allBuildTypesEnabled = buildTypeAllEnabled;
 		if (!this.allBuildTypesEnabled){
 			this.enabledBuildTypesSet = enabledBuildTypes;
+		} else {
+			this.enabledBuildTypesSet = new HashSet<>();
 		}
 		if (webHookAuthConfig != null){
 			this.authType = webHookAuthConfig.getType();
@@ -707,6 +709,14 @@ public class WebHookConfig {
 	
 	public List<WebHookFilterConfig> getTriggerFilters() {
 		return this.filters;
+	}
+	
+	public List<WebHookHeaderConfig> getHeaders() {
+		return headers;
+	}
+	
+	public void setHeaders(List<WebHookHeaderConfig> headers) {
+		this.headers = headers;
 	}
 
 	public WebHookConfig copy() {

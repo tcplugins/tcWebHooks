@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthenticationException;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
@@ -12,6 +13,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.settings.WebHookFilterConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 
 public interface WebHook {
 
@@ -21,7 +23,7 @@ public interface WebHook {
 
 	public abstract void setProxyUserAndPass(String username, String password);
 
-	public abstract void post() throws IOException;
+	public abstract void post() throws IOException, AuthenticationException;
 
 	public abstract Integer getStatus();
 
@@ -89,6 +91,18 @@ public interface WebHook {
 	public abstract boolean checkFilters(VariableResolver variableResolver);
 
 	public abstract void addFilter(WebHookFilterConfig filterHolder);
+	
+	/**
+	 * Add a map of headers. They will later be resolved when resolveHeaders is called.
+	 * @param headers
+	 */
+	public abstract void addHeaders(List<WebHookHeaderConfig> headers);
+	
+	/**
+	 * Iterates over headers and resolves them with WebHook content.
+	 * @param variableResolver
+	 */
+	public abstract void resolveHeaders(VariableResolver variableResolver);
 
 	public abstract String getDisabledReason();
 

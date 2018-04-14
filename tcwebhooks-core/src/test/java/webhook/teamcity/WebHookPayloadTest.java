@@ -13,6 +13,7 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
+import org.apache.http.auth.AuthenticationException;
 import org.junit.Test;
 
 import webhook.WebHook;
@@ -104,6 +105,9 @@ public class WebHookPayloadTest {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (AuthenticationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} finally {

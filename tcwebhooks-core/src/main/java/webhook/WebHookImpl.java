@@ -2,6 +2,8 @@ package webhook;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -10,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -37,6 +40,7 @@ import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.settings.WebHookFilterConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 
 
 public class WebHookImpl implements WebHook {
@@ -59,6 +63,8 @@ public class WebHookImpl implements WebHook {
 	private SFinishedBuild previousSFinishedBuild;
 	private RequestConfig requestConfig= RequestConfig.custom().build();
 	private CredentialsProvider credentialsProvider;
+	private List<WebHookHeaderConfig> headers = new ArrayList<>();
+	private Map<String, String> resolvedHeaders = new LinkedHashMap<>();
 	
 	@Getter
 	private UUID requestId = UUID.randomUUID();
@@ -156,7 +162,7 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	@Override
-	public void post() throws IOException {
+	public void post() throws IOException, AuthenticationException {
 		if ((this.enabled) && (!this.getExecutionStats().isErrored())){
 			HttpPost httppost = new HttpPost(this.url);
 			HttpClientContext context = HttpClientContext.create();
@@ -170,6 +176,11 @@ public class WebHookImpl implements WebHook {
 			}
 			if(authenticator != null){
 				authenticator.addAuthentication(getCredentialsProvider(), context, url);
+				requestConfig = RequestConfig.copy(requestConfig).setTargetPreferredAuthSchemes(Arrays.asList(authenticator.getWwwAuthenticateChallengePrefix())).build();
+			}
+			
+			for (Map.Entry<String, String> header : this.resolvedHeaders.entrySet()) {
+				httppost.addHeader(header.getKey(), header.getValue());
 			}
 			
 			if (this.credentialsProvider != null) {
@@ -419,6 +430,20 @@ public class WebHookImpl implements WebHook {
 			
 		}
 		return true;
+	}
+	
+	@Override
+	public void addHeaders(List<WebHookHeaderConfig> headers) {
+		this.headers.addAll(headers);
+	}
+	
+	@Override
+	public void resolveHeaders(VariableResolver variableResolver) {
+		for (WebHookHeaderConfig header : this.headers ) {
+			String headerName = VariableMessageBuilder.create(header.getName(), variableResolver).build();
+			String headerValue = VariableMessageBuilder.create(header.getValue(), variableResolver).build();
+			resolvedHeaders.put(headerName, headerValue);
+		}
 	}
 	
 	@Override

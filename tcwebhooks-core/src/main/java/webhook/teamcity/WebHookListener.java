@@ -17,6 +17,7 @@ import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.tests.TestName;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.jetbrains.annotations.NotNull;
 
@@ -405,7 +406,13 @@ public class WebHookListener extends BuildServerAdapter {
 					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
 			Loggers.SERVER.debug(e);
 			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);
+		} catch (AuthenticationException e) {
+			Loggers.SERVER.warn(WEB_HOOK_LISTENER + ":doPost :: " 
+					+ "An AuthenticationException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
+			Loggers.SERVER.debug(e);
+			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);
 		}
+		
 	}
 
 }

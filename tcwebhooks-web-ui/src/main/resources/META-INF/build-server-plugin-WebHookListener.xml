@@ -134,6 +134,11 @@
 		init-method="register" 
 		/>
 		
+	<bean id="bearerAuthenticatorFactory"
+		class="webhook.teamcity.auth.BearerAuthenticatorFactory"
+		init-method="register" 
+		/>
+		
 	<bean id="webHookPluginDataResolver"
 		class="webhook.teamcity.WebHookPluginDataResolverImpl"
 		/>

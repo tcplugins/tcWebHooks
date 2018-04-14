@@ -13,6 +13,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.impl.client.HttpClients;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -111,7 +112,7 @@ public class WebHookSettingsTest {
 	}
 	
 	@Test
-	public void test_200UsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_200UsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -129,7 +130,7 @@ public class WebHookSettingsTest {
 	}
 
 	@Test
-	public void test_AuthFailWrongCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_AuthFailWrongCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -148,7 +149,7 @@ public class WebHookSettingsTest {
 	}
 
 	@Test
-	public void test_AuthFailNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_AuthFailNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);
@@ -167,7 +168,7 @@ public class WebHookSettingsTest {
 	}
 
 	@Test
-	public void test_AuthPassNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_AuthPassNoCredsUsingProxyFromConfig() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTest test = new WebHookTest();
 		WebHookMainConfig mainConfig = new WebHookMainConfig();
 		mainConfig.setProxyHost(test.proxy);

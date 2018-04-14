@@ -1,5 +1,10 @@
 package webhook.teamcity;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
@@ -7,6 +12,7 @@ import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 
 public class WebHookFactoryImpl implements WebHookFactory {
@@ -44,6 +50,14 @@ public class WebHookFactoryImpl implements WebHookFactory {
 			for (WebHookFilterConfig filter : webHookConfig.getTriggerFilters()){
 				webHook.addFilter(WebHookFilterConfig.copy(filter));
 			}
+		}
+		
+		if (webHookConfig.getHeaders() != null && ! webHookConfig.getHeaders().isEmpty()) {
+			List<WebHookHeaderConfig> headers = new ArrayList<>();
+			for (WebHookHeaderConfig headerConfig : webHookConfig.getHeaders()) {
+				headers.add(WebHookHeaderConfig.copy(headerConfig));
+			}
+			webHook.addHeaders(headers);
 		}
 		
 		webHook.setProxy(myMainSettings.getProxyConfigForUrl(webHookConfig.getUrl()));

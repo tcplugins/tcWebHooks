@@ -9,6 +9,7 @@ import java.net.ConnectException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 
@@ -62,14 +63,14 @@ public class WebHookTest{
 	}
 
 	@Test(expected=java.net.ConnectException.class)
-	public void test_ConnectionRefused() throws ConnectException, IOException{
+	public void test_ConnectionRefused() throws ConnectException, IOException, AuthenticationException {
 		WebHook w = factory.getWebHook(url);
 		w.setEnabled(true);
 		w.post();		
 	}
 	
 	@Test(expected=java.io.IOException.class)
-	public void test_IOExeption() throws IOException{
+	public void test_IOExeption() throws IOException, AuthenticationException {
 		System.out.println("Testing for IO exception");
 		WebHook w = factory.getWebHook(url, "localhost", proxyPort);
 		w.setEnabled(true);
@@ -182,7 +183,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_NotEnabled() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_NotEnabled() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
 		w.post();
@@ -191,7 +192,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_200WithProxy() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_200WithProxy() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -203,7 +204,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_200WithProxyFailAuth() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_200WithProxyFailAuth() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServerAuth(proxyUsername, proxyPassword);
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -215,7 +216,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_200WithProxyAuth() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_200WithProxyAuth() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServerAuth(proxyUsername, proxyPassword);
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -260,7 +261,7 @@ public class WebHookTest{
 	
 	
 	@Test
-	public void test_302WithProxy() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_302WithProxy() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/302", proxy, proxyPort);
@@ -273,7 +274,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_404WithProxyStringPort() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_404WithProxyStringPort() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/404", proxy, proxyPortString);
@@ -286,7 +287,7 @@ public class WebHookTest{
 	}	
 	
 	@Test
-	public void test_404WithProxyConfig() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_404WithProxyConfig() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHookProxyConfig pc = new WebHookProxyConfig(proxy, Integer.parseInt(proxyPortString));
@@ -299,7 +300,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_404WithAuth() throws FileNotFoundException, IOException, InterruptedException {
+	public void test_404WithAuth() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/404");
 		w.setEnabled(true);

@@ -35,6 +35,7 @@ import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
 import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookListener;
+import webhook.teamcity.auth.BearerAuthenticatorFactory;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.history.WebAddressTransformer;
@@ -103,7 +104,9 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SProject sProject02 = new MockSProject("Test Project 02", "A test project 02", "project2", "TestProjectNumber02", sBuildType);
 	SProject sProject03 = new MockSProject("Test Project 03", "A test sub project 03", "project3", "TestProjectNumber02_TestProjectNumber03", sBuildType);
 	
-	UsernamePasswordAuthenticatorFactory authenticatorFactory = new UsernamePasswordAuthenticatorFactory(authenticatorProvider);
+	UsernamePasswordAuthenticatorFactory basicAuthAuthenticatorFactory = new UsernamePasswordAuthenticatorFactory(authenticatorProvider);
+	BearerAuthenticatorFactory bearerAuthenticatorFactory = new BearerAuthenticatorFactory(authenticatorProvider);
+	
 	
 	SBuildType build2 = mock(SBuildType.class);
 	SBuildType build3 = mock(SBuildType.class);
@@ -169,7 +172,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		((MockSProject) sProject03).setParentProject(sProject02);
 		((MockSProject) sProject02).addChildProjectToMock(sProject03);
 		whl.register();
-		authenticatorFactory.register();
+		basicAuthAuthenticatorFactory.register();
+		bearerAuthenticatorFactory.register();
 		template = getTestingTemplate(); 
 		templateList.add(template);
 		when(templateManager.getRegisteredTemplates()).thenReturn(templateList);
