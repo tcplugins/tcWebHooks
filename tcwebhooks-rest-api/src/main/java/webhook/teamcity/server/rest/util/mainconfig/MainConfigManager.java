@@ -2,8 +2,6 @@ package webhook.teamcity.server.rest.util.mainconfig;
 
 import javax.ws.rs.core.UriInfo;
 
-import jetbrains.buildServer.server.rest.util.BeanContext;
-
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.server.rest.model.mainconfig.Information;

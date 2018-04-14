@@ -24,7 +24,7 @@ public class WebHookExecutionRequest {
 	private String payloadFormat;
 	private String authType;
 	private boolean authEnabled;
-	private Map<String,String> authParameters = new LinkedHashMap<>();
+	@Builder.Default private Map<String,String> authParameters = new LinkedHashMap<>();
 	private BuildState configbuildState;
 
 }

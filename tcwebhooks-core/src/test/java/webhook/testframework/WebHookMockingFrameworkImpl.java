@@ -35,6 +35,7 @@ import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
 import webhook.teamcity.WebHookHttpClientFactoryImpl;
 import webhook.teamcity.WebHookListener;
+import webhook.teamcity.auth.AbstractWebHookAuthenticatorFactory;
 import webhook.teamcity.auth.BearerAuthenticatorFactory;
 import webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
@@ -105,7 +106,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SProject sProject03 = new MockSProject("Test Project 03", "A test sub project 03", "project3", "TestProjectNumber02_TestProjectNumber03", sBuildType);
 	
 	UsernamePasswordAuthenticatorFactory basicAuthAuthenticatorFactory = new UsernamePasswordAuthenticatorFactory(authenticatorProvider);
-	BearerAuthenticatorFactory bearerAuthenticatorFactory = new BearerAuthenticatorFactory(authenticatorProvider);
+	AbstractWebHookAuthenticatorFactory bearerAuthenticatorFactory = new BearerAuthenticatorFactory(authenticatorProvider);
 	
 	
 	SBuildType build2 = mock(SBuildType.class);

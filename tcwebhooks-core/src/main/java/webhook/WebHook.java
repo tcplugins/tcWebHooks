@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthenticationException;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
@@ -23,7 +22,7 @@ public interface WebHook {
 
 	public abstract void setProxyUserAndPass(String username, String password);
 
-	public abstract void post() throws IOException, AuthenticationException;
+	public abstract void post() throws IOException;
 
 	public abstract Integer getStatus();
 

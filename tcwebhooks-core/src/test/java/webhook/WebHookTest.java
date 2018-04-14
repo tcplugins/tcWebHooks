@@ -9,11 +9,11 @@ import java.net.ConnectException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthenticationException;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.auth.AbstractWebHookAuthenticator;
 import webhook.teamcity.auth.UsernamePasswordAuthenticator;
 import webhook.teamcity.auth.WebHookAuthConfig;
 
@@ -63,14 +63,14 @@ public class WebHookTest{
 	}
 
 	@Test(expected=java.net.ConnectException.class)
-	public void test_ConnectionRefused() throws ConnectException, IOException, AuthenticationException {
+	public void test_ConnectionRefused() throws ConnectException, IOException {
 		WebHook w = factory.getWebHook(url);
 		w.setEnabled(true);
 		w.post();		
 	}
 	
 	@Test(expected=java.io.IOException.class)
-	public void test_IOExeption() throws IOException, AuthenticationException {
+	public void test_IOExeption() throws IOException {
 		System.out.println("Testing for IO exception");
 		WebHook w = factory.getWebHook(url, "localhost", proxyPort);
 		w.setEnabled(true);
@@ -112,7 +112,7 @@ public class WebHookTest{
 	public void test_200WithAuthButWrongRealm() throws FileNotFoundException, IOException, Exception {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/auth/200");
-		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		AbstractWebHookAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
 		authConfig.setType("userPass");
 		authConfig.setPreemptive(false);
@@ -137,7 +137,7 @@ public class WebHookTest{
 	public void test_200WithAuthPreemptionButWrongRealm() throws FileNotFoundException, IOException, Exception {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/auth/200");
-		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		AbstractWebHookAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
 				authConfig.setType("userPass");
@@ -163,7 +163,7 @@ public class WebHookTest{
 	public void test_200WithAuth() throws FileNotFoundException, IOException, Exception {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/auth/200");
-		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		AbstractWebHookAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
 		authConfig.setType("userPass");
 		authConfig.getParameters().put("username", "user1");
@@ -183,7 +183,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_NotEnabled() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_NotEnabled() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
 		w.post();
@@ -192,7 +192,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_200WithProxy() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_200WithProxy() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -204,7 +204,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_200WithProxyFailAuth() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_200WithProxyFailAuth() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServerAuth(proxyUsername, proxyPassword);
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -216,7 +216,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_200WithProxyAuth() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_200WithProxyAuth() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServerAuth(proxyUsername, proxyPassword);
 		WebHook w = factory.getWebHook(url + "/200", proxy, proxyPort);
@@ -244,7 +244,7 @@ public class WebHookTest{
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/auth/302");
 		
-		UsernamePasswordAuthenticator authenticator = new UsernamePasswordAuthenticator();
+		AbstractWebHookAuthenticator authenticator = new UsernamePasswordAuthenticator();
 		WebHookAuthConfig authConfig = new WebHookAuthConfig();
 		authConfig.setType("userPass");
 		authConfig.getParameters().put("username", "user1");
@@ -261,7 +261,7 @@ public class WebHookTest{
 	
 	
 	@Test
-	public void test_302WithProxy() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_302WithProxy() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/302", proxy, proxyPort);
@@ -274,7 +274,7 @@ public class WebHookTest{
 	}
 
 	@Test
-	public void test_404WithProxyStringPort() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_404WithProxyStringPort() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHook w = factory.getWebHook(url + "/404", proxy, proxyPortString);
@@ -287,7 +287,7 @@ public class WebHookTest{
 	}	
 	
 	@Test
-	public void test_404WithProxyConfig() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_404WithProxyConfig() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHookTestProxyServer p = startProxyServer();
 		WebHookProxyConfig pc = new WebHookProxyConfig(proxy, Integer.parseInt(proxyPortString));
@@ -300,7 +300,7 @@ public class WebHookTest{
 	}
 	
 	@Test
-	public void test_404WithAuth() throws FileNotFoundException, IOException, InterruptedException, AuthenticationException {
+	public void test_404WithAuth() throws FileNotFoundException, IOException, InterruptedException {
 		WebHookTestServer s = startWebServer();
 		WebHook w = factory.getWebHook(url + "/404");
 		w.setEnabled(true);

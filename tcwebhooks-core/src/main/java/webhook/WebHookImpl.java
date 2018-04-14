@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthenticationException;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -162,7 +161,7 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	@Override
-	public void post() throws IOException, AuthenticationException {
+	public void post() throws IOException {
 		if ((this.enabled) && (!this.getExecutionStats().isErrored())){
 			HttpPost httppost = new HttpPost(this.url);
 			HttpClientContext context = HttpClientContext.create();

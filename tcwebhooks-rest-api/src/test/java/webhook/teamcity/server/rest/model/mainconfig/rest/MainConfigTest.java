@@ -1,19 +1,17 @@
 package webhook.teamcity.server.rest.model.mainconfig.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import com.sun.jersey.api.client.WebResource;
+
 import webhook.teamcity.server.rest.model.mainconfig.Webhooks;
 import webhook.teamcity.server.rest.request.WebHookAbstractSpringAwareJerseyTest;
-
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.test.framework.JerseyTest;
 
 public class MainConfigTest extends WebHookAbstractSpringAwareJerseyTest {
 

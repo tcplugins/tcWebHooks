@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.http.auth.AuthenticationException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -155,7 +154,7 @@ public class WebHookListenerTest {
 	}
 
 	@Test @Ignore
-	public void testBuildFinishedSRunningBuild() throws FileNotFoundException, IOException, AuthenticationException {
+	public void testBuildFinishedSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState().setAllEnabled();
 		projSettings.addNewWebHook("1234", "http://text/test", true, state , "JSON", "testXMLtemplate", true, true, new HashSet<String>());
 		when(webhook.isEnabled()).thenReturn(state.allEnabled());
@@ -166,7 +165,7 @@ public class WebHookListenerTest {
 	}
 	
 	@Test @Ignore
-	public void testBuildFinishedSRunningBuildSuccessAfterFailure() throws FileNotFoundException, IOException, AuthenticationException {
+	public void testBuildFinishedSRunningBuildSuccessAfterFailure() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState();
 		state.enable(BuildStateEnum.BUILD_FIXED);
 		state.enable(BuildStateEnum.BUILD_FINISHED);
@@ -180,7 +179,7 @@ public class WebHookListenerTest {
 	}
 	
 	@Test @Ignore
-	public void testBuildFinishedSRunningBuildSuccessAfterSuccess() throws FileNotFoundException, IOException, AuthenticationException {
+	public void testBuildFinishedSRunningBuildSuccessAfterSuccess() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState();
 		state.enable(BuildStateEnum.BUILD_FIXED);
 		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
@@ -192,7 +191,7 @@ public class WebHookListenerTest {
 	}
 
 	@Test @Ignore
-	public void testBuildInterruptedSRunningBuild() throws FileNotFoundException, IOException, AuthenticationException {
+	public void testBuildInterruptedSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState().setAllEnabled();
 		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
@@ -202,7 +201,7 @@ public class WebHookListenerTest {
 	}
 
 	@Test @Ignore
-	public void testBeforeBuildFinishSRunningBuild() throws FileNotFoundException, IOException, AuthenticationException {
+	public void testBeforeBuildFinishSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState();
 		state.enable(BuildStateEnum.BEFORE_BUILD_FINISHED);
 		projSettings.addNewWebHook("1234", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
@@ -213,7 +212,7 @@ public class WebHookListenerTest {
 	}
 
 	@Test @Ignore
-	public void testBuildChangedStatusSRunningBuildStatusStatus() throws FileNotFoundException, IOException, AuthenticationException {
+	public void testBuildChangedStatusSRunningBuildStatusStatus() throws FileNotFoundException, IOException {
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");
 		sBuildType.setProject(sProject);
 		String triggeredBy = "SubVersion";

@@ -3,20 +3,16 @@ package webhook.teamcity.server.rest.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.SBuildServer;
-
-import org.jetbrains.annotations.NotNull;
-
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
-import com.intellij.openapi.diagnostic.Logger;
-
 public class DataProvider {
-	private static final Logger LOG = Logger.getInstance(DataProvider.class.getName());
 
 	@NotNull private final SBuildServer myServer;
 	@NotNull private final RootUrlHolder myRootUrlHolder;

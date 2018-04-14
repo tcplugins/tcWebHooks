@@ -15,7 +15,7 @@ public class WebHookEndPointPayload {
 	String prettyPayload;
 	String hash;
 	String url;
-	boolean parseFailure = false;
+	@Builder.Default boolean parseFailure = false;
 	Map<String, String> headers;
 	Map<String, String[]> parameters;
 	

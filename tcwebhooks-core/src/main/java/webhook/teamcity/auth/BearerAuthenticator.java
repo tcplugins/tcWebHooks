@@ -6,7 +6,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
@@ -14,21 +13,18 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.auth.bearer.BearerAuthSchemeFactory;
 import webhook.teamcity.auth.bearer.TokenCredentials;
 
-public class BearerAuthenticator implements WebHookAuthenticator {
+public class BearerAuthenticator extends AbstractWebHookAuthenticator implements WebHookAuthenticator {
 
 		public static final String BEARER_AUTH_SCHEME_TYPE = "Bearer";
 		public static final String KEY_BEARER = "bearer";
 		public static final String KEY_REALM = "realm";
-		WebHookAuthenticatorProvider myProvider;
-		WebHookAuthConfig config;
 		
 		@Override
-		public void addAuthentication(CredentialsProvider credentialsProvider, HttpClientContext httpClientContext, String url) throws AuthenticationException {
+		public void addAuthentication(CredentialsProvider credentialsProvider, HttpClientContext httpClientContext, String url) {
 			if (config.getParameters().containsKey(KEY_BEARER)){
 					URI uri = URI.create(url);
 					RegistryBuilder<AuthSchemeProvider> registryBuilder = RegistryBuilder.create();
@@ -52,17 +48,6 @@ public class BearerAuthenticator implements WebHookAuthenticator {
 						httpClientContext.setAuthCache(authCache);
 					}
 			}
-		}
-
-		@Override @NotNull
-		public WebHookAuthConfig getWebHookAuthConfig() {
-			return config;
-		}
-
-		@Override
-		public void setWebHookAuthConfig(WebHookAuthConfig authenticationConfig) {
-			this.config = authenticationConfig;
-			
 		}
 
 		@Override

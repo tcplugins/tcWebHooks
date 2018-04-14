@@ -1,9 +1,7 @@
 package webhook.teamcity;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import webhook.WebHook;
 import webhook.WebHookImpl;

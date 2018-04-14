@@ -1,27 +1,16 @@
 package webhook.teamcity.auth;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.jdom.JDOMException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
 
 import okhttp3.mockwebserver.MockWebServer;
-import webhook.WebHookTestServer;
 import webhook.WebHookTestServerTestBase;
-import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.testframework.WebHookMockingFramework;
-import webhook.testframework.WebHookMockingFrameworkImpl;
 
 public class AuthWithRealServerTestBase extends WebHookTestServerTestBase {
 
@@ -31,7 +20,6 @@ public class AuthWithRealServerTestBase extends WebHookTestServerTestBase {
 	protected WebHookMockingFramework framework;
 	
 	MockWebServer server;
-	private String urlPrefix;
 	
 	@Override
 	public String getHost() {
@@ -53,7 +41,6 @@ public class AuthWithRealServerTestBase extends WebHookTestServerTestBase {
 				server.getPort()
 		));
 
-		urlPrefix = String.format("http://%s:%s", server.getHostName(), server.getPort());
 	}
 
 	@After

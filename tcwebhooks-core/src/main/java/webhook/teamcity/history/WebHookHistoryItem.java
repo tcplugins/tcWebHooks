@@ -18,8 +18,8 @@ public class WebHookHistoryItem {
 	@NotNull  private final String projectId;
 	@Nullable private SProject sProject;
 	@Nullable private String buildTypeId;
-	@NotNull  private String buildTypeName;
-	@NotNull  private String buildTypeExternalId;
+	@Nullable  private String buildTypeName;
+	@Nullable  private String buildTypeExternalId;
 	@Nullable private Long buildId;
 	@NotNull  private final WebHookConfig webHookConfig;
 	@NotNull  private final WebHookExecutionStats webHookExecutionStats;
@@ -61,6 +61,8 @@ public class WebHookHistoryItem {
 	protected WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SBuildType sBuildType, WebHookErrorStatus errorStatus) {
 		this.projectId = sBuildType.getProjectId();
 		this.buildTypeId = sBuildType.getBuildTypeId();
+		this.buildTypeName = sBuildType.getName();
+		this.buildTypeExternalId = sBuildType.getExternalId();
 		this.webHookConfig = whc;
 		this.webHookExecutionStats = webHookExecutionStats;
 		this.timestamp = findTimeStamp(webHookExecutionStats);

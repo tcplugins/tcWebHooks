@@ -23,6 +23,7 @@ public class WebHookPayloadContentPropertiesTest {
 	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void test() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		templates.put("buildStatusHtml", "dlkjdlkf");
 		MockitoAnnotations.initMocks(this);

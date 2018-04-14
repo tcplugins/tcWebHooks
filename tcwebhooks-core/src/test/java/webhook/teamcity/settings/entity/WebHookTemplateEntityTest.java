@@ -1,7 +1,5 @@
 package webhook.teamcity.settings.entity;
 
-import static org.junit.Assert.*;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;

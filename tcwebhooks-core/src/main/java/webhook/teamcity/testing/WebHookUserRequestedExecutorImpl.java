@@ -1,20 +1,13 @@
 package webhook.teamcity.testing;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.joda.time.LocalDateTime;
 
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.WebHook;
 import webhook.WebHookExecutionStats;
@@ -28,19 +21,15 @@ import webhook.teamcity.history.GeneralisedWebAddress;
 import webhook.teamcity.history.GeneralisedWebAddressType;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebHookHistoryItem;
-import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
+import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
-import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
-import webhook.teamcity.settings.entity.WebHookTemplates;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
