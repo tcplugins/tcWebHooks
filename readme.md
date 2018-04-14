@@ -28,6 +28,12 @@ Typical use cases include:
 - Import and export of webhook templates for sharing via REST API.
 - Control of [HTTP timeouts](https://github.com/tcplugins/tcWebHooks/wiki/Adjusting-HTTP-timeouts-on-a-webhook "Adjusting HTTP timeouts on a webhook") 
 
+## Requesting Help
+The wiki is a good first point of call for help with getting started, and configuring tcWebHooks. If you find a bug or believe there is a missing feature, please create an issue on Github. For questions and discussions, there is also a Gitter chat setup. Please bear in mind that I also have a full time job, a wife and kids, and am probably not in your timezone. Hopefully over time we'll build up a group of people that can help if I'm not online.
+
+Documentation | [tcWebHooks Wiki](https://github.com/tcplugins/tcWebHooks/wiki)
+Bug and Feature Requests  | [tcWebHooks Issues](https://github.com/tcplugins/tcWebHooks/issues)
+Chat/Discussion |  [tcWebHooks on Gitter](https://gitter.im/tcplugins/tcWebHooks)
 
 ## Screenshots
 #### WebHook Creation/Editing screen
