@@ -214,6 +214,11 @@ public class TemplateRequest {
 			  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 		  }
 		  ErrorResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new ErrorResult());
+		  
+		  if ( ! templateConfigWrapper.getTemplateConfig().getId().equals(newTemplate.id)) {
+			  validationResult.addError("id", "The templateId in the template does not match the templateId in the URL.");
+		  }	
+		  
 		  if (validationResult.isErrored()) {
 			  throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
 		  }	  
