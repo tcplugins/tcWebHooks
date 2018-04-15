@@ -76,7 +76,7 @@ public class TemplateValidator {
 		for (WebHookTemplateStateRest itemState : templateItem.getBuildStates()) {
 			WebHookTemplateStateRest requestItemState = requestTemplateItem.findConfigForBuildState(itemState.getType());
 				
-			if (requestItemState != null && !itemState.getEditable() && itemState.isEnabled() != requestItemState.isEnabled()) { 
+			if (requestItemState != null && itemState.isEnabled() != requestItemState.isEnabled() && !itemState.getEditable()) { 
 				result.addError(itemState.getType(), itemState.getType() + " is not editable for this templateItem");						
 			}
 		}

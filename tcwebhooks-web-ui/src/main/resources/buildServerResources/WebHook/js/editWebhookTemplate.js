@@ -709,8 +709,7 @@ WebHooksPlugin = {
     		var URL  = window['base_uri'] + '/app/rest/webhooks/templates';
     		
     		if (action === "editTemplate") {
-    			httpMethod = "PUT";
-    			URL = URL + "/" + myJson.id;  
+    			URL = URL + "/id:" + myJson.id + "/patch";  
     		} else if (action === "copyTemplate") {
     			myJson.id = $j("#editTemplateForm input[id='template.id']").val();
     		} else {

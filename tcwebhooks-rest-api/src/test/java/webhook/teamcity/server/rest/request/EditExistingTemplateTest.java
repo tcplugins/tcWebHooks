@@ -158,7 +158,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	responseMsg.rank = null;
     	responseMsg.preferredDateFormat = null;
     	responseMsg.toolTip = null;
-    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
+    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/patch").accept(MediaType.APPLICATION_JSON_TYPE).post(Template.class, responseMsg);
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals("Slack.com Compact Notification", responseAfterEdit.description);
@@ -176,7 +176,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template responseMsg = new Template();
     	responseMsg.id = "slack.com-compact";
-    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
+    	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/patch").accept(MediaType.APPLICATION_JSON_TYPE).post(Template.class, responseMsg);
     	
     	Template responseAfterEdit = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals("Slack.com Compact Notification", responseAfterEdit.description);
@@ -198,7 +198,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	responseMsg.id = "newDescription";
     	try {
-    		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Response.class, responseMsg);
+    		webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/patch").accept(MediaType.APPLICATION_JSON_TYPE).post(Response.class, responseMsg);
     	} catch (UniformInterfaceException ex) {
     		assertEquals(422, ex.getResponse().getStatus());
     		throw ex;
