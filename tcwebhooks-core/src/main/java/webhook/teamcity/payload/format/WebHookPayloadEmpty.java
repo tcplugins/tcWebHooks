@@ -13,12 +13,13 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
+import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
-public class WebHookPayloadEmpty implements WebHookPayload {
+public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObjectSerialiser {
 
 	private final String charset = "UTF-8";
 	private final String contentType = "text/plain";
@@ -166,5 +167,10 @@ public class WebHookPayloadEmpty implements WebHookPayload {
 			
 		};
 	}	
+	
+	@Override
+	public Object serialiseObject(Object object) {
+		return "";
+	}
 	
 }

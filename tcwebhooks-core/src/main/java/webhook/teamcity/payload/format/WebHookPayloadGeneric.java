@@ -183,5 +183,9 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	}
 	
 	protected abstract String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate);
+	
+	public Object serialiseObject(Object object) {
+		return object;
+	}
 
 }

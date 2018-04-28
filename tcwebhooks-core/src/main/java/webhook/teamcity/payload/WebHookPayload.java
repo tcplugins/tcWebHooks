@@ -17,7 +17,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
-public interface WebHookPayload {
+public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	
 	public static final String BUILD_STATUS_FAILURE   = "failure";
 	public static final String BUILD_STATUS_SUCCESS   = "success";

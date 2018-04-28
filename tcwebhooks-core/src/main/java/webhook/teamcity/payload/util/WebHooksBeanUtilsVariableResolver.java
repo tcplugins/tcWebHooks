@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import webhook.teamcity.Loggers;
+import webhook.teamcity.payload.WebHookContentObjectSerialiser;
+import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 
@@ -37,8 +39,10 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 	private static final String SUFFIX = ")";
 	private final Object bean;
 	private final Map<String, ExtraParametersMap> extraAndTeamCityProperties;
+	private final WebHookContentObjectSerialiser webhookPayload;
 	
-	public WebHooksBeanUtilsVariableResolver(Object javaBean, Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
+	public WebHooksBeanUtilsVariableResolver(WebHookContentObjectSerialiser webhookPayload, Object javaBean, Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
+		this.webhookPayload = webhookPayload;
 		this.bean = javaBean;
 		this.extraAndTeamCityProperties = extraAndTeamCityProperties;
 	}
@@ -66,7 +70,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 						return StringEscapeUtils.escapeJson(entry.getValue().get(dirtyString));
 					}
 				}
-				return StringEscapeUtils.escapeJson((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				return StringEscapeUtils.escapeJson((String) getProperty(bean, dirtyString).toString());
 			} catch (NullPointerException | IllegalArgumentException | 
 					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e) 
 			{
@@ -82,7 +86,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 						return StringUtils.capitaliseAllWords(entry.getValue().get(dirtyString));
 					}
 				}
-				return StringUtils.capitaliseAllWords((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				return StringUtils.capitaliseAllWords((String) getProperty(bean, dirtyString).toString());
 			} catch (NullPointerException | IllegalArgumentException | 
 					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e) 
 			{
@@ -105,7 +109,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 					}
 				}
 				return StringUtils.subString(
-								PropertyUtils.getProperty(bean, varName).toString(), 
+								getProperty(bean, varName).toString(), 
 								Integer.valueOf(subStringOptions[1]), 
 								Integer.valueOf(subStringOptions[2]), 
 								Integer.valueOf(subStringOptions[3])
@@ -141,7 +145,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 						return StringSanitiser.sanitise(entry.getValue().get(dirtyString));
 					}
 				}
-				return StringSanitiser.sanitise((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				return StringSanitiser.sanitise((String) getProperty(bean, dirtyString).toString());
 
 			} catch (NullPointerException | IllegalArgumentException | 
 					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -159,9 +163,9 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			
 			// Or override it from the PayloadContent if it exists.
 			try {
-				value = PropertyUtils.getProperty(bean, variableName).toString();
+				value = getProperty(bean, variableName).toString();
 			} catch (NullPointerException npe){
-				value = (String) PropertyUtils.getProperty(bean, variableName);
+				value = (String) getProperty(bean, variableName);
 			}
 			
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -169,6 +173,13 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 		}
 		return value;
 		
+	}
+	
+	private String getProperty(Object bean, String propertyName) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if (PropertyUtils.getProperty(bean, propertyName) == null) {
+			return null;
+		}
+		return this.webhookPayload.serialiseObject(PropertyUtils.getProperty(bean, propertyName)).toString();
 	}
 
 }

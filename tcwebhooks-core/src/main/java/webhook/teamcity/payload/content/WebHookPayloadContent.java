@@ -23,6 +23,7 @@ import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
@@ -280,7 +281,7 @@ public class WebHookPayloadContent {
 			this.projectInternalId = projectId;
 		}
 
-		private Branch getBranch() {
+		public Branch getBranch() {
 			return this.branch;
 		}
 		
@@ -549,7 +550,7 @@ public class WebHookPayloadContent {
 		
 		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
 			
-			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(this, getAllParameters()));
+			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(), this, getAllParameters()));
 			this.buildStatusHtml = builder.build();
 		}
 		
@@ -633,7 +634,7 @@ public class WebHookPayloadContent {
 		public ExtraParametersMap getExtraParameters() {
 			if (this.extraParameters.size() > 0){
 				VariableMessageBuilder builder;
-				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(this, getAllParameters());
+				WebHooksBeanUtilsVariableResolver resolver = new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(), this, getAllParameters());
 				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
 
 //				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(this.teamcityProperties);
@@ -643,7 +644,7 @@ public class WebHookPayloadContent {
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
 				}
-				resolver = new WebHooksBeanUtilsVariableResolver(this, getAllParameters());
+				resolver = new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(),this, getAllParameters());
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
@@ -659,5 +660,11 @@ public class WebHookPayloadContent {
 			this.extraParameters = new ExtraParametersMap(extraParameters);
 		}
 
-		
+		public static class SimpleSerialiser implements WebHookContentObjectSerialiser {
+
+			@Override
+			public Object serialiseObject(Object object) {
+				return object;
+			}
+		}
 }

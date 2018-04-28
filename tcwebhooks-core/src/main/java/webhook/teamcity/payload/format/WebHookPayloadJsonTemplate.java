@@ -3,6 +3,10 @@
  */
 package webhook.teamcity.payload.format;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -12,11 +16,13 @@ import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
 
-public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements WebHookPayload {
+public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements WebHookPayload, WebHookContentObjectSerialiser {
 	
 	public static final String FORMAT_SHORT_NAME = "jsonTemplate";
 	Integer rank = 101;
 	String charset = "UTF-8";
+	
+	Gson gson = new GsonBuilder().create();
 	
 	public WebHookPayloadJsonTemplate(WebHookPayloadManager manager){
 		super(manager);
@@ -40,7 +46,7 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		VariableMessageBuilder builder = VariableMessageBuilder.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(content, content.getAllParameters()));
+		VariableMessageBuilder builder = VariableMessageBuilder.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(this, content, content.getAllParameters()));
 		return builder.build();
 	}
 
@@ -65,4 +71,11 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 		return new JsonToHtmlPrettyPrintingRenderer();
 	}
 
+	@Override
+	public Object serialiseObject(Object object) {
+		if (object instanceof String || object instanceof Boolean || object instanceof Integer || object instanceof Long) {
+			return object;
+		}
+		return gson.toJson(object);
+	}
 }
