@@ -128,7 +128,7 @@
 		    			</copy>
 		    			
 		    			<echo message=" - Creating core ZIP file" />
-		    			<zip destfile="${project.build.directory}/tcWebHooksPlugin-${version}.zip" 
+		    			<zip destfile="${project.build.directory}/tcWebHooks-${version}.zip" 
 		    				 basedir="${project.build.directory}/dist-core"
 		    			 />
 		    			 

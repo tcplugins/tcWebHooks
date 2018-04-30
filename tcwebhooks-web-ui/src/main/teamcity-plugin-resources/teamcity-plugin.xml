@@ -3,7 +3,7 @@
                  xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
   <info>
     <name>tcWebHooks</name>
-    <display-name>Web Hooks plugin (tcWebHooks)</display-name>
+    <display-name>Web Hooks (tcWebHooks)</display-name>
     <version>${version}</version>
     <description>Trigger webhook POST requests from build events. &lt;br/&gt;
            This plugin adds new tabs to the Project and Build pages for viewing and configuring WebHook events.

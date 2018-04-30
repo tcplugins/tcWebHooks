@@ -3,7 +3,7 @@
                  xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
   <info>
     <name>tcWebHooks-rest-api</name>
-    <display-name>Web Hooks REST API plugin</display-name>
+    <display-name>Web Hooks REST API (tcWebHooks)</display-name>
     <version>${version}</version>
     <description>REST API for configuring tcWebhooks plugin. &lt;br/&gt;
            This plugin adds support for configuring the tcWebHook Templates feature, with plans to support configuring Webhooks in future.
