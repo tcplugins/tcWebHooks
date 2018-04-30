@@ -144,7 +144,7 @@
 		    			</copy>
 		    			
 		    			<echo message=" - Creating REST ZIP file" />
-		    			<zip destfile="${project.build.directory}/tcWebHooksPlugin-REST-API-${version}.zip" 
+		    			<zip destfile="${project.build.directory}/tcWebHooks-REST-API-${version}.zip" 
 		    				 basedir="${project.build.directory}/dist-REST"
 		    			 />
 		
