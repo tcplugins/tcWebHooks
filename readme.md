@@ -4,7 +4,7 @@
 
 [![Join the chat at https://gitter.im/tcplugins/tcWebHooks](https://badges.gitter.im/tcplugins/tcWebHooks.svg)](https://gitter.im/tcplugins/tcWebHooks?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![status](https://teamcity.jetbrains.com/app/rest/builds/buildType:WebHooksAndOtherPlugins_TcWebHooks/statusIcon)](https://tc.var.run/viewType.html?buildTypeId=WebHooksAndOtherPlugins_TcWebHooks&guest=1)
-[![license](https://img.shields.io/badge/license-MT%20License-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
+[![license](https://img.shields.io/badge/license-MIT%20License-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
 
 tcWebHooks is a TeamCity plugin which sends webhook HTTP POST requests to a destination of your choice.
 WebHook POSTs for events are a great way to use an event driven architecture to get updates in other systems, rather than polling teamcity for build state changes.  
