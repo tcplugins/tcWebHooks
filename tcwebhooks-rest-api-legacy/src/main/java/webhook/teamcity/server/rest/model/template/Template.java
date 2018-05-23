@@ -355,28 +355,6 @@ public class Template {
 				+ "' is not supported.  Supported are: id, name, description.");
 	}
 
-	public static void setFieldValueAndPersist(
-			final WebHookTemplateFromXml template, final String field,
-			final String value, @NotNull final DataProvider dataProvider) {
-		if ("name".equals(field)) {
-			if (StringUtil.isEmpty(value)) {
-				throw new BadRequestException("Template name cannot be empty.");
-			}
-			template.setTemplateId(value);
-			template.persist();
-			return;
-		} else if ("description".equals(field)) {
-			template.setTemplateDescription(value);
-			template.persist();
-			return;
-
-		}
-		throw new BadRequestException(
-				"Setting field '"
-						+ field
-						+ "' is not supported. Supported are: name, description, archived");
-	}
-
 	public WebHookTemplateConfig getTemplateFromPosted(
 			TemplateFinder templateFinder) {
 		return templateFinder.findTemplateById(this.id).getTemplateConfig();
