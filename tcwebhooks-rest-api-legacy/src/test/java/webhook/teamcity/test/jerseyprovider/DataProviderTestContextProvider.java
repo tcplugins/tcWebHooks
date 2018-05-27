@@ -2,50 +2,49 @@ package webhook.teamcity.test.jerseyprovider;
 
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
 
-import javax.security.sasl.SaslServer;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.jetbrains.annotations.NotNull;
-import org.mockito.Mock;
 import org.springframework.web.context.ContextLoader;
-
-import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.server.rest.PathTransformer;
-import jetbrains.buildServer.server.rest.data.PermissionChecker;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
-import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
-import webhook.teamcity.server.rest.data.DataProvider;
-import webhook.teamcity.server.rest.data.TemplateFinder;
-import webhook.teamcity.server.rest.request.Constants;
-import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
+import jetbrains.buildServer.RootUrlHolder;
+import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.server.rest.data.DataProvider;
+import webhook.teamcity.server.rest.data.TemplateFinder;
+import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.request.Constants;
+import webhook.teamcity.server.rest.util.webhook.WebHookManager;
+import webhook.teamcity.test.springmock.MockProjectManager;
+
 @Provider
 public class DataProviderTestContextProvider implements InjectableProvider<Context, Type>, Injectable<DataProvider> {
   private DataProvider dataProvider;
   private final SBuildServer sBuildServer;
   private final PermissionChecker permissionChecker;
+  private final ProjectManager projectManager;
   private TemplateFinder templateFinder;
-  WebHookPayloadManager payloadManager;
+  private WebHookPayloadManager payloadManager;
   @Context WebHookTemplateManager templateManager;
+  private WebHookManager webHookManager;
+  private WebHookFinder webHookFinder;
+  
   
   public DataProviderTestContextProvider() {
 	  System.out.println("We are here: Trying to provide a testable DataProvider instance");
 	  sBuildServer = mock(SBuildServer.class);
 	  permissionChecker = mock(PermissionChecker.class);
+	  projectManager = new MockProjectManager();
 	  //templateFinder = mock(TemplateFinder.class);
   }
 
@@ -66,7 +65,10 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
 	  }
 	  payloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
-	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder);
+	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
+	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
+	  
+	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder);
 	  return dataProvider;
   }
   

@@ -14,11 +14,14 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
+import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 
 @Provider
 public class DataProviderProvider implements InjectableProvider<Context, Type>, Injectable<DataProvider> {
@@ -30,9 +33,13 @@ public class DataProviderProvider implements InjectableProvider<Context, Type>, 
 			@NotNull final PermissionChecker permissionChecker,
 			@NotNull final WebHookPayloadManager payloadManager,
 			@NotNull final TemplateFinder templateFinder,
-			@NotNull final WebHookTemplateManager templateManager
+			@NotNull final WebHookTemplateManager templateManager,
+			@NotNull final ProjectManager projectManager,
+			@NotNull final WebHookManager webHookManager,
+			@NotNull final WebHookFinder webHookFinder
+			
 		  ) {
-	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder); 
+	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder); 
   }
 
   public ComponentScope getScope() {

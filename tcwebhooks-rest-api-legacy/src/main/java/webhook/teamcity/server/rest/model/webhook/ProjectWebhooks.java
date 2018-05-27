@@ -3,9 +3,15 @@ package webhook.teamcity.server.rest.model.webhook;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /*
  * <?xml version="1.0" encoding="UTF-8"?>
@@ -38,24 +44,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name = "webhooks")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType (name = "webhooks",propOrder = { "count", "projectId", "enabled", "webhooks" })
+@Getter @Setter
 public class ProjectWebhooks {
-	private Boolean enabled;
-	
-	private List<ProjectWebhook> webhooks = new ArrayList<ProjectWebhook>();
 	
 	@XmlAttribute
-	public Boolean getEnabled() {
-		return enabled;
-	}
+	Integer count;
+	
+	@XmlAttribute
+	Boolean enabled;
 
-	@XmlElement(name = "webhook")
-	public List<ProjectWebhook> getWebhooks() {
-		return webhooks;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+	@XmlAttribute
+	String projectId;
+	
+	@XmlElement
+	List<ProjectWebhook> webhooks = new ArrayList<>();
 	
 	public void addWebhook(ProjectWebhook webhook){
 		this.webhooks.add(webhook);
