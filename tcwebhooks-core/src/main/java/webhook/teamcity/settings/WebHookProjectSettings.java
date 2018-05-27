@@ -5,12 +5,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.settings.ProjectSettings;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
-
 import org.jdom.Element;
 
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.settings.ProjectSettings;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;
@@ -18,8 +16,6 @@ import webhook.teamcity.auth.WebHookAuthConfig;
 
 public class WebHookProjectSettings implements ProjectSettings {
 	private static final String NAME = WebHookProjectSettings.class.getName();
-	ProjectSettingsManager psm;
-	ProjectSettings ps;
 	private Boolean webHooksEnabled = true;
 	private Boolean updateSuccess = false;
 	private String updateMessage = "";

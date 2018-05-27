@@ -21,6 +21,7 @@
  	<bean id="requestPathTransformInfo" class="jetbrains.buildServer.server.rest.RequestPathTransformInfo"/>
  	<bean id="beanFactory" class="jetbrains.buildServer.server.rest.util.BeanFactory"/>
  	<bean id="sBuildServer" class="webhook.teamcity.test.springmock.MockSBuildServer"/>
+ 	<bean id="projectManager" class="webhook.teamcity.test.springmock.MockProjectManager"/>
  	<bean id="projectSettingsManager" class="webhook.teamcity.test.springmock.MockProjectSettingsManager"/>
 	
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
@@ -30,6 +31,8 @@
 	<bean id="dataProvider" class="webhook.teamcity.server.rest.data.DataProvider"/>
 	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.DataProviderProvider"/>
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
+	<bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/>
+	<bean id="webHookFinder" class="webhook.teamcity.server.rest.data.WebHookFinder"/>
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
 	<!--bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/-->
 	

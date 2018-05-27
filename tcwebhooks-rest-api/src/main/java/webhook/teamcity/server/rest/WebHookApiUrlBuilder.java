@@ -3,8 +3,12 @@ package webhook.teamcity.server.rest;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.PathTransformer;
+import jetbrains.buildServer.server.rest.util.ValueWithDefault.Value;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.request.TemplateRequest;
+import webhook.teamcity.server.rest.request.WebHooksRequest;
+import webhook.teamcity.server.rest.util.webhook.WebHookManager;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 /**
@@ -22,6 +26,10 @@ public class WebHookApiUrlBuilder {
 	
 	public String getHref(final WebHookTemplateConfig template) {
 	    return myPathTransformer.transform(TemplateRequest.getTemplateHref(template));
+	}
+	
+	public String getHref(String projectExternalId, WebHookConfig config) {
+		return myPathTransformer.transform(WebHooksRequest.getWebHookHref(projectExternalId, config));
 	}
 	
 	public String getTemplateDefaultItemHref(WebHookTemplateConfig WebHookTemplateConfig) {
@@ -59,6 +67,5 @@ public class WebHookApiUrlBuilder {
 	public String getWebHookTemplateItemStateUrl(WebHookTemplateConfig template, WebHookTemplateItemRest templateItem, String state) {
 		return myPathTransformer.transform(TemplateRequest.getTemplateItemStateHref(template, templateItem, state));
 	}
-
 	
 }

@@ -5,8 +5,11 @@ import org.jdom.Element;
 import jetbrains.buildServer.serverSide.settings.ProjectSettings;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsFactory;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import webhook.teamcity.settings.WebHookProjectSettings;
 
 public class MockProjectSettingsManager implements ProjectSettingsManager {
+	
+	WebHookProjectSettings webHookProjectSettings = new WebHookProjectSettings();
 
 	@Override
 	public void registerSettingsFactory(String serviceName,
@@ -23,8 +26,7 @@ public class MockProjectSettingsManager implements ProjectSettingsManager {
 
 	@Override
 	public ProjectSettings getSettings(String projectId, String serviceName) {
-		// TODO Auto-generated method stub
-		return null;
+		return webHookProjectSettings;
 	}
 
 	@Override
@@ -35,8 +37,7 @@ public class MockProjectSettingsManager implements ProjectSettingsManager {
 
 	@Override
 	public void readFrom(Element rootElement, String projectId) {
-		// TODO Auto-generated method stub
-
+		webHookProjectSettings.readFrom(rootElement);
 	}
 
 	@Override

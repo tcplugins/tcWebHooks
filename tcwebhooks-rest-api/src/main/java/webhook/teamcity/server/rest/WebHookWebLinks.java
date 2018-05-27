@@ -14,6 +14,16 @@ public class WebHookWebLinks {
 		myHolder = urlHolder;
 	}
 	
+	@NotNull
+	public String getWebHookUrl(@NotNull String  projectId) {
+		return makeWebHookUrl(projectId);
+	}
+	
+	@NotNull
+	private String makeWebHookUrl(@NotNull String projectId) {
+	    return makeUrl("webhooks/index.html?projectId=" + projectId);
+	}
+	
 	/**
 	 * @param build specified build
 	 * @return URL to view template for specific template. 

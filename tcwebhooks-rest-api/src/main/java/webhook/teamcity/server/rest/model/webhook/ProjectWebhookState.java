@@ -2,31 +2,20 @@ package webhook.teamcity.server.rest.model.webhook;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import webhook.teamcity.BuildStateEnum;
+import javax.xml.bind.annotation.XmlType;
 
 /*
  * <state type="buildStarted" enabled="true" />
  */
 
 @XmlRootElement (name="state")
+@XmlType (name = "state",propOrder = { "type", "enabled" })
 public class ProjectWebhookState {
 	
-	BuildStateEnum type; 
+	@XmlAttribute
+	public String type; 
+	
+	@XmlAttribute
 	Boolean enabled;
 	
-	@XmlAttribute
-	public String getType() {
-		return type.getShortName();
-	}
-	
-	public void setType(String type) {
-		this.type = BuildStateEnum.findBuildState(type);
-	}
-	
-	@XmlAttribute
-	public Boolean getEnabled() {
-		return enabled;
-	}
-
 }
