@@ -1,9 +1,16 @@
-package webhook.teamcity.auth;
+package webhook.teamcity.auth.basic;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticatorFactory;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.auth.basic.UsernamePasswordAuthenticator;
+import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 
 public class UsernamePasswordAuthenticatorFactoryTest {
 	WebHookAuthenticatorProvider provider;

@@ -1,4 +1,4 @@
-package webhook.teamcity.auth;
+package webhook.teamcity.auth.bearer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -12,6 +12,7 @@ import org.junit.Test;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.auth.AuthWithRealServerTestBase;
 import webhook.testframework.WebHookMockingFrameworkImpl;
 
 public class BearerAuthenticatorWithRealServerTest extends AuthWithRealServerTestBase {

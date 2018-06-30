@@ -1,6 +1,12 @@
-package webhook.teamcity.auth;
+package webhook.teamcity.auth.bearer;
 
 import java.util.List;
+
+import webhook.teamcity.auth.AbstractWebHookAuthenticatorFactory;
+import webhook.teamcity.auth.WebHookAuthenticationParameter;
+import webhook.teamcity.auth.WebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticatorFactory;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 
 public class BearerAuthenticatorFactory extends AbstractWebHookAuthenticatorFactory implements WebHookAuthenticatorFactory {
 		public BearerAuthenticatorFactory(WebHookAuthenticatorProvider provider) {

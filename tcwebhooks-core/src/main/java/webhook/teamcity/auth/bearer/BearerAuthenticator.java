@@ -1,4 +1,4 @@
-package webhook.teamcity.auth;
+package webhook.teamcity.auth.bearer;
 
 import java.net.URI;
 
@@ -14,8 +14,8 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.impl.client.BasicAuthCache;
 
-import webhook.teamcity.auth.bearer.BearerAuthSchemeFactory;
-import webhook.teamcity.auth.bearer.TokenCredentials;
+import webhook.teamcity.auth.AbstractWebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticator;
 
 public class BearerAuthenticator extends AbstractWebHookAuthenticator implements WebHookAuthenticator {
 

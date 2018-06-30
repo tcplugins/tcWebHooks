@@ -1,4 +1,4 @@
-package webhook.teamcity.auth;
+package webhook.teamcity.auth.basic;
 
 import static org.junit.Assert.assertEquals;
 

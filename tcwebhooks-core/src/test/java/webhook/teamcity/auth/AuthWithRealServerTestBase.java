@@ -19,7 +19,7 @@ public class AuthWithRealServerTestBase extends WebHookTestServerTestBase {
 	protected ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
 	protected WebHookMockingFramework framework;
 	
-	MockWebServer server;
+	protected MockWebServer server;
 	
 	@Override
 	public String getHost() {

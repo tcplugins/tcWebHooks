@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.AbstractWebHookAuthenticator;
-import webhook.teamcity.auth.UsernamePasswordAuthenticator;
 import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.basic.UsernamePasswordAuthenticator;
 
 
 public class WebHookTest{

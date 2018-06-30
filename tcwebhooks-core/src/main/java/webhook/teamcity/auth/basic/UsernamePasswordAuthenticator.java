@@ -1,4 +1,4 @@
-package webhook.teamcity.auth;
+package webhook.teamcity.auth.basic;
 
 import java.net.URI;
 
@@ -11,6 +11,9 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
+
+import webhook.teamcity.auth.AbstractWebHookAuthenticator;
+import webhook.teamcity.auth.WebHookAuthenticator;
 
 public class UsernamePasswordAuthenticator extends AbstractWebHookAuthenticator implements WebHookAuthenticator {
 

@@ -130,12 +130,12 @@
 		/>
 
 	<bean id="usernamePasswordAuthenticatorFactory"
-		class="webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory"
+		class="webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory"
 		init-method="register" 
 		/>
 		
 	<bean id="bearerAuthenticatorFactory"
-		class="webhook.teamcity.auth.BearerAuthenticatorFactory"
+		class="webhook.teamcity.auth.bearer.BearerAuthenticatorFactory"
 		init-method="register" 
 		/>
 		
