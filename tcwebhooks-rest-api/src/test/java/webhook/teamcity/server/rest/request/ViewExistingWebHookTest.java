@@ -1,6 +1,8 @@
 package webhook.teamcity.server.rest.request;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static webhook.teamcity.server.rest.request.WebHooksRequest.API_WEBHOOKS_URL;
 
 import java.io.File;
@@ -72,6 +74,27 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
 		ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
     	assertEquals(1, (int)responseMsg.getCount());
+    }
+    
+    @Test
+    public void testShortJsonWebHooksRequestUsingRegisteredWebHook() throws JAXBException, IOException, JDOMException {
+    	
+    	SortedMap<String, String> map = new TreeMap<>();
+    	ExtraParametersMap  extraParameters  = new ExtraParametersMap(map); 
+    	ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
+    	
+    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
+    	
+    	Element webhooksParent = new Element("webhooks");
+    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
+    	projectSettingsManager.readFrom(webhooksParent, "testProject");
+    	
+    	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
+    	prettyPrint(responseMsg);
+    	assertEquals(1, (int)responseMsg.getCount());
+    	assertNotNull(responseMsg.getWebhooks().get(0).getUrl());
+    	assertNull(responseMsg.getWebhooks().get(0).getAuthentication());
     }
 
 }

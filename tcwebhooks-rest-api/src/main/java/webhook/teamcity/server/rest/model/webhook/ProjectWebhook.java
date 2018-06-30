@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.model.Fields;
-import jetbrains.buildServer.server.rest.model.project.Project;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +48,7 @@ import webhook.teamcity.settings.WebHookConfig;
 @NoArgsConstructor
 @Getter @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType (propOrder = { "url", "id", "projectId", "enabled", "format", "template", "webUrl", "href", "states", "parameters", "customTemplates" })
+@XmlType (propOrder = { "url", "id", "projectId", "enabled", "format", "template", "webUrl", "href", "states", "parameters", "customTemplates", "authentication" })
 public class ProjectWebhook {
 	
 	@XmlAttribute
@@ -79,13 +78,15 @@ public class ProjectWebhook {
 	@XmlElement(name = "custom-templates")
 	private List<CustomTemplate> customTemplates;
 	
+	@XmlElement(name = "authentication")
+	private ProjectWebHookAuthConfig authentication;
+	
 	@XmlAttribute
 	public String href;
 	
 	@XmlAttribute
 	public  String webUrl;
 
-	
 	public ProjectWebhook(WebHookConfig config, final String projectExternalId, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 		
 		this.url = ValueWithDefault.decideDefault(fields.isIncluded("url", true, true), config.getUrl()); 
@@ -107,6 +108,10 @@ public class ProjectWebhook {
 					states.add(webhookState);
 				}
 			}
+		}
+		
+		if (config.getAuthenticationConfig() != null && ( fields.isIncluded("authentication", false, true) || fields.isAllNested() ) ) {
+			authentication = new ProjectWebHookAuthConfig(config.getAuthenticationConfig());
 		}
 	}
 
