@@ -83,7 +83,7 @@
 		/>
 
 	<bean id="usernamePasswordAuthenticatorFactory"
-		class="webhook.teamcity.auth.UsernamePasswordAuthenticatorFactory"
+		class="webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory"
 		init-method="register" 
 		/>
 
