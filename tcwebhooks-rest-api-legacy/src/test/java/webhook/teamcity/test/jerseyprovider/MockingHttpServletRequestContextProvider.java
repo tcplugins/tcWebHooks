@@ -2,26 +2,16 @@ package webhook.teamcity.test.jerseyprovider;
 
 import static org.mockito.Mockito.mock;
 
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.InjectableProvider;
-
-import java.io.IOException;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-
-import jetbrains.buildServer.serverSide.SBuildServer;
-import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
-import webhook.teamcity.settings.WebHookMainSettings;
+import com.sun.jersey.core.spi.component.ComponentContext;
+import com.sun.jersey.core.spi.component.ComponentScope;
+import com.sun.jersey.spi.inject.Injectable;
+import com.sun.jersey.spi.inject.InjectableProvider;
 
 @Provider
 public class MockingHttpServletRequestContextProvider implements InjectableProvider<Context, Type>, Injectable<HttpServletRequest> {
