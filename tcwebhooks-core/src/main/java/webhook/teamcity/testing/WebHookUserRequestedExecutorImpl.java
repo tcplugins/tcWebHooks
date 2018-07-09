@@ -8,7 +8,6 @@ import org.joda.time.LocalDateTime;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.WebHook;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.BuildStateEnum;
@@ -23,17 +22,19 @@ import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
+import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
-public class WebHookUserRequestedExecutorImpl {
+public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExecutor {
 	
 	private static final String WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL = "WebHookUserRequestedExecutorImpl";
 	private final SBuildServer myServer;
@@ -43,17 +44,18 @@ public class WebHookUserRequestedExecutorImpl {
 	private final WebHookPayloadManager myWebHookPayloadManager;
 	private final WebHookFactory myWebHookFactory;
 	private final WebHookHistoryItemFactory myWebHookHistoryItemFactory;
+	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
 	
 	public WebHookUserRequestedExecutorImpl(
 			SBuildServer server,
 			WebHookMainSettings mainSettings,
-			ProjectSettingsManager projectSettingsManager,
 			WebHookConfigFactory webHookConfigFactory,
 			WebHookFactory webHookFactory,
 			WebHookTemplateResolver webHookTemplateResolver,
 			WebHookPayloadManager webHookPayloadManager,
 			WebHookHistoryItemFactory webHookHistoryItemFactory,
+			WebHookHistoryRepository webHookHistoryRepository,
 			WebAddressTransformer webAddressTransformer
 			) {
 		myServer = server;
@@ -63,9 +65,11 @@ public class WebHookUserRequestedExecutorImpl {
 		myWebHookTemplateResolver = webHookTemplateResolver;
 		myWebHookPayloadManager = webHookPayloadManager;
 		myWebHookHistoryItemFactory = webHookHistoryItemFactory;
+		myWebHookHistoryRepository = webHookHistoryRepository;
 		myWebAddressTransformer = webAddressTransformer;
 	}
 	
+	@Override
 	public WebHookHistoryItem requestWebHookExecution(WebHookExecutionRequest webHookExecutionRequest) {
 		WebHookConfig webHookConfig = myWebHookConfigFactory.build(webHookExecutionRequest);
 		
@@ -75,24 +79,24 @@ public class WebHookUserRequestedExecutorImpl {
 														webHookConfig.getUrl()
 														)
 												);
-		return executeWebHook(webHookExecutionRequest.getBuildId(), webHookExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh);	
+		WebHookHistoryItem webHookHistoryItem = executeWebHook(webHookExecutionRequest.getBuildId(), webHookExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh);
+		myWebHookHistoryRepository.addHistoryItem(webHookHistoryItem);
+		return webHookHistoryItem; 
 
 		
 	}
 
-	/** Method that builds a template from the webHookTemplateExecutionRequest and then 
-	 *  executes the webhook.
-	 *  
-	 *   Webhook config could be a URL from the user, or a webhook config id.
-	 *   
-	 * @param webHookTemplateExecutionRequest
-	 * @return
-	 */
 	public WebHookHistoryItem requestWebHookExecution(WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
 		WebHookConfig webHookConfig = null;
 
 		try {
-			webHookConfig = myWebHookConfigFactory.build(webHookTemplateExecutionRequest);
+			if (webHookTemplateExecutionRequest.getUniqueKey() == null  && webHookTemplateExecutionRequest.getUrl() == null) {
+				throw new WebHookConfigNotFoundException("Neither existing webhook id or URL found.");
+			} else if (webHookTemplateExecutionRequest.getUniqueKey() == null) {
+				webHookConfig = myWebHookConfigFactory.buildSimple(webHookTemplateExecutionRequest);
+			} else {
+				webHookConfig = myWebHookConfigFactory.build(webHookTemplateExecutionRequest);
+			}
 		} catch (WebHookConfigNotFoundException e) {
 			SBuild sbuild = myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId());
 			WebHookExecutionStats stats = new WebHookExecutionStats();
@@ -100,9 +104,10 @@ public class WebHookUserRequestedExecutorImpl {
 			stats.setErrored(true);
 			stats.setStatusCode(WebHookExecutionException.WEBHOOK_CONFIGURATION_NOT_FOUND_EXCEPTION_ERROR_CODE);
 			stats.setStatusReason(e.getMessage());
-			return new WebHookHistoryItem(
-					webHookTemplateExecutionRequest.getProjectId(), 
-					myServer.getProjectManager().findProjectById(webHookTemplateExecutionRequest.getProjectId()),
+			
+			WebHookHistoryItem webHookHistoryItem = new WebHookHistoryItem(
+					webHookTemplateExecutionRequest.getProjectExternalId(), 
+					myServer.getProjectManager().findProjectByExternalId(webHookTemplateExecutionRequest.getProjectExternalId()).getName(),
 					sbuild.getBuildTypeId(),
 					sbuild.getBuildTypeName(),
 					sbuild.getBuildTypeExternalId(),
@@ -111,14 +116,25 @@ public class WebHookUserRequestedExecutorImpl {
 					stats,
 					new WebHookErrorStatus(e, e.getMessage(), WebHookExecutionException.WEBHOOK_CONFIGURATION_NOT_FOUND_EXCEPTION_ERROR_CODE),
 					new LocalDateTime(),
-					getGeneralisedWebAddress(webHookTemplateExecutionRequest)
+					getGeneralisedWebAddress(webHookTemplateExecutionRequest),
+					true
 					);
+			myWebHookHistoryRepository.addHistoryItem(webHookHistoryItem);
+			return webHookHistoryItem; 
 		}
 		
 		// If we got a URL from the user, override the one on the config.
 		if (webHookTemplateExecutionRequest.getUrl() != null && !webHookTemplateExecutionRequest.getUrl().trim().isEmpty()) {
 			webHookConfig.setUrl(webHookTemplateExecutionRequest.getUrl());
 		}
+		
+		// Enable the build state we are testing, just in case it was not already enabled.
+		if (! webHookConfig.getBuildStates().enabled(webHookTemplateExecutionRequest.getTestBuildState())) {
+			webHookConfig.getBuildStates().enable(webHookTemplateExecutionRequest.getTestBuildState());
+		}
+		
+		// Add a header to indicate that it was a test.
+		webHookConfig.getHeaders().add(WebHookHeaderConfig.create("x-tcwebhooks-user-initiated-test", "true"));
 		
 		WebHook wh = myWebHookFactory.getWebHook(webHookConfig, 
 				myMainSettings.getProxyConfigForUrl(
@@ -137,7 +153,10 @@ public class WebHookUserRequestedExecutorImpl {
 		
 		webHookTemplateManager.registerTemplateFormatFromXmlConfig(webHookTemplateConfig);
 		
-		return executeWebHook(webHookTemplateExecutionRequest.getBuildId(), webHookTemplateExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh);
+		WebHookHistoryItem webHookHistoryItem = executeWebHook(webHookTemplateExecutionRequest.getBuildId(), webHookTemplateExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh); 
+		myWebHookHistoryRepository.addHistoryItem(webHookHistoryItem);
+		return webHookHistoryItem; 
+		
 	}
 
 	private GeneralisedWebAddress getGeneralisedWebAddress(
@@ -158,11 +177,11 @@ public class WebHookUserRequestedExecutorImpl {
 		SBuild sRunningBuild = myServer.findBuildInstanceById(buildId);
 		try {
 			wh = contentBuilder.buildWebHookContent(wh, webHookConfig, sRunningBuild, 
-						testBuildState, false);
+						testBuildState, true);
 			
 			Loggers.SERVER.debug("#### CONTENT #### " + wh.getPayload());
 			WebHookListener.doPost(wh, webHookConfig.getPayloadFormat());
-			return myWebHookHistoryItemFactory.getWebHookHistoryItem(
+			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
 							webHookConfig,
 							wh.getExecutionStats(), 
 							sRunningBuild,
@@ -172,7 +191,7 @@ public class WebHookUserRequestedExecutorImpl {
 			wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
 			Loggers.SERVER.error(WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL + ex.getMessage());
 			Loggers.SERVER.debug(ex);
-			return myWebHookHistoryItemFactory.getWebHookHistoryItem(
+			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
 							webHookConfig,
 							wh.getExecutionStats(), 
 							sRunningBuild,
@@ -183,7 +202,7 @@ public class WebHookUserRequestedExecutorImpl {
 			wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
 			Loggers.SERVER.error(WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
 			Loggers.SERVER.debug(WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-			return myWebHookHistoryItemFactory.getWebHookHistoryItem(
+			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
 							webHookConfig,
 							wh.getExecutionStats(), 
 							sRunningBuild,

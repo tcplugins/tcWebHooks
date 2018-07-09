@@ -24,6 +24,7 @@
       ${teamcityPluginResourcesPath}WebHook/css/styles.css
     </bs:linkCSS>
     <bs:linkScript>
+      ${teamcityPluginResourcesPath}WebHook/js/moment-2.22.2.min.js
       ${teamcityPluginResourcesPath}WebHook/js/editWebhookTemplate.js
     </bs:linkScript>
     <script type="text/javascript">
@@ -209,6 +210,7 @@
             <input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplateItem"/>
             <div id="ajaxTemplateItemEditResult"></div>
             <div class="popupSaveButtonsBlock">
+            	<button id="editTemplateItemDialogPreview" class="btn btn_primary" onclick="WebHooksPlugin.TemplateEditBuildEventDialog.openPreviewDialog(); return false">Preview Template</button>
                 <forms:submit id="editTemplateItemDialogSubmit" label="Save Template"/>
                 <forms:cancel onclick="WebHooksPlugin.TemplateEditBuildEventDialog.close()"/>
             </div>
@@ -245,15 +247,18 @@
         enableLiveAutocompletion: true
     });
 
-    var wordList = ["buildFullName", "buildComment", "changes", "agentOs", 
-					"buildNumber", "branchIsDefault", "buildResultPrevious", "buildStatus", 
-					"projectInternalId", "buildStatusUrl", "buildTypeId", "responsibilityUserNew", 
-					"buildRunners", "buildStartTime", "buildTags", "responsibilityUserOld", 
-					"buildFinishTime", "buildStateDescription", "text", "buildName", 
-					"buildResult", "agentName", "branchName", "buildResultDelta", "buildId", 
-					"message", "buildExternalTypeId", "rootUrl", "currentTime", "notifyType", 
-					"buildInternalTypeId", "comment", "projectExternalId", "branchDisplayName", 
-					"projectName", "projectId", "agentHostname", "buildStatusHtml", "triggeredBy", ];
+    var wordList = ["buildName", "buildFullName", "buildTypeId",
+    				"buildInternalTypeId", "buildExternalTypeId", "buildNumber", "buildId", 
+    				"projectName", "projectId", "projectInternalId", "projectExternalId", 
+    				"buildStatus", "buildResult", "buildResultPrevious", "buildResultDelta", 
+    				"buildStateDescription", "buildStatusUrl", "notifyType",
+					"buildComment", "buildRunners", "buildTags", "changes",  "comment", "triggeredBy",
+					"buildStartTime", "currentTime", "buildFinishTime", 
+					"branchName", "branchDisplayName", "branchIsDefault",
+					"text", "message",  "rootUrl", "buildStatusHtml", 
+					"agentName", "agentHostname", "agentOs",  
+					"responsibilityUserOld", "responsibilityUserNew"  
+					];
     
     /* your custom completer */
     var customCompleter = {
@@ -301,6 +306,39 @@
     
 </script>
 
+    <bs:dialog dialogId="previewTemplateItemDialog"
+               dialogClass="previewTemplateItemDialog"
+               title="Preview Build Event Template"
+               closeCommand="WebHooksPlugin.PreviewTemplateItemDialog.close()">
+        <forms:multipartForm id="previewTemplateItemForm"
+                             action="/admin/manageWebhookTemplate.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.PreviewTemplateItemDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td>Are you sure you want to delete this Build Event Template? There is no undo.
+                        <div id="ajaxDeleteResult"></div>
+                </td></tr>
+            </table>
+            <input type="hidden" id="templateId" name="templateId"/>
+            <input type="hidden" id="templateNumber" name="templateNumber"/>
+            <input type="hidden" name="action" id="WebHookTemplateAction" value="previewTemplateItem"/>
+            <table style="width:100%">
+                <tr><td colspan=2>Select a build to use as example data for a webhook test execution:</td></tr> 
+	            <tr><td>Project:</td><td> <forms:select id="previewTemplateItemDialogProjectSelect" name="previewTemplateItemDialogProjectSelect"/></td></tr>
+            	<tr><td>Build:</td><td> <forms:select id="previewTemplateItemDialogBuildSelect" name="previewTemplateItemDialogBuildSelect"/><br></td></tr>
+            	<tr><td>Build Event:</td><td> <forms:select id="previewTemplateItemDialogBuildStateSelect" name="previewTemplateItemDialogBuildStateSelect"/><br></td></tr>
+           	</table>
+           	<div>
+           		<div id="currentTemplatePreview"></div>
+           	</div>
+            <div class="popupSaveButtonsBlock">
+                <forms:submit id="previewTemplateItemDialogSubmit" label="Send Test WebHook for Build Event"/>
+                <forms:cancel onclick="WebHooksPlugin.PreviewTemplateItemDialog.close()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
+    
     <bs:dialog dialogId="deleteTemplateItemDialog"
                dialogClass="deleteTemplateItemDialog"
                title="Confirm Build Event Template deletion"

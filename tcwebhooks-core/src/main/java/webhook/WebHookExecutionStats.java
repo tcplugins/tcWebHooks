@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.http.Header;
+import org.apache.http.HttpRequest;
+import org.apache.http.impl.EnglishReasonPhraseCatalog;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -72,7 +74,11 @@ public class WebHookExecutionStats {
 	public void setRequestCompleted(int status, String statusReason) {
 		this.requestCompletedTimeStamp = new Date();
 		this.statusCode = status;
-		this.statusReason = statusReason;
+		if (statusReason == null || statusReason.isEmpty() ) {
+			this.statusReason = EnglishReasonPhraseCatalog.INSTANCE.getReason(status, null);
+		} else {
+			this.statusReason = statusReason;
+		}
 	}
 	
 	public void setTeardownCompleted() {

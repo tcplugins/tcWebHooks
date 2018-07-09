@@ -32,6 +32,17 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		return item;
 		
 	}
+	
+	@Override
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc,
+			WebHookExecutionStats webHookExecutionStats, SBuild sBuild, WebHookErrorStatus errorStatus) {
+		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, sBuild, errorStatus);
+		addGeneralisedWebAddress(whc, item);
+		addSProject(item);
+		addBuildTypeData(item);
+		item.setTest(true);
+		return item;
+	}
 
 	@Override
 	public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
@@ -53,6 +64,7 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		return item;
 	}
 	
+	
 	private void addGeneralisedWebAddress(WebHookConfig whc, WebHookHistoryItem item) {
 		try {
 			URL url = new URL(whc.getUrl());
@@ -63,7 +75,7 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 	}
 	
 	private void addSProject(WebHookHistoryItem item) {
-		item.setSProject(myProjectManager.findProjectById(item.getProjectId()));
+		item.setProjectName(myProjectManager.findProjectById(item.getProjectId()).getName());
 	}
 	
 	private void addBuildTypeData(WebHookHistoryItem item) {

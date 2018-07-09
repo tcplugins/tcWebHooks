@@ -12,7 +12,7 @@ public class WebHookTemplateExecutionRequest {
 	
 	// These are obtained from the test request.
 	private Long buildId;
-	private String projectId;
+	private String projectExternalId;
 	private BuildStateEnum testBuildState;
 	private String uniqueKey;
 	private String url;

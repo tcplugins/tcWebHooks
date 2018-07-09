@@ -31,7 +31,7 @@ label.webhookEnabled {
 	display:none;
 }
 
-#currentTemplateRaw, #currentTemplateRendered {
+#currentTemplateRaw, #currentTemplateRendered, #currentTemplatePreview {
 	margin: 0.5em  0em 0.5em 0em;
 	width:auto;
 	height:15em;
@@ -41,6 +41,11 @@ label.webhookEnabled {
 	word-wrap: break-word;
 	overflow: scroll;
 	
+}
+
+#currentTemplatePreview {
+	width:50em;
+	height:25em;
 }
 
 .etabs { margin: 0; padding: 0 0 0 1em; }
@@ -396,6 +401,11 @@ div#editTemplateItemDialog {
 	max-width: 1000px;
 }
 
+div#previewTemplateItemDialog {
+	min-width: 52em;
+	max-width: 1000px;
+}
+
 table.templateDialogFormTable {
 	width: 100%;
     min-width: 48em;
@@ -467,6 +477,17 @@ div#templateEditor ul.etabs li#branchOptionTab {
 #deleteTemplateDialogSubmit, #deleteTemplateItemDialogSubmit {
 	background-color: red;
 	background-image: linear-gradient(to bottom, #e06667, #e50000);
+}
+
+#editTemplateItemDialogPreview {
+	float:right;
+}
+
+#previewTemplateItemDialogProjectSelect, 
+#previewTemplateItemDialogBuildSelect,
+#previewTemplateItemDialogBuildStateSelect {
+	text-align: left;
+	width: 80%;
 }
 
 /*

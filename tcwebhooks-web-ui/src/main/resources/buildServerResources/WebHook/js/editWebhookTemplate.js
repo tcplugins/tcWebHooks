@@ -442,7 +442,117 @@ WebHooksPlugin = {
 				this.putWebHookTemplateData();
 			}
 			return false;
+		},
+		
+		openPreviewDialog: function() {
+			WebHooksPlugin.PreviewTemplateItemDialog.showDialog();
 		}
+		
+    })),
+    
+    PreviewTemplateItemDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    	getContainer: function () {
+    		return $('previewTemplateItemDialog');
+    	},
+    	
+    	formElement: function () {
+    		return $('previewTemplateItemForm');
+    	},
+    	
+    	loadProjectList: function () {
+    		$j("#previewTemplateItemDialogProjectSelect").append($j('<option></option>').val(null).html("Loading project list..."))
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/projects',
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					var myselect = $j('<select>');
+					myselect.append( $j('<option></option>').val(null).html("Choose a Project...") );
+					$j(response.project).each(function(index, project) {
+						console.log(project);
+						if (project.id === '_Root') { 
+							myselect.append( $j('<option></option>').val(project.id).html(project.id) );
+						} else {
+							myselect.append( $j('<option></option>').val(project.id).html(project.name) );
+						}
+					});
+					$j("#previewTemplateItemDialogProjectSelect").empty().append(myselect.html()).change(
+							function() {
+								WebHooksPlugin.PreviewTemplateItemDialog.loadBuildList( $j(this).val() );
+							});
+				},
+				error: function (response) {
+					console.log(response);
+					alert(response);
+				}
+			});
+    	},
+    	
+    	loadBuildList: function (projectId) {
+    		if (!projectId) { // We got a null or undefined projectId. Empty the build list and return
+    			$j("#previewTemplateItemDialogBuildSelect").empty();
+    			return;
+    		}
+    		$j("#previewTemplateItemDialogBuildSelect").empty().append($j('<option></option>').val(null).html("Loading build history..."))
+    		$j.ajax ({
+    			url: window['base_uri'] + '/app/rest/builds?locator=project:' + projectId 
+    					+ ",state:finished&&fields=build(id,number,status,finishDate,buildType(id,name))",
+    			type: "GET",
+    			headers : {
+    				'Accept' : 'application/json'
+    			},
+    			success: function (response) {
+    				var myselect = $j('<select>');
+    				myselect.append( $j('<option></option>').val(null).html("Choose a Build...") );
+    				$j(response.build).each(function(index, build) {
+    					console.log(build);
+    					var desc = build.buildType.name 
+    							  + "#" + build.number 
+    							  + " - " + build.status + " ("
+    							  + moment(build.finishDate, moment.ISO_8601).fromNow()
+    							  + ")";
+    					
+						myselect.append( $j('<option></option>').val(build.id).html(desc) );
+    				});
+    				$j("#previewTemplateItemDialogBuildSelect").empty().append(myselect.html());
+    			},
+    			error: function (response) {
+    				if (response.status == 404) {
+    					$j("#previewTemplateItemDialogBuildSelect").empty().append(
+    							$j('<option></option>').val(null).html("No builds found. Choose a different project")
+    						);
+    				} else {
+	    				console.log(response);
+	    				alert(response);
+    				}
+    			}
+    		});
+    	},
+    	
+    	loadBuildEventList: function () {
+			var myselect = $j('<select>');
+			myselect.append( $j('<option></option>').val(null).html("Choose a Build Event to simulate...") );
+    		$j("#editTemplateItemForm input.buildState[type=checkbox]").each(function (index, checkbox) {
+    			var label = checkbox.nextSibling.nodeValue;
+    			var isChecked = $j('input#' + checkbox.id).is(':checked');
+    			if (isChecked) {
+    				myselect.append( $j('<option></option>').val(checkbox.id).html(label) );
+    			} else {
+    				myselect.append( $j('<option></option>').val(checkbox.id).html(label).attr("disabled", "disabled") );
+    			}
+    			console.log("Found checkbox: " + checkbox.name + " : " + label + " : " + isChecked);
+    		});
+    		$j("#previewTemplateItemDialogBuildStateSelect").empty().append(myselect.html());
+    	},
+    	
+    	showDialog: function () {
+    		this.showCentered();
+    		this.loadProjectList();
+    		this.loadBuildEventList();
+    	}
+    	
     })),
     
     NoRestApiDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {

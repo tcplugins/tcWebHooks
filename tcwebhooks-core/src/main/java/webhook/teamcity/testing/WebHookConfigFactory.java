@@ -8,5 +8,6 @@ public interface WebHookConfigFactory {
 
 	WebHookConfig build(WebHookExecutionRequest webHookExecutionRequest);
 	WebHookConfig build(WebHookTemplateExecutionRequest webHookExecutionRequest) throws WebHookConfigNotFoundException;
+	WebHookConfig buildSimple(WebHookTemplateExecutionRequest webHookTemplateExecutionRequest);
 
 }

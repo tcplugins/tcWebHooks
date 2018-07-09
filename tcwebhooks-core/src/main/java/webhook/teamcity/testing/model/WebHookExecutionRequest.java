@@ -13,7 +13,7 @@ public class WebHookExecutionRequest {
 
 	// These are obtained from the test request.
 	private Long buildId;
-	private String projectId;
+	private String projectExternalId;
 	private BuildStateEnum testBuildState;
 	
 	// These are obtained from the edit WebHook dialog box, 

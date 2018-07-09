@@ -16,16 +16,17 @@ import webhook.teamcity.settings.WebHookConfig;
 public class WebHookHistoryItem {
 	
 	@NotNull  private final String projectId;
-	@Nullable private SProject sProject;
+	@Nullable private String projectName;
 	@Nullable private String buildTypeId;
-	@Nullable  private String buildTypeName;
-	@Nullable  private String buildTypeExternalId;
+	@Nullable private String buildTypeName;
+	@Nullable private String buildTypeExternalId;
 	@Nullable private Long buildId;
 	@NotNull  private final WebHookConfig webHookConfig;
 	@NotNull  private final WebHookExecutionStats webHookExecutionStats;
 	@Nullable private final WebHookErrorStatus webhookErrorStatus;
 	@NotNull  private final LocalDateTime timestamp;
 	@Nullable private GeneralisedWebAddress generalisedWebAddress;
+	@NotNull  private boolean isTest = false;
 	
 	@Data @AllArgsConstructor
 	public static class WebHookErrorStatus {
@@ -46,6 +47,10 @@ public class WebHookHistoryItem {
 			return generalisedWebAddress.getHashedGeneralisedAddress();
 		}
 		return "unknown";
+	}
+	
+	public String getTest() {
+		return this.isTest ? " (Test)" : "";
 	}
 	
 	protected WebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats, SBuild sBuild, WebHookErrorStatus errorStatus) {

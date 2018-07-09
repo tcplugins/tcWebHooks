@@ -12,6 +12,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
@@ -51,11 +52,11 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 
 	@Override
 	public WebHookConfig build(WebHookTemplateExecutionRequest webHookExecutionRequest) throws WebHookConfigNotFoundException {
-		return findWebHookWithId(webHookExecutionRequest.getProjectId(), webHookExecutionRequest.getUniqueKey()).copy();
+		return findWebHookWithId(webHookExecutionRequest.getProjectExternalId(), webHookExecutionRequest.getUniqueKey()).copy();
 	}
 
 	private WebHookConfig findWebHookWithId(String projectId, String webHookConfigUniqueId) throws WebHookConfigNotFoundException {
-		SProject myProject = myServer.getProjectManager().findProjectById(projectId);
+		SProject myProject = myServer.getProjectManager().findProjectByExternalId(projectId);
 		for (SProject project : myProject.getProjectPath()){
 			WebHookProjectSettings projSettings = (WebHookProjectSettings) myProjectSettingsManager.getSettings(project.getProjectId(), WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
 		    	if (projSettings.isEnabled()){
@@ -82,6 +83,24 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 		    	}
 		}
     		throw new WebHookConfigNotFoundException(String.format("Webhook Configuration %s was not found", webHookConfigUniqueId));
+	}
+
+	@Override
+	public WebHookConfig buildSimple(WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
+		// TODO Auto-generated method stub
+		return WebHookConfig.builder()
+				 .url(webHookTemplateExecutionRequest.getUrl())
+				 .payloadFormat(webHookTemplateExecutionRequest.getFormat())
+				 //.payloadTemplate(webHookExecutionRequest.getTemplateId())
+				 .templates(new TreeMap<String,CustomMessageTemplate>())
+				 //.authEnabled(webHookExecutionRequest.isAuthEnabled())
+				 //.authType(webHookExecutionRequest.getAuthType())
+				 //.authParameters(webHookExecutionRequest.getAuthParameters())
+				 //.filters(new ArrayList<WebHookFilterConfig>())
+				 //.states(webHookExecutionRequest.getConfigbuildState())
+				 .headers(new ArrayList<WebHookHeaderConfig>())
+				 .extraParameters(new TreeMap<String,String>()) //TODO: Should we get from config somehow?
+				 .build();
 	}
 	
 }

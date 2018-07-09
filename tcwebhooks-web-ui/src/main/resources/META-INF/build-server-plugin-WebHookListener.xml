@@ -207,6 +207,14 @@
 	<bean id="webHookTemplateResolver"
 		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
+		
+	<bean id="webHookConfigFactory"
+		class="webhook.teamcity.testing.WebHookConfigFactoryImpl"
+		/>
+		
+	<bean id="webHookUserRequestedExecutor"
+		class="webhook.teamcity.testing.WebHookUserRequestedExecutorImpl"
+		/>
 
 	<bean id="legacyDepricatedFormatWebHookTemplate"
 		class="webhook.teamcity.payload.template.LegacyDeprecatedFormatWebHookTemplate"

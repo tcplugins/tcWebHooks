@@ -24,4 +24,9 @@ public interface WebHookHistoryItemFactory {
 													SProject project, 
 													WebHookErrorStatus errorStatus);
 
-}
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig webHookConfig,
+													WebHookExecutionStats executionStats, 
+													SBuild sRunningBuild, 
+													WebHookErrorStatus webHookErrorStatus);
+
+}	

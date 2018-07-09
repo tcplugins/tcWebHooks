@@ -2,6 +2,7 @@ package webhook.teamcity.testing;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,6 +54,7 @@ import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
+import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -97,10 +99,13 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	
 	private MockSBuildType buildType = new MockSBuildType("name", "description", "buildTypeId");
-	private SProject sproject = new MockSProject("name", "description", "projectId", "projectExternalId", buildType);
+	private SProject sproject = new MockSProject("My Project", "description", "project01", "MyProject", buildType);
 	private SRunningBuild runningBuild = new MockSRunningBuild(buildType, "triggeredBy", Status.NORMAL, "statusText", "buildNumber"); 
 	
 	private WebHookHistoryItemFactory webHookHistoryItemFactory;
+	
+	@Mock
+	private WebHookHistoryRepository webHookHistoryRepository;
 	
 	@Mock
 	private ParametersProvider parametersProvider;
@@ -124,7 +129,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		when(server.findBuildInstanceById(1)).thenReturn(runningBuild);
 		when(server.findBuildInstanceById(2)).thenReturn(runningBuild);
 		when(server.getProjectManager()).thenReturn(projectManager);
-		when(projectManager.findProjectById(anyString())).thenReturn(sproject);
+		when(projectManager.findProjectByExternalId(eq("MyProject"))).thenReturn(sproject);
+		when(projectManager.findProjectById(eq("project01"))).thenReturn(sproject);
 		
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, new ExtraParametersMap(new HashMap<String,String>()), new ExtraParametersMap(new HashMap<String,String>()));
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-slackcompact-jsonTemplate-AllEnabled.xml"));
@@ -140,14 +146,14 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 
 	@Test
 	public void testRequestWebHookExecutionWebHookExecutionRequest() {
-		WebHookUserRequestedExecutorImpl executorImpl = new WebHookUserRequestedExecutorImpl(
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,
-				projectSettingsManager, 
 				webHookConfigFactory, 
 				webHookFactory,
 				webHookTemplateResolver, 
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
+				webHookHistoryRepository,
 				webAddressTransformer
 			);
 		
@@ -156,7 +162,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
-				.projectId("project01")
+				.projectExternalId("MyProject")
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				
 				.url("http://localhost:12345/webhook")
@@ -174,14 +180,14 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	@Test
 	public void testRequestWebHookExecutionWebHookExecutionRequestReturns200() throws InterruptedException {
-		WebHookUserRequestedExecutorImpl executorImpl = new WebHookUserRequestedExecutorImpl(
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,
-				projectSettingsManager, 
 				webHookConfigFactory, 
 				webHookFactory,
 				webHookTemplateResolver, 
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
+				webHookHistoryRepository,
 				webAddressTransformer
 				);
 		
@@ -190,7 +196,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
-				.projectId("project01")
+				.projectExternalId("MyProject")
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				
 				.url("http://localhost:58001/200")
@@ -213,14 +219,14 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 
 	@Test
 	public void testRequestWebHookExecutionWebHookTemplateExecutionRequest() {
-		WebHookUserRequestedExecutorImpl executorImpl = new WebHookUserRequestedExecutorImpl(
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,
-				projectSettingsManager,
 				webHookConfigFactory, 
 				webHookFactory,
 				webHookTemplateResolver, 
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
+				webHookHistoryRepository,
 				webAddressTransformer
 			);
 		
@@ -230,7 +236,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
 				.buildId(2L)
-				.projectId(sproject.getProjectId())
+				.projectExternalId(sproject.getExternalId())
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				.uniqueKey(loadedConfig.getUniqueKey())
 				.url("http://localhost:12345/webhook")
@@ -248,14 +254,14 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	@Test
 	public void testRequestWebHookExecutionWebHookTemplateExecutionRequestReturns200() throws InterruptedException {
-		WebHookUserRequestedExecutorImpl executorImpl = new WebHookUserRequestedExecutorImpl(
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,
-				projectSettingsManager,
 				webHookConfigFactory, 
 				webHookFactory,
 				webHookTemplateResolver, 
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
+				webHookHistoryRepository,
 				webAddressTransformer
 				);
 		
@@ -265,7 +271,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
 				.buildId(2L)
-				.projectId(sproject.getProjectId())
+				.projectExternalId(sproject.getExternalId())
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				.uniqueKey(loadedConfig.getUniqueKey())
 				.url("http://localhost:58001/200")
@@ -287,14 +293,14 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	@Test
 	public void testRequestWebHookExecutionWebHookTemplateExecutionRequestWithInvalidWebHook() {
-		WebHookUserRequestedExecutorImpl executorImpl = new WebHookUserRequestedExecutorImpl(
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,
-				projectSettingsManager,
 				webHookConfigFactory, 
 				webHookFactory,
 				webHookTemplateResolver, 
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
+				webHookHistoryRepository,
 				webAddressTransformer
 				);
 		
@@ -303,7 +309,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
 				.buildId(2L)
-				.projectId(sproject.getProjectId())
+				.projectExternalId(sproject.getExternalId())
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				.uniqueKey("12345")
 				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildId}"))
@@ -339,17 +345,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		@Override
 		public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
 				SBuild sBuild, WebHookErrorStatus errorStatus) {
-			try {
-				return new WebHookHistoryItem(
-						"prodjectId", sProject, "buildTypeId", 
-						"buildTypeName", "buildTypeExternalId", 1L, whc, 
-						webHookExecutionStats, 
-						errorStatus, new LocalDateTime(), 
-						webAddressTransformer.getGeneralisedHostName(new URL(whc.getUrl())));
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				return null;
-			}
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		@Override
@@ -364,6 +361,24 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				SProject project, WebHookErrorStatus errorStatus) {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		@Override
+		public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc,
+				WebHookExecutionStats webHookExecutionStats, SBuild sBuild, WebHookErrorStatus errorStatus) {
+			try {
+				return new WebHookHistoryItem(
+						"prodjectId", sProject.getName(), 
+						"buildTypeId", 
+						"buildTypeName", "buildTypeExternalId", 1L, whc, 
+						webHookExecutionStats, 
+						errorStatus, new LocalDateTime(), 
+						webAddressTransformer.getGeneralisedHostName(new URL(whc.getUrl())),
+						true);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 		
 	}
