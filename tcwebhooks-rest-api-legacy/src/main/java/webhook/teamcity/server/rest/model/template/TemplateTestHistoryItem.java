@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class TemplateTestHistoryItem {
 	
 	@XmlElement
-	String datetime;
+	String dateTime;
 	
 	@XmlElement(name = "error")
 	ErrorStatus error;
