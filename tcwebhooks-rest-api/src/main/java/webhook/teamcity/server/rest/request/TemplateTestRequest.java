@@ -31,6 +31,7 @@ public class TemplateTestRequest {
 	@Context @NotNull private PermissionChecker myPermissionChecker;
 	
 	@POST
+	@Path("/execute")
 	@Consumes({"application/xml", "application/json"})
 	@Produces({"application/xml", "application/json"})
 	public TemplateTestHistoryItem executeWebHookTemplateRequest(TemplateTestExecutionRequest executionRequest) {
@@ -58,7 +59,7 @@ public class TemplateTestRequest {
         
         return TemplateTestHistoryItem
 					.builder()
-					.datetime(webHookHistoryItem.getTimestamp().toString())
+					.dateTime(webHookHistoryItem.getTimestamp().toString())
 					.trackingId(webHookHistoryItem.getWebHookExecutionStats().getTrackingIdAsString())
 					.url(webHookHistoryItem.getWebHookConfig().getUrl())
 					.executionTime(String.valueOf(webHookHistoryItem.getWebHookExecutionStats().getTotalExecutionTime()) + " ms")

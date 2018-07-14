@@ -315,23 +315,24 @@
                              targetIframe="hidden-iframe"
                              onsubmit="return WebHooksPlugin.PreviewTemplateItemDialog.doPost();">
 
-            <table class="runnerFormTable">
-                <tr><td>Are you sure you want to delete this Build Event Template? There is no undo.
-                        <div id="ajaxDeleteResult"></div>
-                </td></tr>
-            </table>
             <input type="hidden" id="templateId" name="templateId"/>
             <input type="hidden" id="templateNumber" name="templateNumber"/>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="previewTemplateItem"/>
             <table style="width:100%">
+            	<tr><td colspan=2><h4>Preview Template Payload</h4></td></tr>
                 <tr><td colspan=2>Select a build to use as example data for a webhook test execution:</td></tr> 
 	            <tr><td>Project:</td><td> <forms:select id="previewTemplateItemDialogProjectSelect" name="previewTemplateItemDialogProjectSelect"/></td></tr>
             	<tr><td>Build:</td><td> <forms:select id="previewTemplateItemDialogBuildSelect" name="previewTemplateItemDialogBuildSelect"/><br></td></tr>
             	<tr><td>Build Event:</td><td> <forms:select id="previewTemplateItemDialogBuildStateSelect" name="previewTemplateItemDialogBuildStateSelect"/><br></td></tr>
+	           	<tr><td colspan="2"><div>
+           						<div id="currentTemplatePreview"></div>
+           						</div></td></tr>
+				<tr><td colspan=2><h4>Execute Test Webhook</h4></td></tr>           						
+            	<tr><td>WebHook:</td><td> <forms:select id="previewTemplateItemDialogWebHookSelect" name="previewTemplateItemDialogWebHookSelect"/><br></td></tr>
+            	<tr><td>URL:</td><td> <input type=text length=1024 size=50 id="previewTempleteItemDialogUrl" name="previewTempleteItemDialogUrl" placeholder="Enter a URL, or choose a webhook above, or both (to override the URL)"><br></td></tr>
+				<tr><td colspan=2><div id="previewTempleteItemDialogAjaxResult" /></td></tr>            	
            	</table>
-           	<div>
-           		<div id="currentTemplatePreview"></div>
-           	</div>
+           						
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="previewTemplateItemDialogSubmit" label="Send Test WebHook for Build Event"/>
                 <forms:cancel onclick="WebHooksPlugin.PreviewTemplateItemDialog.close()"/>

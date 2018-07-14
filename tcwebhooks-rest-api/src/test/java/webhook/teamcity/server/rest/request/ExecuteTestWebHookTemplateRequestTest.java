@@ -55,7 +55,7 @@ public class ExecuteTestWebHookTemplateRequestTest extends WebHookAbstractSpring
         											"http://localhost/somewhere",
         											null,
         											"buildStarted");
-        TemplateTestHistoryItem responseMsg = webResource.path(API_TEMPLATE_TEST_URL).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(TemplateTestHistoryItem.class, executionRequest);
+        TemplateTestHistoryItem responseMsg = webResource.path(API_TEMPLATE_TEST_URL + "/execute").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(TemplateTestHistoryItem.class, executionRequest);
         
     	prettyPrint(responseMsg);
     }
@@ -73,7 +73,7 @@ public class ExecuteTestWebHookTemplateRequestTest extends WebHookAbstractSpring
     			"http://localhost/somewhere",
     			null,
     			"buildStarted");
-    	String responseMsg = webResource.path(API_TEMPLATE_TEST_URL).type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML_TYPE).post(String.class, executionRequest);
+    	String responseMsg = webResource.path(API_TEMPLATE_TEST_URL + "/execute").type(MediaType.APPLICATION_XML).accept(MediaType.APPLICATION_XML_TYPE).post(String.class, executionRequest);
     	
     	System.out.println(responseMsg);
     }

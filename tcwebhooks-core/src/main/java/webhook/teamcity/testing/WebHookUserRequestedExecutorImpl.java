@@ -96,6 +96,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 				webHookConfig = myWebHookConfigFactory.buildSimple(webHookTemplateExecutionRequest);
 			} else {
 				webHookConfig = myWebHookConfigFactory.build(webHookTemplateExecutionRequest);
+				webHookConfig.setPayloadFormat(webHookTemplateExecutionRequest.getFormat());
 			}
 		} catch (WebHookConfigNotFoundException e) {
 			SBuild sbuild = myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId());

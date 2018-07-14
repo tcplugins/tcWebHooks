@@ -239,6 +239,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.projectExternalId(sproject.getExternalId())
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				.uniqueKey(loadedConfig.getUniqueKey())
+				.format("jsontemplate")
 				.url("http://localhost:12345/webhook")
 				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildId}"))
 				.defaultTemplate(new WebHookTemplateText(false, "non-Branch text for build: ${buildId}"))
@@ -274,6 +275,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.projectExternalId(sproject.getExternalId())
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				.uniqueKey(loadedConfig.getUniqueKey())
+				.format("jsontemplate")
 				.url("http://localhost:58001/200")
 				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildId}"))
 				.defaultTemplate(new WebHookTemplateText(false, "non-Branch text for build: ${buildId}"))
@@ -312,6 +314,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.projectExternalId(sproject.getExternalId())
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				.uniqueKey("12345")
+				.format("jsontemplate")
 				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildId}"))
 				.defaultTemplate(new WebHookTemplateText(false, "non-Branch text for build: ${buildId}"))
 				.build();
@@ -337,29 +340,25 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
 
 		
-		public MockWebHookHistoryItemFactory(
-				SProject sproject) {
+		public MockWebHookHistoryItemFactory(SProject sproject) {
 			this.sProject = sproject;
 		}
 
 		@Override
 		public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
 				SBuild sBuild, WebHookErrorStatus errorStatus) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats executionStats,
 				SBuildType sBuildType, WebHookErrorStatus errorStatus) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats executionStats,
 				SProject project, WebHookErrorStatus errorStatus) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
