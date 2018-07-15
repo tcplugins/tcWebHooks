@@ -407,9 +407,13 @@ WebHooksPlugin = {
         	} else {
 	    		$j(myJson.buildState).each(function() {
 	    			//console.log(this.type + " :: "+ this.enabled);
-	    			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
-	    			if (this.editable) {
-	    				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+	    			if (action === 'addDefaultTemplate') {
+	    				$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", this.editable).prop( "disabled", true);
+	    			} else {
+		    			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", this.enabled).prop( "disabled", ! this.editable);
+		    			if (this.editable) {
+		    				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
+		    			}
 	    			}
 	    		});
         	}
