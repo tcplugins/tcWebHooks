@@ -86,15 +86,15 @@
 					    <td><a href="../viewType.html?buildTypeId=${historyItem.buildTypeExternalId}">${historyItem.buildTypeName}</a></td>
 					</c:if>
 					
-					<c:if test="${afn:permissionGrantedForProject(historyItem.SProject, 'EDIT_PROJECT')}">
+					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.projectId, 'EDIT_PROJECT')}">
 						<td>${historyItem.webHookExecutionStats.url}</td>
 					</c:if>
 					
-					<c:if test="${not afn:permissionGrantedForProject(historyItem.SProject, 'EDIT_PROJECT')}">
+					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.projectId, 'EDIT_PROJECT')}">
 						<td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** ${historyItem.url}</span></td>
 					</c:if>
 					
-					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}">undefined</c:out></td>
+					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}${historyItem.test}">undefined</c:out></td>
 					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
 	   				</tr>
 	        	
