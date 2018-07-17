@@ -9,6 +9,14 @@ import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
+/**
+ * 
+ * A NoOp JaxHelper so that any changes we make to a template are not peristed anywhere.
+ * This is used by the testing code when generating a Template on the fly for test webhook execution. 
+ * 
+ * @author netwolfuk
+ *
+ */
 public class  NoOpJaxHelper implements WebHookTemplateJaxHelper {
 
 	/**

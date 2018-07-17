@@ -22,10 +22,12 @@
     <bs:linkCSS>
       /css/admin/adminMain.css
       ${teamcityPluginResourcesPath}WebHook/css/styles.css
+      ${teamcityPluginResourcesPath}WebHook/highlight/styles/tomorrow.css
     </bs:linkCSS>
     <bs:linkScript>
       ${teamcityPluginResourcesPath}WebHook/js/moment-2.22.2.min.js
       ${teamcityPluginResourcesPath}WebHook/js/editWebhookTemplate.js
+      ${teamcityPluginResourcesPath}WebHook/highlight/highlight.pack.js
     </bs:linkScript>
     <script type="text/javascript">
       BS.Navigation.items = [

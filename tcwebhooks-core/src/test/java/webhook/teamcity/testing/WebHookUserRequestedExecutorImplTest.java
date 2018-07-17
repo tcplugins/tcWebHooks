@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -24,7 +23,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import jetbrains.buildServer.StatusDescriptor;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
@@ -69,6 +67,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
+import webhook.teamcity.testing.model.WebHookRenderResult;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
@@ -110,10 +109,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	@Mock
 	private ParametersProvider parametersProvider;
 	
-	private final StatusDescriptor runningBuildStatusDescriptor = new StatusDescriptor(Status.NORMAL, "text");
-	
-	private final Date buildStartDate = new Date();
-	
 	private final WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
 	
 	@Mock
@@ -144,6 +139,42 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		webHookHistoryItemFactory = new MockWebHookHistoryItemFactory(sproject);
 	}
 
+	
+	@Test
+	public void testRequestWebHookPreviewWebHookTemplateExecutionRequest() {
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
+				server, mainSettings,
+				webHookConfigFactory, 
+				webHookFactory,
+				webHookTemplateResolver, 
+				webHookPayloadManager, 
+				webHookHistoryItemFactory,
+				webHookHistoryRepository,
+				webAddressTransformer
+			);
+		
+		BuildState finishedBuildState = new BuildState();
+		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
+		
+		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
+				.buildId(2L)
+				.projectExternalId(sproject.getExternalId())
+				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
+				.uniqueKey(loadedConfig.getUniqueKey())
+				.format("jsontemplate")
+				.url("http://localhost:12345/webhook")
+				.defaultBranchTemplate(new WebHookTemplateBranchText("{\n \"branch_buildId\" : \"${buildId}\" \n}"))
+				.defaultTemplate(new WebHookTemplateText(false, "{ \"nonBranch_buildId\" : \"${buildId}\" }"))
+				.build();
+		WebHookRenderResult payload = executorImpl.requestWebHookPreview(webHookTemplateExecutionRequest);
+		
+		Loggers.SERVER.debug("################# " + payload);
+		assertEquals(true, payload.getHtml().contains("branch_buildId"));
+
+	}	
+	
+	
 	@Test
 	public void testRequestWebHookExecutionWebHookExecutionRequest() {
 		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(

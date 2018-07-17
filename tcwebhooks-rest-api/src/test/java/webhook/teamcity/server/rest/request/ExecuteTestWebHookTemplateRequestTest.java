@@ -60,6 +60,24 @@ public class ExecuteTestWebHookTemplateRequestTest extends WebHookAbstractSpring
     	prettyPrint(responseMsg);
     }
     
+    @Test(expected=com.sun.jersey.api.client.UniformInterfaceException.class)
+    public void testRequestTemplateTestsUsingJsonWithMissingFieldReturn406() {
+    	WebResource webResource = resource();
+    	TemplateTestExecutionRequest executionRequest = new TemplateTestExecutionRequest(
+    			null,
+    			"",
+    			"a test branch template",
+    			false,
+    			"12345",
+    			"project01",
+    			"http://localhost/somewhere",
+    			null,
+    			"buildStarted");
+    	TemplateTestHistoryItem responseMsg = webResource.path(API_TEMPLATE_TEST_URL + "/execute").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON_TYPE).post(TemplateTestHistoryItem.class, executionRequest);
+    	
+    	prettyPrint(responseMsg);
+    }
+    
     @Test
     public void testRequestTemplateTestsUsingXml() {
     	WebResource webResource = resource();

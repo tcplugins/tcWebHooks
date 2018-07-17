@@ -482,7 +482,7 @@ WebHooksPlugin = {
 							myselect.append( $j('<option></option>').val(project.id).html(project.name) );
 						}
 					});
-					$j("#previewTemplateItemDialogProjectSelect").empty().append(myselect.html()).change(
+					$j("#previewTemplateItemDialogProjectSelect").empty().append(myselect.html()).off().change(
 							function() {
 								WebHooksPlugin.PreviewTemplateItemDialog.loadBuildList( $j(this).val() );
 								WebHooksPlugin.PreviewTemplateItemDialog.loadWebHookList( $j(this).val() );
@@ -522,6 +522,9 @@ WebHooksPlugin = {
 						myselect.append( $j('<option></option>').val(build.id).html(desc) );
     				});
     				$j("#previewTemplateItemDialogBuildSelect").empty().append(myselect.html());
+    	    		$j("#previewTemplateItemDialogBuildSelect").off().change( function() {
+        				WebHooksPlugin.PreviewTemplateItemDialog.renderPreview();
+    	    		});
     			},
     			error: function (response) {
     				if (response.status == 404) {
@@ -558,6 +561,9 @@ WebHooksPlugin = {
     		});
     		$j("#previewTemplateItemDialogBuildStateSelect").empty().append(myselect.html());
     		$j("#previewTemplateItemDialogBuildStateSelect").val(selectedItem);
+    		$j("#previewTemplateItemDialogBuildStateSelect").off().change( function() {
+    				WebHooksPlugin.PreviewTemplateItemDialog.renderPreview();
+    		});
     	},
     	
     	loadWebHookList: function( projectId ) {
@@ -591,9 +597,10 @@ WebHooksPlugin = {
 	    					
 							myselect.append( $j('<option></option>').val(webhook.id).html(desc) );
 	    				});
-	    				$j("#previewTemplateItemDialogWebHookSelect").empty().append(myselect.html()).change(
+	    				$j("#previewTemplateItemDialogWebHookSelect").empty().append(myselect.html()).off().change(
 								function() {
 									WebHooksPlugin.PreviewTemplateItemDialog.handleWebHookListChange( $j(this).val() );
+									WebHooksPlugin.PreviewTemplateItemDialog.renderPreview();
 								});
     				}
     			},
@@ -624,6 +631,60 @@ WebHooksPlugin = {
     		}
     	},
     	
+    	renderPreview: function () {
+    		if (
+    				$j("#previewTemplateItemDialogProjectSelect").val() &&
+    				$j("#previewTemplateItemDialogBuildSelect").val() &&
+    				$j("#previewTemplateItemDialogBuildStateSelect").val()
+    			)
+    		{
+        		var jsonRequest = {};
+        		jsonRequest.templateText = editor.getValue();
+        		jsonRequest.useTemplateTextForBranch = $j("#editTemplateItemForm input#useTemplateTextForBranch").is(':checked');
+        		jsonRequest.branchTemplateText = editorBranch.getValue();
+        		jsonRequest.buildId = $j("#previewTemplateItemDialogBuildSelect").val();
+        		jsonRequest.projectExternalId = $j("#previewTemplateItemDialogProjectSelect").val();
+        		jsonRequest.format = "jsontemplate";
+        		jsonRequest.buildStateName = $j("#previewTemplateItemDialogBuildStateSelect").val();
+        		jsonRequest.url = "";
+        		
+    			$j.ajax ({
+    				url: window['base_uri'] + '/app/rest/webhooks/test/template/preview',
+    				type: "POST",
+    				data: JSON.stringify(jsonRequest),
+    				dataType: 'json',
+    				headers : {
+    					'Content-Type' : 'application/json',
+    					'Accept' : 'text/html'
+    				},
+    				success: function (response) {
+    					console.log(response.responseText);
+						$j('#currentTemplatePreview').html(response.responseText);
+						hljs.highlightBlock($j('#currentTemplatePreview pre code'));
+    					$j('pre code').each(function(i, block) {
+    					    hljs.highlightBlock(block);
+    					  });						
+    				},
+    				error: function (response) {
+    					console.log(response);
+    					if (response.status === 422) {
+    						$j('#currentTemplatePreview').html(response);
+    					} else {
+    					
+	    					$j('#currentTemplatePreview').html(response.responseText);
+	    					hljs.highlightBlock($j('#currentTemplatePreview pre code'));
+	    					
+	    					$j('pre code').each(function(i, block) {
+	    					    hljs.highlightBlock(block);
+	    					  });
+    					}
+    				}
+    			});        		
+    		} else {
+    			$j('#currentTemplatePreview').empty();
+    		}
+    	},
+    	
     	doPost: function() {
     		
 			var dialog = this;
@@ -636,6 +697,7 @@ WebHooksPlugin = {
     		jsonRequest.projectExternalId = $j("#previewTemplateItemDialogProjectSelect").val();
     		jsonRequest.format = "jsontemplate";
     		jsonRequest.webhookId = $j("#previewTemplateItemDialogWebHookSelect").val();
+    		jsonRequest.url = $j("#previewTempleteItemDialogUrl").val();
     		jsonRequest.buildStateName = $j("#previewTemplateItemDialogBuildStateSelect").val();
     		
 			$j.ajax ({
@@ -650,6 +712,8 @@ WebHooksPlugin = {
 				success: function (response) {
 					//dialog.close();
 					//$("buildEventTemplatesContainer").refresh();
+					
+					dialog.cleanErrors();
 					var ul = $j('<ul>');
 					
 					if (response.error) {
@@ -672,12 +736,27 @@ WebHooksPlugin = {
     		return false;
     	},
     	
+        ajaxError: function(message) {
+        	var next = $j("#previewTempleteItemDialogAjaxResult").next();
+        	if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+        		next.text(message);
+        	} else {
+        		$j("#previewTempleteItemDialogAjaxResult").after("<p class='error'>" + message + "</p>");
+        	}
+        },  
+        
+        cleanErrors: function () {
+            $j("#previewTemplateItemForm .error").remove();
+            $j("#previewTempleteItemDialogAjaxResult").empty();
+        },        
+    	
     	showDialog: function () {
     		this.showCentered();
     		if ( ! $j("#previewTemplateItemDialogProjectSelect").val()) {
     			this.loadProjectList();
     		}
     		this.loadBuildEventList();
+    		this.renderPreview();
     	}
     	
     })),
