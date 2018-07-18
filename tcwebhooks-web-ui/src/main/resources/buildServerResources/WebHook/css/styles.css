@@ -48,6 +48,12 @@ label.webhookEnabled {
 	height:25em;
 }
 
+#currentTemplatePreview pre code.hljs, 
+.endpointPayload pre code.hljs, 
+#currentTemplateRendered pre code.hljs {
+	overflow-x: visible;
+}
+
 #previewTempleteItemDialogAjaxResult {
 	padding: 1.5em;
 }

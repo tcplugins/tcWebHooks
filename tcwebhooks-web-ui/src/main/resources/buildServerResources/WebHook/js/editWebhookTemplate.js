@@ -672,9 +672,10 @@ WebHooksPlugin = {
     					} else {
     					
 	    					$j('#currentTemplatePreview').html(response.responseText);
-	    					hljs.highlightBlock($j('#currentTemplatePreview pre code'));
+	    					//hljs.highlightBlock($j('#currentTemplatePreview pre code'));
 	    					
 	    					$j('pre code').each(function(i, block) {
+	    						console.log("blah " + block);
 	    					    hljs.highlightBlock(block);
 	    					  });
     					}
