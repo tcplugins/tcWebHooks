@@ -28,8 +28,10 @@ public class HtmlErrorMessageBodyWriter implements MessageBodyWriter<ErrorResult
     @Override
     public long getSize(ErrorResult errorResult, Class<?> type, Type genericType,
                         Annotation[] annotations, MediaType mediaType) {
-        // deprecated by JAX-RS 2.0 and ignored by Jersey runtime
-        return 0;
+    	//
+    	// Jersey 1.x requires a content length.
+    	//
+        return buildOutput(errorResult).length();
     }
 
     @Override
@@ -38,16 +40,17 @@ public class HtmlErrorMessageBodyWriter implements MessageBodyWriter<ErrorResult
                         OutputStream out) throws IOException, WebApplicationException {
 
         Writer writer = new PrintWriter(out);
-        writer.write("<html>");
-        writer.write("<body><h2>Errors</h2><ul>");
-        
-        for (Entry<String,String> entry : errorResult.getErrors().entrySet()) {
-        	writer.write("<li>" + entry.getKey() + " : " + entry.getValue() + "</li>");
-        }
-        writer.write("</ul></body>");
-        writer.write("</html>");
-
+        writer.write(buildOutput(errorResult));
         writer.flush();
         writer.close();
+    }
+    
+    private String buildOutput(ErrorResult errorResult) {
+    	StringBuilder stringBuilder = new StringBuilder("<html>\n").append("<body><h2>Errors</h2><ul>");
+        for (Entry<String,String> entry : errorResult.getErrors().entrySet()) {
+        	stringBuilder.append("<li>").append(entry.getKey()).append(" : ").append(entry.getValue()).append("</li>");
+        }
+        stringBuilder.append("</ul></body></html>");
+        return stringBuilder.toString();
     }
 }

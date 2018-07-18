@@ -668,7 +668,7 @@ WebHooksPlugin = {
     				error: function (response) {
     					console.log(response);
     					if (response.status === 422) {
-    						$j('#currentTemplatePreview').html(response);
+    						$j('#currentTemplatePreview').html(response.responseText);
     					} else {
     					
 	    					$j('#currentTemplatePreview').html(response.responseText);
