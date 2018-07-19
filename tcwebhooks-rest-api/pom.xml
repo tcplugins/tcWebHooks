@@ -21,11 +21,11 @@
 		    <url>file://${basedir}/lib-compile</url>
 		  </repository>
 
-		    <repository>
+		  <!-- <repository>
 		      <id>jcenter-snapshots</id>
 		      <name>jcenter</name>
 		      <url>https://jcenter.bintray.com/</url>
-		    </repository>
+		    </repository>-->
 		  
 		  <repository>
 		    <id>RiffPie Repo for Jersey Test addon</id>
@@ -33,14 +33,14 @@
 		  </repository>
 		  
 
-    <repository>
+    <!-- <repository>
         <id>spring-milestones</id>
         <name>Spring Milestones</name>
         <url>https://repo.spring.io/milestone/</url>
         <snapshots>
             <enabled>false</enabled>
         </snapshots>
-    </repository>
+    </repository>-->
     		  
 	</repositories>
 	<build>
