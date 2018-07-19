@@ -159,7 +159,7 @@
                     </td>
                 </tr>
                 <tr class="templateDetails">
-                    <th>Rank</th>
+                    <th>Rank<l:star/></th>
                     <td>
                         <div><input type="text" id="template.rank" name="template.rank"/></div>
                     </td>
