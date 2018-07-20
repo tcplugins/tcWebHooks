@@ -256,7 +256,7 @@
     				"buildStateDescription", "buildStatusUrl", "notifyType",
 					"buildComment", "buildRunners", "buildTags", "changes",  "comment", "triggeredBy",
 					"buildStartTime", "currentTime", "buildFinishTime", 
-					"branchName", "branchDisplayName", "branchIsDefault",
+					"branchName", "branchDisplayName", "branchIsDefault", "branch",
 					"text", "message",  "rootUrl", "buildStatusHtml", 
 					"agentName", "agentHostname", "agentOs",  
 					"responsibilityUserOld", "responsibilityUserNew"  
