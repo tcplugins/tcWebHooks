@@ -297,7 +297,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 				String webhookFormat, String templateName) {
 			return WebHookTemplateContent.create(
 					state.getShortName(), 
-					myWebHookTemplateConfig.getDefaultBranchTemplate().getTemplateContent(), 
+					myWebHookTemplateConfig.getDefaultTemplate().getTemplateContent(), 
 					true, 
 					myWebHookTemplateConfig.getPreferredDateTimeFormat()
 				);
