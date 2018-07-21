@@ -753,6 +753,9 @@ WebHooksPlugin = {
     	
     	showDialog: function () {
     		this.showCentered();
+    		
+    		$j("#previewTemplateItemDialog h3.dialogTitle").html("Preview &amp; Test Build Event Template");
+    		
     		if ( ! $j("#previewTemplateItemDialogProjectSelect").val()) {
     			this.loadProjectList();
     		}
