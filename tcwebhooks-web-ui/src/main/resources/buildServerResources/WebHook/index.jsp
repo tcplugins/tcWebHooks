@@ -375,7 +375,7 @@
 					if (webhook.payloadTemplate === 'none') {
 						jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html(webhook.payloadFormatForWeb);
 					} else {
-						jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html("<a href='template.html?" + webhook.payloadTemplate +"'>" + webhook.payloadFormatForWeb + "</a>");
+						jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html("<a href='template.html?template=" + webhook.payloadTemplate +"'>" + webhook.payloadFormatForWeb + "</a>");
 					}
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").html(webhook.enabledEventsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").html(webhook.enabledBuildsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#buildPane');});
