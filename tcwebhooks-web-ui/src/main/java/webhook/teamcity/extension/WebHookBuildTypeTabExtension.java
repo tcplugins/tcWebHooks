@@ -19,6 +19,7 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
+import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -28,17 +29,20 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 	private final ProjectSettingsManager myProjectSettingsManager;
 	private final String myPluginPath;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
+	private final WebAddressTransformer myWebAddressTransformer;
 
 	protected WebHookBuildTypeTabExtension(
 			@NotNull ProjectManager projectManager, 
 			@NotNull ProjectSettingsManager projectSettingsManager, 
 			@NotNull WebControllerManager manager,
 			@NotNull PluginDescriptor pluginDescriptor,
-			@NotNull WebHookHistoryRepository webHookHistoryRepository) {
+			@NotNull WebHookHistoryRepository webHookHistoryRepository,
+			@NotNull WebAddressTransformer webAddressTransformer) {
 		super("webHooks", "WebHooks", manager, projectManager);
 		myProjectSettingsManager = projectSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		myWebHookHistoryRepository = webHookHistoryRepository;
+		myWebAddressTransformer = webAddressTransformer;
 	}
 
 	@Override
@@ -51,15 +55,15 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 			 @NotNull SBuildType buildType, SUser user) {
 		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
 		List<SProject> parentProjects = buildType.getProject().getProjectPath();
-		if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
+		/*if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
 			parentProjects.remove(0);
-		}
+		}*/
 		for (SProject projectParent : parentProjects){
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
 							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
-							buildType
+							buildType, myWebAddressTransformer
 							)
 					);
 		}
