@@ -22,11 +22,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jetbrains.buildServer.serverSide.SBuildServer;
 import lombok.Getter;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.server.pluginfixer.JarReport;
 
 public class WebHookTeamCityRestApiZipPluginFixer {
+	
+	private SBuildServer mySBuildServer;
+
+	public WebHookTeamCityRestApiZipPluginFixer(SBuildServer sBuildServer) {
+		mySBuildServer = sBuildServer;
+	}
 	
 	private static final String[] filenames = { "server/jaxb-api-2.2.5.jar", "server/jaxb-impl-2.2.5.jar"};
 	public static final String UNPACKED_LOCATION = File.separator + ".unpacked" + File.separator + "rest-api";
@@ -135,6 +142,13 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	}
 	
 	protected File findTeamCityBaseLocation() {
+		
+		File teamCityHome = new File(this.mySBuildServer.getServerRootPath() + "/WEB-INF");
+		if (teamCityHome.exists() && teamCityHome.isDirectory()) {
+			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: TeamCity WEB-INF is: " + teamCityHome.getAbsolutePath());
+			return teamCityHome;
+		}
+		
 		Map<String, String> env = System.getenv();
 		File catalinaHome = getCatalinaHomeDir(env); 
 		if (catalinaHome != null) {
