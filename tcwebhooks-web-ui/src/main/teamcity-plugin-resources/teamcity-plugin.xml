@@ -5,13 +5,13 @@
     <name>tcWebHooks</name>
     <display-name>Web Hooks (tcWebHooks)</display-name>
     <version>${version}</version>
-    <description>Trigger webhook POST requests from build events. &lt;br/&gt;
+    <description>Trigger webhook POST requests from build events.
            This plugin adds new tabs to the Project and Build pages for viewing and configuring WebHook events.
-        &lt;ul&gt;
-    	   &lt;li&gt;Branch: ${gitBranch}&lt;/li&gt;
-    	   &lt;li&gt;Revision: ${gitHash}&lt;/li&gt;
-    	&lt;/ul&gt; 
+        
+    	   - Branch: ${gitBranch}
+    	   - Revision: ${gitHash}
     </description>
+    <download-url>https://github.com/tcplugins/tcWebHooks/releases</download-url>
     <vendor>
       <name>Net Wolf</name>
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
