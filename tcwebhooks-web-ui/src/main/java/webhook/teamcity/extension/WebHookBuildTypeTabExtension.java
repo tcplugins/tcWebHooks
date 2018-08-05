@@ -55,15 +55,14 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 			 @NotNull SBuildType buildType, SUser user) {
 		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
 		List<SProject> parentProjects = buildType.getProject().getProjectPath();
-		/*if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
-			parentProjects.remove(0);
-		}*/
 		for (SProject projectParent : parentProjects){
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
 							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
-							buildType, myWebAddressTransformer
+							buildType, 
+							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT), 
+							myWebAddressTransformer
 							)
 					);
 		}

@@ -59,36 +59,20 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		List<SProject> parentProjects = project.getProjectPath();
 		
 		model.put("permissionError", "");
-		/*
-		if (!user.getGlobalPermissions().contains(Permission.CHANGE_SERVER_SETTINGS)){
-			parentProjects.remove(0);
-			if (project.getProjectId().equals("_Root")){
-				model.put("permissionError", "<strong>You do not have permission to view WebHooks for the <em>_Root</em> project. Please contact your TeamCity Administrator</strong>");
-			}
-		}*/
 		for (SProject projectParent : parentProjects){
-			if (user.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT)) {
-				// User is admin on the project. Don't pass a transformer.
-				projectAndParents.add(
-						ProjectAndBuildWebhooksBean.newInstance(
-								projectParent,
-								(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
-								null, null
-								)
-						);
-			} else {
-				projectAndParents.add(
-						ProjectAndBuildWebhooksBean.newInstance(
-								projectParent,
-								(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
-								null, myWebAddressTransformer
-								)
-						);
-			}
+			projectAndParents.add(
+					ProjectAndBuildWebhooksBean.newInstance(
+							projectParent,
+							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
+							null, 
+							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT), 
+							myWebAddressTransformer
+						)
+					);
 		}
 		
 		model.put("projectAndParents", projectAndParents);
-   	
+		
     	model.put("projectId", project.getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
     	model.put("projectName", project.getName());

@@ -149,6 +149,8 @@ public class WebHookListener extends BuildServerAdapter {
 		    		
 		    		if (whc.getEnabled()){
 						if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+							whc.setProjectExternalId(project.getExternalId());
+							whc.setProjectInternalId(project.getProjectId());
 							configs.add(whc);
 						} else {
 							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());

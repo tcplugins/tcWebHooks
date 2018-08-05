@@ -135,8 +135,8 @@ public class WebHookHistoryRepositoryImplTest {
 		when(sBuild01.getBuildId()).thenReturn(01L);
 		when(sBuild02.getBuildId()).thenReturn(02L);
 		
-		whc1 = new WebHookConfig("http://url/1", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
-		whc2 = new WebHookConfig("http://url/2", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
+		whc1 = new WebHookConfig("project01", "MyProject", "http://url/1", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
+		whc2 = new WebHookConfig("project01", "MyProject", "http://url/2", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
 		
 		WebHookHistoryRepository historyRepository = new WebHookHistoryRepositoryImpl();
 		historyRepository.addHistoryItem(new WebHookHistoryItem(whc1, webhook01.getExecutionStats(), sBuild01, null));

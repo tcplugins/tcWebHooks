@@ -76,6 +76,8 @@ public class WebHookConfig {
 	@Builder.Default private Boolean authPreemptive = true;
 	private List<WebHookFilterConfig> filters;
 	private List<WebHookHeaderConfig> headers;
+	@Builder.Default private String projectInternalId = null;
+	@Builder.Default private String projectExternalId = null;
 	
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -97,7 +99,7 @@ public class WebHookConfig {
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
 		}
-		
+
 		if (e.getAttribute(ATTR_ENABLED) != null){
 			this.setEnabled(Boolean.parseBoolean(e.getAttributeValue(ATTR_ENABLED)));
 		}
@@ -303,8 +305,10 @@ public class WebHookConfig {
 	 * @param payloadFormat (unvalidated)
 	 * @param webHookAuthConfig 
 	 */
-	public WebHookConfig (String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
+	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
 		this.uniqueKey = "id_" + getRandomKey();
+		this.setProjectInternalId(projectInternalId);
+		this.setProjectExternalId(projectExternalId);
 		this.extraParameters = new TreeMap<>();
 		this.templates = new TreeMap<>();
 		this.authType = "";
@@ -722,6 +726,24 @@ public class WebHookConfig {
 	public WebHookConfig copy() {
 		WebHookConfig configCopy = new WebHookConfig(this.getAsElement()) ;
 		configCopy.setUniqueKey(this.getUniqueKey());
+		configCopy.setProjectInternalId(this.getProjectInternalId());
+		configCopy.setProjectExternalId(this.getProjectExternalId());
 		return configCopy;
+	}
+
+	public String getProjectInternalId() {
+		return projectInternalId;
+	}
+	
+	public void setProjectInternalId(String projectInternalId) {
+		this.projectInternalId = projectInternalId;
+	}
+
+	public String getProjectExternalId() {
+		return projectExternalId;
+	}
+
+	public void setProjectExternalId(String projectExternalId) {
+		this.projectExternalId = projectExternalId;
 	}
 }

@@ -18,13 +18,15 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 
 public class ProjectAndBuildWebhooksBean {
 	SProject project;
+	boolean isAdmin;
 	WebHookProjectSettings webHookProjectSettings;
 	List<WebHookConfigWithGeneralisedAddressWrapper> projectWebhooksWithAddress;
 	List<BuildWebhooksBean> buildWebhooks;
 	
-	public static ProjectAndBuildWebhooksBean newInstance (SProject project, WebHookProjectSettings settings, SBuildType sBuild, WebAddressTransformer webAddressTransformer) {
+	public static ProjectAndBuildWebhooksBean newInstance (SProject project, WebHookProjectSettings settings, SBuildType sBuild, boolean isAdmin, WebAddressTransformer webAddressTransformer) {
 		ProjectAndBuildWebhooksBean bean = new ProjectAndBuildWebhooksBean();
 		bean.project = project;
+		bean.isAdmin = isAdmin;
 		bean.webHookProjectSettings = settings;
 		bean.projectWebhooksWithAddress = new ArrayList<>();
 		
@@ -52,6 +54,10 @@ public class ProjectAndBuildWebhooksBean {
 	
 	public SProject getProject() {
 		return project;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
 	}
 
 	public WebHookProjectSettings getWebHookProjectSettings() {

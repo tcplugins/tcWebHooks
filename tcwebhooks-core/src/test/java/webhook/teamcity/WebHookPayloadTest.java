@@ -77,7 +77,7 @@ public class WebHookPayloadTest {
 		WebHookProjectSettings whps = new WebHookProjectSettings();
 		
 		BuildState state = new BuildState().setAllEnabled();
-		whps.addNewWebHook("project1", url, true, state, "nvpairs", "originalNvpairsTemplate", true, true, new HashSet<String>());
+		whps.addNewWebHook("project1", "MyProject", url, true, state, "nvpairs", "originalNvpairsTemplate", true, true, new HashSet<String>());
 		
     	for (WebHookConfig whc : whps.getWebHooksConfigs()){
 			WebHook wh = new WebHookImpl();

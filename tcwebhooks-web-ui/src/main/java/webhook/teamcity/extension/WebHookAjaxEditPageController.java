@@ -184,7 +184,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
-			    							projSettings.addNewWebHook(myProject.getProjectId(),request.getParameter("URL"), enabled, 
+			    							projSettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
 			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(projSettings.updateSuccessful()){

@@ -34,12 +34,12 @@
 				<table class="testList dark borderBottom">
 					<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
 					<tbody>
-					<c:if test="${not afn:permissionGrantedForProjectWithId(project.externalProjectId, 'EDIT_PROJECT')}">
+					<c:if test="${not project.admin}">
 						<c:forEach items="${project.projectWebhooks}" var="hook">
 							<tr><td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** <c:out value="${hook.generalisedUrl}" /></span></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
 						</c:forEach>
 					</c:if>
-					<c:if test="${afn:permissionGrantedForProjectWithId(project.externalProjectId, 'EDIT_PROJECT')}">
+					<c:if test="${project.admin}">
 						<c:forEach items="${project.projectWebhooks}" var="hook">
 							<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
 						</c:forEach>
@@ -93,12 +93,12 @@
 					    <td><a href="../viewType.html?buildTypeId=${historyItem.buildTypeExternalId}">${historyItem.buildTypeName}</a></td>
 					</c:if>
 					
-					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.projectId, 'EDIT_PROJECT')}">
-						<td>${historyItem.webHookExecutionStats.url}</td>
+					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
+						<td><span title="Webhook from project '${historyItem.webHookConfig.projectExternalId}'">${historyItem.webHookExecutionStats.url}</span></td>
 					</c:if>
 					
-					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.projectId, 'EDIT_PROJECT')}">
-						<td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** ${historyItem.url}</span></td>
+					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
+						<td><span title="You do not have permission to see the full URL for this webhook (no 'EDIT_PROJECT' permission on '${historyItem.webHookConfig.projectExternalId}')">** ${historyItem.url}</span></td>
 					</c:if>
 					
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}${historyItem.test}">undefined</c:out></td>
