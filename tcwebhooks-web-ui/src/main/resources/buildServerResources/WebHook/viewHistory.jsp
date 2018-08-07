@@ -99,12 +99,12 @@
 					    <td><a href="../viewType.html?buildTypeId=${historyItem.buildTypeExternalId}">${historyItem.buildTypeName}</a></td>
 					</c:if>
 					
-					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.projectId, 'EDIT_PROJECT')}">
-						<td>${historyItem.webHookExecutionStats.url}</td>
+					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
+						<td><span title="Webhook from project '${historyItem.webHookConfig.projectExternalId}'">${historyItem.webHookExecutionStats.url}</span></td>
 					</c:if>
 					
-					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.projectId, 'EDIT_PROJECT')}">
-						<td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** ${historyItem.url}</span></td>
+					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
+						<td><span title="You do not have permission to see the full URL for this webhook (no 'EDIT_PROJECT' permission on '${historyItem.webHookConfig.projectExternalId}')">** ${historyItem.url}</span></td>
 					</c:if>
 					
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}${historyItem.test}">undefined</c:out></td>
