@@ -49,6 +49,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	private final WebHookHistoryItemFactory myWebHookHistoryItemFactory;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
+	private final WebHookContentBuilder myWebHookContentBuilder;
 	
 	public WebHookUserRequestedExecutorImpl(
 			SBuildServer server,
@@ -59,7 +60,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 			WebHookPayloadManager webHookPayloadManager,
 			WebHookHistoryItemFactory webHookHistoryItemFactory,
 			WebHookHistoryRepository webHookHistoryRepository,
-			WebAddressTransformer webAddressTransformer
+			WebAddressTransformer webAddressTransformer,
+			WebHookContentBuilder webHookContentBuilder
 			) {
 		myServer = server;
 		myMainSettings = mainSettings;
@@ -70,12 +72,41 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		myWebHookHistoryItemFactory = webHookHistoryItemFactory;
 		myWebHookHistoryRepository = webHookHistoryRepository;
 		myWebAddressTransformer = webAddressTransformer;
+		myWebHookContentBuilder = webHookContentBuilder;
 	}
 
 
 	@Override
-	public WebHookRenderResult requestWebHookPreview(WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
+	public WebHookRenderResult requestWebHookPreview(WebHookExecutionRequest webHookExecutionRequest) {
 
+		WebHookConfig webHookConfig = myWebHookConfigFactory.build(webHookExecutionRequest);
+		WebHook wh = myWebHookFactory.getWebHook(webHookConfig, 
+				myMainSettings.getProxyConfigForUrl(
+						webHookConfig.getUrl()
+						)
+				);		
+		
+		wh = myWebHookContentBuilder.buildWebHookContent(
+				wh, 
+				webHookConfig,
+				myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()), 
+				webHookExecutionRequest.getTestBuildState(), 
+				true
+			);
+		
+		WebHookStringRenderer renderer = myWebHookPayloadManager.getFormat(webHookExecutionRequest.getPayloadFormat()).getWebHookStringRenderer();
+
+		try {
+			return new WebHookRenderResult(renderer.render(wh.getPayload()), webHookExecutionRequest.getPayloadFormat());
+		} catch (WebHookHtmlRendererException ex){
+			Loggers.SERVER.info(ex);
+			return new WebHookRenderResult(wh.getPayload(), ex);
+		}
+	}
+	
+	@Override
+	public WebHookRenderResult requestWebHookPreview(WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
+			
 		WebHookConfig webHookConfig = myWebHookConfigFactory.buildSimple(webHookTemplateExecutionRequest);
 		
 		WebHook wh = myWebHookFactory.getWebHook(webHookConfig, 
@@ -118,7 +149,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 			WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
 		
 		// We need an alternative WebHookTemplateManager. We'll use the injected payload manager, but create our
-		// own jaxHelper. It's only used to persist the template, which we won't do in this stage.
+		// own jaxHelper. The jaxHelper is only used to persist the template, which we won't do in this class.
 		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(myWebHookPayloadManager, new NoOpJaxHelper());
 		
 		WebHookTemplateConfig webHookTemplateConfig = webHookTemplateExecutionRequest.toConfig();

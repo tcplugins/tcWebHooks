@@ -43,10 +43,12 @@ import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.TestingWebHookHttpClientFactoryImpl;
 import webhook.teamcity.TestingWebHookHttpClientFactoryImpl.TestableHttpClient;
+import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
 import webhook.teamcity.WebHookHttpClientFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItem;
@@ -95,7 +97,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	private WebHookAuthenticatorProvider webHookAuthenticatorProvider = new WebHookAuthenticatorProvider();
 
 	private WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, webHookAuthenticatorProvider, webHookHttpClientFactory);
-	
+	private WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver);
 	
 	private MockSBuildType buildType = new MockSBuildType("name", "description", "buildTypeId");
 	private SProject sproject = new MockSProject("My Project", "description", "project01", "MyProject", buildType);
@@ -124,8 +126,12 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		when(server.findBuildInstanceById(1)).thenReturn(runningBuild);
 		when(server.findBuildInstanceById(2)).thenReturn(runningBuild);
 		when(server.getProjectManager()).thenReturn(projectManager);
+		when(server.getRootUrl()).thenReturn("http://teamcity");
 		when(projectManager.findProjectByExternalId(eq("MyProject"))).thenReturn(sproject);
 		when(projectManager.findProjectById(eq("project01"))).thenReturn(sproject);
+
+		UsernamePasswordAuthenticatorFactory usernamePasswordAuthenticatorFactory = new UsernamePasswordAuthenticatorFactory(webHookAuthenticatorProvider);
+		usernamePasswordAuthenticatorFactory.register();
 		
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, new ExtraParametersMap(new HashMap<String,String>()), new ExtraParametersMap(new HashMap<String,String>()));
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-slackcompact-jsonTemplate-AllEnabled.xml"));
@@ -139,6 +145,41 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		webHookHistoryItemFactory = new MockWebHookHistoryItemFactory(sproject);
 	}
 
+	@Test
+	public void testRequestWebHookPreviewWebHookExecutionRequest() {
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
+				server, mainSettings,
+				webHookConfigFactory, 
+				webHookFactory,
+				webHookTemplateResolver, 
+				webHookPayloadManager, 
+				webHookHistoryItemFactory,
+				webHookHistoryRepository,
+				webAddressTransformer,
+				webHookContentBuilder
+			);
+		
+		BuildState finishedBuildState = new BuildState();
+		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		
+		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
+				.buildId(1L)
+				.projectExternalId("MyProject")
+				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
+				
+				.url("http://localhost:12345/webhook")
+				.templateId("slack.com-compact")
+				.payloadFormat("jsonTemplate")
+				.authEnabled(false)
+				.configbuildState(finishedBuildState)
+				.build();
+		
+		WebHookRenderResult payload = executorImpl.requestWebHookPreview(webHookExecutionRequest);
+		
+		Loggers.SERVER.debug("################# " + payload);
+		assertEquals(true, payload.getHtml().contains("http://teamcity/viewLog.html?buildTypeId=name"));
+		
+	}
 	
 	@Test
 	public void testRequestWebHookPreviewWebHookTemplateExecutionRequest() {
@@ -150,7 +191,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
-				webAddressTransformer
+				webAddressTransformer,
+				null
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -174,7 +216,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 
 	}	
 	
-	
 	@Test
 	public void testRequestWebHookExecutionWebHookExecutionRequest() {
 		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
@@ -185,7 +226,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
-				webAddressTransformer
+				webAddressTransformer,
+				webHookContentBuilder
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -219,7 +261,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
-				webAddressTransformer
+				webAddressTransformer,
+				webHookContentBuilder
 				);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -248,6 +291,55 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		stopWebServer(s);
 	}
 
+	@SuppressWarnings("serial")
+	@Test
+	public void testRequestWebHookExecutionWebHookExecutionRequestWithAuthReturns200() throws InterruptedException {
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
+				server, mainSettings,
+				webHookConfigFactory, 
+				webHookFactory,
+				webHookTemplateResolver, 
+				webHookPayloadManager, 
+				webHookHistoryItemFactory,
+				webHookHistoryRepository,
+				webAddressTransformer,
+				webHookContentBuilder
+				);
+		
+		BuildState finishedBuildState = new BuildState();
+		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		
+		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
+				.buildId(1L)
+				.projectExternalId("MyProject")
+				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
+				
+				.url("http://localhost:58001/auth/200")
+				.templateId("slack.com-compact")
+				.payloadFormat("jsonTemplate")
+				.authEnabled(true)
+				.authType("userpass")
+				.authParameters(new HashMap<String,String>() {
+					 {
+						    put("username", "user1");
+						    put("password", "user1pass");
+						    put("realm",    "TestRealm");
+						 }
+						})
+				.configbuildState(finishedBuildState)
+				.build();
+		
+		WebHookTestServer s = startWebServer();
+		
+		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
+		
+		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
+		
+		stopWebServer(s);
+	}
+	
 	@Test
 	public void testRequestWebHookExecutionWebHookTemplateExecutionRequest() {
 		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
@@ -258,7 +350,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
-				webAddressTransformer
+				webAddressTransformer,
+				null
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -294,7 +387,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
-				webAddressTransformer
+				webAddressTransformer,
+				webHookContentBuilder
 				);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -334,7 +428,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookPayloadManager, 
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
-				webAddressTransformer
+				webAddressTransformer,
+				null
 				);
 		
 		BuildState finishedBuildState = new BuildState();
