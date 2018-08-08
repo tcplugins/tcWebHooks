@@ -91,6 +91,11 @@
      	init-method="register" 
      	/>
 
+     <bean id="webHookPreviewAndExecuteController" 
+     	class="webhook.teamcity.extension.WebHookPreviewAndExecuteController" 
+     	init-method="register" 
+     	/>
+
      <bean id="webHookProjectHistoryController" 
      	class="webhook.teamcity.extension.WebHookProjectHistoryController" 
      	init-method="register" 
