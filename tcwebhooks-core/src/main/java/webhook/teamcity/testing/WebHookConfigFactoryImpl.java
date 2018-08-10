@@ -1,11 +1,14 @@
 package webhook.teamcity.testing;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -45,9 +48,17 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 					 .authType(webHookExecutionRequest.getAuthType())
 					 .authParameters(webHookExecutionRequest.getAuthParameters())
 					 .filters(new ArrayList<WebHookFilterConfig>())
-					 .states(webHookExecutionRequest.getConfigbuildState())
+					 .states(buildStates(webHookExecutionRequest.getConfigBuildStates()))
 					 .extraParameters(new TreeMap<String,String>()) //TODO: Should we get from config somehow?
 					 .build();
+	}
+
+	private BuildState buildStates(Map<BuildStateEnum, Boolean> configBuildStates) {
+		BuildState buildState = new BuildState();
+		for (Map.Entry<BuildStateEnum, Boolean> entry : configBuildStates.entrySet()) {
+			buildState.setEnabled(entry.getKey(), entry.getValue());
+		}
+		return buildState;
 	}
 
 	@Override

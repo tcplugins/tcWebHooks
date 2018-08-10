@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.google.gson.GsonBuilder;
 
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
@@ -118,6 +122,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	WebHookMockingFramework framework;
 	
+	Map<BuildStateEnum, Boolean> finishedBuildState = Collections.singletonMap(BuildStateEnum.BUILD_SUCCESSFUL, true);
+	
 	@Before
 	public void setup() throws JAXBException, IOException, JDOMException {
 		MockitoAnnotations.initMocks(this);
@@ -159,9 +165,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookContentBuilder
 			);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
-		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
 				.projectExternalId("MyProject")
@@ -171,13 +174,15 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.templateId("slack.com-compact")
 				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
-				.configbuildState(finishedBuildState)
+				.configBuildStates(finishedBuildState)
 				.build();
 		
 		WebHookRenderResult payload = executorImpl.requestWebHookPreview(webHookExecutionRequest);
 		
 		Loggers.SERVER.debug("################# " + payload);
 		assertEquals(true, payload.getHtml().contains("http://teamcity/viewLog.html?buildTypeId=name"));
+		
+		Loggers.SERVER.debug(new GsonBuilder().setPrettyPrinting().create().toJson(webHookExecutionRequest));
 		
 	}
 	
@@ -230,9 +235,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookContentBuilder
 			);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
-		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
 				.projectExternalId("MyProject")
@@ -242,7 +244,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.templateId("slack.com-compact")
 				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
-				.configbuildState(finishedBuildState)
+				.configBuildStates(finishedBuildState)
 				.build();
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 		
@@ -265,9 +267,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookContentBuilder
 				);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
-		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
 				.projectExternalId("MyProject")
@@ -277,7 +276,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.templateId("slack.com-compact")
 				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
-				.configbuildState(finishedBuildState)
+				.configBuildStates(finishedBuildState)
 				.build();
 		
 		WebHookTestServer s = startWebServer();
@@ -306,9 +305,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookContentBuilder
 				);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
-		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
 				.projectExternalId("MyProject")
@@ -326,7 +322,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 						    put("realm",    "TestRealm");
 						 }
 						})
-				.configbuildState(finishedBuildState)
+				.configBuildStates(finishedBuildState)
 				.build();
 		
 		WebHookTestServer s = startWebServer();

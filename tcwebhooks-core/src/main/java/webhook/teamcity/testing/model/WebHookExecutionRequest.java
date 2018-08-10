@@ -25,6 +25,6 @@ public class WebHookExecutionRequest {
 	private String authType;
 	private boolean authEnabled;
 	@Builder.Default private Map<String,String> authParameters = new LinkedHashMap<>();
-	private BuildState configbuildState;
+	private Map<BuildStateEnum, Boolean> configBuildStates;
 
 }
