@@ -5,7 +5,6 @@ import java.util.Map;
 
 import lombok.Builder;
 import lombok.Data;
-import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 
 @Data @Builder

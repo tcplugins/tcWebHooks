@@ -84,16 +84,15 @@
     <script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
 	    <script type=text/javascript>
-		var jQueryWebhook = jQuery.noConflict();
 		var webhookDialogWidth = -1;
 		var webhookDialogHeight = -1;
 		var templatePaneOuterHeight = -1;
-		jQueryWebhook(document).ready( function() {
-				jQueryWebhook('#tab-container').easytabs({
+		$j(document).ready( function() {
+				$j('#tab-container').easytabs({
 					  animate: false,
 					  updateHash: false
 				});
-				jQueryWebhook('#tab-container').bind('easytabs:after', function() {
+				$j('#tab-container').bind('easytabs:after', function() {
 					// one should call editor.resize() after changing size or visibility of the div 
 					editor.resize();
 					editorBranch.resize();
@@ -332,7 +331,12 @@
 				<tr><td colspan=2><h4>Execute Test Webhook</h4></td></tr>           						
             	<tr><td>WebHook:</td><td> <forms:select id="previewTemplateItemDialogWebHookSelect" name="previewTemplateItemDialogWebHookSelect"/><br></td></tr>
             	<tr><td>URL:</td><td> <input type=text length=1024 size=50 id="previewTempleteItemDialogUrl" name="previewTempleteItemDialogUrl" placeholder="Enter a URL, or choose a webhook above, or both (to override the URL)"><br></td></tr>
-				<tr><td colspan=2><div id="previewTempleteItemDialogAjaxResult" /></td></tr>            	
+				<tr><td colspan=2>
+				<div id="webhookTestProgress">
+					<forms:progressRing progressTitle="Sending test webhook..."/>						            		
+					<span class="stage-status__description">Sending test webhook...</span>
+				</div>	
+				<div id="previewTempleteItemDialogAjaxResult" /></td></tr>            	
            	</table>
            						
             <div class="popupSaveButtonsBlock">

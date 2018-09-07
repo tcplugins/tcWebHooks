@@ -31,10 +31,10 @@ label.webhookEnabled {
 	display:none;
 }
 
-#currentTemplateRaw, #currentTemplateRendered, #currentTemplatePreview {
+#currentTemplateRaw, #currentTemplateRendered, #currentTemplatePreview, #webhookPreviewRendered {
 	margin: 0.5em  0em 0.5em 0em;
 	width:auto;
-	height:15em;
+	height:25em;
 	border: solid 1px;
 	border-color: #999;
 	white-space: pre-wrap;
@@ -48,13 +48,16 @@ label.webhookEnabled {
 	height:25em;
 }
 
+#webhookPreviewRendered pre .hljs,
 #currentTemplatePreview pre code.hljs, 
-.endpointPayload pre code.hljs, 
-#currentTemplateRendered pre code.hljs {
+.endpointPayload pre code.hljs {
 	overflow-x: visible;
 }
 
-#previewTempleteItemDialogAjaxResult {
+#webhookPreviewRenderedAjaxResult, 
+#previewTempleteItemDialogAjaxResult, 
+#webhookDialogAjaxResult, 
+#webhookTestProgress {
 	padding: 1.5em;
 }
 
@@ -222,13 +225,8 @@ div.endpointPayloadHeaders table tr :first-child {
 	font-weight: bold;	
 }
 
-
-#editWebHookDialog .dialogHeader {
-	padding:0.75em;
-}
-
-#editWebHookDialog .dialogHeader .closeWindow {
-	margin:1px 1px 0 0;
+#editWebHookDialog {
+	width: 50em;
 }
 
 #buildSuccessful.buildState, #buildFailed.buildState {
@@ -357,7 +355,7 @@ tr.templateHeading {
 	background-color: rgb(245, 245, 245);
 }
 
-#repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit {
+#deleteWebHookDialogSubmit, #repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit {
 	background-color: red;
 	background-image: linear-gradient(to bottom, #e06667, #e50000);
 }
@@ -493,11 +491,17 @@ div#templateEditor ul.etabs li#branchOptionTab {
 	float:right;
 }
 
+#webhookPreviewBuildId,
+#webhookPreviewBuildEvent,
 #previewTemplateItemDialogProjectSelect, 
 #previewTemplateItemDialogBuildSelect,
 #previewTemplateItemDialogBuildStateSelect {
 	text-align: left;
 	width: 80%;
+}
+
+.webHookPreviewHeader table {
+	width: 100%;
 }
 
 /*
@@ -593,4 +597,23 @@ div.webhookTotalCount span.description {
 
 span.lowercase {
 	text-transform:lowercase;
+}
+
+#webhookDialogPreview {
+	float: right;
+}
+
+#currentTemplateName {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: bold;
+}
+
+#webhookDialogAjaxResult li, #previewTempleteItemDialogAjaxResult li {
+	list-style: none;
+}
+
+div#webhookTestProgress {
+	display: none;
 }

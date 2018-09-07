@@ -1,20 +1,20 @@
 {
 	"buildId" : 2834,
 	"projectExternalId" : "TcPluginsLocal",
-	"testBuildState" : "BUILD_STARTED",
+	"testBuildState" : "buildStarted",
 	"url" : "http://localhost:8111/webhooks/endpoint.html",
 	"templateId" : "slack.com-compact",
 	"payloadFormat" : "jsontemplate",
 	"authType" : null,
 	"authEnabled" : false,
 	"configBuildStates" : {
-		"BUILD_SUCCESSFUL" : true, 
-		"CHANGES_LOADED" : false, 
-	    "BUILD_FAILED" : true,
-	    "BUILD_BROKEN" : true,
-	    "BUILD_STARTED" : false,
-	    "BEFORE_BUILD_FINISHED" : false,
-	    "RESPONSIBILITY_CHANGED" : false,
+		"buildSuccessful" : true, 
+		"changesLoaded" : false, 
+	    "buildFailed" : true,
+	    "buildBroken" : true,
+	    "buildStarted" : false,
+	    "beforeBuildFinish" : false,
+	    "responsibilityChanged" : false,
 		"BUILD_FIXED" : true,
 	    "BUILD_INTERRUPTED" : false
     }

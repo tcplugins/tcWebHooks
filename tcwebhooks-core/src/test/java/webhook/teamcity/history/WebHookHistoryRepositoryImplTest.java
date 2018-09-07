@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.http.NameValuePair;
 import org.joda.time.LocalDate;
@@ -49,6 +50,20 @@ public class WebHookHistoryRepositoryImplTest {
 	public void testAddHistoryItem() {
 		WebHookHistoryRepository historyRepository = setupMocks();
 		assertEquals(2, historyRepository.getTotalCount());
+	}
+	
+	@Test
+	public void testGetHistoryItem() {
+		WebHookHistoryRepository historyRepository = setupMocks();
+		UUID trackingId = stats01.getTrackingId();
+		assertEquals(stats01.getStatusCode(), historyRepository.getHistoryItem(trackingId.toString()).getWebHookExecutionStats().getStatusCode());
+	}
+	
+	@Test
+	public void testGetHistoryItemForInvalidItemReturnsNull() {
+		WebHookHistoryRepository historyRepository = setupMocks();
+		UUID trackingId = stats01.getTrackingId();
+		assertEquals(stats01.getStatusCode(), historyRepository.getHistoryItem(trackingId.toString()).getWebHookExecutionStats().getStatusCode());
 	}
 
 	@Test

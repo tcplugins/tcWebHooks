@@ -22,11 +22,10 @@
 					<td class="edit highlight webHookRowItemEdit"><a href="javascript://">edit</a></td>
 					<td class="edit highlight webHookRowItemDelete"><a ref="javascript://">delete</a></td>
 				</tr> 	
-	
 			<c:forEach items="${webHookList.webHookList}" var="hook">
 				
 				<tr id="viewRow_${hook.uniqueKey}" class="webHookRow">
-					<td class="name highlight" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
+					<td class="name highlight" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
 					
 							<c:choose>
 								<c:when test="${hook.payloadTemplate == 'none'}">
@@ -38,10 +37,10 @@
 							</c:choose>					
 					
 					
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
-					<td class="value highlight" style="width:15%;" onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.enabledBuildsListForWeb}" /></td>
-					<td class="edit highlight"><a onclick="BS.EditWebHookDialog.showDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
-					<td class="edit highlight"><a onclick="BS.WebHookForm.removeWebHook('${hook.uniqueKey}','#hookPane');" href="javascript://">delete</a></td>
+					<td class="value highlight" style="width:15%;" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
+					<td class="value highlight" style="width:15%;" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.enabledBuildsListForWeb}" /></td>
+					<td class="edit highlight"><a onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
+					<td class="edit highlight"><a onclick="WebHooksPlugin.showDeleteDialog('${hook.uniqueKey}');" href="javascript://">delete</a></td>
 				</tr> 
 			</c:forEach>
 			</tbody>
@@ -49,28 +48,24 @@
 				<tr>
 		<c:choose>  
     		<c:when test="${haveBuild}"> 
-					<td colspan="6" class="highlight newWebHookRow"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this build</p></td>
+					<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.showAddDialog();" class="addNew">Click to create new WebHook for this build</p></td>
          	</c:when>  
          	<c:otherwise>  
-					<td colspan="6" class="highlight newWebHookRow"><p onclick="BS.EditWebHookDialog.showDialog('new');" class="addNew">Click to create new WebHook for this project</p></td>
+					<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.showAddDialog();" class="addNew">Click to create new WebHook for this project</p></td>
          	</c:otherwise>  
 		</c:choose> 
 				</tr>
 			</tfoot>
 		</table>
-      <div id="editWebHookDialog" class="editParameterDialog modalDialog"  style="width:50em;">
-        <div class="dialogHeader">
-          <div class="closeWindow">
-            <a title="Close dialog window" href="javascript://" showdiscardchangesmessage="false"
-               onclick="BS.EditWebHookDialog.cancelDialog()">close</a>
-          </div>
-          <h3 id="webHookDialogTitle" class="dialogTitle"></h3>
-
-        </div>
-
-        <div class="modalDialogBody">
-          <form id='WebHookForm' action="ajaxEdit.html?projectId=${projectId}"
-                method="post" onsubmit="return BS.WebHookForm.saveWebHook();">
+		
+    <bs:dialog dialogId="editWebHookDialog"
+               dialogClass="editParameterDialog"
+               title="Edit Build Event Template"
+               closeCommand="WebHooksPlugin.EditWebHookDialog.cancelDialog()">
+		  <forms:multipartForm id="editWebHookForm"
+                             action="ajaxEdit.html?projectId=${projectId}"
+                             targetIframe="hidden-iframe"
+          					 onsubmit="return WebHooksPlugin.EditWebHookDialog.doPost();">
             <div id='webHookFormContents'>
             
             		<div id="tab-container" class="tab-container">
@@ -86,7 +81,7 @@
 												
 												<tr style="border:none;">
 													<td>URL:</td>
-													<td colspan=2 style="padding-left:0.5em;"><input id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
+													<td colspan=2 style="padding-left:0.5em;"><input autocomplete="on" id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
 												</tr>
 												<tr>
 													<td></td>
@@ -102,7 +97,7 @@
 														<table style="padding:0; margin:0; left: 0px;" id="payloadFormatTable"><tbody style="padding:0; margin:0; left: 0px;">
 																<tr style="padding:0; margin:0; left: 0px;">
 																	<td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
-																		<select id="payloadFormatHolder" name="payloadFormatHolder">
+																		<select id="payloadFormatHolder" name="payloadFormatHolder" class="templateAjaxRefresh">
 																		    <c:forEach items="${formatList}" var="template">
 																				<option value="${template.templateFormatCombinationKey}">${template.description}</option>
 																			</c:forEach>
@@ -197,15 +192,14 @@
 						            </div><!--extrasPane -->
 						            <div id='templatePane'>
 						            	<div id='templateLeftPanel'>
-						            		<div id="currentTemplateName"></div>
-						            		<div>						            		
-						            		     <a href="javascript://" showdiscardchangesmessage="false" onclick="BS.EditWebHookDialog.maximizeDialog()" class="maximize maxtoggle">Maximize</a>
-						            		     <a href="javascript://" showdiscardchangesmessage="false" onclick="BS.EditWebHookDialog.restoreDialog()" class="restore maxtoggle">Restore</a>
-						            		
-							            		<table><tr><td>Build History:</td>
-							            		<td> <select name="currentTemplateBuildId" id="currentTemplateBuildId" class="templateAjaxRefresh"></select></td></tr>
+						            		<div class="webHookPreviewHeader">						            		
+							            		<table>
+							            		<tr><td colspan=2>Select a build to use as example data for a webhook test execution:</td></tr>
+							            		<tr><td>Template:</td><td><span id="currentTemplateName"></span></td></tr>
+							            		<tr><td>Build:</td>
+							            		<td> <select name="webhookPreviewBuildId" id="webhookPreviewBuildId" class="templateAjaxRefresh"></select></td></tr>
 							            		<tr><td>Build Event:</td>
-							            		<td> <select name="currentTemplateBuildEvent" id="currentTemplateBuildEvent" class="templateAjaxRefresh">
+							            		<td> <select name="webhookPreviewBuildEvent" id="webhookPreviewBuildEvent" class="templateAjaxRefresh">
 								            			<option value="buildStarted">Build Started</option>
 								            			<option value="changesLoaded">Changes Loaded</option>
 								            			<option value="buildInterrupted">Build Interrupted</option>
@@ -218,45 +212,52 @@
 								            		</select>
 								            	</td></tr></table> 
 											</div>
-						            		<div id="currentTemplateRaw"></div>
-						            		<div id="currentTemplateRendered"></div>
-																	            		
-						            		
+						            		<div id="webhookPreviewRendered"></div>
+						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return WebHooksPlugin.EditWebHookDialog.executeWebHook();">Send Test WebHook for Build Event</button>
+											<div id="webhookTestProgress">
+												<forms:progressRing progressTitle="Sending test webhook..."/>						            		
+												<span class="stage-status__description">Sending test webhook...</span>
+											</div>						            		
+											<div id="webhookDialogAjaxResult"></div>
 						            	</div>
-						            
-						            
 						            </div><!--templatePane -->
 					    	</div><!-- panel-container  -->
 					</div>    <!-- tab-container -->   
 		            
-		            <!--
-		            <label class="editParameterLabel" for="parameterName">Name: <span class="mandatoryAsterix" title="Mandatory field">*</span></label>
-					<input type="text" name="parameterName" id="parameterName" size="" maxlength="512" value="" class="textfield" style="margin:0; padding:0; width:22em;"   >
-		
-		            <span class="error" id="error_parameterName" style="margin-left: 5.5em;"></span>
-		
-		            <div class="clr" style="height:3px;"></div>
-		            <label class="editParameterLabel" for="parameterValue">Value:</label>
-					<input type="text" name="parameterValue" id="parameterValue" size="" maxlength="512" value="" class="textfield" style="margin:0; padding:0; width:22em;"   >
-					-->
 			</div> <!-- webHookFormContents -->
-
-            <div class="popupSaveButtonsBlock">
-              <a href="javascript://" showdiscardchangesmessage="false" onclick="BS.EditWebHookDialog.cancelDialog()"
-                 class="cancel">Cancel</a>
-              <input class="submitButton" type="submit" value="Save"/>
-			<img id="webHookSaving" style="display: none; padding-top: 0.1em; float: right;" src="../img/ajax-loader.gif" width="16" height="16" alt="Please wait..." title="Please wait..."/>
-
-              <br clear="all"/>
-            </div>
 
             <input type="hidden" id="webHookId" name="webHookId" value=""/>
             <input type="hidden" id="payloadFormat" name="payloadFormat" value=""/>
             <input type="hidden" id="payloadTemplate" name="payloadTemplate" value=""/>
             <input type="hidden" id="submitAction" name="submitAction" value=""/>
 
-
-          </form>
-	    </div>
-    </div>
+            <!-- input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplateItem"/-->
+            <div id="ajaxWebHookEditResult"></div>
+            <div class="popupSaveButtonsBlock">
+                <forms:submit id="editTemplateItemDialogSubmit" label="Save Web Hook"/>
+                <forms:cancel onclick="WebHooksPlugin.EditWebHookDialog.cancelDialog()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
           
+    <bs:dialog dialogId="deleteWebHookDialog"
+               dialogClass="deleteWebHookDialog"
+               title="Confirm Webhook deletion"
+               closeCommand="WebHooksPlugin.DeleteWebHookDialog.cancelDialog()">
+        <forms:multipartForm id="deleteWebHookForm"
+                             action="ajaxEdit.html?projectId=${projectId}"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.DeleteWebHookDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td id="deleteWebHookWarningMessage">Are you sure you want to delete this Webhook? 
+                        <div id="ajaxWebHookDeleteResult"></div>
+                </td></tr>
+            </table>
+            <input type="hidden" id="webHookId" name="webHookId"/>
+            <div class="popupSaveButtonsBlock">
+                <forms:submit id="deleteWebHookDialogSubmit" label="Delete Web Hook"/>
+                <forms:cancel onclick="WebHooksPlugin.DeleteWebHookDialog.cancelDialog()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>

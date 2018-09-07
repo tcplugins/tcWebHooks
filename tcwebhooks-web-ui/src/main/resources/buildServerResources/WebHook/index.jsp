@@ -51,6 +51,7 @@
     </c:if>
 	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook//js/moment-2.22.2.min.js"></script>
     <script type=text/javascript>
 		var jQueryWebhook = jQuery.noConflict();
 		var webhookDialogWidth = -1;
@@ -62,24 +63,6 @@
 					  animate: false,
 					  updateHash: false
 				});
-			<c:if test="${haveProject}"> 
-				jQueryWebhook.getJSON( "ajax/projectHistory.html", {
-					projectId: "${projectExternalId}"
-				})
-				.done(function(data){
-					projectHistory = data;
-					populateBuildHistory();
-				});
-			</c:if>
-			<c:if test="${haveBuild}"> 
-				jQueryWebhook.getJSON( "ajax/projectHistory.html", {
-					buildTypeId: "${buildExternalId}"
-				})
-				.done(function(data){
-					projectHistory = data;
-					populateBuildHistory();
-				});
-			</c:if>
 				jQueryWebhook('#payloadFormatHolder').change(function() {
 					var formatName = jQueryWebhook(this).val();
   					jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, template){
@@ -109,32 +92,11 @@
 				});
  				
 				jQueryWebhook('select.templateAjaxRefresh').change(function() {
-					var selectedBuildState = jQueryWebhook('#currentTemplateBuildEvent').val();
-					var selectedBuildId = jQueryWebhook('#currentTemplateBuildId').val();
-					if (selectedBuildId === "") {
-						jQueryWebhook('#currentTemplateRaw').html("");
-						jQueryWebhook('#currentTemplateRendered').html("");
-					} else {
-						jQueryWebhook.getJSON( "renderTemplate.html", {
-											projectId: "${projectExternalId}",
-											buildState: selectedBuildState,
-											buildId: selectedBuildId,
-											payloadTemplate: lookupTemplate(jQueryWebhook('#payloadFormatHolder').val()),
-											payloadFormat: lookupFormat(jQueryWebhook('#payloadFormatHolder').val())
-										})
-										.done(function(data){
-												jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
-												jQueryWebhook('#currentTemplateRendered').html(data.templatesOutput.webhookTemplateRendered);
-												
-												  jQueryWebhook('#currentTemplateRendered pre code').each(function(i, block) {
-												    hljs.highlightBlock(block);
-												  });
-										});
-					}
+					renderPreviewOnChange()
 				});
 		});
 		
-		function populateBuildHistory() {
+		function populateBuildHistoryOld() {
 			jQueryWebhook('#currentTemplateRaw').html("");
 			jQueryWebhook('#currentTemplateRendered').html("");
 			jQueryWebhook('#currentTemplateBuildId').empty();
@@ -143,6 +105,115 @@
 				jQueryWebhook('#currentTemplateBuildId').append(jQueryWebhook("<option />").val(build.buildId).text(build.title + "#" + build.buildNumber + " (" + build.buildDate + ")"));
 			});
 		}
+		
+		function renderPreviewOnChange() {
+			var selectedBuildState = jQueryWebhook('#currentTemplateBuildEvent').val();
+			var selectedBuildId = jQueryWebhook('#currentTemplateBuildId').val();
+			if (selectedBuildId === "") {
+				jQueryWebhook('#currentTemplateRendered').html("");
+			} else {
+				jQueryWebhook.ajax ({
+    				url: "testWebHook.html?action=preview",
+    				type: "POST",
+    				dataType: 'json',
+    				headers : {
+    					'Content-Type' : 'application/json',
+    					'Accept' : 'text/html'
+    				},    				
+    				data: JSON.stringify({
+									"url": jQueryWebhook('#webHookUrl').val(),
+									"projectExternalId": "${projectExternalId}",
+									"testBuildState": selectedBuildState,
+									"buildId": selectedBuildId,
+									"templateId": lookupTemplate(jQueryWebhook('#payloadFormatHolder').val()),
+									"payloadFormat": lookupFormat(jQueryWebhook('#payloadFormatHolder').val()),
+									"authType" : null,
+									"authEnabled" : false,
+									"configBuildStates" : {
+										"BUILD_SUCCESSFUL" : true, 
+										"CHANGES_LOADED" : false, 
+									    "BUILD_FAILED" : true,
+									    "BUILD_BROKEN" : true,
+									    "BUILD_STARTED" : false,
+									    "BEFORE_BUILD_FINISHED" : false,
+									    "RESPONSIBILITY_CHANGED" : false,
+										"BUILD_FIXED" : true,
+									    "BUILD_INTERRUPTED" : false
+								    }
+								}),
+					success:(function(data){
+										//jQueryWebhook('#currentTemplateRaw').html(data.templatesOutput.webhookTemplate);
+										jQueryWebhook('#currentTemplateRendered').html(data.html);
+										
+										jQueryWebhook('#currentTemplateRendered pre code').each(function(i, block) {
+										    hljs.highlightBlock(block);
+										});
+								})
+					});
+			}
+			
+		} 
+		
+		function populateBuildHistory() {
+			
+			<c:if test="${not haveBuild && haveProject}"> 
+				populateBuildHistoryAjax("project:${projectExternalId},");
+			</c:if>
+			<c:if test="${haveBuild}">				
+				populateBuildHistoryAjax("buildType:${buildExternalId},");
+			</c:if>
+		}
+		
+		function populateBuildHistoryAjax(locator) {
+			jQueryWebhook('#currentTemplateRendered').empty();
+			
+		   		if (!locator) { // We got a null or undefined locator. Empty the build list and return
+	    			jQueryWebhook("#currentTemplateBuildId").empty();
+		   			console.log("populateBuildHistoryAjax() : locator is null. This should not happen");
+	    			return;
+	    		}
+		   		
+		   		if (locator === 'project:_Root,') {
+		   			locator = '';
+		   		}
+		   		
+	    		jQueryWebhook("#currentTemplateBuildId").empty().append(jQueryWebhook('<option></option>').val(null).html("Loading build history..."))
+	    		jQueryWebhook.ajax ({
+	    			url: window['base_uri'] + '/app/rest/builds?locator=' + locator 
+	    					+ "state:finished&fields=build(id,number,status,finishDate,buildType(id,name))",
+	    			type: "GET",
+	    			headers : {
+	    				'Accept' : 'application/json'
+	    			},
+	    			success: function (response) {
+	    				var myselect = jQueryWebhook('<select>');
+	    				myselect.append( jQueryWebhook('<option></option>').val(null).html("Choose a Build...") );
+	    				jQueryWebhook(response.build).each(function(index, build) {
+	    					console.log(build);
+	    					var desc = build.buildType.name 
+	    							  + "#" + build.number 
+	    							  + " - " + build.status + " ("
+	    							  + moment(build.finishDate, moment.ISO_8601).fromNow()
+	    							  + ")";
+	    					console.log(desc);
+							myselect.append( jQueryWebhook('<option></option>').val(build.id).html(desc) );
+	    				});
+	    				jQueryWebhook("#currentTemplateBuildId").empty().append(myselect.html());
+	    			},
+	    			error: function (response) {
+	    				if (response.status == 404) {
+	    					jQueryWebhook("#currentTemplateBuildId").empty().append(
+	    							jQueryWebhook('<option></option>').val(null).html("No builds found. Choose a different project")
+	    						);
+	    				} else {
+		    				console.log(response);
+		    				alert(response);
+	    				}
+	    			}
+	    		});
+
+		}
+
 		
 		function selectBuildState(){
 			doExtraCompleted();
@@ -294,6 +365,7 @@
 		}
 		
 		function populateWebHookDialog(id){
+			populateBuildHistory();
 			jQueryWebhook('#buildList').empty();
 			jQueryWebhook.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
 				if (id === webHookKey){
@@ -327,7 +399,7 @@
 				}
 			});
 			updateSelectedBuildTypes();
-			populateBuildHistory();
+			
 		}
 
 		function lookupTemplate(templateFormatCombinationKey){
@@ -391,7 +463,7 @@
 				}
 			});
 			
-			populateBuildHistory();
+			//populateBuildHistory();
 		}
 
 		BS.EditWebHookDialog = OO.extend(BS.AbstractModalDialog, {
@@ -408,7 +480,7 @@
 			    var title = id == "new" ? "Add New" : "Edit";
 			    title += " WebHook";
 
-			    $('webHookDialogTitle').innerHTML = title;
+			    //$('webHookDialogTitle').innerHTML = title;
 
 
 			    if (webhookDialogWidth < 0){
@@ -446,8 +518,8 @@
 			  	jQueryWebhook('#editWebHookDialog').innerHeight(maxDialogHeight);
 			  	var dialogDiff = webhookDialogHeight - templatePaneOuterHeight;
 			  	jQueryWebhook('#templatePane').innerHeight(templatePaneOuterHeight + dialogDiff);
-			  	jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
-			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	//jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /1.2 );
 			  	jQueryWebhook('.maxtoggle').toggle();
 			  	this.showCentered();
 			  	
@@ -457,8 +529,8 @@
 			  	jQueryWebhook('#editWebHookDialog').innerWidth(webhookDialogWidth);
 			  	jQueryWebhook('#editWebHookDialog').innerHeight(webhookDialogHeight);
 			  	jQueryWebhook('#templatePane').outerHeight(templatePaneOuterHeight);
-			  	jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
-			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	//jQueryWebhook('#currentTemplateRaw').outerHeight(jQueryWebhook('#templatePane').innerHeight() /2.2 );
+			  	jQueryWebhook('#currentTemplateRendered').outerHeight(jQueryWebhook('#templatePane').innerHeight() /1.2 );
 			  	jQueryWebhook('.maxtoggle').toggle();
 			  	this.showCentered();
 			  }
@@ -484,7 +556,7 @@
 			  },
 
 			  formElement : function() {
-			    return $('WebHookForm');
+			    return jQueryWebhook('WebHookForm');
 			  },
 
 			  saveWebHook : function() {

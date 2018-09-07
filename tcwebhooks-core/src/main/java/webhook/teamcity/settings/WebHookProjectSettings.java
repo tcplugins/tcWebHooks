@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.settings.ProjectSettings;
+import lombok.Getter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;
@@ -17,8 +18,6 @@ import webhook.teamcity.auth.WebHookAuthConfig;
 public class WebHookProjectSettings implements ProjectSettings {
 	private static final String NAME = WebHookProjectSettings.class.getName();
 	private Boolean webHooksEnabled = true;
-	private Boolean updateSuccess = false;
-	private String updateMessage = "";
 	private CopyOnWriteArrayList<WebHookConfig> webHooksConfigs;
 	
 	public WebHookProjectSettings(){
@@ -114,31 +113,34 @@ public class WebHookProjectSettings implements ProjectSettings {
     	return tmpString.toString();
     }
 
-    public void deleteWebHook(String webHookId, String projectId){
+    public WebHookUpdateResult deleteWebHook(String webHookId, String projectId){
+    	WebHookConfig configToDelete = null;
+    	boolean updateSuccess = false;
+    	
         if(this.webHooksConfigs != null)
         {
-        	updateSuccess = false;
-        	updateMessage = "";
         	List<WebHookConfig> tempWebHookList = new ArrayList<>();
             for(WebHookConfig whc : webHooksConfigs)
             {
                 if (whc.getUniqueKey().equals(webHookId)){
                 	Loggers.SERVER.debug(NAME + ":deleteWebHook :: Deleting webhook from " + projectId + " with URL " + whc.getUrl());
                 	tempWebHookList.add(whc);
+                	configToDelete = whc;
                 }
             }
             if (! tempWebHookList.isEmpty()){
-            	this.updateSuccess = true;
+            	updateSuccess = true;
             	this.webHooksConfigs.removeAll(tempWebHookList);	
             }
-        }    	
+        }
+        return new WebHookUpdateResult(updateSuccess, configToDelete);
     }
 
-	public void updateWebHook(String projectId, String webHookId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+		boolean updateSuccess = false;
+		WebHookConfig configToUpdate = null;
         if(this.webHooksConfigs != null)
         {
-        	updateSuccess = false;
-        	updateMessage = "";
             for(WebHookConfig whc : webHooksConfigs)
             {
                 if (whc.getUniqueKey().equals(webHookId)){
@@ -167,25 +169,24 @@ public class WebHookProjectSettings implements ProjectSettings {
             			whc.clearAuthParameters();
             		}
                 	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + projectId + " with URL " + whc.getUrl());
-                   	this.updateSuccess = true;
+                   	updateSuccess = true;
+                   	configToUpdate = whc;
                 }
             }
-        }    			
+        }
+        return new WebHookUpdateResult(updateSuccess, configToUpdate);
 	}
 
 	public void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
 		addNewWebHook(projectInternalId, projectExternalId, url, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null);
 	}
 	
-	public void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
-		this.webHooksConfigs.add(new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig));
+	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig); 
+		this.webHooksConfigs.add(newWebHook);
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
-		this.updateSuccess = true;
+		return new WebHookUpdateResult(true, newWebHook);
 	}
-
-    public Boolean updateSuccessful(){
-    	return this.updateSuccess;
-    }
     
 	public void dispose() {
 		Loggers.SERVER.debug(NAME + ":dispose() called");
@@ -209,9 +210,16 @@ public class WebHookProjectSettings implements ProjectSettings {
 	public List<WebHookConfig> getWebHooksConfigs() {
 		return webHooksConfigs;
 	}
-
-	public String getUpdateMessage() {
-		return updateMessage;
+	
+	@Getter
+	public class WebHookUpdateResult {
+		boolean updated;
+		WebHookConfig webHookConfig;
+		
+		public WebHookUpdateResult(Boolean updated, WebHookConfig webHookConfig) {
+			this.updated = updated;
+			this.webHookConfig = webHookConfig;
+		}
 	}
 
 }

@@ -215,7 +215,7 @@ public class WebHookIndexPageController extends BaseController {
 	        	params.put("errorReason", "No project specified.");
 	        }
 
-	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/index.jsp", params);
+	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/webhookEdit.jsp", params);
 	    }
 
 		private String getProjectName(String externalProjectId, String name) {

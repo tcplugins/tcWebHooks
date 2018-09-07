@@ -20,6 +20,16 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	public void addHistoryItem(WebHookHistoryItem histoyItem) {
 		this.webHookHistoryItems.put(histoyItem.getWebHookExecutionStats().getTrackingId(), histoyItem);
 	}
+	
+	@Override
+	public WebHookHistoryItem getHistoryItem(String trackingId) {
+		try {
+			UUID uuid = UUID.fromString(trackingId);
+			return webHookHistoryItems.get(uuid);
+		} catch (IllegalArgumentException ex) {
+			return null;
+		}
+	}
 
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryItemsForProject(String projectId, int pageNumber, int pageSize) {

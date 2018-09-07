@@ -500,10 +500,17 @@ WebHooksPlugin = {
     			$j("#previewTemplateItemDialogBuildSelect").empty();
     			return;
     		}
+    		
+    		var locator = 'project:' + projectId + ',';
+    		
+	   		if (projectId === '_Root') { // If _Root, don't specify project in locator
+	   			locator = '';
+	   		}
+    		
     		$j("#previewTemplateItemDialogBuildSelect").empty().append($j('<option></option>').val(null).html("Loading build history..."))
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/builds?locator=project:' + projectId 
-    					+ ",state:finished&&fields=build(id,number,status,finishDate,buildType(id,name))",
+    			url: window['base_uri'] + '/app/rest/builds?locator=' + locator
+    					+ "state:finished&fields=build(id,number,status,finishDate,buildType(id,name))",
     			type: "GET",
     			headers : {
     				'Accept' : 'application/json'
@@ -701,6 +708,9 @@ WebHooksPlugin = {
     		jsonRequest.url = $j("#previewTempleteItemDialogUrl").val();
     		jsonRequest.buildStateName = $j("#previewTemplateItemDialogBuildStateSelect").val();
     		
+    		dialog.cleanErrors();
+    		$j('#webhookTestProgress').css("display","block");
+    		
 			$j.ajax ({
 				url: window['base_uri'] + '/app/rest/webhooks/test/template/execute',
 				type: "POST",
@@ -711,10 +721,8 @@ WebHooksPlugin = {
 					'Accept' : 'application/json'
 				},
 				success: function (response) {
-					//dialog.close();
-					//$("buildEventTemplatesContainer").refresh();
 					
-					dialog.cleanErrors();
+					$j('#webhookTestProgress').css("display","none");
 					var ul = $j('<ul>');
 					
 					if (response.error) {
@@ -729,6 +737,7 @@ WebHooksPlugin = {
 					console.log(response);
 				},
 				error: function (response) {
+					$j('#webhookTestProgress').css("display","none");
 					console.log(response);
 					WebHooksPlugin.handleAjaxError(dialog, response);
 				}
@@ -752,6 +761,7 @@ WebHooksPlugin = {
         },        
     	
     	showDialog: function () {
+    		this.cleanErrors();
     		this.showCentered();
     		
     		$j("#previewTemplateItemDialog h3.dialogTitle").html("Preview &amp; Test Build Event Template");

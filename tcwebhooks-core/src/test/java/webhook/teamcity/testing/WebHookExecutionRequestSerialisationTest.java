@@ -10,9 +10,9 @@ import java.nio.file.Files;
 
 import org.junit.Test;
 
-import com.google.gson.GsonBuilder;
-
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
+import webhook.teamcity.testing.model.WebHookExecutionRequestGsonBuilder;
 
 public class WebHookExecutionRequestSerialisationTest {
 	
@@ -20,9 +20,11 @@ public class WebHookExecutionRequestSerialisationTest {
 	public void testWebHookExecutionRequestDeserialisation() throws IOException {
 		
 		BufferedReader reader = Files.newBufferedReader(new File("src/test/resources/testWebHookRequest/webhook-request-01.json").toPath(), StandardCharsets.UTF_8);
-		WebHookExecutionRequest webHookExecutionRequest = new GsonBuilder().create().fromJson(reader, WebHookExecutionRequest.class);
+		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequestGsonBuilder.gsonBuilder().fromJson(reader, WebHookExecutionRequest.class);
 		assertEquals(Long.valueOf(2834L), webHookExecutionRequest.getBuildId());
-		
+		assertEquals(true, webHookExecutionRequest.getConfigBuildStates().get(BuildStateEnum.BUILD_SUCCESSFUL));
+		assertEquals(false, webHookExecutionRequest.getConfigBuildStates().get(BuildStateEnum.BUILD_STARTED));
+		System.out.println(WebHookExecutionRequestGsonBuilder.gsonBuilder().toJson(webHookExecutionRequest));
 	}
 
 }

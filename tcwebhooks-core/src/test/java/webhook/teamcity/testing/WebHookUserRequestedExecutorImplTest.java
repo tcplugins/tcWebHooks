@@ -73,6 +73,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
+import webhook.teamcity.testing.model.WebHookExecutionRequestGsonBuilder;
 import webhook.teamcity.testing.model.WebHookRenderResult;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 import webhook.testframework.WebHookMockingFramework;
@@ -182,7 +183,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		Loggers.SERVER.debug("################# " + payload);
 		assertEquals(true, payload.getHtml().contains("http://teamcity/viewLog.html?buildTypeId=name"));
 		
-		Loggers.SERVER.debug(new GsonBuilder().setPrettyPrinting().create().toJson(webHookExecutionRequest));
+		Loggers.SERVER.debug(WebHookExecutionRequestGsonBuilder.gsonBuilder().toJson(webHookExecutionRequest));
 		
 	}
 	

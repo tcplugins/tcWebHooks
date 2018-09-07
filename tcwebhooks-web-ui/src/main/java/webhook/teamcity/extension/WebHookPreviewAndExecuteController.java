@@ -8,18 +8,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.extension.bean.WebHookTestHistoryItem;
+import webhook.teamcity.history.WebHookHistoryItem;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
+import webhook.teamcity.testing.model.WebHookExecutionRequestGsonBuilder;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookPreviewAndExecuteController extends BaseController {
 	
+	private static final String PARAM_ACTION = "action";
 	private final WebControllerManager myWebManager;
     private final String myPluginPath;
 	private final WebHookUserRequestedExecutor myWebHookUserRequestedExecutor;
@@ -44,30 +48,52 @@ public class WebHookPreviewAndExecuteController extends BaseController {
 		if (isPost(request)) {
 			
 			HashMap<String,Object> params = new HashMap<>();
-			Gson gson = new GsonBuilder().create();
+			Gson gson = WebHookExecutionRequestGsonBuilder.gsonBuilder();
 			
 			WebHookExecutionRequest webHookExecutionRequest = gson.fromJson(
 					request.getReader(), 
 					WebHookExecutionRequest.class
 				);
 			
-			if (request.getParameter("action") != null && request.getParameter("action").equals("preview")) {
+			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("preview")) {
 				
 				params.put("templateRendering", 
 						gson.toJson(
 								myWebHookUserRequestedExecutor.requestWebHookPreview(webHookExecutionRequest))
 						);
-			} else if (request.getParameter("action") != null && request.getParameter("action").equals("execute")) {
+			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("execute")) {
+				
+				WebHookHistoryItem webHookHistoryItem = myWebHookUserRequestedExecutor.requestWebHookExecution(webHookExecutionRequest);
+				
+				WebHookTestHistoryItem.ErrorStatus error = null;
+		        if (webHookHistoryItem.getWebhookErrorStatus() != null) {
+		        	error = new WebHookTestHistoryItem.ErrorStatus(webHookHistoryItem.getWebhookErrorStatus().getMessage(), webHookHistoryItem.getWebhookErrorStatus().getErrorCode());
+		        }
 				
 				params.put("templateRendering", 
-						gson.toJson(
-								myWebHookUserRequestedExecutor.requestWebHookExecution(webHookExecutionRequest))
-						);
+						gson.toJson(WebHookTestHistoryItem
+								.builder()
+								.dateTime(webHookHistoryItem.getTimestamp().toString())
+								.trackingId(webHookHistoryItem.getWebHookExecutionStats().getTrackingIdAsString())
+								.url(getUrl(webHookHistoryItem.getWebHookConfig()))
+								.executionTime(String.valueOf(webHookHistoryItem.getWebHookExecutionStats().getTotalExecutionTime()) + " ms")
+								.statusCode(webHookHistoryItem.getWebHookExecutionStats().getStatusCode())
+								.statusReason(webHookHistoryItem.getWebHookExecutionStats().getStatusReason())
+								.error(error)
+								.build())					
+					);
 			}
 			return new ModelAndView(myPluginPath + "WebHook/templateRendering.jsp", params);
 		}
 
 		return null;
 	}
-
+	
+	private String getUrl(WebHookConfig webHookConfig) {
+		if (webHookConfig == null || webHookConfig.getUrl() == null || webHookConfig.getUrl().trim().isEmpty()) {
+			return "";
+		}
+		return webHookConfig.getUrl();
+	}
+	
 }

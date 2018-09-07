@@ -35,6 +35,7 @@ import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookProjectSettings.WebHookUpdateResult;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookAjaxEditPageController extends BaseController {
@@ -96,17 +97,17 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    			if ((request.getParameter("submitAction") != null ) 
 			    				&& (request.getParameter("submitAction").equals("removeWebHook"))
 			    				&& (request.getParameter("removedWebHookId") != null)){
-			    					projSettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
-			    					if(projSettings.updateSuccessful()){
+			    					WebHookUpdateResult result = projSettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
+			    					if(result.isUpdated()){
 			    						myProject.persist();
-			    						params.put(PARAMS_MESSAGES_KEY, "<errors />");
+	    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='delete' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    					} else {
 			    						params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. Have the WebHooks been edited on disk or by another user?</error></errors>");		
 			    						noErrors = false;
 			    					}
 			    					
 			    			} else if (noErrors && (request.getParameter("submitAction") != null ) 
-				    				&& (request.getParameter("submitAction").equals("updateWebHook"))){
+				    				&& (request.getParameter("submitAction").equals("updateWebHook") || request.getParameter("submitAction").equals("addWebHook"))){
 			    				if((request.getParameter("URL") != null ) 
 				    				&& (request.getParameter("URL").length() > 0 )
 				    				&& (request.getParameter("payloadFormat") != null)
@@ -184,25 +185,25 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
-			    							projSettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
+			    							WebHookUpdateResult result = projSettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
 			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
-			    							if(projSettings.updateSuccessful()){
+			    							if(result.isUpdated()){
 			    								myProject.persist();
-			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors />");
+			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='new' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
-			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
+			    								params.put("message", "<errors><error id=\"persistenceError\">Unable to perist webhook</error>");
 			    							}
 			    						} else if (noErrors) {
-			    							projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
+			    							WebHookUpdateResult result = projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
-			    							if(projSettings.updateSuccessful()){
+			    							if(result.isUpdated()){
 			    								myProject.persist();
-			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors />");
+			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='update' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
-			    								params.put("message", "<errors><error id=\"\">" + projSettings.getUpdateMessage() + "</error>");
+			    								params.put("message", "<errors><error id=\"persistenceError\">Unable to perist webhook</error>");
 			    							}
 			    						}
 			    					} // TODO Need to handle webHookId being null

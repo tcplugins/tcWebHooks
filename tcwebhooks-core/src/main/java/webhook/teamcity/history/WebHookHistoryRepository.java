@@ -6,8 +6,17 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 
 public interface WebHookHistoryRepository {
-	
-	public void addHistoryItem(WebHookHistoryItem histoyItem);
+	/**
+	 * Adds a {@link WebHookHistoryItem} to the repository
+	 * @param historyItem
+	 */
+	public void addHistoryItem(WebHookHistoryItem historyItem);
+	/**
+	 * Get {@link WebHookHistoryItem} from repository
+	 * @param trackingId to identify the history item
+	 * @return {@link WebHookHistoryItem} or null if no matching item found.
+	 */
+	public WebHookHistoryItem getHistoryItem(String trackingId);
 	public PagedList<WebHookHistoryItem> findHistoryItemsForProject(String projectId, int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuildType(String buildTypeId, int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuild(Long buildId, int pageNumber, int pageSize);
