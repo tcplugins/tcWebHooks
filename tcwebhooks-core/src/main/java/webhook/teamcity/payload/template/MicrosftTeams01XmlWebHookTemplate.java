@@ -5,11 +5,11 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
-public class FlowdockXmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
+public class MicrosftTeams01XmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
 	
-	private static final String CONF_PROPERTIES = "webhook/teamcity/payload/template/FlowdockWebHookTemplate.xml";
+	private static final String CONF_PROPERTIES = "webhook/teamcity/payload/template/MicrosoftTeams02WebHookTemplate.xml";
 	
-	public FlowdockXmlWebHookTemplate(
+	public MicrosftTeams01XmlWebHookTemplate(
 			WebHookTemplateManager templateManager,
 			WebHookPayloadManager payloadManager,
 			WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
@@ -18,7 +18,7 @@ public class FlowdockXmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate 
 
 	@Override
 	public String getLoggingName() {
-		return "FlowdockXmlWebHookTemplate";
+		return "MicrosoftTeams02XmlWebHookTemplate";
 	}
 
 	@Override

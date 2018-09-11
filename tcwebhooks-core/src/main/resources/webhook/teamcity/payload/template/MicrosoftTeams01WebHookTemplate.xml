@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="microsoft-teams" enabled="true" rank="100" format="jsonTemplate"><template-description>Microsoft Teams</template-description><template-tool-tip>Post to Microsoft Teams Group Chat Software</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="1"><template id="0"><template-text use-for-branch-template="false">{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "summary": "TeamCity - ${buildName} - ${buildResult}",
+    "themeColor": "#FF0000",
+    "sections": [
+        {
+            "startGroup": true,
+            "title": "&lt;a href=\"${rootUrl}/project.html?projectId=${projectId}\"&gt;${projectName}&lt;/a&gt; :: &lt;a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\"&gt;${buildName}&lt;/a&gt; # &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildNumber}&lt;/strong&gt;&lt;/a&gt; has &lt;strong&gt;${buildStateDescription}&lt;/strong&gt; with a status of &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildResult}&lt;/strong&gt;&lt;/a&gt;",
+            "activityImage": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildFailed%402x.png",
+            "activityTitle": "${buildName} - **${buildResult}**",
+            "activitySubtitle": "Triggered by **${triggeredBy}** on agent **${agentName}**"
+        }
+    ]
+}</template-text><branch-template-text>{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "summary": "TeamCity - ${buildName}-${sanitize(branchName)} - ${buildResult}",
+    "themeColor": "#FF0000",
+    "sections": [
+        {
+            "startGroup": true,
+            "title": "&lt;a href=\"${rootUrl}/project.html?projectId=${projectId}\"&gt;${projectName}&lt;/a&gt; :: &lt;a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\"&gt;${buildName}&lt;/a&gt; # &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildNumber}&lt;/strong&gt;&lt;/a&gt; has &lt;strong&gt;${buildStateDescription}&lt;/strong&gt; with a status of &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildResult}&lt;/strong&gt;&lt;/a&gt;",
+            "activityImage": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildFailed%402x.png",
+            "activityTitle": "${buildName} (${sanitize(branchDisplayName)}) - **${buildResult}**",
+            "activitySubtitle": "Triggered by **${triggeredBy}** on agent **${agentName}**"
+        }
+    ]
+}</branch-template-text><states><state type="buildFailed" enabled="true"/><state type="buildBroken" enabled="true"/></states></template><template id="1"><template-text use-for-branch-template="false">{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "summary": "TeamCity - ${buildName} - ${buildResult}",
+    "themeColor": "#00FF00",
+    "sections": [
+        {
+            "startGroup": true,
+            "title": "&lt;a href=\"${rootUrl}/project.html?projectId=${projectId}\"&gt;${projectName}&lt;/a&gt; :: &lt;a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\"&gt;${buildName}&lt;/a&gt; # &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildNumber}&lt;/strong&gt;&lt;/a&gt; has &lt;strong&gt;${buildStateDescription}&lt;/strong&gt; with a status of &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildResult}&lt;/strong&gt;&lt;/a&gt;",
+            "activityImage": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildSuccessful%402x.png",
+            "activityTitle": "${buildName} - **${buildResult}**",
+            "activitySubtitle": "Triggered by **${triggeredBy}** on agent **${agentName}**"
+        }
+    ]
+}</template-text><branch-template-text>{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "summary": "TeamCity - ${buildName}-${sanitize(branchName)} - ${buildResult}",
+    "themeColor": "#00FF00",
+    "sections": [
+        {
+            "startGroup": true,
+            "title": "&lt;a href=\"${rootUrl}/project.html?projectId=${projectId}\"&gt;${projectName}&lt;/a&gt; :: &lt;a href=\"${rootUrl}/viewType.html?buildTypeId=${buildTypeId}\"&gt;${buildName}&lt;/a&gt; # &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildNumber}&lt;/strong&gt;&lt;/a&gt; has &lt;strong&gt;${buildStateDescription}&lt;/strong&gt; with a status of &lt;a href=\"${rootUrl}/viewLog.html?buildTypeId=${buildTypeId}&amp;buildId=${buildId}\"&gt;&lt;strong&gt;${buildResult}&lt;/strong&gt;&lt;/a&gt;",
+            "activityImage": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/buildSuccessful%402x.png",
+            "activityTitle": "${buildName} (${sanitize(branchDisplayName)}) - **${buildResult}**",
+            "activitySubtitle": "Triggered by **${triggeredBy}** on agent **${agentName}**"
+        }
+    ]
+}</branch-template-text><states><state type="buildSuccessful" enabled="true"/><state type="buildFixed" enabled="true"/></states></template></templates></webhook-template>

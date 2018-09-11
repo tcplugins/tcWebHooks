@@ -223,7 +223,7 @@
 		class="webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
-			<value>14</value>
+			<value>100</value>
 		</property>
 	</bean>
 	
@@ -231,7 +231,7 @@
 		class="webhook.teamcity.payload.template.SlackComXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
-			<value>15</value>
+			<value>100</value>
 		</property>
 	</bean>
 	
@@ -239,7 +239,7 @@
 		class="webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
-			<value>16</value>
+			<value>100</value>
 		</property>
 	</bean>
 	
@@ -247,7 +247,23 @@
 		class="webhook.teamcity.payload.template.FlowdockXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
-			<value>14</value>
+			<value>100</value>
+		</property>
+	</bean>
+	
+	<bean id="microsftTeams01XmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.MicrosftTeams01XmlWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>100</value>
+		</property>
+	</bean>
+	
+	<bean id="microsftTeams02XmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.MicrosftTeams02XmlWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>100</value>
 		</property>
 	</bean>
 

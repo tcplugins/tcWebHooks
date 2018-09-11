@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<webhook-template enabled="true" name="flowdock" rank="14">
+	<webhook-template enabled="true" name="flowdock" rank="100">
 		<template-description>Flowdock JSON templates</template-description>
 		<template-tool-tip>Supports the TeamCity Flowdock JSON integration</template-tool-tip>
         <preferred-date-format></preferred-date-format>

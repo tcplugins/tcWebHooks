@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="microsoft-teams-2" enabled="true" rank="100" format="jsonTemplate"><template-description>Microsoft Teams (light)</template-description><template-tool-tip>A template for Microsoft Teams. Has a different look and feel.</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="3"><template id="0"><template-text use-for-branch-template="true">{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "themeColor": "E00F00",
+    "summary": "Build Failed",
+    "sections": [
+      {
+        "activityTitle": "${projectName} Build Failed",
+        "facts": [
+          {
+            "name": "Project",
+            "value": "[${projectName}](${rootUrl}/project.html?projectId=${projectId})"
+          },
+          {
+            "name": "Configuration",
+            "value": "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})"
+          },
+          {
+            "name": "Build",
+            "value": "[#${buildNumber}](${buildStatusUrl})"
+          }
+        ],
+        "markdown": true
+      }
+    ],
+    "potentialAction": [
+      {
+        "@type": "OpenUri",
+        "name": "View Build Log",
+        "targets": [
+          {
+            "os": "default",
+            "uri": "${buildStatusUrl}&amp;tab=buildLog"
+          }
+        ]
+      }
+    ]
+  }</template-text><branch-template-text></branch-template-text><states><state type="buildFailed" enabled="true"/></states></template><template id="1"><template-text use-for-branch-template="true">{
+  "@type": "MessageCard",
+  "@context": "http://schema.org/extensions",
+  "summary": "Build Succeeded",
+  "sections": [
+    {
+      "activityTitle": "${projectName} Build Started",
+      "facts": [
+        {
+          "name": "Project",
+          "value": "[${projectName}](${rootUrl}/project.html?projectId=${projectId})"
+        },
+        {
+          "name": "Configuration",
+          "value": "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})"
+        },
+        {
+          "name": "Build",
+          "value": "[#${buildNumber}](${buildStatusUrl})"
+        }
+      ],
+      "markdown": true
+    }
+  ]
+}</template-text><branch-template-text></branch-template-text><states><state type="buildStarted" enabled="true"/></states></template><template id="2"><template-text use-for-branch-template="true">{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "themeColor": "00E03C",
+    "summary": "Build Succeeded",
+    "sections": [
+      {
+        "activityTitle": "${projectName} Build Succeeded",
+        "facts": [
+          {
+            "name": "Project",
+            "value": "[${projectName}](${rootUrl}/project.html?projectId=${projectId})"
+          },
+          {
+            "name": "Configuration",
+            "value": "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})"
+          },
+          {
+            "name": "Build",
+            "value": "[#${buildNumber}](${buildStatusUrl})"
+          }
+        ],
+        "markdown": true
+      }
+    ],
+    "potentialAction": [
+      {
+        "@type": "OpenUri",
+        "name": "View Build Artifacts",
+        "targets": [
+          {
+            "os": "default",
+            "uri": "${buildStatusUrl}&amp;tab=artifacts"
+          }
+        ]
+      },
+      {
+        "@type": "OpenUri",
+        "name": "View Build Log",
+        "targets": [
+          {
+            "os": "default",
+            "uri": "${buildStatusUrl}&amp;tab=buildLog"
+          }
+        ]
+      }
+    ]
+  }</template-text><branch-template-text></branch-template-text><states><state type="buildSuccessful" enabled="true"/></states></template></templates></webhook-template>
