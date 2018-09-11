@@ -83,7 +83,7 @@ public class TemplateTestRequest {
 					.builder()
 					.dateTime(webHookHistoryItem.getTimestamp().toString())
 					.trackingId(webHookHistoryItem.getWebHookExecutionStats().getTrackingIdAsString())
-					.url(getUrl(webHookHistoryItem.getWebHookConfig()))
+					.url(getUrl(webHookHistoryItem))
 					.executionTime(String.valueOf(webHookHistoryItem.getWebHookExecutionStats().getTotalExecutionTime()) + " ms")
 					.statusCode(webHookHistoryItem.getWebHookExecutionStats().getStatusCode())
 					.statusReason(webHookHistoryItem.getWebHookExecutionStats().getStatusReason())
@@ -145,11 +145,20 @@ public class TemplateTestRequest {
 		return e;
 	}
 
-	private String getUrl(WebHookConfig webHookConfig) {
-		if (webHookConfig == null || webHookConfig.getUrl() == null || webHookConfig.getUrl().trim().isEmpty()) {
-			return "";
+	private String getUrl(WebHookHistoryItem webHookConfig) {
+		if (webHookConfig != null &&
+				webHookConfig.getWebHookExecutionStats() != null &&
+				webHookConfig.getWebHookExecutionStats().getUrl() != null &&
+				!webHookConfig.getWebHookExecutionStats().getUrl().trim().isEmpty() )
+		{
+			return webHookConfig.getWebHookExecutionStats().getUrl();
+			
+		} else if (webHookConfig != null &&
+				webHookConfig.getUrl() != null &&
+				webHookConfig.getUrl().trim().isEmpty()) {
+			return webHookConfig.getUrl();
 		}
-		return webHookConfig.getUrl();
+		return "";
 	}
 	
 }
