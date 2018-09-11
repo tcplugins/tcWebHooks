@@ -47,7 +47,12 @@
     <script type=text/javascript>
     		var restApiDetected = ${isRestApiInstalled};
 		</script>		
-		<div>The following WebHooks Templates are available for use when configuring a WebHooks.
+		<div>
+		<h2>The following table shows the WebHooks Templates installed in this TeamCity instance.</h2> 
+		A guide to <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction">WebHook Templates is on the tcWebHooks Wiki</a>. 
+		<p>Additional templates can be downloaded from the 
+		<a href="https://github.com/tcplugins/tcWebHooksTemplates">tcWebHooksTemplates project</a> on GitHub. 
+		User contributions are welcome. Please see the readme for instructions on importing and exporting WebHook Templates.<p>
 		<c:if test="${not isRestApiInstalled}">
 			<p>Viewing or making changes to template content will not be possible using the WebHook Templates UI because the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API</a> is not installed.
 		</c:if>

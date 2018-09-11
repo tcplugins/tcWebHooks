@@ -254,7 +254,7 @@
     				"buildStatus", "buildResult", "buildResultPrevious", "buildResultDelta", 
     				"buildStateDescription", "buildStatusUrl", "notifyType",
 					"buildComment", "buildRunners", "buildTags", "changes",  "comment", "triggeredBy",
-					"buildStartTime", "currentTime", "buildFinishTime", 
+					"buildStartTime", "currentTime",  
 					"branchName", "branchDisplayName", "branchIsDefault", "branch",
 					"text", "message",  "rootUrl", "buildStatusHtml", 
 					"agentName", "agentHostname", "agentOs",  
