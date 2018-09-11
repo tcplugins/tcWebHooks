@@ -64,7 +64,7 @@
 						<p>There are <strong>${config.buildCount}</strong> WebHooks for this specific build. 
 							<a href="./webhooks/index.html?buildTypeId=${config.buildExternalId}">Edit build WebHooks</a>.</p>
 						<table class="testList dark borderBottom">
-							<thead><tr><th class=name>URL</th><th class=name>Enabled</th></tr></thead>
+							<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
 							<tbody>
 							<c:forEach items="${config.buildWebHookList}" var="hook">
 								<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  

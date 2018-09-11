@@ -64,33 +64,5 @@
 					</tbody>
 				</table>
 		</c:if>
-
-			<c:forEach items="${projectBean.buildWebhooks}" var="config">
-
-				<div style='margin-top: 2.5em;'><h3 class="title" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for ${projectName} &gt; ${config.buildName}</h3>
-				
-				<c:if test="${config.hasNoBuildWebHooks}" >
-						<div style='margin-left: 1em; margin-right:1em;'>
-						<p>There are no WebHooks configured for this specific build.</p> 
-						<a href="../webhooks/index.html?buildTypeId=${config.buildExternalId}">Add build WebHooks</a>.
-						</div>
-				</c:if>
-				<c:if test="${config.hasBuildWebHooks}" >
-						<div style='margin-left: 1em; margin-right:1em;'>
-						<p>There are <strong>${config.buildCount}</strong> WebHooks for this specific build. 
-							<a href="../webhooks/index.html?buildTypeId=${config.buildExternalId}">Edit build WebHooks</a>.</p>
-						<table class="testList dark borderBottom">
-							<thead><tr><th class=name>URL</th><th class=name>Enabled</th></tr></thead>
-							<tbody>
-							<c:forEach items="${config.buildWebHookList}" var="hook">
-								<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
-							</c:forEach>
-							</tbody>
-						</table>
-						</div>
-				</c:if>
-				</div>
-				
-			</c:forEach>
-		</div>	
+	</div>	
 	
