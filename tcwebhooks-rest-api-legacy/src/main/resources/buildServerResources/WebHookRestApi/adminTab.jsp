@@ -35,7 +35,7 @@
 	        		<tr><td colspan="4" style="text-align: left;padding:0.5em;"><strong>Plugin file found in <em>${foundJar.path.toString()}</em></strong></td></tr>
 	        		<tr><td><strong>Plugin ZIP file</strong></td>
 	        			<td colspan=2>${foundJar.path.toString()}</td>
-	        			<c:set var="colspan" value="${foundJar.fileListSize} + 2"/>
+	        			<c:set var="colspan" value="${foundJar.fileListSize + 2}"/>
 	        			<td rowspan="${colspan}">
 	        				<c:choose>
 			        			<c:when test="${foundJar.jarReport.jarFileFound}">
