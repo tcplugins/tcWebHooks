@@ -29,10 +29,10 @@
 					
 							<c:choose>
 								<c:when test="${hook.payloadTemplate == 'none'}">
-					<td class="value highlight" style="width:15%;"><c:out value="${hook.payloadFormatForWeb}" /></td>
+					<td class="value highlight webHookRowItemFormat" style="width:15%;"><c:out value="${hook.payloadFormatForWeb}" /></td>
 								</c:when>
 								<c:otherwise>
-					<td class="value highlight" style="width:15%;"><a href="template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
+					<td class="value highlight webHookRowItemFormat" style="width:15%;"><a href="template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
 								</c:otherwise>
 							</c:choose>					
 					
@@ -226,6 +226,7 @@
 		            
 			</div> <!-- webHookFormContents -->
 
+            <input type="hidden" id="projectExternalId" name="projectExternalId" value="${projectExternalId}"/>
             <input type="hidden" id="webHookId" name="webHookId" value=""/>
             <input type="hidden" id="payloadFormat" name="payloadFormat" value=""/>
             <input type="hidden" id="payloadTemplate" name="payloadTemplate" value=""/>

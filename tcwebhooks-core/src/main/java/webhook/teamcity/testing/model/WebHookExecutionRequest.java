@@ -23,6 +23,7 @@ public class WebHookExecutionRequest {
 	private String payloadFormat;
 	private String authType;
 	private boolean authEnabled;
+	private boolean authPreemptive;
 	@Builder.Default private Map<String,String> authParameters = new LinkedHashMap<>();
 	private Map<BuildStateEnum, Boolean> configBuildStates;
 

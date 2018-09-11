@@ -168,6 +168,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
+				.uniqueKey("new")
 				.projectExternalId("MyProject")
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				
@@ -238,6 +239,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
+				.uniqueKey("new")
 				.projectExternalId("MyProject")
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				
@@ -270,6 +272,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
+				.uniqueKey("new")
 				.projectExternalId("MyProject")
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				
@@ -284,6 +287,46 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 
+		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
+		
+		stopWebServer(s);
+	}
+	
+	@Test
+	public void testRequestWebHookExecutionWithOverridenConfigWebHookExecutionRequestReturns200() throws InterruptedException {
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
+				server, mainSettings,
+				webHookConfigFactory, 
+				webHookFactory,
+				webHookTemplateResolver, 
+				webHookPayloadManager, 
+				webHookHistoryItemFactory,
+				webHookHistoryRepository,
+				webAddressTransformer,
+				webHookContentBuilder
+				);
+		
+		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
+		
+		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
+				.buildId(1L)
+				.uniqueKey(loadedConfig.getUniqueKey())
+				.projectExternalId("MyProject")
+				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
+				
+				.url("http://localhost:58001/200")
+				.templateId("slack.com-compact")
+				.payloadFormat("jsonTemplate")
+				.authEnabled(false)
+				.configBuildStates(finishedBuildState)
+				.build();
+		
+		WebHookTestServer s = startWebServer();
+		
+		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
+		
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
 		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
@@ -308,6 +351,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
 				.buildId(1L)
+				.uniqueKey("new")
 				.projectExternalId("MyProject")
 				.testBuildState(BuildStateEnum.BUILD_SUCCESSFUL)
 				

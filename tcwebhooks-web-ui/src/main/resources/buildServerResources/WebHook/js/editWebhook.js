@@ -290,13 +290,16 @@ WebHooksPlugin = {
 						},    				
 						data: JSON.stringify({
 										"url": $j('#webHookUrl').val(),
-										"projectExternalId": "${projectExternalId}",
+										"projectExternalId": $j("#editWebHookForm input[id='projectExternalId']").val(),
+										"uniqueKey": $j("#editWebHookForm input[id='webHookId']").val(),
 										"testBuildState": selectedBuildState,
 										"buildId": selectedBuildId,
 										"templateId": lookupTemplate($j('#payloadFormatHolder').val()),
 										"payloadFormat": lookupFormat($j('#payloadFormatHolder').val()),
-										"authType" : null,
-										"authEnabled" : false,
+										"authType" : lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
+										"authEnabled" : lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
+										"authPreemptive" : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
+										"authParameters" : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
 										"configBuildStates" : {
 											"BUILD_SUCCESSFUL" : true, 
 											"CHANGES_LOADED" : false, 
@@ -537,7 +540,7 @@ function buildWebHookAuthParameterHtml(paramObj, webhookObj, setValue) {
 			+ paramObj.key + '" title="'+ paramObj.toolTip + '">' 
 			+ paramObj.name + requireText + '</label></td><td class="authParameterValueWrapper">' 
 			+ '<input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
-			+ paramObj.key + '" ' + value + 'class="authParameterValue"></td></tr>';
+			+ paramObj.key + '" ' + value + 'class="authParameterValue authParameterItemValue"></td></tr>';
 			
 }
 
@@ -616,6 +619,34 @@ function lookupFormat(templateFormatCombinationKey){
 		}
 	});
 	return name;
+}
+
+function lookupAuthType(authTypeValue) {
+	if (authTypeValue) {
+		return authTypeValue;
+	}
+	return null;
+}
+
+function lookupAuthEnabled(authTypeValue) {
+	if (authTypeValue) {
+		return true;
+	}
+	return false;
+}
+
+function lookupAuthParameters(authTypeValue, webHookForm) {
+	var authParams = {};
+	if (! lookupAuthEnabled(authTypeValue)) {
+		return authParams;
+	}
+	$j.each(webHookForm, function(index, item) {
+		var mySubStringOffSet = item.name.indexOf("extraAuthParam_");
+		if (mySubStringOffSet != -1) {
+			authParams[item.name.substring(15)] = item.value;
+		}
+	});
+	return authParams;
 }
 
 function htmlEscape(str) {

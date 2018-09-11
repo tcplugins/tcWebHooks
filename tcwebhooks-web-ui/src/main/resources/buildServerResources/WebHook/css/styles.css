@@ -617,3 +617,7 @@ span.lowercase {
 div#webhookTestProgress {
 	display: none;
 }
+
+td.webHookRowItemFormat {
+	cursor: default;
+}

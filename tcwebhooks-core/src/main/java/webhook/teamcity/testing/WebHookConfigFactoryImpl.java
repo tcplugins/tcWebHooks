@@ -1,6 +1,7 @@
 package webhook.teamcity.testing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -39,6 +40,41 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 	
 	@Override
 	public WebHookConfig build(WebHookExecutionRequest webHookExecutionRequest) {
+		
+		if (webHookExecutionRequest.getUniqueKey().equals("new")) {
+		
+			return buildNewConfig(webHookExecutionRequest);
+		} else {
+			try {
+				// Find the existing, and override anything we got from the request.
+				// This means that customTemplate, Parameters and filters will be copied over.
+				WebHookConfig webHookConfig = findWebHookWithId(webHookExecutionRequest.getProjectExternalId(), webHookExecutionRequest.getUniqueKey());
+				webHookConfig.setUrl(webHookExecutionRequest.getUrl());
+				webHookConfig.setPayloadFormat(webHookExecutionRequest.getPayloadFormat());
+				webHookConfig.setAuthEnabled(webHookExecutionRequest.isAuthEnabled());
+				webHookConfig.setAuthType(webHookExecutionRequest.getAuthType());
+				webHookConfig.setAuthPreemptive(webHookExecutionRequest.isAuthPreemptive());
+				webHookConfig.setAuthParameters(getAuthParameters(webHookExecutionRequest.getAuthParameters()));
+				webHookConfig.setBuildStates(buildStates(webHookExecutionRequest.getConfigBuildStates()));
+
+				return webHookConfig;
+				
+			} catch (WebHookConfigNotFoundException e) {
+				return buildNewConfig(webHookExecutionRequest);
+			}
+					
+		}
+	}
+
+	private Map<String, String> getAuthParameters(Map<String, String> authParameters) {
+		Map<String,String> params = new HashMap<>();
+		if (authParameters == null) {
+			return params;
+		}
+		return authParameters;
+	}
+
+	private WebHookConfig buildNewConfig(WebHookExecutionRequest webHookExecutionRequest) {
 		return WebHookConfig.builder()
 					 .url(webHookExecutionRequest.getUrl())
 					 .payloadFormat(webHookExecutionRequest.getPayloadFormat())
@@ -46,10 +82,11 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 					 .templates(new TreeMap<String,CustomMessageTemplate>())
 					 .authEnabled(webHookExecutionRequest.isAuthEnabled())
 					 .authType(webHookExecutionRequest.getAuthType())
-					 .authParameters(webHookExecutionRequest.getAuthParameters())
+					 .authPreemptive(webHookExecutionRequest.isAuthPreemptive())
+					 .authParameters(getAuthParameters(webHookExecutionRequest.getAuthParameters()))
 					 .filters(new ArrayList<WebHookFilterConfig>())
 					 .states(buildStates(webHookExecutionRequest.getConfigBuildStates()))
-					 .extraParameters(new TreeMap<String,String>()) //TODO: Should we get from config somehow?
+					 .extraParameters(new TreeMap<String,String>())
 					 .build();
 	}
 
@@ -66,8 +103,8 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 		return findWebHookWithId(webHookExecutionRequest.getProjectExternalId(), webHookExecutionRequest.getUniqueKey()).copy();
 	}
 
-	private WebHookConfig findWebHookWithId(String projectId, String webHookConfigUniqueId) throws WebHookConfigNotFoundException {
-		SProject myProject = myServer.getProjectManager().findProjectByExternalId(projectId);
+	private WebHookConfig findWebHookWithId(String projectExternalId, String webHookConfigUniqueId) throws WebHookConfigNotFoundException {
+		SProject myProject = myServer.getProjectManager().findProjectByExternalId(projectExternalId);
 		for (SProject project : myProject.getProjectPath()){
 			WebHookProjectSettings projSettings = (WebHookProjectSettings) myProjectSettingsManager.getSettings(project.getProjectId(), WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
 		    	if (projSettings.isEnabled()){
@@ -90,10 +127,10 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 					}
 			    	}
 		    	} else {
-		    		Loggers.SERVER.debug("WebHookUserRequestedExecutorImpl :: WebHooks are disasbled for  " + projectId);
+		    		Loggers.SERVER.debug("WebHookUserRequestedExecutorImpl :: WebHooks are disasbled for  " + projectExternalId);
 		    	}
 		}
-    		throw new WebHookConfigNotFoundException(String.format("Webhook Configuration %s was not found", webHookConfigUniqueId));
+    	throw new WebHookConfigNotFoundException(String.format("Webhook Configuration %s was not found", webHookConfigUniqueId));
 	}
 
 	@Override
