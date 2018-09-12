@@ -214,6 +214,7 @@
 											</div>
 						            		<div id="webhookPreviewRendered"></div>
 						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return WebHooksPlugin.EditWebHookDialog.executeWebHook();">Send Test WebHook for Build Event</button>
+						            		<span class="testingLimitations"><a rel="noopener noreferrer" target="_blank" href="https://github.com/tcplugins/tcWebHooks/wiki/Testing-a-WebHook#limitations-with-webhook-testing">Testing limitations (opens in new window)</a></span>
 											<div id="webhookTestProgress">
 												<forms:progressRing progressTitle="Sending test webhook..."/>						            		
 												<span class="stage-status__description">Sending test webhook...</span>

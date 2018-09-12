@@ -621,3 +621,8 @@ div#webhookTestProgress {
 td.webHookRowItemFormat {
 	cursor: default;
 }
+
+span.testingLimitations {
+	float: right;
+	clear: right;
+}
