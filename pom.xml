@@ -4,7 +4,7 @@
 	<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
 	<artifactId>tcwebhooks</artifactId>
 	<properties>
-    	<majorVersion>1.1-RC1</majorVersion>
+    	<majorVersion>1.1-RC2</majorVersion>
     	<minorVersion>snapshot</minorVersion>
     	<gitHash>${GIT_HASH}</gitHash>
     	<gitBranch>${GIT_BRANCH}</gitBranch>    	
