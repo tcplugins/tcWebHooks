@@ -156,13 +156,19 @@
 								    }
 								}),
 					success:(function(data){
+									if(data.errored) {
+										$j('#webhookPreviewRendered').html(
+												"<b>An error occured building the payload preview</b><br><div style='padding:1em;'>" +
+												data.exception.detailMessage + "</div>");
+									} else {
 										$j('#webhookPreviewRendered').html(data.html);
 										
 										$j('#webhookPreviewRendered pre code').each(function(i, block) {
 										    hljs.highlightBlock(block);
 										});
+									}
 								})
-					});
+				});
 			}
 		} else {
 			$j('#webhookPreviewRendered').html();
