@@ -19,6 +19,7 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.util.VariableMessageBuilderImpl;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
 import webhook.teamcity.settings.WebHookConfig;
 
@@ -101,7 +102,7 @@ public class WebHookContentBuilder {
 	public String resolveTemplatedUrl(WebHook wh, String url, BuildStateEnum buildState, SBuild runningBuild, WebHookContentObjectSerialiser serialiser, SortedMap<String,String> extraParameters, Map<String,String> templates){
 		if (url.contains("${") && url.contains("}")){
 			WebHookPayloadContent content = new WebHookPayloadContent(payloadManager.getServer(), runningBuild, getPreviousNonPersonalBuild(wh, runningBuild), buildState, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
-			VariableMessageBuilder builder = VariableMessageBuilder.create(url, new WebHooksBeanUtilsVariableResolver(serialiser,content, content.getAllParameters()));
+			VariableMessageBuilder builder = VariableMessageBuilderImpl.create(url, new WebHooksBeanUtilsVariableResolver(serialiser,content, content.getAllParameters()));
 			return builder.build();
 		} else {
 			return url;

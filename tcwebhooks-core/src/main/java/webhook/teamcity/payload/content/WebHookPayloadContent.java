@@ -27,6 +27,7 @@ import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.util.VariableMessageBuilderImpl;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
 
 public class WebHookPayloadContent {
@@ -550,7 +551,7 @@ public class WebHookPayloadContent {
 		
 		private void setBuildStatusHtml(BuildStateEnum buildState, final String htmlStatusTemplate) {
 			
-			VariableMessageBuilder builder = VariableMessageBuilder.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(), this, getAllParameters()));
+			VariableMessageBuilder builder = VariableMessageBuilderImpl.create(htmlStatusTemplate, new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(), this, getAllParameters()));
 			this.buildStatusHtml = builder.build();
 		}
 		
@@ -641,12 +642,12 @@ public class WebHookPayloadContent {
 //				resolvedParametersMap.putAll(extraParameters);
 
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
-					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
+					builder = VariableMessageBuilderImpl.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
 				}
 				resolver = new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(),this, getAllParameters());
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
-					builder = VariableMessageBuilder.create(entry.getValue(), resolver);
+					builder = VariableMessageBuilderImpl.create(entry.getValue(), resolver);
 					resolvedParametersMap.put(entry.getKey(), builder.build());
 				}
 				return resolvedParametersMap;

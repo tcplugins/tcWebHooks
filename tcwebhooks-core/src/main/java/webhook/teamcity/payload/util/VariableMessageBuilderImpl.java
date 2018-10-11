@@ -1,0 +1,26 @@
+package webhook.teamcity.payload.util;
+
+import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+
+public class VariableMessageBuilderImpl implements VariableMessageBuilder {
+	static final String VAR_START = "${";
+	static final String VAR_END = "}";
+	
+	String template;
+	VariableResolver resolver;
+	TemplateMatcher matcher;
+	
+	public static VariableMessageBuilder create(final String template, VariableResolver resolver){
+		VariableMessageBuilderImpl builder = new VariableMessageBuilderImpl();
+		builder.template = template;
+		builder.resolver = resolver;
+		builder.matcher = new TemplateMatcher(VAR_START, VAR_END);
+		return builder;
+	}
+
+	@Override
+	public String build(){
+		return matcher.replace(template, resolver);
+	}
+	
+}

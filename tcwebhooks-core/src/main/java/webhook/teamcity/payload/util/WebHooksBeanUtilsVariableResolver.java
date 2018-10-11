@@ -10,7 +10,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
-import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 

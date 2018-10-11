@@ -37,7 +37,7 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
-import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.util.VariableMessageBuilderImpl;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 
@@ -413,7 +413,7 @@ public class WebHookImpl implements WebHook {
 			}
 			
 			/* Otherwise, parse it and test it */
-			String variable = VariableMessageBuilder.create(filter.getValue(), variableResolver).build();
+			String variable = VariableMessageBuilderImpl.create(filter.getValue(), variableResolver).build();
 			Pattern p = filter.getPattern();
 			if (!p.matcher(variable).matches()){
 				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
@@ -439,8 +439,8 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void resolveHeaders(VariableResolver variableResolver) {
 		for (WebHookHeaderConfig header : this.headers ) {
-			String headerName = VariableMessageBuilder.create(header.getName(), variableResolver).build();
-			String headerValue = VariableMessageBuilder.create(header.getValue(), variableResolver).build();
+			String headerName = VariableMessageBuilderImpl.create(header.getName(), variableResolver).build();
+			String headerValue = VariableMessageBuilderImpl.create(header.getValue(), variableResolver).build();
 			resolvedHeaders.put(headerName, headerValue);
 		}
 	}

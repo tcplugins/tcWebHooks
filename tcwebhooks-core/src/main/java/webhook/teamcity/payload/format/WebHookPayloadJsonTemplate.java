@@ -14,6 +14,7 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.util.VariableMessageBuilderImpl;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
 
 public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements WebHookPayload, WebHookContentObjectSerialiser {
@@ -46,7 +47,7 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		VariableMessageBuilder builder = VariableMessageBuilder.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(this, content, content.getAllParameters()));
+		VariableMessageBuilder builder = VariableMessageBuilderImpl.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(this, content, content.getAllParameters()));
 		return builder.build();
 	}
 
