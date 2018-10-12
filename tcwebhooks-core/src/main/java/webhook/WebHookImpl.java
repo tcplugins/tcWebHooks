@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,6 +29,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import lombok.Getter;
@@ -198,6 +200,21 @@ public class WebHookImpl implements WebHook {
 		        this.webhookStats.setRequestCompleted(httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
 		        //TODO: Fix this; this.content = httpResponse.getResponseBodyAsString();
 		        this.webhookStats.setResponseHeaders(httpResponse.getAllHeaders());
+		        if (Loggers.SERVER.isDebugEnabled()) {
+			        Loggers.SERVER.debug("WebHookImpl::  --- Begin Server Response ---");
+			        try {
+			        	HttpEntity responseEntity = httpResponse.getEntity();
+				        if(responseEntity != null) {
+				        	Loggers.SERVER.debug( EntityUtils.toString(responseEntity) );
+			        	} else {
+			        		Loggers.SERVER.debug("Unable to parse response body. responseEntity is null");
+			        	}
+//			        	Loggers.SERVER.debug(new NonErroringBasicResponseHandler().handleResponse(httpResponse));
+			        } catch (IOException ex) {
+			        	Loggers.SERVER.debug("Unable to parse response body:" + ex.getMessage());
+			        }
+			        Loggers.SERVER.debug("WebHookImpl::  --- End Server Response ---");
+		        }
 		    } finally {
 		        httppost.releaseConnection();
 		        this.webhookStats.setTeardownCompleted();

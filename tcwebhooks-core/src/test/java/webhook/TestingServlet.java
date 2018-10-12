@@ -28,18 +28,18 @@ public class TestingServlet extends HttpServlet
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		response.setContentType("text/plain");
+		response.setContentType(request.getContentType());
 		response.setStatus(this.response);
 		switch (this.response) {
 			case  HttpServletResponse.SC_OK:
-				//response.getWriter().println("<h1>Hello SimpleServlet</h1>");
+				response.getWriter().println("<h1>Hello SimpleServlet</h1>");
 				this.printParams(request, response);
 				break;
 			case HttpServletResponse.SC_MOVED_TEMPORARILY:
 				response.sendRedirect("/200");
 				break;
 			default:
-				response.getWriter().println("<h1>Hello from defaultt</h1>");
+				response.getWriter().println("<h1>Hello from default</h1>");
 				break;
 		}
 		System.out.println("Handling Web request for " + ((Request) request).getUri().toString());
