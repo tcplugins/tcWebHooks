@@ -2,6 +2,7 @@ package webhook;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +34,13 @@ public class TestingServlet extends HttpServlet
 		response.setStatus(this.response);
 		switch (this.response) {
 			case  HttpServletResponse.SC_OK:
-				response.getWriter().println("<h1>Hello SimpleServlet</h1>");
-				this.printParams(request, response);
+				if (request.getContentType() != null && request.getContentType().startsWith("application/x-www-form-urlencoded")) {
+					response.setContentType("text/plain");
+					this.printParams(request, response);
+				} else {
+					String requestBody = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.name());
+					response.getWriter().println(requestBody);
+				}
 				break;
 			case HttpServletResponse.SC_MOVED_TEMPORARILY:
 				response.sendRedirect("/200");

@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.Consts;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -198,10 +199,18 @@ public class WebHookImpl implements WebHook {
 		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.requestConfig.getSocketTimeout());
 		    	httpResponse = client.execute(httppost, context);
 		        this.webhookStats.setRequestCompleted(httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
-		        //TODO: Fix this; this.content = httpResponse.getResponseBodyAsString();
 		        this.webhookStats.setResponseHeaders(httpResponse.getAllHeaders());
+		        
 		        if (Loggers.SERVER.isDebugEnabled()) {
-			        Loggers.SERVER.debug("WebHookImpl::  --- Begin Server Response ---");
+		        	// Log headers
+		        	Loggers.SERVER.debug("WebHookImpl::  --- Begin Server Response Headers ---");
+		        	for (Header header : httpResponse.getAllHeaders()) {
+		        		Loggers.SERVER.debug( header.getName() + " : " + header.getValue() );
+		        	}
+		        	Loggers.SERVER.debug("WebHookImpl::  --- End Server Response Headers ---");
+		        	
+		        	// Log body
+		        	Loggers.SERVER.debug("WebHookImpl::  --- Begin Server Response Body ---");
 			        try {
 			        	HttpEntity responseEntity = httpResponse.getEntity();
 				        if(responseEntity != null) {
@@ -209,11 +218,10 @@ public class WebHookImpl implements WebHook {
 			        	} else {
 			        		Loggers.SERVER.debug("Unable to parse response body. responseEntity is null");
 			        	}
-//			        	Loggers.SERVER.debug(new NonErroringBasicResponseHandler().handleResponse(httpResponse));
 			        } catch (IOException ex) {
 			        	Loggers.SERVER.debug("Unable to parse response body:" + ex.getMessage());
 			        }
-			        Loggers.SERVER.debug("WebHookImpl::  --- End Server Response ---");
+			        Loggers.SERVER.debug("WebHookImpl::  --- End Server Response Body ---");
 		        }
 		    } finally {
 		        httppost.releaseConnection();
