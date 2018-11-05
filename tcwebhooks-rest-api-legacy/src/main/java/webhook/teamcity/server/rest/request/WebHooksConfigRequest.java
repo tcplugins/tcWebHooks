@@ -7,17 +7,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import jetbrains.buildServer.server.rest.util.BeanContext;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.sun.jersey.spi.resource.Singleton;
+
+import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
+import jetbrains.buildServer.serverSide.auth.Permission;
+import webhook.teamcity.server.rest.errors.WebHookPermissionException;
 import webhook.teamcity.server.rest.model.mainconfig.Webhooks;
 import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
-
-import com.sun.jersey.spi.resource.Singleton;
 
 /**
  * @author Net Wolf UK Date: 27.01.2015
@@ -27,32 +28,44 @@ import com.sun.jersey.spi.resource.Singleton;
 @Singleton
 public class WebHooksConfigRequest implements ApiRequest {
 	static final String BASE_URI = Constants.API_URL + "/server";
-	private static final String NAME = WebHooksConfigRequest.class.getName();
+	private static final Permission mainConfigReadPermission = Permission.CHANGE_SERVER_SETTINGS;
+	private static final Permission mainConfigEditPermission = Permission.CHANGE_SERVER_SETTINGS;
 	@Context @NotNull private MainConfigManager mainConfigManager;
-//	@Context @NotNull private BeanContext myBeanContext;
 	@Context @NotNull private UriInfo uriInfo;
+	@Context @NotNull public PermissionChecker myPermissionChecker;
 
 	@GET 	// An @GET implies @Path("/")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Webhooks showConfig() {
+		checkMainConfigReadPermission();
 		return mainConfigManager.build(uriInfo);
 	}
 
-	@GET
-	@Path("/json")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Webhooks showConfigAsJson() {
-		return mainConfigManager.build(uriInfo);
-	}
-	
 	@PUT
 	public Response updateConfig(Webhooks webhooks){
+		checkMainConfigWritePermission();
 		mainConfigManager.updateMainConfig(webhooks);
 		return Response.noContent().build();
 	}
 
 	public static String getUri() {
 		return BASE_URI;
+	}
+	
+	private void checkMainConfigReadPermission() {
+		try {
+			myPermissionChecker.checkGlobalPermission(mainConfigReadPermission);
+		} catch (AuthorizationFailedException e) {
+			throw new WebHookPermissionException("Reading main settings requires permission: 'CHANGE_SERVER_SETTINGS'");
+		}
+	}
+	
+	private void checkMainConfigWritePermission() {
+		try {
+			myPermissionChecker.checkGlobalPermission(mainConfigEditPermission);
+		} catch (AuthorizationFailedException e) {
+			throw new WebHookPermissionException("Writing main settings requires permission 'CHANGE_SERVER_SETTINGS'");
+		}
 	}
 
 }

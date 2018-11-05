@@ -41,7 +41,7 @@ public class MainConfigTest extends WebHookAbstractSpringAwareJerseyTest {
     @Test
     public void testJsonRequest() {
     	WebResource webResource = resource();
-    	Webhooks responseMsg = webResource.path(WEBHOOKS_API_SERVER_JSON).accept(MediaType.APPLICATION_JSON_TYPE).get(Webhooks.class);
+    	Webhooks responseMsg = webResource.path(WEBHOOKS_API_SERVER).accept(MediaType.APPLICATION_JSON_TYPE).get(Webhooks.class);
     	assertEquals("Using WebHooks in myCompany Inc.", responseMsg.getInfo().getText());
     	assertEquals("http://intranet.mycompany.com/docs/UsingWebHooks", responseMsg.getInfo().getUrl());
     }
