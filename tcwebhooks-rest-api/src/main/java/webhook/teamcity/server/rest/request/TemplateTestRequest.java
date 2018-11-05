@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
@@ -29,7 +27,6 @@ import webhook.teamcity.server.rest.model.template.TemplateTestHistoryItem;
 import webhook.teamcity.server.rest.model.template.TemplateTestHistoryItem.ErrorStatus;
 import webhook.teamcity.server.rest.request.validator.ExecuteWebHookTemplateRequestValidator;
 import webhook.teamcity.server.rest.request.validator.PreviewWebHookTemplateRequestValidator;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 import webhook.teamcity.testing.model.WebHookRenderResult;
