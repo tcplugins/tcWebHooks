@@ -397,12 +397,12 @@ public class WebHookConfig {
 			el.addContent(templatesEl);
 		}
 		
-		if (! this.authType.isEmpty()){
+		if (this.authType != null && ! this.authType.isEmpty()){
 			Element authEl = new Element("auth");
 			authEl.setAttribute(ATTR_ENABLED, this.authEnabled.toString());
 			authEl.setAttribute(ATTR_TYPE, this.authType);
 			authEl.setAttribute(ATTR_PREEMPTIVE, this.authPreemptive.toString() );
-			if (! this.authParameters.isEmpty()){
+			if (this.authParameters != null && ! this.authParameters.isEmpty()){
 				Element paramsEl = new Element("auth-parameters");
 				for (String i : this.authParameters.keySet()){
 					paramsEl.addContent(this.getKeyAndValueAsElement(this.authParameters, i, ATTR_PARAM));
