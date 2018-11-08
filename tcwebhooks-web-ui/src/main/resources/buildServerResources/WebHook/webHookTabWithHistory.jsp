@@ -66,9 +66,16 @@
 						<table class="testList dark borderBottom">
 							<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
 							<tbody>
-							<c:forEach items="${config.buildWebHookList}" var="hook">
-								<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
-							</c:forEach>
+							<c:if test="${not project.admin}">
+								<c:forEach items="${config.buildWebHookList}" var="hook">
+									<tr><td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** <c:out value="${hook.generalisedUrl}" /></span></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
+								</c:forEach>							
+							</c:if>
+							<c:if test="${project.admin}">
+								<c:forEach items="${config.buildWebHookList}" var="hook">
+									<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>  
+								</c:forEach>
+							</c:if>
 							</tbody>
 						</table>
 						</div>
