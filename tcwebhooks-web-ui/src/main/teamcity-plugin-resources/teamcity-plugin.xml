@@ -4,12 +4,13 @@
   <info>
     <name>tcWebHooks</name>
     <display-name>Web Hooks (tcWebHooks)</display-name>
-    <version>${version}</version>
+    <version>${majorVersion}</version>
     <description>Trigger webhook POST requests from build events.
            This plugin adds new tabs to the Project and Build pages for viewing and configuring WebHook events.
         
     	   - Branch: ${gitBranch}
     	   - Revision: ${gitHash}
+    	   - Build: ${buildNumber}
     </description>
     <download-url>https://github.com/tcplugins/tcWebHooks/releases</download-url>
     <vendor>

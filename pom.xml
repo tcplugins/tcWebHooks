@@ -4,11 +4,11 @@
 	<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
 	<artifactId>tcwebhooks</artifactId>
 	<properties>
-    	<majorVersion>1.1</majorVersion>
-    	<minorVersion>snapshot</minorVersion>
+    	<majorVersion>1.2.0</majorVersion>
+    	<buildNumber>snapshot</buildNumber>
     	<gitHash>${GIT_HASH}</gitHash>
     	<gitBranch>${GIT_BRANCH}</gitBranch>    	
-    	<currentVersion>${majorVersion}.${minorVersion}</currentVersion>
+    	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>9.1</teamcityVersion>
     	<springframework.version>4.0.9.RELEASE</springframework.version>
