@@ -4,12 +4,13 @@
   <info>
     <name>tcWebHooks-rest-api</name>
     <display-name>Web Hooks REST API (tcWebHooks)</display-name>
-    <version>${version}</version>
+    <version>${majorVersion}</version>
     <description>REST API for configuring tcWebhooks plugin.
            This plugin adds support for configuring the tcWebHook Templates feature, with plans to support configuring Webhooks in future.
         
     	   - Branch: ${gitBranch}
     	   - Revision: ${gitHash}
+    	   - Build: ${buildNumber}    	   
     </description>
     <download-url>https://github.com/tcplugins/tcWebHooks/releases</download-url>
     <vendor>
