@@ -1,7 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       		http://www.springframework.org/schema/beans 
+       		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	        http://www.springframework.org/schema/context
+	        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	        http://www.springframework.org/schema/mvc
+	        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"
+		xmlns:context="http://www.springframework.org/schema/context"
+	 	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	 	xmlns:p="http://www.springframework.org/schema/p"
+        default-autowire="constructor">
 
-<beans default-autowire="constructor">
+ 	<context:component-scan base-package="webhook.teamcity.server.rest" />
+ 	<mvc:annotation-driven />
+ 	
+ 	
+ 	<bean id="testRestApi"
+        class="webhook.teamcity.server.rest.TestRestApi"
+    />
+ 	
+ 	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	   <property name="mappings">
+	      <map>
+	         <entry key="/app/test/webhooks/**" value-ref="testRestApi"/>
+	      </map>
+	   </property>
+	</bean>
 
 	<bean id="webHookListener" 
 		class="webhook.teamcity.WebHookListener" 
