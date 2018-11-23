@@ -13,6 +13,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
+import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -171,6 +172,11 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	@Override
 	public Object serialiseObject(Object object) {
 		return "";
+	}
+
+	@Override
+	public PayloadTemplateEngineType getTemplateEngineType() {
+		return PayloadTemplateEngineType.STANDARD;
 	}
 	
 }
