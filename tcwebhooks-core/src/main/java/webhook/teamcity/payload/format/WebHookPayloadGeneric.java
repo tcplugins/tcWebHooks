@@ -17,6 +17,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -186,6 +187,11 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	
 	public Object serialiseObject(Object object) {
 		return object;
+	}
+	
+	@Override
+	public PayloadTemplateEngineType getTemplateEngineType() {
+		return PayloadTemplateEngineType.STANDARD;
 	}
 
 }

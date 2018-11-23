@@ -210,5 +210,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 	
 	public abstract WebHookStringRenderer getWebHookStringRenderer();
+	
+	public abstract PayloadTemplateEngineType getTemplateEngineType(); 
 
 }
