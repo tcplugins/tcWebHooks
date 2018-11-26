@@ -15,6 +15,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 
 import org.junit.Test;
 
+import webhook.TestingWebHookFactory;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookTest;
@@ -29,6 +30,8 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 
 
 public class WebHookPayloadTest {
+	
+	TestingWebHookFactory factory = new TestingWebHookFactory();
 
 	@Test
 	public void TestNVPairsPayloadContent() throws WebHookPayloadContentAssemblyException{
@@ -80,8 +83,7 @@ public class WebHookPayloadTest {
 		whps.addNewWebHook("project1", "MyProject", url, true, state, "nvpairs", "originalNvpairsTemplate", true, true, new HashSet<String>());
 		
     	for (WebHookConfig whc : whps.getWebHooksConfigs()){
-			WebHook wh = new WebHookImpl();
-			wh.setUrl(whc.getUrl());
+			WebHook wh = factory.getWebHook(whc.getUrl());
 			wh.setEnabled(whc.getEnabled());
 			//webHook.addParams(webHookConfig.getParams());
 			wh.setBuildStates(whc.getBuildStates());

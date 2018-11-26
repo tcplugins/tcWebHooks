@@ -18,6 +18,7 @@ import jetbrains.buildServer.serverSide.BuildHistory;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import webhook.TestingWebHookFactory;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -40,6 +41,8 @@ public class WebHookContentBuilderTest {
 	BuildHistory buildHistory = mock(BuildHistory.class);
 	SBuildServer server = mock(SBuildServer.class);
 	WebHookTemplateJaxHelper webHookTemplateJaxHelper = mock(WebHookTemplateJaxHelper.class);
+	
+	TestingWebHookFactory factory = new TestingWebHookFactory();
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,7 +64,7 @@ public class WebHookContentBuilderTest {
 		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(manager, webHookTemplateJaxHelper);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(webHookTemplateManager);
 		WebHookContentBuilder builder = new WebHookContentBuilder(manager, resolver);
-		WebHook wh = new WebHookImpl();
+		WebHook wh = factory.getWebHook();
 		WebHookConfig whc = mock(WebHookConfig.class);
 		when(whc.getPayloadFormat()).thenReturn("JSON");
 		
@@ -72,7 +75,7 @@ public class WebHookContentBuilderTest {
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsPersonal() {
 		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
-		WebHook wh = new WebHookImpl();
+		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
 		SFinishedBuild personalPreviousBuild = mock(SFinishedBuild.class);
@@ -95,7 +98,7 @@ public class WebHookContentBuilderTest {
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsNonPersonal() {
 		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
-		WebHook wh = new WebHookImpl();
+		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
 		SFinishedBuild nonPersonalPreviousBuild = mock(SFinishedBuild.class);
@@ -114,7 +117,7 @@ public class WebHookContentBuilderTest {
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPersonalPreviousReturnsNull() {
 		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
-		WebHook wh = new WebHookImpl();
+		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
 		SFinishedBuild personalPreviousBuild = mock(SFinishedBuild.class);
@@ -134,7 +137,7 @@ public class WebHookContentBuilderTest {
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenNonPersonalPreviousReturnsNull() {
 		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
-		WebHook wh = new WebHookImpl();
+		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
 		

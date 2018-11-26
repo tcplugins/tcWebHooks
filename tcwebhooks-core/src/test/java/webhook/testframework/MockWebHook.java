@@ -2,21 +2,23 @@ package webhook.testframework;
 
 import java.io.IOException;
 
+import org.apache.http.impl.client.HttpClients;
+
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
 import webhook.teamcity.settings.WebHookConfig;
 
-public class MockWebHook  extends WebHookImpl implements WebHook, Mocked {
+public class MockWebHook extends WebHookImpl implements WebHook, Mocked {
 	
 	int invocationCount = 0;
 
 	public MockWebHook() {
-		super();
+		super("", null, HttpClients.createDefault());
 	}
 	
 	public MockWebHook(WebHookConfig webHookConfig, WebHookProxyConfig pc) {
-		super();
+		super(webHookConfig.getUrl(), pc, HttpClients.createDefault());
 		this.setUrl(webHookConfig.getUrl());
 		this.setEnabled(webHookConfig.getEnabled());
 		this.setBuildStates(webHookConfig.getBuildStates());

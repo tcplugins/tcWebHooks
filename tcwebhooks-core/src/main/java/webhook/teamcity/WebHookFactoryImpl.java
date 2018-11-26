@@ -65,11 +65,4 @@ public class WebHookFactoryImpl implements WebHookFactory {
 		return webHook;
 	}
 
-	@Override
-	public WebHook getWebHook() {
-		return new WebHookImpl();
-	}
-	
-	
-	
 }
