@@ -363,25 +363,4 @@ public class WebHookTest{
 			e.printStackTrace();
 		}
 	}	
-	
-	public static class TestingWebHookFactory {
-		public WebHook getWebHook(){
-			return new WebHookImpl();
-		}
-
-		public WebHook getWebHook(String url, String proxy, Integer proxyPort) {
-			return new WebHookImpl(url, proxy, proxyPort, HttpClients.createDefault());
-		}
-
-		public WebHook getWebHook(String url) {
-			return new WebHookImpl(url, HttpClients.createDefault());
-		}
-
-		public WebHook getWebHook(String url, String proxy, String proxyPort) {
-			return new WebHookImpl(url, proxy, proxyPort, HttpClients.createDefault());
-		}
-		public WebHook getWebHook(String url, WebHookProxyConfig proxyConfig) {
-			return new WebHookImpl(url, proxyConfig, HttpClients.createDefault());
-		}
-	}
 }

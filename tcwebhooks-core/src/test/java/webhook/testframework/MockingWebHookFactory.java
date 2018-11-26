@@ -13,13 +13,6 @@ public class MockingWebHookFactory implements WebHookFactory {
 	List<MockWebHook> webHookMocks =  new ArrayList<>();
 
 	@Override
-	public WebHook getWebHook() {
-		MockWebHook m = new MockWebHook();
-		webHookMocks.add(m);
-		return m;
-	}
-
-	@Override
 	public WebHook getWebHook(WebHookConfig webhookConfig, WebHookProxyConfig pc) {
 		MockWebHook m =  new MockWebHook(webhookConfig, pc);
 		webHookMocks.add(m);

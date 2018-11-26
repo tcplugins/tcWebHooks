@@ -24,6 +24,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import webhook.TestingWebHookFactory;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.teamcity.BuildStateEnum;
@@ -123,7 +124,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	
 	private WebHookMockingFrameworkImpl() {
-		webHookImpl = new WebHookImpl();
+		webHookImpl = new TestingWebHookFactory().getWebHook();
 		spyWebHook = spy(webHookImpl);   
 		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository, historyItemFactory);
 		projSettings = new WebHookProjectSettings();

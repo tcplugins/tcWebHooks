@@ -72,48 +72,6 @@ public class WebHookImpl implements WebHook {
 	private UUID requestId = UUID.randomUUID();
 	
 	
-	public WebHookImpl(){
-		this.webhookStats = new WebHookExecutionStats();
-		this.client = HttpClients.createDefault();
-		this.params = new ArrayList<>();
-	}
-	
-	protected WebHookImpl(HttpClient client){
-		this.webhookStats = new WebHookExecutionStats();
-		this.client = client;
-		this.params = new ArrayList<>();
-	}
-	
-	public WebHookImpl(String url, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats(url);
-		this.url = url;
-		this.client = client;
-		this.params = new ArrayList<>();
-	}
-	
-	public WebHookImpl (String url, String proxyHost, String proxyPort, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats(url);
-		this.url = url;
-		this.client = client;
-		this.params = new ArrayList<>();
-		if (proxyPort.length() != 0) {
-			try {
-				this.proxyPort = Integer.parseInt(proxyPort);
-			} catch (NumberFormatException ex){
-				Loggers.SERVER.warn("Proxy port does not appear to be a valid number: " + proxyPort);
-			}
-		}
-		this.setProxy(proxyHost, this.proxyPort);
-	}
-	
-	public WebHookImpl (String url, String proxyHost, Integer proxyPort, HttpClient client){
-		this.webhookStats = new WebHookExecutionStats(url);
-		this.url = url;
-		this.client = client;
-		this.params = new ArrayList<>();
-		this.setProxy(proxyHost, proxyPort);
-	}
-	
 	public WebHookImpl (String url, WebHookProxyConfig proxyConfig, HttpClient client){
 		this.webhookStats = new WebHookExecutionStats(url);
 		this.url = url;

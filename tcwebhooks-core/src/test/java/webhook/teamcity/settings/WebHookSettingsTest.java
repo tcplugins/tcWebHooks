@@ -20,6 +20,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.junit.Test;
 
+import webhook.TestingWebHookFactory;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
@@ -207,7 +208,7 @@ public class WebHookSettingsTest {
 
 		
 		for (WebHookConfig c : configs){
-			WebHook wh = new WebHookImpl(c.getUrl(), HttpClients.createDefault());
+			WebHook wh = new TestingWebHookFactory().getWebHook(c.getUrl());
 			wh.setEnabled(c.getEnabled());
 			//wh.addParams(c.getParams());
 			System.out.println(wh.getUrl());

@@ -27,6 +27,7 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import webhook.TestingWebHookFactory;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
@@ -88,7 +89,7 @@ public class WebHookListenerTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		webHookImpl = new WebHookImpl();
+		webHookImpl = new TestingWebHookFactory().getWebHook();
 		allBuildStates.allEnabled();
 		webHookImpl.setBuildStates(allBuildStates);
 		spyWebHook = spy(webHookImpl);   
