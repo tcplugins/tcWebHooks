@@ -16,6 +16,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 
 public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	
@@ -212,5 +213,5 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	public abstract WebHookStringRenderer getWebHookStringRenderer();
 	
 	public abstract PayloadTemplateEngineType getTemplateEngineType(); 
-
+	
 }

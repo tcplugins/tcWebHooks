@@ -41,6 +41,7 @@ import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 
@@ -70,6 +71,7 @@ public class WebHookImpl implements WebHook {
 	
 	@Getter
 	private UUID requestId = UUID.randomUUID();
+	private VariableResolverFactory variableResolverFactory;
 	
 	
 	public WebHookImpl (String url, WebHookProxyConfig proxyConfig, HttpClient client){
@@ -396,7 +398,7 @@ public class WebHookImpl implements WebHook {
 			}
 			
 			/* Otherwise, parse it and test it */
-			String variable = VariableMessageBuilder.create(filter.getValue(), variableResolver).build();
+			String variable = this.variableResolverFactory.createVariableMessageBuilder(filter.getValue(), variableResolver).build();
 			Pattern p = filter.getPattern();
 			if (!p.matcher(variable).matches()){
 				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
@@ -422,8 +424,8 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void resolveHeaders(VariableResolver variableResolver) {
 		for (WebHookHeaderConfig header : this.headers ) {
-			String headerName = VariableMessageBuilder.create(header.getName(), variableResolver).build();
-			String headerValue = VariableMessageBuilder.create(header.getValue(), variableResolver).build();
+			String headerName = this.variableResolverFactory.createVariableMessageBuilder(header.getName(), variableResolver).build();
+			String headerValue = this.variableResolverFactory.createVariableMessageBuilder(header.getValue(), variableResolver).build();
 			resolvedHeaders.put(headerName, headerValue);
 		}
 	}
@@ -457,6 +459,16 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setResponseTimeOut(int httpResponseTimeout) {
 		RequestConfig.copy(this.requestConfig).setSocketTimeout(httpResponseTimeout* 1000).build();
+	}
+
+	@Override
+	public VariableResolverFactory getVariableResolverFactory() {
+		return this.variableResolverFactory;
+	}
+
+	@Override
+	public void setVariableResolverFactory(VariableResolverFactory variableResolverFactory) {
+		this.variableResolverFactory = variableResolverFactory;		
 	}
 	
 }

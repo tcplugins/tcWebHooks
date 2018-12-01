@@ -14,7 +14,8 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.util.VariableMessageBuilder;
-import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolver;
 
 public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements WebHookPayload, WebHookContentObjectSerialiser {
 	
@@ -24,8 +25,8 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	
 	Gson gson = new GsonBuilder().create();
 	
-	public WebHookPayloadJsonTemplate(WebHookPayloadManager manager){
-		super(manager);
+	public WebHookPayloadJsonTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
+		super(manager, variableResolverManager);
 	}
 
 	public void register(){
@@ -46,7 +47,7 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		VariableMessageBuilder builder = VariableMessageBuilder.create(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(this, content, content.getAllParameters()));
+		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(webHookTemplateContent.getTemplateText(), new WebHooksBeanUtilsVariableResolver(this, content, content.getAllParameters()));
 		return builder.build();
 	}
 

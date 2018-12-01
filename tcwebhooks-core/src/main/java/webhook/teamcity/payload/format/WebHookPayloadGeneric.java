@@ -22,24 +22,29 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	
 	WebHookPayloadManager myManager;
+	VariableResolverFactory myVariableResolverFactory;
 	
-	public WebHookPayloadGeneric(WebHookPayloadManager manager){
+	public WebHookPayloadGeneric(WebHookPayloadManager manager, WebHookVariableResolverManager webHookVariableResolverManager){
 		this.setPayloadManager(manager);
+		this.myVariableResolverFactory = webHookVariableResolverManager.getVariableResolverFactory(getTemplateEngineType());
 	}
 
 	@Override
 	public void setPayloadManager(WebHookPayloadManager manager){
 		myManager = manager;
 	}
+
 	
 	@Override
 	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
@@ -58,28 +63,28 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	@Override
 	public String buildFinished(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String buildInterrupted(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String changesLoaded(SBuild runningBuild, SFinishedBuild previousBuild, 
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.CHANGES_LOADED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.CHANGES_LOADED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 	
 	@Override
 	public String buildStarted(SBuild runningBuild, SFinishedBuild previousBuild, 
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
@@ -92,7 +97,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		String oldUser = "Nobody";
 		String newUser = "Nobody";
 		try {
@@ -133,7 +138,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			ResponsibilityEntry responsibilityEntryNew,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		
-		WebHookPayloadContent content = new WebHookPayloadContent(myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
+		WebHookPayloadContent content = new WebHookPayloadContent(myVariableResolverFactory, myManager.getServer(), buildType, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		String oldUser = "Nobody";
 		String newUser = "Nobody";
 		if (responsibilityEntryOld.getState() != ResponsibilityEntry.State.NONE) {

@@ -11,6 +11,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 
@@ -116,5 +117,9 @@ public interface WebHook {
 	public abstract void setResponseTimeOut(int httpResponseTimeout);
 
 	public abstract void setEnabledForBuildState(BuildStateEnum buildState, boolean enabled);
+	
+	public abstract VariableResolverFactory getVariableResolverFactory();
+	
+	public abstract void setVariableResolverFactory(VariableResolverFactory variableResolverFactory);
 
 }

@@ -10,6 +10,7 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
 import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
@@ -19,8 +20,8 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 	Integer rank = 100;
 	String charset = "UTF-8";
 	
-	public WebHookPayloadJson(WebHookPayloadManager manager){
-		super(manager);
+	public WebHookPayloadJson(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
+		super(manager, variableResolverManager);
 	}
 
 	public void register(){

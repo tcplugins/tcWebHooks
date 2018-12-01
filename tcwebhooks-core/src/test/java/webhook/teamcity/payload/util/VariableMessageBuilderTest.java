@@ -8,6 +8,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent.SimpleSerialiser;
+import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolver;
 
 public class VariableMessageBuilderTest extends VariableMessageBuilderTestBase {
 	

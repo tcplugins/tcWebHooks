@@ -207,6 +207,14 @@
 		class="webhook.teamcity.testing.WebHookConfigFactoryImpl"
 		/>
 		
+	<bean id="webHookVariableResolverManager"		
+		class="webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl"
+		/>
+		
+	<bean id="webHooksBeanUtilsVariableResolverFactory"
+		class="webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory"
+		/>		
+		
 	<bean id="webHookUserRequestedExecutor"
 		class="webhook.teamcity.testing.WebHookUserRequestedExecutorImpl"
 		/>

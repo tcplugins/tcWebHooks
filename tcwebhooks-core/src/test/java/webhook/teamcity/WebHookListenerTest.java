@@ -43,6 +43,10 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -61,7 +65,9 @@ public class WebHookListenerTest {
 	WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	WebHookContentBuilder contentBuilder;
 	WebHookAuthenticatorProvider authenticatorProvider = mock(WebHookAuthenticatorProvider.class);
-	WebHookPayload payload = new WebHookPayloadJson(manager);
+	WebHookVariableResolverManager resolverManager = new WebHookVariableResolverManagerImpl();
+	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
+	WebHookPayload payload = new WebHookPayloadJson(manager, resolverManager);
 	WebHookProjectSettings projSettings;
 	WebHookFactory factory = mock(WebHookFactory.class);
 	WebHook webhook = mock (WebHook.class);
@@ -88,13 +94,13 @@ public class WebHookListenerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		
+		resolverManager.registerVariableResolverFactory(variableResolverFactory);
 		webHookImpl = new TestingWebHookFactory().getWebHook();
 		allBuildStates.allEnabled();
 		webHookImpl.setBuildStates(allBuildStates);
 		spyWebHook = spy(webHookImpl);   
 		webHookConfig = mock(WebHookConfig.class);
-		contentBuilder = new WebHookContentBuilder(manager, templateResolver);
+		contentBuilder = new WebHookContentBuilder(manager, templateResolver, resolverManager);
 		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);

@@ -1,4 +1,4 @@
-package webhook.teamcity.payload.util;
+package webhook.teamcity.payload.variableresolver;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -12,6 +12,9 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.util.StringSanitiser;
+import webhook.teamcity.payload.util.StringUtils;
+import webhook.teamcity.payload.util.TemplateMatcher;
 import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 
 import org.apache.commons.lang3.StringEscapeUtils;

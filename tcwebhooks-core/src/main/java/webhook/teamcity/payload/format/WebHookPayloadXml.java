@@ -6,6 +6,7 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToXmlConvertor;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.template.render.XmlToHtmlPrettyPrintingRenderer;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -13,8 +14,8 @@ public class WebHookPayloadXml extends WebHookPayloadGeneric {
 
 	private Integer rank = 100; 
 
-	public WebHookPayloadXml(WebHookPayloadManager wpm) {
-		super(wpm);
+	public WebHookPayloadXml(WebHookPayloadManager wpm, WebHookVariableResolverManager variableResolverManager) {
+		super(wpm, variableResolverManager);
 	}
 
 	public void register(){

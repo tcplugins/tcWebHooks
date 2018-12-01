@@ -25,6 +25,10 @@ import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
@@ -32,7 +36,8 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 public class WebHookPayloadTest {
 	
 	TestingWebHookFactory factory = new TestingWebHookFactory();
-
+	WebHookVariableResolverManager resolverManager = new WebHookVariableResolverManagerImpl();
+	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
 	@Test
 	public void TestNVPairsPayloadContent() throws WebHookPayloadContentAssemblyException{
 		
@@ -45,8 +50,10 @@ public class WebHookPayloadTest {
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		
+		resolverManager.registerVariableResolverFactory(variableResolverFactory);
+		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
-		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
+		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm, resolverManager);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<>();
 		extraParameters.put("something", "somewhere");
@@ -70,12 +77,14 @@ public class WebHookPayloadTest {
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		
+		resolverManager.registerVariableResolverFactory(variableResolverFactory);
+		
 		WebHookTest test = new WebHookTest();
 		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";
 		WebHookTestServer s = test.startWebServer();
 		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
-		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
+		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm, resolverManager);
 		whp.register();
 		WebHookProjectSettings whps = new WebHookProjectSettings();
 		

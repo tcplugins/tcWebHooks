@@ -18,6 +18,7 @@ import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.template.render.WwwFormUrlEncodedToHtmlPrettyPrintingRenderer;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {
@@ -25,8 +26,8 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 	public static final String FORMAT_SHORT_NAME = "nvpairs";
 	public static final String FORMAT_CONTENT_TYPE = "application/x-www-form-urlencoded";
 
-	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager) {
-		super(manager);
+	public WebHookPayloadNameValuePairs(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager) {
+		super(manager, variableResolverManager);
 	}
 
 	Integer rank = 100;
@@ -88,24 +89,22 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		
 		}
 		
-		if (content != null && content.getExtraParameters() != null  && content.getExtraParameters().size() > 0){
-			
-			for(Iterator<String> param = content.getExtraParameters().keySet().iterator(); param.hasNext();)
+		if (content != null && content.getExtraParameters(this.myVariableResolverFactory) != null  && content.getExtraParameters(this.myVariableResolverFactory).size() > 0){
+			for(Map.Entry<String, String> entry : content.getExtraParameters(myVariableResolverFactory).entrySet())
 			{
-				String key = param.next();
 				String pair = "&";
 				try {
-					if (key != null){
-						pair += URLEncoder.encode(key, this.charset);
-						if (content.getExtraParameters().get(key) != null){
-							pair += "=" + URLEncoder.encode((String)content.getExtraParameters().get(key), this.charset);
+					if (entry.getKey() != null){
+						pair += URLEncoder.encode(entry.getKey(), this.charset);
+						if (entry.getValue() != null){
+							pair += "=" + URLEncoder.encode(entry.getValue(), this.charset);
 						} else {
 							pair += "=" + URLEncoder.encode("null", this.charset);
 						}
 					}
 				} catch (UnsupportedEncodingException | ClassCastException ex ) {
 					pair = "";
-					Loggers.SERVER.debug("failed to encode 'extra' parameter '" + key + "' to URL format. Value has been converted to an empty string.", ex );
+					Loggers.SERVER.debug("failed to encode 'extra' parameter '" + entry.getKey() + "' to URL format. Value has been converted to an empty string.", ex );
 				}
 				returnString += pair;
 				Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString);
