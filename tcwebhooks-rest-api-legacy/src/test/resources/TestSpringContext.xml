@@ -90,4 +90,8 @@
 		class="webhook.teamcity.test.jerseyprovider.WebHookTemplateManagerTestProvider"
 		/>
 		
+	<bean id="webHookVariableResolverManager" 
+		class="webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl"
+		/>
+		
 </beans>
