@@ -46,6 +46,9 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -97,6 +100,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
 	private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
+	private WebHookVariableResolverManager webHookVariableResolverManager = new WebHookVariableResolverManagerImpl();
 	
 	
 	public static WebHookSemiMockingFrameworkImpl create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
@@ -117,7 +121,8 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		
 		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
 		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager);
-		webHookContentBuilder =  new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver);
+		webHookVariableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		webHookContentBuilder =  new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver, webHookVariableResolverManager);
 		
 		authenticatorProvider = setupAuthenticatorProviderAndRegisterFactories();
 		
@@ -163,16 +168,16 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 
 	private WebHookPayloadManager setupPayloadManagerAndRegisterPayloadFormats() {
 		WebHookPayloadManager webHookPayloadManager = new WebHookPayloadManager(sBuildServer);
-		WebHookPayload nvPairsPayloadFormat = new WebHookPayloadNameValuePairs(webHookPayloadManager);
+		WebHookPayload nvPairsPayloadFormat = new WebHookPayloadNameValuePairs(webHookPayloadManager, webHookVariableResolverManager);
 		nvPairsPayloadFormat.register();
 		
-		WebHookPayload jsonPayloadFormat = new WebHookPayloadJsonTemplate(webHookPayloadManager);
+		WebHookPayload jsonPayloadFormat = new WebHookPayloadJsonTemplate(webHookPayloadManager, webHookVariableResolverManager);
 		
 		jsonPayloadFormat.register();
-		WebHookPayload tailoredJsonPayloadFormat = new WebHookPayloadTailoredJson(webHookPayloadManager);
+		WebHookPayload tailoredJsonPayloadFormat = new WebHookPayloadTailoredJson(webHookPayloadManager, webHookVariableResolverManager);
 		tailoredJsonPayloadFormat.register();
 		
-		WebHookPayload jsonTemplatePayloadFormat = new WebHookPayloadJsonTemplate(webHookPayloadManager);
+		WebHookPayload jsonTemplatePayloadFormat = new WebHookPayloadJsonTemplate(webHookPayloadManager, webHookVariableResolverManager);
 		jsonTemplatePayloadFormat.register();
 		return webHookPayloadManager;
 	}
@@ -274,6 +279,11 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 
 	public WebHookTemplateJaxHelper getWebHookTemplateJaxHelper() {
 		return webHookTemplateJaxHelper;
+	}
+
+	@Override
+	public WebHookVariableResolverManager getWebHookVariableResolverManager() {
+		return this.webHookVariableResolverManager;
 	}
 
 }

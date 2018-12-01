@@ -1,10 +1,11 @@
 package webhook.teamcity.payload.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
+import webhook.teamcity.payload.variableresolver.standard.TemplateMatcher;
 
 public class TemplateMatcherTest {
 

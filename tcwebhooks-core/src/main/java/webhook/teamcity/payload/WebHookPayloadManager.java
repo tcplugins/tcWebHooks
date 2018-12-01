@@ -51,6 +51,16 @@ public class WebHookPayloadManager {
 		return orderedFormatCollection;
 	}
 	
+	public List<WebHookPayload> getTemplatedFormats() {
+		List<WebHookPayload> templatedFormats = new ArrayList<>();
+		for (WebHookPayload payload : orderedFormatCollection) {
+			if (payload.getTemplateEngineType().isTemplated()) {
+				templatedFormats.add(payload);
+			}
+		}
+		return templatedFormats;
+	}
+	
 	public Collection<WebHookPayload> getRegisteredFormatsAsCollection(){
 		return orderedFormatCollection;
 	}
