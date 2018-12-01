@@ -12,6 +12,7 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import webhook.teamcity.MockSBuildType;
@@ -21,8 +22,18 @@ import webhook.teamcity.payload.UnsupportedWebHookFormatException;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 
 public class WebHookPayloadTest {
+	
+	WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
+	
+	@Before
+	public void setup() {
+		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+	}
 	
 	@Test
 	public void test_Xml() throws WebHookPayloadContentAssemblyException{
@@ -38,7 +49,7 @@ public class WebHookPayloadTest {
 
 		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
-		WebHookPayloadXml whp = new WebHookPayloadXml(wpm);
+		WebHookPayloadXml whp = new WebHookPayloadXml(wpm, variableResolverManager);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
@@ -68,7 +79,7 @@ public class WebHookPayloadTest {
 
 		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
-		WebHookPayloadJson whp = new WebHookPayloadJson(wpm);
+		WebHookPayloadJson whp = new WebHookPayloadJson(wpm, variableResolverManager);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<>();
 		
@@ -97,7 +108,7 @@ public class WebHookPayloadTest {
 
 		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
-		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm);
+		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm, variableResolverManager);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<>();
 		

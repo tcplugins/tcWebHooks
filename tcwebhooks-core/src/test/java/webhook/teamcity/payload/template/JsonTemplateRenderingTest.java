@@ -23,6 +23,9 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 
@@ -50,9 +53,12 @@ public class JsonTemplateRenderingTest {
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 
+		WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
+		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		
 		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
-		WebHookPayloadJsonTemplate whp = new WebHookPayloadJsonTemplate(wpm);
+		WebHookPayloadJsonTemplate whp = new WebHookPayloadJsonTemplate(wpm, variableResolverManager);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<>();
 		

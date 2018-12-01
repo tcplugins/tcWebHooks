@@ -26,6 +26,10 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
@@ -43,9 +47,13 @@ public class WebHookContentBuilderTest {
 	WebHookTemplateJaxHelper webHookTemplateJaxHelper = mock(WebHookTemplateJaxHelper.class);
 	
 	TestingWebHookFactory factory = new TestingWebHookFactory();
+	WebHookVariableResolverManager resolverManager = new WebHookVariableResolverManagerImpl();
+	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
+	
 
 	@Before
 	public void setUp() throws Exception {
+		resolverManager.registerVariableResolverFactory(variableResolverFactory);
 		when(previousSuccessfulBuild.getBuildStatus()).thenReturn(Status.NORMAL);
 		when(previousSuccessfulBuild.isPersonal()).thenReturn(false);
 		when(previousFailedBuild.getBuildStatus()).thenReturn(Status.FAILURE);
@@ -59,11 +67,11 @@ public class WebHookContentBuilderTest {
 	public void testBuildWebHookContent() throws WebHookPayloadContentAssemblyException {
 		
 		WebHookPayloadManager manager = new WebHookPayloadManager(server);
-		WebHookPayloadJson whp = new WebHookPayloadJson(manager);
+		WebHookPayloadJson whp = new WebHookPayloadJson(manager, resolverManager);
 		whp.register();
 		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(manager, webHookTemplateJaxHelper);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(webHookTemplateManager);
-		WebHookContentBuilder builder = new WebHookContentBuilder(manager, resolver);
+		WebHookContentBuilder builder = new WebHookContentBuilder(manager, resolver, resolverManager);
 		WebHook wh = factory.getWebHook();
 		WebHookConfig whc = mock(WebHookConfig.class);
 		when(whc.getPayloadFormat()).thenReturn("JSON");
@@ -74,7 +82,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsPersonal() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
@@ -97,7 +105,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsNonPersonal() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
@@ -116,7 +124,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPersonalPreviousReturnsNull() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
@@ -136,7 +144,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenNonPersonalPreviousReturnsNull() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);

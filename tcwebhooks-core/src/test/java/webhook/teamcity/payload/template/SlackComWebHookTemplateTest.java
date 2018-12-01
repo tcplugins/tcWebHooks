@@ -32,6 +32,9 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
@@ -52,15 +55,17 @@ public class SlackComWebHookTemplateTest {
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(sBuildServer);
 		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, webHookTemplateJaxHelper);
 		WebHookHttpClientFactory clientFactory = new WebHookHttpClientFactoryImpl();
+		WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
+		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
 		
-		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager);
+		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager, variableResolverManager);
 		webHookPayloadJsonTemplate.register();
 
 		SlackComCompactXmlWebHookTemplate slackCompactTemplate = new SlackComCompactXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
 		slackCompactTemplate.register();
-		webHookContentBuilder = new WebHookContentBuilder(payloadManager, templateResolver);
+		webHookContentBuilder = new WebHookContentBuilder(payloadManager, templateResolver, variableResolverManager);
 		
 		WebHookConfig webhookSlackCompact  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-slackcompact.xml"));
 		when(mainSettings.getProxyConfigForUrl(webhookSlackCompact.getUrl())).thenReturn(null);

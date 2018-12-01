@@ -24,7 +24,8 @@ import webhook.WebHookProxyConfig;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
@@ -416,11 +417,21 @@ public class WebHookHistoryRepositoryImplTest {
 		@Override
 		public void addHeaders(List<WebHookHeaderConfig> headers) {
 			notImplemented();
-			
 		}
 
 		@Override
 		public void resolveHeaders(VariableResolver variableResolver) {
+			notImplemented();
+		}
+
+		@Override
+		public VariableResolverFactory getVariableResolverFactory() {
+			notImplemented();
+			return null;
+		}
+
+		@Override
+		public void setVariableResolverFactory(VariableResolverFactory variableResolverFactory) {
 			notImplemented();
 		}
 		

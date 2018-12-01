@@ -13,12 +13,14 @@
  * Lesser General Public License for more details.
  */
 
-package webhook.teamcity.payload.util;
+package webhook.teamcity.payload.variableresolver.standard;
 
 import java.io.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 /**
  * @author Santhosh Kumar T
@@ -94,10 +96,6 @@ public class TemplateMatcher{
 
     /*-------------------------------------------------[ VariableResolver ]---------------------------------------------------*/
     
-    public static interface VariableResolver{
-        public String resolve(String variable);
-    }
-
     public static class MapVariableResolver implements VariableResolver{
         private Map<String, String> variables;
 
