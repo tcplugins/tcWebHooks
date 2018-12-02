@@ -2,6 +2,8 @@ package webhook;
 
 import org.apache.http.impl.client.HttpClients;
 
+import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
+
 public class TestingWebHookFactory {
 	public WebHook getWebHook(){
 		return getWebHook("http://testing.test");
@@ -19,6 +21,8 @@ public class TestingWebHookFactory {
 		return getWebHook(url, new WebHookProxyConfig(proxy, Integer.valueOf(proxyPort)));
 	}
 	public WebHook getWebHook(String url, WebHookProxyConfig proxyConfig) {
-		return new WebHookImpl(url, proxyConfig, HttpClients.createDefault());
+		WebHook w = new WebHookImpl(url, proxyConfig, HttpClients.createDefault());
+		w.setVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		return w;
 	}
 }

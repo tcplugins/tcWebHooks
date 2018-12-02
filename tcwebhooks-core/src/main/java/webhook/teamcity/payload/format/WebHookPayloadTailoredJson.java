@@ -45,7 +45,7 @@ public class WebHookPayloadTailoredJson extends WebHookPayloadGeneric implements
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate) {
 		try {
-			return content.getExtraParameters(myVariableResolverFactory).get("body");
+			return content.getExtraParameters(getVariableResolverFactory()).get("body");
 		} catch (NullPointerException npe){
 			throw new WebHookPayloadContentAssemblyException("Failure building message content :: Unable to retreive 'body' content.");
 		}	

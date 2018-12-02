@@ -43,6 +43,7 @@ public class WebHookContentBuilder {
 		WebHookTemplateContent templateForThisBuild;
 		wh.setContentType(payloadFormat.getContentType());
 		wh.setCharset(payloadFormat.getCharset());
+		wh.setVariableResolverFactory(variableResolverFactory);
 		
 		if (state.equals(BuildStateEnum.BUILD_STARTED)){
 			wh.setEnabledForBuildState(BuildStateEnum.BUILD_STARTED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_STARTED)));
