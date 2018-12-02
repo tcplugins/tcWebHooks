@@ -145,26 +145,8 @@ WebHooksPlugin = {
             
 		    populateWebHookDialog(id);
 		    doExtraCompleted();
-		    
-		    if (webhookDialogWidth < 0){
-		    	webhookDialogWidth = $j('#editWebHookDialog').innerWidth();
-		    } else {
-		    	$j('#editWebHookDialog').innerWidth(webhookDialogWidth);
-		    }
-		    
 		    this.showCentered();
-		    $j('#hookPane').innerHeight($j('#templatePane').innerHeight());
-		    $j('#buildPane').innerHeight($j('#templatePane').innerHeight());
-		    $j('#extrasPane').innerHeight($j('#templatePane').innerHeight());
-			$j('#tab-container').easytabs('select', tab);
-			
-			if (webhookDialogHeight < 0){
-		    	webhookDialogHeight = $j('#editWebHookDialog').innerHeight();
-		    	templatePaneOuterHeight = $j('#templatePane').outerHeight();
-		    }
-		    
 		    $j('#webHookUrl').focus();            
-            this.showCentered();
         },
 
         cleanFields: function (data) {

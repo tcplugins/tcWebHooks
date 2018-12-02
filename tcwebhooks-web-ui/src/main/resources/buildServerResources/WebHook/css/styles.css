@@ -240,6 +240,10 @@ div.endpointPayloadHeaders table tr :first-child {
     margin-left: 0px;
 }
 
+#hookPane, #buildPane, #extrasPane, #templatePane {
+	min-height:38em;
+} 
+
 #buildPane {
 	overflow:auto;
 }
