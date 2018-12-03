@@ -10,6 +10,8 @@ import webhook.teamcity.payload.util.VariableMessageBuilder;
 
 public interface VariableResolverFactory {
 	
+	public abstract void register();
+	public abstract void setWebHookVariableResolverManager(WebHookVariableResolverManager variableResolverManager);
 	public abstract PayloadTemplateEngineType getPayloadTemplateType();
 	public abstract String getVariableResolverFactoryName();
 	public abstract VariableMessageBuilder createVariableMessageBuilder(final String template, VariableResolver resolver);

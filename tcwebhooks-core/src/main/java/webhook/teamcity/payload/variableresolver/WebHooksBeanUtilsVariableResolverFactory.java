@@ -2,6 +2,7 @@ package webhook.teamcity.payload.variableresolver;
 
 import java.util.Map;
 
+import jetbrains.buildServer.log.Loggers;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.content.ExtraParametersMap;
@@ -10,6 +11,19 @@ import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.payload.util.WebHookVariableMessageBuilder;
 
 public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolverFactory {
+	
+	WebHookVariableResolverManager variableResolverManager;
+	
+	@Override
+	public void register() {
+		Loggers.SERVER.info("WebHooksBeanUtilsVariableResolverFactory :: Registering for type: " + getPayloadTemplateType().toString());
+		this.variableResolverManager.registerVariableResolverFactory(this);
+	}
+	
+	@Override
+	public void setWebHookVariableResolverManager(WebHookVariableResolverManager variableResolverManager) {
+		this.variableResolverManager = variableResolverManager;
+	}
 
 	@Override
 	public PayloadTemplateEngineType getPayloadTemplateType() {
@@ -18,7 +32,7 @@ public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolve
 
 	@Override
 	public String getVariableResolverFactoryName() {
-		return "WebHooksBeanUtilsVariableResolver";
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
