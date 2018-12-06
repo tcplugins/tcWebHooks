@@ -430,10 +430,9 @@
             <table class="runnerFormTable">
                 <tr><td colspan=2>
                 	<div class="templateEdit">
-                			<p><strong>Are you sure you want to create a new template from scratch?</strong></p>
-                			<p>It might be easier to cancel this dialog and copy one of the existing templates.<p>
-                			<p>To copy an existing template, click &quot;view&quot; 
-                			on the template and choose &quot;Copy template...&quot; from the Actions menu on the next page.</p>
+                			<p><strong>Edit the fields below to modify template details</strong></p>
+                			<p>It is not possible to modify a template ID because it is referenced by webhook configurations. 
+                			Instead copy this template to a new ID by choosing &quot;Copy template...&quot; from the Actions menu on this page.</p>
                 	</div>
 
                 	<div class="templateCopy">
