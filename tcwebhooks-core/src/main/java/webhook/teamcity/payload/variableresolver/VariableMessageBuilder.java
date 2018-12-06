@@ -1,4 +1,4 @@
-package webhook.teamcity.payload.util;
+package webhook.teamcity.payload.variableresolver;
 
 public interface VariableMessageBuilder {
 

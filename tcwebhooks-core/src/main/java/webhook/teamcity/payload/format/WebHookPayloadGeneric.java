@@ -201,10 +201,5 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	public Object serialiseObject(Object object) {
 		return object;
 	}
-	
-	@Override
-	public PayloadTemplateEngineType getTemplateEngineType() {
-		return PayloadTemplateEngineType.STANDARD;
-	}
 
 }

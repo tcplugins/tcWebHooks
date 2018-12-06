@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 
 import webhook.teamcity.Loggers;
+import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -140,6 +141,11 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 	@Override
 	public WebHookStringRenderer getWebHookStringRenderer() {
 		return new WwwFormUrlEncodedToHtmlPrettyPrintingRenderer();
+	}
+	
+	@Override
+	public PayloadTemplateEngineType getTemplateEngineType() {
+		return PayloadTemplateEngineType.LEGACY;
 	}
 	
 }

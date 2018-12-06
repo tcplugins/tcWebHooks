@@ -11,18 +11,16 @@ import jetbrains.buildServer.serverSide.ParametersSupport;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.WebHook;
-import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolver;
-import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class WebHookContentBuilder {

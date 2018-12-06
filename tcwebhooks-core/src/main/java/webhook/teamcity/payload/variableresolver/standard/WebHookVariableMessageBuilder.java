@@ -1,6 +1,7 @@
-package webhook.teamcity.payload.util;
+package webhook.teamcity.payload.variableresolver.standard;
 
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHookVariableMessageBuilder implements VariableMessageBuilder {
 	static final String VAR_START = "${";

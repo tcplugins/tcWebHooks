@@ -10,8 +10,8 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 

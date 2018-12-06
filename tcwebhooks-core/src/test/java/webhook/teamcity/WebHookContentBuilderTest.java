@@ -29,7 +29,7 @@ import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 

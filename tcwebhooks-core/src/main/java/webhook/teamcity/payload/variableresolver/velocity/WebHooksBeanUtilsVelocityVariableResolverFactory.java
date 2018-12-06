@@ -1,16 +1,20 @@
-package webhook.teamcity.payload.variableresolver;
+package webhook.teamcity.payload.variableresolver.velocity;
 
 import java.util.Map;
 
+import org.apache.velocity.context.Context;
+
 import jetbrains.buildServer.log.Loggers;
+import webhook.teamcity.WebHookContentResolutionException;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.content.ExtraParametersMap;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
-import webhook.teamcity.payload.util.VariableMessageBuilder;
-import webhook.teamcity.payload.util.WebHookVariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 
-public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolverFactory {
+public class WebHooksBeanUtilsVelocityVariableResolverFactory implements VariableResolverFactory {
 	
 	WebHookVariableResolverManager variableResolverManager;
 	
@@ -27,7 +31,7 @@ public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolve
 
 	@Override
 	public PayloadTemplateEngineType getPayloadTemplateType() {
-		return PayloadTemplateEngineType.STANDARD;
+		return PayloadTemplateEngineType.VELOCITY;
 	}
 
 	@Override
@@ -38,12 +42,15 @@ public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolve
 	@Override
 	public VariableResolver buildVariableResolver(WebHookContentObjectSerialiser webhookPayload, Object javaBean,
 			Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
-		return new WebHooksBeanUtilsVariableResolver(webhookPayload, javaBean, extraAndTeamCityProperties);
+		return new WebHooksBeanUtilsVelocityVariableResolver(javaBean, extraAndTeamCityProperties);
 	}
 
 	@Override
 	public VariableMessageBuilder createVariableMessageBuilder(String template, VariableResolver resolver) {
-		return WebHookVariableMessageBuilder.create(template, resolver);
+		if (resolver instanceof WebHooksBeanUtilsVelocityVariableResolver) {
+			return WebHookVelocityVariableMessageBuilder.create(template, (Context)resolver);
+		} 
+		throw new WebHookContentResolutionException("Incompatible VariableResolver. It must implement Velocity Context");
 	}
 
 }

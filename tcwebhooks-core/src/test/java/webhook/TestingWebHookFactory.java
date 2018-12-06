@@ -2,7 +2,7 @@ package webhook;
 
 import org.apache.http.impl.client.HttpClients;
 
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 
 public class TestingWebHookFactory {
 	public WebHook getWebHook(){

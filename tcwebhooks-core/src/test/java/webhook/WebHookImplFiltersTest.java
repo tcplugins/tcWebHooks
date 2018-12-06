@@ -10,11 +10,11 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent.SimpleSerialiser;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
-import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolver;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.payload.util.VariableMessageBuilderTestBase;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolver;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookFilterConfig;
 
 public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {

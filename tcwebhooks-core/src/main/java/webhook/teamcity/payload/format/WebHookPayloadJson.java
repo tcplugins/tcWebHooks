@@ -3,6 +3,7 @@
  */
 package webhook.teamcity.payload.format;
 
+import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -75,6 +76,9 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 		return new JsonToHtmlPrettyPrintingRenderer();
 	}
 	
-	
+	@Override
+	public PayloadTemplateEngineType getTemplateEngineType() {
+		return PayloadTemplateEngineType.LEGACY;
+	}	
 
 }

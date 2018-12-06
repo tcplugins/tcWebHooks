@@ -1,5 +1,6 @@
 package webhook.teamcity.payload.format;
 
+import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
@@ -64,5 +65,10 @@ public class WebHookPayloadXml extends WebHookPayloadGeneric {
 	public WebHookStringRenderer getWebHookStringRenderer() {
 		return new XmlToHtmlPrettyPrintingRenderer();
 	}
+	
+	@Override
+	public PayloadTemplateEngineType getTemplateEngineType() {
+		return PayloadTemplateEngineType.LEGACY;
+	}	
 
 }

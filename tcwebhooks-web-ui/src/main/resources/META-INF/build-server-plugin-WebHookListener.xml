@@ -185,6 +185,14 @@
 			<value>50</value>
 		</property>
 	</bean>
+	
+	<bean id="webHookPayloadJsonVelocityTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadJsonVelocityTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>50</value>
+		</property>
+	</bean>
 
 	<bean id="webHookTemplateJaxHelper"
 		class="webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl"
@@ -212,7 +220,19 @@
 		/>
 		
 	<bean id="webHooksBeanUtilsVariableResolverFactory"
-		class="webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory"
+		class="webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory"
+		init-method="register">
+		<property name="webHookVariableResolverManager" ref="webHookVariableResolverManager"/>
+	</bean>
+
+	<bean id="webHooksBeanUtilsLegacyVariableResolverFactory"
+		class="webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory"
+		init-method="register">
+		<property name="webHookVariableResolverManager" ref="webHookVariableResolverManager"/>
+	</bean>
+	
+	<bean id="webHooksBeanUtilsVelocityVariableResolverFactory"
+		class="webhook.teamcity.payload.variableresolver.velocity.WebHooksBeanUtilsVelocityVariableResolverFactory"
 		init-method="register">
 		<property name="webHookVariableResolverManager" ref="webHookVariableResolverManager"/>
 	</bean>

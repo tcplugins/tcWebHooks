@@ -176,7 +176,7 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 
 	@Override
 	public PayloadTemplateEngineType getTemplateEngineType() {
-		return PayloadTemplateEngineType.STANDARD;
+		return PayloadTemplateEngineType.LEGACY;
 	}
 	
 }

@@ -24,7 +24,7 @@ import webhook.WebHookProxyConfig;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;

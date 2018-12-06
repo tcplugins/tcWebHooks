@@ -17,7 +17,7 @@ import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 
 public class VariableMessageBuilderTestBase {
 

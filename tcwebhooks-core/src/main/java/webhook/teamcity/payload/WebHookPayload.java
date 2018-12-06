@@ -16,7 +16,6 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
-import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 
 public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	
@@ -43,7 +42,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	
 	/**
 	 * Returns a Description of the format type. This is used for display on the config page
-	 * when selecting the WebHook format. The output will be used with <c:out in the JSP so 
+	 * when selecting the WebHook format. The output will be used with <code>< c:out ></code> in the JSP so 
 	 * any HTML tags will get escaped into &amp;lt; tag &amp;gt; etc.
 	 *  
 	 * @return	Text for display on the WebHook config page.
@@ -69,8 +68,6 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 */
 	String getFormatShortName();
 
-	
-	
 	/**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
 	 * or build parameters and returns a String of the WebHook payload.
@@ -210,8 +207,21 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 			ResponsibilityEntry entry, boolean isUserAction,
 			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 	
+	/**
+	 * Get the {@link WebHookStringRenderer}, which is responsible for rendering the 
+	 * payload as an HTML string. Must convert the output to properly escape HTML and
+	 * should do pretty printing. 
+	 * 
+	 * @return an instance of a {@link WebHookStringRenderer}
+	 */
 	public abstract WebHookStringRenderer getWebHookStringRenderer();
 	
+	/**
+	 * Specifies which type of template engine this payload uses to convert 
+	 * the templated payload into populated output. 
+	 * 
+	 * @return One of the {@link PayloadTemplateEngineType} enums
+	 */
 	public abstract PayloadTemplateEngineType getTemplateEngineType(); 
 	
 }

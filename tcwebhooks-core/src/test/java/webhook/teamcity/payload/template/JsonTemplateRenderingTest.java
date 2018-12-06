@@ -25,7 +25,7 @@ import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 

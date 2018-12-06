@@ -26,10 +26,10 @@ import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
-import webhook.teamcity.payload.util.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolver;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHookPayloadContent {
 		String buildStatus,

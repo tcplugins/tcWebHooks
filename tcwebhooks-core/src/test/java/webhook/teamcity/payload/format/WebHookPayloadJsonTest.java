@@ -13,7 +13,7 @@ import org.junit.Test;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 
 public class WebHookPayloadJsonTest {
 	

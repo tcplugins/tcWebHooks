@@ -5,8 +5,6 @@ import java.util.Map;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.content.ExtraParametersMap;
-import webhook.teamcity.payload.util.TemplateMatcher.VariableResolver;
-import webhook.teamcity.payload.util.VariableMessageBuilder;
 
 public interface VariableResolverFactory {
 	

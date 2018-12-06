@@ -9,7 +9,8 @@ import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent.SimpleSerialiser;
-import webhook.teamcity.payload.variableresolver.WebHooksBeanUtilsVariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolver;
 
 public class VariableMessageBuilderTest extends VariableMessageBuilderTestBase {
 	
