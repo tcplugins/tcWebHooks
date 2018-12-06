@@ -28,6 +28,7 @@ import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -38,6 +39,7 @@ public class WebHookPayloadTest {
 	TestingWebHookFactory factory = new TestingWebHookFactory();
 	WebHookVariableResolverManager resolverManager = new WebHookVariableResolverManagerImpl();
 	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
+	VariableResolverFactory legacyVariableResolverFactory = new WebHooksBeanUtilsLegacyVariableResolverFactory();
 	@Test
 	public void TestNVPairsPayloadContent() throws WebHookPayloadContentAssemblyException{
 		
@@ -51,6 +53,7 @@ public class WebHookPayloadTest {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		
 		resolverManager.registerVariableResolverFactory(variableResolverFactory);
+		resolverManager.registerVariableResolverFactory(legacyVariableResolverFactory);
 		
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm, resolverManager);
@@ -78,6 +81,7 @@ public class WebHookPayloadTest {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		
 		resolverManager.registerVariableResolverFactory(variableResolverFactory);
+		resolverManager.registerVariableResolverFactory(legacyVariableResolverFactory);
 		
 		WebHookTest test = new WebHookTest();
 		String url = "http://" + test.webserverHost + ":" + test.webserverPort + "/200";

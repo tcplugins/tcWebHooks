@@ -39,6 +39,7 @@ public class WebHookTemplateListPageController extends WebHookTemplateBasePageCo
 	        HashMap<String,Object> params = new HashMap<>();
 	        addBaseParams(params);
 	        
+	        params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
         	params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, myTemplateManager.getRegisteredTemplates(),
         			myPayloadManager.getRegisteredFormats()).getTemplateList());
 
