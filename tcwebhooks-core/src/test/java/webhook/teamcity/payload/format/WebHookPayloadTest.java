@@ -24,6 +24,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 
 public class WebHookPayloadTest {
@@ -33,6 +34,7 @@ public class WebHookPayloadTest {
 	@Before
 	public void setup() {
 		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsLegacyVariableResolverFactory());
 	}
 	
 	@Test

@@ -175,6 +175,19 @@
                         <div><input type="text" id="template.dateFormat" name="template.dateFormat"/></div>
                     </td>
                 </tr>
+                <tr class="templateDetails">
+                    <th>Payload Format</th>
+                    <td>
+                        <div>
+                        <select id="payloadFormat" name="template.payloadFormat">
+                        	<option value="">Choose a Payload Format...</option> 
+                        	<c:forEach items="${payloadFormats}" var="format">
+                        		<option value="<c:out value="${format.formatShortName}" />"><c:out value="${format.formatDescription}" /></option>
+                        	</c:forEach>
+                        </select>
+                        </div>
+                    </td>
+                </tr>
             </table>
             <input type="hidden" name="action" id="WebHookTemplateAction" value="addTemplate"/>
             <div class="popupSaveButtonsBlock">

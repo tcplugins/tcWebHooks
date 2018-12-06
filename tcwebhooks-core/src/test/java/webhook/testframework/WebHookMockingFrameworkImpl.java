@@ -62,6 +62,7 @@ import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.format.WebHookPayloadXml;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
@@ -84,6 +85,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
 	WebHookVariableResolverManager webHookVariableResolverManager = mock(WebHookVariableResolverManager.class);
 	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
+	VariableResolverFactory legacyVariableResolverFactory = new WebHooksBeanUtilsLegacyVariableResolverFactory();
 	 
 	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(manager, resolver, webHookVariableResolverManager);
 	WebHookPayloadTemplate template;
@@ -139,6 +141,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
 //		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.STANDARD)).thenReturn(variableResolverFactory);
+		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY)).thenReturn(legacyVariableResolverFactory);
 		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);
 		when(manager.getFormat("nvpairs")).thenReturn(payloadNvpairs);
 		when(manager.isRegisteredFormat("json")).thenReturn(true);

@@ -13,16 +13,20 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
+import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookTemplateEditPageController extends WebHookTemplateBasePageController {
 
+		private final WebHookPayloadManager myPayloadManager;
+	
 	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
-	    		WebHookTemplateManager webHookTemplateManager) {
+	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
+	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager) {
 	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager);
+	        this.myPayloadManager = payloadManager;
 	    }
 
 	    @Override
@@ -44,6 +48,7 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
     				WebHookTemplateConfig templateConfig = myTemplateManager.getTemplateConfig(templateName);
     				
     				if (templateConfig != null) {
+    					params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
     					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId())));
     					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
     				}
