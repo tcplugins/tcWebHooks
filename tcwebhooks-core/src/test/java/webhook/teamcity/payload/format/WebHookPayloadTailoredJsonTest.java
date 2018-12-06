@@ -24,6 +24,7 @@ import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
+import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
@@ -39,6 +40,7 @@ public class WebHookPayloadTailoredJsonTest {
 	@Before
 	public void setup() {
 		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsLegacyVariableResolverFactory());
 	}
 
 	@Test
@@ -104,7 +106,7 @@ public class WebHookPayloadTailoredJsonTest {
 		templates.put(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE, "test template");
 		
 		WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
-		VariableResolverFactory variableResolverFactory = variableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.STANDARD);
+		VariableResolverFactory variableResolverFactory = variableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY);
 
 		WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, framework.getServer(), framework.getRunningBuild(), sFinishedBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties, templates);
 		whp.getStatusAsString(content, null);
@@ -124,7 +126,7 @@ public class WebHookPayloadTailoredJsonTest {
 		templates.put(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE, "test template");
 		
 		WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
-		VariableResolverFactory variableResolverFactory = variableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.STANDARD);
+		VariableResolverFactory variableResolverFactory = variableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY);
 
 		
 		WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, framework.getServer(), framework.getRunningBuild(), sFinishedBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties, templates);

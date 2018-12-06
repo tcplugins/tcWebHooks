@@ -651,7 +651,7 @@ WebHooksPlugin = {
         		jsonRequest.branchTemplateText = editorBranch.getValue();
         		jsonRequest.buildId = $j("#previewTemplateItemDialogBuildSelect").val();
         		jsonRequest.projectExternalId = $j("#previewTemplateItemDialogProjectSelect").val();
-        		jsonRequest.format = "jsontemplate";
+        		jsonRequest.format = myJson.parentTemplate.format;
         		jsonRequest.buildStateName = $j("#previewTemplateItemDialogBuildStateSelect").val();
         		jsonRequest.url = "";
         		
@@ -703,7 +703,7 @@ WebHooksPlugin = {
     		jsonRequest.branchTemplateText = editorBranch.getValue();
     		jsonRequest.buildId = $j("#previewTemplateItemDialogBuildSelect").val();
     		jsonRequest.projectExternalId = $j("#previewTemplateItemDialogProjectSelect").val();
-    		jsonRequest.format = "jsontemplate";
+    		jsonRequest.format = myJson.parentTemplate.format;
     		jsonRequest.webhookId = $j("#previewTemplateItemDialogWebHookSelect").val();
     		jsonRequest.url = $j("#previewTempleteItemDialogUrl").val();
     		jsonRequest.buildStateName = $j("#previewTemplateItemDialogBuildStateSelect").val();
@@ -976,6 +976,7 @@ WebHooksPlugin = {
 			$j("#editTemplateForm input[id='template.tooltip']").val(myJson.toolTip);
 			$j("#editTemplateForm input[id='template.rank']").val(myJson.rank);
 			$j("#editTemplateForm input[id='template.dateFormat']").val(myJson.preferredDateFormat);
+			$j("#editTemplateForm select#payloadFormat").val(myJson.format);
 			console.log(myJson);
 		},    	
     	
@@ -1050,8 +1051,8 @@ WebHooksPlugin = {
 			myJson.toolTip = $j("#editTemplateForm input[id='template.tooltip']").val();
 			myJson.rank = $j("#editTemplateForm input[id='template.rank']").val();
 			myJson.preferredDateFormat = $j("#editTemplateForm input[id='template.dateFormat']").val();
-			
-			
+			myJson.format = $j("#editTemplateForm select#payloadFormat").val()
+						
     		console.log(myJson);
     		
     		$j.ajax ({

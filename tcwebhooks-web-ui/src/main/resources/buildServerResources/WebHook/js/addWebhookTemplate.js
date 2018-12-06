@@ -84,7 +84,8 @@ WebHooksPlugin = {
 					description : $j("#addTemplateForm input[id='template.description']").val(),
 					toolTip : $j("#addTemplateForm input[id='template.tooltip']").val(),
 					rank : $j("#addTemplateForm input[id='template.rank']").val(),
-					format : "jsonTemplate",
+					preferredDateFormat : $j("#addTemplateForm input[id='template.dateFormat']").val(),
+					format : $j("#addTemplateForm select#payloadFormat").val()
     		};
 			
     		console.log(myJsonContent);
