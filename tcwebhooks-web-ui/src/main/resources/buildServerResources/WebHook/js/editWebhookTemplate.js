@@ -80,42 +80,38 @@ WebHooksPlugin = {
         },
 
         showDialogCreateDefaultTemplate: function (title, action, data) {
-        	
-        	//this.getWebHookTemplateData(data.templateId, data.templateNumber, action);
-        	this.getParentTemplateData(data.templateId, data.templateNumber, action)
-			this.disableCheckboxes();
-			this.clearEditor();
-
-            $j("input[id='WebhookTemplateaction']").val(action);
-            $j(".dialogTitle").html(title);
-            this.cleanFields(data);
-            this.cleanErrors();
-            this.showCentered();
+        	$j("input[id='WebhookTemplateaction']").val(action);
+        	$j(".dialogTitle").html(title);
+        	this.resetAndShow(data);
+            this.getParentTemplateData(data.templateId, data.templateNumber, action)
         },
         
         showDialogAddEventTemplate: function (title, action, data) {
         	
-        	this.getTemplateDataOrGetParentOnFailure(data.templateId, data.templateNumber, action)
-        	
         	$j("input[id='WebhookTemplateaction']").val(action);
         	$j(".dialogTitle").html(title);
-        	this.cleanFields(data);
-        	this.cleanErrors();
-        	this.showCentered();
+        	this.resetAndShow(data);
+        	this.getTemplateDataOrGetParentOnFailure(data.templateId, data.templateNumber, action)
         },
         
         showDialog: function (title, action, data) {
         	
-        	this.getWebHookTemplateData(data.templateId, data.templateNumber, action);
-        	
             $j("input[id='WebhookTemplateaction']").val(action);
             $j(".dialogTitle").html(title);
+            this.resetAndShow(data);
+            this.getWebHookTemplateData(data.templateId, data.templateNumber, action);
+
+        },
+        
+        resetAndShow: function (data) {
+			this.disableCheckboxes();
             this.cleanFields(data);
-            this.cleanErrors();
             this.showCentered();
+            this.clearEditor();        	
         },
 
         cleanFields: function (data) {
+        	/*
             $j("#repoEditFilterForm input[id='debrepo.uuid']").val(data.uuid);
             $j("#repoEditFilterForm input[id='debrepofilter.id']").val(data.id);
             $j(".runnerFormTable input[id='debrepofilter.regex']").val(data.regex);
@@ -123,7 +119,7 @@ WebHooksPlugin = {
             $j(".runnerFormTable input[id='debrepofilter.component']").val(data.component);
             $j(".runnerFormTable select[id='debrepofilter.buildtypeid']").val(data.build);
             $j("#repoEditFilterForm input[id='projectId']").val(data.projectId);
-
+			*/
             this.cleanErrors();
         },
 
@@ -162,8 +158,6 @@ WebHooksPlugin = {
         },
         
 		getWebHookTemplateData: function (templateId, buildTemplateId, action) {
-			this.disableCheckboxes();
-			this.clearEditor();
 			this.getTemplateData(templateId, buildTemplateId, action);
 		},
 		putWebHookTemplateData: function () {
@@ -176,7 +170,7 @@ WebHooksPlugin = {
 			this.postTemplateData();
 		},
 		disableCheckboxes: function () {
-			$j("#editTemplateItemForm input.buildState").prop("disabled", true);
+			$j("#editTemplateItemForm input.buildState").prop("disabled", true).prop( "checked", false);
 			$j("#editTemplateItemForm label").addClass("checkboxLooksDisabled");
 		},
 		enableCheckboxes: function () {
