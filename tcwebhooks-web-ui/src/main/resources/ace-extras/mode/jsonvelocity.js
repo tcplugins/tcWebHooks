@@ -171,7 +171,7 @@ var JsonVelocityHighlightRules = function() {
     this.normalizeRules();
 };
 
-oop.inherits(VelocityHighlightRules, TextHighlightRules);
+oop.inherits(JsonVelocityHighlightRules, TextHighlightRules);
 
 exports.JsonVelocityHighlightRules = JsonVelocityHighlightRules;
 });
