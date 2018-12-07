@@ -6,7 +6,7 @@ var lang = require("../lib/lang");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var JsonHighlightRules = require("./json_highlight_rules").JsonHighlightRules;
 
-var VelocityHighlightRules = function() {
+var JsonVelocityHighlightRules = function() {
     JsonHighlightRules.call(this);
 
     var builtinConstants = lang.arrayToMap(
@@ -173,5 +173,5 @@ var VelocityHighlightRules = function() {
 
 oop.inherits(VelocityHighlightRules, TextHighlightRules);
 
-exports.VelocityHighlightRules = VelocityHighlightRules;
+exports.JsonVelocityHighlightRules = JsonVelocityHighlightRules;
 });
