@@ -2,8 +2,8 @@ define(function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
-var HtmlMode = require("./json").Mode;
-var JsonVelocityHighlightRules = require("./jsonvelocity_highlight_rules").VelocityHighlightRules;
+var JsonMode = require("./json").Mode;
+var JsonVelocityHighlightRules = require("./jsonvelocity_highlight_rules").JsonVelocityHighlightRules;
 var FoldMode = require("./folding/velocity").FoldMode;
 
 var Mode = function() {
@@ -11,7 +11,7 @@ var Mode = function() {
     this.HighlightRules = JsonVelocityHighlightRules;
     this.foldingRules = new FoldMode();
 };
-oop.inherits(Mode, HtmlMode);
+oop.inherits(Mode, JsonMode);
 
 (function() {
     this.lineCommentStart = "##";

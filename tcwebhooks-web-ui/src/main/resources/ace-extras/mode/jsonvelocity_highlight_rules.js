@@ -4,7 +4,7 @@ define(function(require, exports, module) {
 var oop = require("../lib/oop");
 var lang = require("../lib/lang");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-var JsonHighlightRules = require("./json_highlight_rules").HtmlHighlightRules;
+var JsonHighlightRules = require("./json_highlight_rules").JsonHighlightRules;
 
 var JsonVelocityHighlightRules = function() {
     JsonHighlightRules.call(this);
