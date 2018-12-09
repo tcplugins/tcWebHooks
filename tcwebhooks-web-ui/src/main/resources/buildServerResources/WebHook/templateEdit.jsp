@@ -227,25 +227,29 @@
     // trigger extension
     var langTools = ace.require("ace/ext/language_tools");
     var editor = ace.edit("editor");
-    editor.session.setMode("ace/mode/json");
-    editor.setTheme("ace/theme/xcode");
+    editor.session.setMode("ace/mode/jsonvelocity");
+    editor.setTheme("ace/theme/github");
     editor.$blockScrolling = Infinity;
     // enable autocompletion and snippets
     editor.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
-        enableLiveAutocompletion: true
+        enableLiveAutocompletion: true,
+        useWorker: false,
+        showPrintMargin: false
     });
     
     var editorBranch = ace.edit("editorBranch");
-    editorBranch.session.setMode("ace/mode/json");
-    editorBranch.setTheme("ace/theme/xcode");
+    editorBranch.session.setMode("ace/mode/jsonvelocity");
+    editorBranch.setTheme("ace/theme/github");
     editorBranch.$blockScrolling = Infinity;
     // enable autocompletion and snippets
     editorBranch.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
-        enableLiveAutocompletion: true
+        enableLiveAutocompletion: true,
+        useWorker: false,
+        showPrintMargin: false
     });
 
     var wordList = ["buildName", "buildFullName", "buildTypeId",
