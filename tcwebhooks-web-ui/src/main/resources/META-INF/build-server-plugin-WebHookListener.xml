@@ -186,6 +186,14 @@
 		</property>
 	</bean>
 	
+	<bean id="webHookPayloadNameValuePairsTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairsTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>50</value>
+		</property>
+	</bean>
+	
 	<bean id="webHookPayloadJsonVelocityTemplate"
 		class="webhook.teamcity.payload.format.WebHookPayloadJsonVelocityTemplate"
 		init-method="register">

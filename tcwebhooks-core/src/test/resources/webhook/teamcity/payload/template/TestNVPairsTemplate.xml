@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<webhook-template id="microsoft-teams-2" enabled="true"
+	rank="100" format="jsonTemplate">
+	<template-description>Microsoft Teams (light)</template-description>
+	<template-tool-tip>A template for Microsoft Teams. Has a different look
+		and feel.</template-tool-tip>
+	<preferred-date-format></preferred-date-format>
+	<templates max-id="3">
+		<template id="0">
+			<template-text use-for-branch-template="true">
+				test=${item1}
+				${item2}=bar
+			</template-text>
+			<branch-template-text></branch-template-text>
+			<states>
+				<state type="buildStarted" enabled="true" />
+			</states>
+		</template>
+		<template id="2">
+			<template-text use-for-branch-template="true">
+				${item3}=${item4}
+				bar=foo
+				${item5}=${item6}
+			</template-text>
+			<branch-template-text></branch-template-text>
+			<states>
+				<state type="buildSuccessful" enabled="true" />
+			</states>
+		</template>
+	</templates>
+</webhook-template>
