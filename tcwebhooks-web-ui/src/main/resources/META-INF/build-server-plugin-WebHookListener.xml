@@ -182,15 +182,7 @@
 		class="webhook.teamcity.payload.format.WebHookPayloadJsonTemplate"
 		init-method="register">
 		<property name="rank">
-			<value>50</value>
-		</property>
-	</bean>
-	
-	<bean id="webHookPayloadNameValuePairsTemplate"
-		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairsTemplate"
-		init-method="register">
-		<property name="rank">
-			<value>50</value>
+			<value>100</value>
 		</property>
 	</bean>
 	
@@ -198,7 +190,23 @@
 		class="webhook.teamcity.payload.format.WebHookPayloadJsonVelocityTemplate"
 		init-method="register">
 		<property name="rank">
-			<value>50</value>
+			<value>110</value>
+		</property>
+	</bean>
+	
+	<bean id="webHookPayloadNameValuePairsTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairsTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>200</value>
+		</property>
+	</bean>
+	
+	<bean id="webHookPayloadNameValuePairsVelocityTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairsVelocityTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>210</value>
 		</property>
 	</bean>
 
