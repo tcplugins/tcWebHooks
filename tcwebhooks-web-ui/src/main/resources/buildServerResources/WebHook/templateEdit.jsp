@@ -116,7 +116,7 @@
           <th style="width:10%;" title="Determines Template ordering in the WebHook UI (smallest number first)">Rank:</th><td style="width:10%; border:none;">${webhookTemplateBean.rank}</td>
           <c:choose>
 		  	<c:when test="${not empty webhookTemplateBean.dateFormat}">
-          	<th style="width:15%;" title="Used used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none;">${webhookTemplateBean.dateFormat}</td>
+          	<th style="width:15%;" title="Used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none;">${webhookTemplateBean.dateFormat}</td>
           	</c:when>
           	<c:otherwise>
           	<th style="width:15%;">Date Format:</th><td style="border:none;"><i>none</i></td>
