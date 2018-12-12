@@ -119,12 +119,12 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 			    		}
 			    		
 			    		if (whc.getUniqueKey().equals(webHookConfigUniqueId)) {
-						if (myWebHookPayloadManager.isRegisteredFormat(whc.getPayloadFormat())){
-							return whc;
-						} else {
-							throw new WebHookConfigNotFoundException("No registered Payload Handler for " + whc.getPayloadFormat());
+							if (myWebHookPayloadManager.isRegisteredFormat(whc.getPayloadFormat())){
+								return whc.copy();
+							} else {
+								throw new WebHookConfigNotFoundException("No registered Payload Handler for " + whc.getPayloadFormat());
+							}
 						}
-					}
 			    	}
 		    	} else {
 		    		Loggers.SERVER.debug("WebHookUserRequestedExecutorImpl :: WebHooks are disasbled for  " + projectExternalId);
