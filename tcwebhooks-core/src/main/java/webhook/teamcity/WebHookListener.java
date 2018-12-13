@@ -6,11 +6,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -77,15 +80,15 @@ public class WebHookListener extends BuildServerAdapter {
         Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Registering");
     }
 
-	private void processBuildEvent(SRunningBuild sRunningBuild, BuildStateEnum state) {
+	private void processBuildEvent(SBuild sBuild, BuildStateEnum state) {
 			
 			boolean overrideIsEnabled = false;
 
-			Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sRunningBuild.getProjectId() + " at buildState " + state.getShortName());
-			for (WebHookConfig whc : getListOfEnabledWebHooks(sRunningBuild.getProjectId())){
+			Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + " at buildState " + state.getShortName());
+			for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
 				WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 				try {
-					wh = webHookContentBuilder.buildWebHookContent(wh, whc, sRunningBuild, state, overrideIsEnabled);
+					wh = webHookContentBuilder.buildWebHookContent(wh, whc, sBuild, state, overrideIsEnabled);
 					
 					doPost(wh, whc.getPayloadFormat());
 					Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
@@ -93,7 +96,7 @@ public class WebHookListener extends BuildServerAdapter {
 							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
-									sRunningBuild,
+									sBuild,
 									null)
 						);
 				} catch (WebHookExecutionException ex){
@@ -105,7 +108,7 @@ public class WebHookListener extends BuildServerAdapter {
 							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
-									sRunningBuild,
+									sBuild,
 									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
 						);
 				} catch (Exception ex){
@@ -117,7 +120,7 @@ public class WebHookListener extends BuildServerAdapter {
 							webHookHistoryItemFactory.getWebHookHistoryItem(
 									whc,
 									wh.getExecutionStats(), 
-									sRunningBuild,
+									sBuild,
 									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
 							);
 				}
@@ -409,6 +412,25 @@ public class WebHookListener extends BuildServerAdapter {
 			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);
 		}
 		
+	}
+	
+	/**
+	 * Support for listening to events where a user has modified a build result and "marked as successful" or "marked as failed".
+	 * 
+	 * Checks if the list of problems has gone to zero (from greater than zero) or vice versa. If so, it fires the finished event. 
+	 */
+	@Override
+	public void buildProblemsChanged(SBuild build, List<BuildProblemData> before, List<BuildProblemData> after) {
+		if (build instanceof SFinishedBuild 
+				&& (   
+						 !before.isEmpty() && after.isEmpty()		// Problems count changed to zero (muted)
+					  || before.isEmpty()  && !after.isEmpty() 		// Problems count changed from zero to greater than zero. 
+				)
+			)
+		{
+			this.processBuildEvent(build, BuildStateEnum.BUILD_FINISHED);
+		}
+
 	}
 
 }
