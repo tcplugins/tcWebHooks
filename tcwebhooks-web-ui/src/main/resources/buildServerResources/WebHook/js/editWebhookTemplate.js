@@ -104,7 +104,7 @@ WebHooksPlugin = {
         },
         
         resetAndShow: function (data) {
-			this.disableCheckboxes();
+			this.disableAndClearCheckboxes();
             this.cleanFields(data);
             this.showCentered();
             this.clearEditor();        	
@@ -169,8 +169,12 @@ WebHooksPlugin = {
 			this.updateJsonDataFromForm();
 			this.postTemplateData();
 		},
-		disableCheckboxes: function () {
+		disableAndClearCheckboxes: function () {
 			$j("#editTemplateItemForm input.buildState").prop("disabled", true).prop( "checked", false);
+			$j("#editTemplateItemForm label").addClass("checkboxLooksDisabled");
+		},
+		disableCheckboxes: function () {
+			$j("#editTemplateItemForm input.buildState").prop("disabled", true);
 			$j("#editTemplateItemForm label").addClass("checkboxLooksDisabled");
 		},
 		enableCheckboxes: function () {
