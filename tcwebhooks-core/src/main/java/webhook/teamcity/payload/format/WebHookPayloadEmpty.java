@@ -12,6 +12,7 @@ import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
@@ -31,6 +32,18 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	
 	public WebHookPayloadEmpty(WebHookPayloadManager manager){
 		this.setPayloadManager(manager);
+	}
+	
+	@Override
+	public String buildAddedToQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
+			Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
+		return "";
+	}
+
+	@Override
+	public String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
+			Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment) {
+		return "";
 	}
 
 	@Override

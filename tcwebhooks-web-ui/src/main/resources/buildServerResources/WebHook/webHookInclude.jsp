@@ -113,6 +113,16 @@
 												
 												<tr style="border:none;" class="onDuring">
 													<td>Trigger on Events:</td>
+													<td  class="buildAddedToQueue" style="padding-left:3px;"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="buildAddedToQueue" name="BuildAddedToQueue"  type=checkbox />
+														 Build Added to Queue</label>
+													</td>
+													<td class="buildRemovedFromQueue"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="buildRemovedFromQueue" name="BuildRemovedFromQueue" type=checkbox />
+														 Build Removed from Queue</label>
+													</td>
+												</tr>
+												<tr style="border:none;"><td>&nbsp;</td>
 													<td  class="buildStarted" style="padding-left:3px;"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="buildStarted" name="BuildStarted"  type=checkbox />
 														 Build Started</label>
@@ -200,6 +210,8 @@
 							            		<td> <select name="webhookPreviewBuildId" id="webhookPreviewBuildId" class="templateAjaxRefresh"></select></td></tr>
 							            		<tr><td>Build Event:</td>
 							            		<td> <select name="webhookPreviewBuildEvent" id="webhookPreviewBuildEvent" class="templateAjaxRefresh">
+								            			<option value="buildAddedToQueue">Build Added to Queue</option>
+								            			<option value="buildRemovedFromQueue">Build Removed from Queue</option>
 								            			<option value="buildStarted">Build Started</option>
 								            			<option value="changesLoaded">Changes Loaded</option>
 								            			<option value="buildInterrupted">Build Interrupted</option>

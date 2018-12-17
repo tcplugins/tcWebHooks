@@ -14,6 +14,7 @@ import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
@@ -69,13 +70,33 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	String getFormatShortName();
 
 	/**
-	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
+	 * Extracts the required information from the sQueuedBuild and extraParameters configured in the webhook
 	 * or build parameters and returns a String of the WebHook payload.
 	 *  
-	 * @param sRunningBuild
+	 * @param sQueuedBuild
 	 * @param extraParameters
-	 * @return Formatted payload for the WebHook to send for the buildStarted event.
+	 * @return Formatted payload for the WebHook to send for the buildAddedToQueue event.
 	 */
+    String buildAddedToQueue(SQueuedBuild sQueuedBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    
+    /**
+     * Extracts the required information from the sQueuedBuild and extraParameters configured in the webhook
+     * or build parameters and returns a String of the WebHook payload.
+     *  
+     * @param sQueuedBuild
+     * @param extraParameters
+     * @return Formatted payload for the WebHook to send for the buildAddedToQueue event.
+     */
+    String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment);
+    
+    /**
+     * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
+     * or build parameters and returns a String of the WebHook payload.
+     *  
+     * @param sRunningBuild
+     * @param extraParameters
+     * @return Formatted payload for the WebHook to send for the buildStarted event.
+     */
     String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
     
     /**

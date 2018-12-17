@@ -1,6 +1,8 @@
 package webhook.teamcity;
 
 public enum BuildStateEnum {
+    BUILD_ADDED_TO_QUEUE	("buildAddedToQueue",		"been added to the build queue",		"Build Added to Queue"),                
+    BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue"),                
     BUILD_STARTED 			("buildStarted",			"started",					"Build Started"),                
     CHANGES_LOADED 			("changesLoaded",			"loaded changes",			"Changes Loaded"),                
     BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted"),
@@ -67,7 +69,7 @@ public enum BuildStateEnum {
 	 * @return an array of just the build states that are notifiable
 	 */
 	public static BuildStateEnum[] getNotifyStates(){
-		final BuildStateEnum[] notifyStates = {BUILD_STARTED, CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED };
+		final BuildStateEnum[] notifyStates = {BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED };
 		return notifyStates;
 	}
 }

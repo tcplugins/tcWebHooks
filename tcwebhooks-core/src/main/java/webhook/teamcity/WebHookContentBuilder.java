@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import jetbrains.buildServer.serverSide.ParametersSupport;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import webhook.WebHook;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
@@ -33,6 +34,37 @@ public class WebHookContentBuilder {
 		this.payloadManager = manager;
 		this.webHookTemplateResolver = resolver;
 		this.webHookVariableResolverManager = variableResolverManager; 
+	}
+	
+	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SQueuedBuild sBuild, BuildStateEnum state,
+			String user, String comment, boolean overrideIsEnabled) {
+		WebHookPayload payloadFormat = payloadManager.getFormat(whc.getPayloadFormat());
+		VariableResolverFactory variableResolverFactory = this.webHookVariableResolverManager.getVariableResolverFactory(payloadFormat.getTemplateEngineType());
+		WebHookTemplateContent templateForThisBuild;
+		wh.setContentType(payloadFormat.getContentType());
+		wh.setCharset(payloadFormat.getCharset());
+		wh.setVariableResolverFactory(variableResolverFactory);
+		
+		if (state.equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) ){
+			wh.setEnabledForBuildState(state, overrideIsEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(state)));
+			if (wh.isEnabled()){
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.buildAddedToQueue(sBuild, mergeParameters(whc.getParams(), null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
+				wh.setUrl(resolveTemplatedUrl(variableResolverFactory, wh, whc.getUrl(), state, sBuild, payloadFormat, mergeParameters(whc.getParams(),null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), user, comment));
+				wh.checkFilters(getVariableResolver(variableResolverFactory, wh, state, sBuild, payloadFormat, mergeParameters(whc.getParams(), null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), user, comment));
+				wh.resolveHeaders(getVariableResolver(variableResolverFactory, wh, state, sBuild, payloadFormat, mergeParameters(whc.getParams(), null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), user, comment));
+			}
+		} else if (state.equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE) ){
+			wh.setEnabledForBuildState(state, overrideIsEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(state)));
+			if (wh.isEnabled()){
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate(), payloadFormat);
+				wh.setPayload(payloadFormat.buildRemovedFromQueue(sBuild, mergeParameters(whc.getParams(), null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild, user, comment));
+				wh.setUrl(resolveTemplatedUrl(variableResolverFactory, wh, whc.getUrl(), state, sBuild, payloadFormat, mergeParameters(whc.getParams(),null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), user, comment));
+				wh.checkFilters(getVariableResolver(variableResolverFactory, wh, state, sBuild, payloadFormat, mergeParameters(whc.getParams(), null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), user, comment));
+				wh.resolveHeaders(getVariableResolver(variableResolverFactory, wh, state, sBuild, payloadFormat, mergeParameters(whc.getParams(), null, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), user, comment));
+			}
+		}
+		return wh;
 	}
 	
 	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isOverrideEnabled) {
@@ -114,8 +146,24 @@ public class WebHookContentBuilder {
 		}
 	}
 	
+	public String resolveTemplatedUrl(VariableResolverFactory variableResolverFactory, WebHook wh, String url, BuildStateEnum buildState, SQueuedBuild sQueuedBuild, WebHookContentObjectSerialiser serialiser, SortedMap<String,String> extraParameters, Map<String,String> templates, String user, String comment){
+		if (url.contains(variableResolverFactory.getPayloadTemplateType().getVariablePrefix()) && url.contains(variableResolverFactory.getPayloadTemplateType().getVariableSuffix())){
+			WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, payloadManager.getServer(), sQueuedBuild, buildState, extraParameters, templates, user, comment);
+			VariableResolver variableResolver = variableResolverFactory.buildVariableResolver(serialiser,content, content.getAllParameters());
+			VariableMessageBuilder builder = variableResolverFactory.createVariableMessageBuilder(url, variableResolver);
+			return builder.build();
+		} else {
+			return url;
+		}
+	}
+	
 	public VariableResolver getVariableResolver(VariableResolverFactory variableResolverFactory, WebHook wh, BuildStateEnum buildState, SBuild runningBuild, WebHookContentObjectSerialiser serialiser, SortedMap<String,String> extraParameters, Map<String,String> templates){
 		WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, payloadManager.getServer(), runningBuild, getPreviousNonPersonalBuild(wh, runningBuild), buildState, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+		return variableResolverFactory.buildVariableResolver(serialiser, content, content.getAllParameters());
+	}
+	
+	public VariableResolver getVariableResolver(VariableResolverFactory variableResolverFactory, WebHook wh, BuildStateEnum buildState, SQueuedBuild queuedBuild, WebHookContentObjectSerialiser serialiser, SortedMap<String,String> extraParameters, Map<String,String> templates, String user, String comment){
+		WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory,  payloadManager.getServer(),  queuedBuild,  buildState, extraParameters,  templates, user, comment);
 		return variableResolverFactory.buildVariableResolver(serialiser, content, content.getAllParameters());
 	}
 	
@@ -133,6 +181,14 @@ public class WebHookContentBuilder {
 		return templateForThisBuild;
 	}
 	
+	public WebHookTemplateContent findTemplateForState(
+			SQueuedBuild sQueuedBuild, BuildStateEnum state,
+			String payloadtemplateName, WebHookPayload payloadFormat) {
+
+		// Branch is null for queued builds, so get the non-branch template.
+		return webHookTemplateResolver.findWebHookTemplate(state, sQueuedBuild.getBuildType(), payloadFormat.getFormatShortName(), payloadtemplateName);
+	}
+	
 	public static SortedMap<String,String> mergeParameters(SortedMap<String,String> parametersFromConfig, ParametersSupport build, String preferredDateFormat){
 		SortedMap<String, String> newMap = new TreeMap<>();
 		
@@ -146,10 +202,12 @@ public class WebHookContentBuilder {
 		newMap.putAll(parametersFromConfig);
 
 		// Then override any from ones declared in the actual build via webhook.*
-		Map<String,String> teamCityProperties = build.getParametersProvider().getAll(); 
-		for (Entry<String,String> tcProperty : teamCityProperties.entrySet()){
-			if (tcProperty.getKey().startsWith("webhook.")){
-				newMap.put(tcProperty.getKey().substring("webhook.".length()), tcProperty.getValue());
+		if (build != null) {
+			Map<String,String> teamCityProperties = build.getParametersProvider().getAll(); 
+			for (Entry<String,String> tcProperty : teamCityProperties.entrySet()){
+				if (tcProperty.getKey().startsWith("webhook.")){
+					newMap.put(tcProperty.getKey().substring("webhook.".length()), tcProperty.getValue());
+				}
 			}
 		}
 		return newMap;

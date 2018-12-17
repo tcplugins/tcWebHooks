@@ -16,18 +16,21 @@ public class BuildState {
 	
 	public BuildState() {
 		states.clear();
-		states.put(BuildStateEnum.BUILD_STARTED, 			new SimpleBuildState(BuildStateEnum.BUILD_STARTED, 			false));
-		states.put(BuildStateEnum.CHANGES_LOADED, 			new SimpleBuildState(BuildStateEnum.CHANGES_LOADED, 		false));
-		states.put(BuildStateEnum.BEFORE_BUILD_FINISHED, 	new SimpleBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, 	false)); 
-		states.put(BuildStateEnum.RESPONSIBILITY_CHANGED, 	new SimpleBuildState(BuildStateEnum.RESPONSIBILITY_CHANGED,	false));
-		states.put(BuildStateEnum.BUILD_INTERRUPTED, 		new SimpleBuildState(BuildStateEnum.BUILD_INTERRUPTED, 		false));
-		states.put(BuildStateEnum.BUILD_SUCCESSFUL, 		new SimpleBuildState(BuildStateEnum.BUILD_SUCCESSFUL, 		false));
-		states.put(BuildStateEnum.BUILD_FAILED, 			new SimpleBuildState(BuildStateEnum.BUILD_FAILED, 			false));
-
-		states.put(BuildStateEnum.BUILD_BROKEN, 			new SimpleBuildState(BuildStateEnum.BUILD_BROKEN, 			false));
-		states.put(BuildStateEnum.BUILD_FIXED, 				new SimpleBuildState(BuildStateEnum.BUILD_FIXED, 			false));
 		
-		states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 		false)); 		
+		states.put(BuildStateEnum.BUILD_ADDED_TO_QUEUE, 	new SimpleBuildState(BuildStateEnum.BUILD_ADDED_TO_QUEUE, 		false));
+		states.put(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, new SimpleBuildState(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE,	false));
+		states.put(BuildStateEnum.BUILD_STARTED, 			new SimpleBuildState(BuildStateEnum.BUILD_STARTED, 				false));
+		states.put(BuildStateEnum.CHANGES_LOADED, 			new SimpleBuildState(BuildStateEnum.CHANGES_LOADED, 			false));
+		states.put(BuildStateEnum.BEFORE_BUILD_FINISHED, 	new SimpleBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, 		false)); 
+		states.put(BuildStateEnum.RESPONSIBILITY_CHANGED, 	new SimpleBuildState(BuildStateEnum.RESPONSIBILITY_CHANGED,		false));
+		states.put(BuildStateEnum.BUILD_INTERRUPTED, 		new SimpleBuildState(BuildStateEnum.BUILD_INTERRUPTED, 			false));
+		states.put(BuildStateEnum.BUILD_SUCCESSFUL, 		new SimpleBuildState(BuildStateEnum.BUILD_SUCCESSFUL, 			false));
+		states.put(BuildStateEnum.BUILD_FAILED, 			new SimpleBuildState(BuildStateEnum.BUILD_FAILED, 				false));
+
+		states.put(BuildStateEnum.BUILD_BROKEN, 			new SimpleBuildState(BuildStateEnum.BUILD_BROKEN, 				false));
+		states.put(BuildStateEnum.BUILD_FIXED, 				new SimpleBuildState(BuildStateEnum.BUILD_FIXED, 				false));
+		
+		states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 			false)); 		
 	}
 	
 	public Set<BuildStateEnum> getStateSet(){
@@ -75,7 +78,7 @@ public class BuildState {
      * @param currentBuildState
      * @param success
      * @param changed
-     * @return The WebHook state for use detemining template etc.
+     * @return The WebHook state for use determining template etc.
      */
     public static BuildStateEnum getEffectiveState(BuildStateEnum currentBuildState, boolean success, boolean changed){
     	

@@ -12,6 +12,8 @@ public class WebHookBuildStateConverter {
 		
 		// Set changes loaded based on started.
 		newStates.setEnabled(BuildStateEnum.CHANGES_LOADED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_STARTED, oldState));
+		newStates.setEnabled(BuildStateEnum.BUILD_ADDED_TO_QUEUE, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_STARTED, oldState));
+		newStates.setEnabled(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_STARTED, oldState));
 		
 		newStates.setEnabled(BuildStateEnum.BUILD_STARTED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_STARTED, oldState));
 		newStates.setEnabled(BuildStateEnum.BEFORE_BUILD_FINISHED, OldStyleBuildState.enabled(OldStyleBuildState.BEFORE_BUILD_FINISHED, oldState));

@@ -31,7 +31,6 @@ import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.extension.util.EnabledBuildStateResolver;
-import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -43,6 +42,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    private static final String PARAMS_MESSAGES_KEY = "messages";
 		protected static final String BEFORE_FINISHED = "BeforeFinished";
 		protected static final String BUILD_INTERRUPTED = "BuildInterrupted";
+		protected static final String BUILD_ADDED_TO_QUEUE = "BuildAddedToQueue";
+		protected static final String BUILD_REMOVED_FROM_QUEUE = "BuildRemovedFromQueue";
 		protected static final String BUILD_STARTED = "BuildStarted";
 		protected static final String CHANGES_LOADED = "ChangesLoaded";
 		protected static final String BUILD_BROKEN = "BuildBroken";
@@ -135,6 +136,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FAILED, BUILD_FAILED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_FIXED, BUILD_FIXED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_BROKEN, BUILD_BROKEN);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_ADDED_TO_QUEUE, BUILD_ADDED_TO_QUEUE);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, BUILD_REMOVED_FROM_QUEUE);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_STARTED, BUILD_STARTED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.CHANGES_LOADED, CHANGES_LOADED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_INTERRUPTED, BUILD_INTERRUPTED);	

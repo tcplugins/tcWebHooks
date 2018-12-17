@@ -16,6 +16,7 @@ import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.vcs.SVcsModification;
 import lombok.Getter;
@@ -90,6 +91,20 @@ public class WebHookPayloadContent {
 			populateCommonContent(variableResolverFactory, server, buildType, buildState, templates);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 			this.teamcityProperties =  new ExtraParametersMap(buildType.getParametersProvider().getAll());
+		}
+		
+		/**
+		 * Constructor: Only called by Add and Remove from Queue.
+		 * @param server
+		 * @param buildType
+		 * @param buildState
+		 * @param extraParameters
+		 */
+		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SQueuedBuild sQueuedBuild, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates, String user, String comment) {
+			populateCommonContent(variableResolverFactory, server, sQueuedBuild.getBuildType(), buildState, templates);
+    		setTriggeredBy(sQueuedBuild.getTriggeredBy().getAsString());
+			this.extraParameters =  new ExtraParametersMap(extraParameters);
+			this.teamcityProperties =  new ExtraParametersMap(sQueuedBuild.getBuildType().getParametersProvider().getAll());
 		}
 
 		/**

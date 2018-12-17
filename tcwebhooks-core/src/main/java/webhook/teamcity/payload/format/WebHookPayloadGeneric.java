@@ -15,9 +15,9 @@ import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -48,6 +48,19 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		myManager = manager;
 	}
 
+	@Override
+	public String buildAddedToQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
+			Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sQueuedBuild, BuildStateEnum.BUILD_ADDED_TO_QUEUE, extraParameters, templates, null, null);
+		return getStatusAsString(content, webHookTemplate);
+	}
+
+	@Override
+	public String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
+			Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sQueuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, extraParameters, templates, user, comment);
+		return getStatusAsString(content, webHookTemplate);
+	}
 	
 	@Override
 	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,

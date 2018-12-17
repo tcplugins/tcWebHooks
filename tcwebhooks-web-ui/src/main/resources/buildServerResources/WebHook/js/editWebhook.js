@@ -288,6 +288,8 @@ WebHooksPlugin = {
 										    "BUILD_FAILED" : true,
 										    "BUILD_BROKEN" : true,
 										    "BUILD_STARTED" : false,
+										    "BUILD_ADDED_TO_QUEUE" : false,
+										    "BUILD_REMOVED_FROM_QUEUE" : false,
 										    "BEFORE_BUILD_FINISHED" : false,
 										    "RESPONSIBILITY_CHANGED" : false,
 											"BUILD_FIXED" : true,

@@ -217,6 +217,8 @@ WebHooksPlugin = {
 							templateText : { content: "" },
 							branchTemplateText :  { content: "" },
 							buildState : [ 
+										{ type: "buildAddedToQueue", enabled : false, editable: true },
+										{ type: "buildRemovedFromQueue", enabled : false, editable: true },
 										{ type: "buildStarted", 		 enabled : false, editable: true },
 										{ type: "changesLoaded", 		 enabled : false, editable: true },
 										{ type: "buildInterrupted", 	 enabled : false, editable: true },

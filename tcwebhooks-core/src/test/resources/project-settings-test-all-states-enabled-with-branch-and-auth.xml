@@ -3,6 +3,9 @@
   <webhooks enabled="true">
     <webhook url="http://localhost:58001/auth/200" enabled="true" format="JSON">
       <states>
+        <state type="buildAddedToQueue" enabled="true" />
+        <state type="buildRemovedFromQueue" enabled="true" />
+        <state type="buildStarted" enabled="true" />
         <state type="buildStarted" enabled="true" />
         <state type="changesLoaded" enabled="true" />
         <state type="beforeBuildFinish" enabled="true" />

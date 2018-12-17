@@ -498,6 +498,12 @@ public class WebHookConfig {
 			return "None";
 		} else {
 			String enabledStates = "";
+			if (states.enabled(BuildStateEnum.BUILD_ADDED_TO_QUEUE)){
+				enabledStates += ", Build Added to Queue";
+			}
+			if (states.enabled(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)){
+				enabledStates += ", Build Removed from Queue";
+			}
 			if (states.enabled(BuildStateEnum.BUILD_STARTED)){
 				enabledStates += ", Build Started";
 			}

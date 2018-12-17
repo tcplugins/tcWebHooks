@@ -15,9 +15,11 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.tests.TestName;
+import jetbrains.buildServer.users.User;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
@@ -125,6 +127,52 @@ public class WebHookListener extends BuildServerAdapter {
 							);
 				}
 	    	}
+	}
+	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
+		
+		boolean overrideIsEnabled = false;
+		
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + " at buildState " + state.getShortName());
+		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
+			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+			try {
+				wh = webHookContentBuilder.buildWebHookContent(wh, whc, sBuild, state, user, comment, overrideIsEnabled);
+				
+				doPost(wh, whc.getPayloadFormat());
+				Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+				webHookHistoryRepository.addHistoryItem(
+						webHookHistoryItemFactory.getWebHookHistoryItem(
+								whc,
+								wh.getExecutionStats(), 
+								sBuild.getBuildType(),
+								null)
+						);
+			} catch (WebHookExecutionException ex){
+				wh.getExecutionStats().setErrored(true);
+				wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
+				Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+				Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
+				webHookHistoryRepository.addHistoryItem(
+						webHookHistoryItemFactory.getWebHookHistoryItem(
+								whc,
+								wh.getExecutionStats(), 
+								sBuild.getBuildType(),
+								new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
+						);
+			} catch (Exception ex){
+				wh.getExecutionStats().setErrored(true);
+				wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
+				Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+				Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
+				webHookHistoryRepository.addHistoryItem(
+						webHookHistoryItemFactory.getWebHookHistoryItem(
+								whc,
+								wh.getExecutionStats(), 
+								sBuild.getBuildType(),
+								new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
+						);
+			}
+		}
 	}
 
 	/** 
@@ -431,6 +479,17 @@ public class WebHookListener extends BuildServerAdapter {
 			this.processBuildEvent(build, BuildStateEnum.BUILD_FINISHED);
 		}
 
+	}
+	
+	@Override
+	public void buildTypeAddedToQueue(SQueuedBuild queuedBuild) {
+		this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_ADDED_TO_QUEUE, null, null);
+	}
+	
+	@Override
+	public void buildRemovedFromQueue(SQueuedBuild queuedBuild, User user, String comment) {
+		String username = user != null ? user.getUsername() : null;
+		this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, username, comment);
 	}
 
 }
