@@ -21,7 +21,8 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 		
 		builder.ve.setProperty("userdirective", "webhook.teamcity.payload.variableresolver.velocity.VelocitySanitiseDirective, "
 											  + "webhook.teamcity.payload.variableresolver.velocity.VelocitySanitizeDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityNowDirective");
+											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityNowDirective, "
+											  + "webhook.teamcity.payload.variableresolver.velocity.VelocitySubStringDirective");
 		
 		builder.ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
 	    	      "org.apache.velocity.runtime.log.Log4JLogChute" );
