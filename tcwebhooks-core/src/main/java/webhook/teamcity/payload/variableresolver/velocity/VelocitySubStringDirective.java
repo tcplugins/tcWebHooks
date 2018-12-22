@@ -43,7 +43,7 @@ public class VelocitySubStringDirective extends Directive {
         }
         
         // check if we read params ok, and return false if any issues.
-        if (text == null || startIndex == -1 || endIndex == -1 || minLength == -1) {
+        if (text == null || text.equals("null") || startIndex == -1 || endIndex == -1 || minLength == -1) {
         	return false; // Failed to render.
         }
         
