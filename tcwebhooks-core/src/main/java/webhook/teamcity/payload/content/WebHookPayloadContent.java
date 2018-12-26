@@ -148,7 +148,7 @@ public class WebHookPayloadContent {
 			
 			setNotifyType(state.getShortName());
 			setBuildRunners(buildType.getBuildRunners());
-			setBuildFullName(buildType.getFullName().toString());
+			setBuildFullName(buildType.getFullName());
 			setBuildName(buildType.getName());
 			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(buildType));
     		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
@@ -164,7 +164,7 @@ public class WebHookPayloadContent {
 		private void populateMessageAndText(SBuild sRunningBuild,
 				BuildStateEnum state, Map<String,String> templates) {
 			// Message is a long form message, for on webpages or in email.
-    		setMessage("Build " + sRunningBuild.getBuildType().getFullName().toString() 
+    		setMessage("Build " + sRunningBuild.getBuildType().getFullName() 
     				+ " has " + state.getDescriptionSuffix() + ". This is build number " + sRunningBuild.getBuildNumber() 
     				+ ", has a status of \"" + this.buildResult + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
     		
@@ -183,28 +183,24 @@ public class WebHookPayloadContent {
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState, Map<String, String> templates) {
 			
-			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locate first, and then override if found.
+			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
 			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
 				try {
 					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
 				} 
-				catch (NullPointerException npe){}
-				catch (IllegalArgumentException iea) {}
+				catch (NullPointerException | IllegalArgumentException ex){}
 				
 			} else if (extraParameters.containsKey("preferredDateFormat")){
 				try {
 					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
 				} 
-				catch (NullPointerException npe){}
-				catch (IllegalArgumentException iea) {}
+				catch (NullPointerException | IllegalArgumentException ex) {}
 			} 
 			
 			setBuildStartTime(format.format(sRunningBuild.getStartDate()));
 			
-			if (sRunningBuild instanceof SRunningBuild) {
-				if (((SRunningBuild) sRunningBuild).getFinishDate() != null){
-					setBuildFinishTime(format.format(((SRunningBuild) sRunningBuild).getFinishDate()));
-				}
+			if (sRunningBuild instanceof SRunningBuild && (SRunningBuild) sRunningBuild.getFinishDate() != null) {
+				setBuildFinishTime(format.format(((SRunningBuild) sRunningBuild).getFinishDate()));
 			}
 			
 			setCurrentTime(format.format(new Date()));
@@ -213,7 +209,7 @@ public class WebHookPayloadContent {
 			setBuildResult(sRunningBuild, previousBuild, buildState);
     		setNotifyType(buildState.getShortName());
     		setBuildRunners(sRunningBuild.getBuildType().getBuildRunners());
-    		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
+    		setBuildFullName(sRunningBuild.getBuildType().getFullName());
     		setBuildName(sRunningBuild.getBuildType().getName());
 			setBuildId(Long.toString(sRunningBuild.getBuildId()));
 			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sRunningBuild.getBuildType()));
