@@ -209,6 +209,22 @@
 			<value>210</value>
 		</property>
 	</bean>
+	
+	<bean id="webHookPayloadXmlTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadXmlTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>220</value>
+		</property>
+	</bean>
+	
+	<bean id="webHookPayloadXmlVelocityTemplate"
+		class="webhook.teamcity.payload.format.WebHookPayloadXmlVelocityTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>230</value>
+		</property>
+	</bean>
 
 	<bean id="webHookTemplateJaxHelper"
 		class="webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl"
