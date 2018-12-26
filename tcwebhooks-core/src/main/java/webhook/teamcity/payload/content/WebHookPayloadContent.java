@@ -79,10 +79,12 @@ public class WebHookPayloadContent {
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
+		 * @param variableResolverFactory
 		 * @param server
 		 * @param buildType
 		 * @param buildState
 		 * @param extraParameters
+		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuildType buildType, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
 			populateCommonContent(variableResolverFactory, server, buildType, buildState, templates);
@@ -92,11 +94,14 @@ public class WebHookPayloadContent {
 
 		/**
 		 * Constructor: Called by everything except RepsonsibilityChanged.
+		 * @param variableResolverFactory
 		 * @param server
 		 * @param sRunningBuild
 		 * @param previousBuild
 		 * @param buildState
 		 * @param extraParameters
+		 * @param teamcityParameters
+		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 

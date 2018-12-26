@@ -81,6 +81,7 @@ public class MockSBuildType implements SBuildType {
 	private String description;
 	private String buildTypeId;
 	private WebHookMockingFramework mockingFramework;
+	private ParametersProvider parametersProvider;
 	
 	
 	public MockSBuildType(String name, String description, String buildTypeId) {
@@ -825,10 +826,14 @@ public class MockSBuildType implements SBuildType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public void setParametersProvider (ParametersProvider parametersProvider) {
+		this.parametersProvider = parametersProvider;
+	}
 
 	public ParametersProvider getParametersProvider() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.parametersProvider;
 	}
 
 	public void attachToTemplate(BuildTypeTemplate arg0, boolean arg1)
