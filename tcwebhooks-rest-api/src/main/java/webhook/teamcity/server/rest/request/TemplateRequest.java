@@ -144,6 +144,17 @@ public class TemplateRequest {
 	  return new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator), new Fields(fields), myBeanContext);
   }
 
+  @GET
+  @Path("/{templateLocator}/export")
+  @Produces({"application/json"})
+  public Response exportTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
+	  checkTemplateReadPermission();
+	  Template template = new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator), new Fields(fields), myBeanContext);   
+	  return Response.ok(template)
+			  .header("Content-Disposition", "attachment; filename=\"" + template.getId() + ".json\"")
+			  .build(); 
+  }
+
 	private Template buildAndPersistTemplate(Template newTemplate, String updateMode, WebHookTemplateConfig template) {
 		template.setTemplateDescription(newTemplate.description);
 	    template.setFormat(newTemplate.format);

@@ -53,6 +53,13 @@ WebHooksPlugin = {
     		WebHooksPlugin.EditTemplateDialog.showDialog("Copy Template", 'copyTemplate', data);
     	}
     },
+    exportTemplate: function(templateId) {
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.ExportTemplateDialog.showDialog("Export Template", 'exportTemplate', templateId);
+    	}
+    },
     disableTemplate: function(data) {
     	alert("This is not implemented yet.");
     },
@@ -788,6 +795,20 @@ WebHooksPlugin = {
     		this.showCentered();
     	}
  
+    })),
+    ExportTemplateDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    	getContainer: function () {
+    		return $('exportTemplateDialog');
+    	},
+    	
+    	formElement: function () {
+    		return $('exportTemplateForm');
+    	},
+    	
+    	showDialog: function (title, action, data) {
+    		$j(".dialogTitle").html(title);
+    		this.showCentered();
+    	}
     })),
     DeleteTemplateItemDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {

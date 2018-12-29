@@ -15,6 +15,7 @@
     /css/userRoles.css
     
     ${jspHome}WebHook/css/styles.css
+
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -26,6 +27,8 @@
         /js/bs/editProject.js
         /js/bs/adminActions.js
       ${jspHome}WebHook/js/addWebhookTemplate.js
+
+
       </bs:linkScript>
 
     <script type="text/javascript">
@@ -35,17 +38,42 @@
       ];
     </script>
     </jsp:attribute>
-    
+
   <jsp:attribute name="quickLinks_include">
-    <div class="toolbarItem" style="padding-top:2em;">
-    <button style="float:right;" class="btn" onclick="WebHooksPlugin.addTemplate(); return false">Add New Template</button>
+    <div class="toolbarItem">
+	    <c:set var="menuItems">
+		    <authz:authorize allPermissions="CHANGE_SERVER_SETTINGS">
+		      <jsp:body>
+		        <l:li>
+			      <a href="#" title="Add New Template" onclick="WebHooksPlugin.addTemplate(); return false">Add New Template...</a>
+		        </l:li>
+		        <l:li>
+			      <a href="#" title="Import Template" onclick="WebHooksPlugin.importTemplate(); return false">Import Template...</a>
+		        </l:li>
+		      </jsp:body>
+		    </authz:authorize>
+		</c:set>
+		<c:if test="${not empty fn:trim(menuItems)}">
+		  <bs:actionsPopup controlId="prjActions${projectExternalId}"
+		                   popup_options="shift: {x: -150, y: 20}, className: 'quickLinksMenuPopup'">
+		    <jsp:attribute name="content">
+		      <div>
+		        <ul class="menuList">
+		          ${menuItems}
+		        </ul>
+		      </div>
+		    </jsp:attribute>
+		    <jsp:body>Actions</jsp:body>
+		  </bs:actionsPopup>
+		</c:if>
     </div>
-  </jsp:attribute>    
-      
+  </jsp:attribute>
+    
     <jsp:attribute name="body_include">
     
     <script type=text/javascript>
     		var restApiDetected = ${isRestApiInstalled};
+    		var templateJson = {};
 		</script>		
 		<div>
 		<h2>The following table shows the WebHooks Templates installed in this TeamCity instance.</h2> 
@@ -197,6 +225,41 @@
             </div>
         </forms:multipartForm>
     </bs:dialog>    	
+
+    <bs:dialog dialogId="importTemplateDialog"
+               dialogClass="importTemplateDialog"
+               title="Import Template"
+               closeCommand="WebHooksPlugin.ImportTemplateDialog.close()">
+        <forms:multipartForm id="importTemplateForm"
+                             action="/admin/manageWebhookTemplate.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.ImportTemplateDialog.doPost();">
+                             
+            <div class="upload-wrapper">
+            	<div class="upload">
+            		<div class="fs-upload-target"><b>Import a WebHook Template JSON file</b><p>
+            			Drag and drop the file here <br>or click to select from disk.</p>
+	            		<input id="fs-upload-input" class="fs-upload-input" type="file" accept="application/json" 
+	            				onchange="WebHooksPlugin.ImportTemplateDialog.handleFiles(this.files)">
+	            		<div id="template-parse-error">The file does not appear to be a valid WebHooks Template file.<br>Please try again.</div>
+	            	</div>
+	            	<div id="fs-uploaded">
+	            		<table>
+	            		<tr><td><b>Description:</b></td><td class="template-description"></td></tr>
+	            		<tr><td><b>ID:</b></td><td class="template-id"></td></tr>
+	            		<tr><td><b>Payload Format:</b></td><td class="template-payload-format"></td></tr>
+	            		<tr><td><b>Status:</b></td><td class="template-status"></td></tr>
+	            		</table>
+	            	</div>
+	            	<div id="ajaxTemplateImportResult"></div>
+            	</div>
+            </div>
+            <div class="popupSaveButtonsBlock">
+                <forms:cancel onclick="WebHooksPlugin.ImportTemplateDialog.close()"/>
+                <forms:submit id="importTemplateDialogSubmit" label="Import Template"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
     	
     </jsp:attribute>
 </bs:page>

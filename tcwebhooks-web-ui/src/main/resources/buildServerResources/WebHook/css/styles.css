@@ -630,3 +630,89 @@ span.testingLimitations {
 	float: right;
 	clear: right;
 }
+
+div.upload {
+	align-content: center;
+	
+}
+
+div#fs-uploaded {
+	display: none;
+	min-height: 18em;
+}
+
+div#fs-uploaded table td {
+	padding: 0.25em;
+}
+
+input#importTemplateDialogSubmit {
+	visibility: hidden;
+}
+
+div#template-parse-error {
+	margin-top: 1em;
+	visibility: hidden;
+	font-weight:  bold;
+}
+
+div.fs-upload-target {
+	height: 18em;
+	align-content: center;
+	cursor: pointer;
+	background-color: #F9F9F9;
+	text-align: center;
+	padding-top: 2em;
+	border: #999 dashed 2px;
+  	border-radius:10px;
+  	box-shadow: 0px 0px 0px 1px #fff inset;
+}
+
+div.fs-upload-target:hover, div.fs-upload-dragover {
+	background-color: #F3F3F3;
+	border-color: #0096ff;
+}
+
+div.fs-upload-dragexit {
+	background-color: #F9F9F9;
+	border: #999 dashed 2px;
+}
+
+/*! formstone v1.4.10 [upload.css] 2018-08-03 | GPL-3.0 License | formstone.it */
+.fs-upload {
+	position: relative;
+	overflow: hidden
+}
+
+.fs-upload, .fs-upload *, .fs-upload :after, .fs-upload :before,
+	.fs-upload:after, .fs-upload:before {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transition: none;
+	transition: none;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important
+}
+
+.fs-upload-input {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: -1px;
+	opacity: 0;
+	pointer-events: none
+}
+
+.fs-upload-target {
+
+	
+}
+
+.fs-upload-disabled .fs-upload-target, .no-touch .fs-upload-disabled:hover .fs-upload-target
+	{
+	cursor: default;
+	cursor: not-allowed
+}

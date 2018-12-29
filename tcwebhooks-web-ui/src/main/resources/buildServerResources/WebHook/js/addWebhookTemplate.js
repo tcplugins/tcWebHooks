@@ -18,6 +18,13 @@ WebHooksPlugin = {
     		WebHooksPlugin.AddTemplateDialog.showDialog("Add New Template", 'addTemplate');
     	}    	
     },
+    importTemplate: function(templateId) {
+    	if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    	} else {
+    		WebHooksPlugin.ImportTemplateDialog.showDialog("Import Template", 'importTemplate', templateId);
+    	}
+    },
     AddTemplateDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {
     		return $('addTemplateDialog');
@@ -111,5 +118,236 @@ WebHooksPlugin = {
     		
     		return false;
     	}
-    }))
+    })),
+    ImportTemplateDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    	getContainer: function () {
+    		return $('importTemplateDialog');
+    	},
+    	
+    	formElement: function () {
+    		return $('importTemplateForm');
+    	},
+    	
+    	showDialog: function (title, action, data) {
+    		var dialog = this;
+    		
+    		$j(".dialogTitle").html(title);
+    		$j(".fs-upload-target").removeClass("fs-upload-dragover")
+    							   .addClass("fs-upload-dragexit")
+    							   .css("display", "block");
+    		$j("#fs-uploaded").css("display", "none");
+    		$j("#template-parse-error").css("visibility", "hidden");
+    		this.showCentered();
+    	},
+    	
+    	handleFiles: function (files) {
+			// let's just work with one file
+			var file = files[0];
+			var reader = new FileReader();
+
+			if (!file.type.startsWith('application/json')){ 
+				console.log("Refusing to parse file of mime type:" + file.type);
+				$j("#template-parse-error").css("visibility", "visible");
+				return;
+			}
+			reader.onload = function(e) {
+				var my_template = JSON.parse (e.target.result);
+				if (WebHooksPlugin.ImportTemplateDialog.validateTemplate(my_template)) {
+					templateJson = my_template;
+					$j("#template-parse-error").css("visibility", "hidden");
+					WebHooksPlugin.ImportTemplateDialog.printTemplateData(my_template);
+					WebHooksPlugin.ImportTemplateDialog.printTemplateStatus(my_template);
+					$j("#importTemplateDialogSubmit").css("visibility", "visible");
+				} else {
+					$j("#template-parse-error").css("display", "block")
+											   .css("visibility", "visible");
+				}
+				console.log( my_template );
+				console.log( "ID of uploaded template is: " + my_template.id );
+			}
+
+			reader.readAsText(file);	
+    	},
+    	
+    	printTemplateStatus: function (template) {
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + template.id,
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					$j("#fs-uploaded .template-status")
+						.html("A template with the same ID already exists.");
+					
+					if (response.status === "USER_OVERRIDDEN") {
+						$j("#fs-uploaded .template-status")
+							.append("<p>The existing template has status 'USER_OVERRIDDEN'. " +
+									"This means there is a bundled template with user applied changes.");
+					} else if (response.status === "USER_DEFINED") {
+						$j("#fs-uploaded .template-status")
+							.append("<p>The existing template has status 'USER_DEFINED'. " +
+									"This means there is an existing template which has been " +
+									"previously created or imported.");
+					} else if (response.status === "PROVIDED") {
+						$j("#fs-uploaded .template-status")
+							.append("<p>The existing template has status 'PROVIDED'. " +
+									"This means there is an existing bundled template. " +
+									"Future updates to this bundled template will be overriden " +
+									"by this template.");
+					}
+					$j("#fs-uploaded .template-status")
+						.append("<p>Importing this template will overwite the existing one, " +
+								"and any previous changes will be lost. Any existing webhooks " +
+								"using this template will use the new template.");
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					if (xhr.status == 404) {
+						$j("#fs-uploaded .template-status").html("No template with this ID exists. Importing this template will create a new template.");
+					} else {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+					}
+				}
+			});
+    	},
+    	
+    	validateTemplate: function (template) {
+    		return (
+    				template.id && template.format && template.rank
+    				);
+    	},
+    	
+    	printTemplateData: function (template) {
+    		$j("#fs-uploaded .template-id").html(template.id);
+    		$j("#fs-uploaded .template-description").html(template.description);
+    		$j("#fs-uploaded .template-payload-format").html(template.format);
+    		$j("#fs-uploaded .template-status").html("checking...");
+    		$j(".fs-upload-target").css("display", "none");
+    		$j("#fs-uploaded").css("display", "block");
+    	},
+
+    	doPost: function() {
+    		this.cleanErrors();
+    		
+    		var dialog = this;
+    		templateId = templateJson.id;
+    		
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId,
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					dialog.sendTemplate(dialog, templateJson, "PUT", window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId);
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					if (xhr.status == 404) {
+						dialog.sendTemplate(dialog, templateJson, "POST", window['base_uri'] + '/app/rest/webhooks/templates');
+					} else {
+						console.log(xhr);
+						console.log(ajaxOptions);
+						console.log(thrownError);
+					}
+				}
+			});
+			
+    		return false;
+    	},
+    	
+    	cleanFields: function (data) {
+    		this.cleanErrors();
+    	},
+    	
+    	cleanErrors: function () {
+    		$j("#importTemplateForm .error").remove();
+    	},
+    	
+    	error: function($element, message) {
+    		var next = $element.next();
+    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+    			next.text(message);
+    		} else {
+    			$element.after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+    	
+    	ajaxError: function(message) {
+    		var next = $j("#ajaxTemplateImportResult").next();
+    		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
+    			next.text(message);
+    		} else {
+    			$j("#ajaxTemplateImportResult").after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+    	
+    	sendTemplate: function(dialog, template, method, url) {
+    		$j.ajax ({
+    			url: url,
+    			type: method,
+				data: JSON.stringify(template),
+				dataType: 'json',
+    			headers : {
+    				'Content-Type' : 'application/json',
+    				'Accept' : 'application/json'
+    			},
+    			success: function (response) {
+    				dialog.close();
+    				window.location = window['base_uri'] + '/webhooks/template.html?template=' + template.id;
+    			},
+    			error: function (response) {
+    				console.log(response);
+    				WebHooksPlugin.handleAjaxError(dialog, response);
+    			}
+    		});
+    		
+    	}
+    })) 
 };
+
+
+$j(function() {
+	const dropzone = document.querySelector(".fs-upload-target");
+
+	dropzone.addEventListener("dragover", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		e.dataTransfer.dropEffect = "copy";
+	}, false);
+
+	dropzone.addEventListener("dragenter", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$j(".fs-upload-target").removeClass("fs-upload-dragexit").addClass("fs-upload-dragover");
+	}, false);
+
+	dropzone.addEventListener("dragexit", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$j(".fs-upload-target").removeClass("fs-upload-dragover").addClass("fs-upload-dragexit");
+
+	}, false);
+
+	dropzone.addEventListener("drop", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const dt = e.dataTransfer;
+		const files = dt.files;
+
+		WebHooksPlugin.ImportTemplateDialog.handleFiles(files);
+		
+	}, false);
+
+	const fileElem = document.getElementById("fs-upload-input");
+
+	dropzone.addEventListener("click", function (e) {
+	    if (fileElem) {
+	        fileElem.click();
+	    }
+	}, false);
+	
+});
+

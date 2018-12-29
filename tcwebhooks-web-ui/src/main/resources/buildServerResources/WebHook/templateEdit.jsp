@@ -50,6 +50,9 @@
 			      <a href="#" title="Make a copy of this Template" onclick="return WebHooksPlugin.copyTemplate('${webhookTemplateBean.templateId}'); return false">Copy template...</a>
 		        </l:li>
 		        <l:li>
+			      <a href="#" title="Export Template" onclick="WebHooksPlugin.exportTemplate('${webhookTemplateBean.templateId}'); return false">Export template...</a>
+		        </l:li>
+		        <l:li>
 			      <a href="#" title="Disable Template" onclick="WebHooksPlugin.disableTemplate('${webhookTemplateBean.templateId}'); return false">Disable template...</a>
 		        </l:li>
 		        <l:li>
@@ -422,6 +425,28 @@
             </table>
             <div class="popupSaveButtonsBlock">
                 <forms:cancel onclick="WebHooksPlugin.NoRestApiDialog.close()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
+    
+    <bs:dialog dialogId="exportTemplateDialog"
+               dialogClass="exportTemplateDialog"
+               title="Export Template"
+               closeCommand="WebHooksPlugin.ExportTemplateDialog.close()">
+        <forms:multipartForm id="exportTemplateForm"
+                             action="/admin/manageWebhookTemplate.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.ExportTemplateDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td>Click the link below to export and download this template as JSON.<p>
+                		
+                		<a href="../../../app/rest/webhooks/templates/id:${webhookTemplateBean.templateId}/export?fields=$long,content">Download template...</a>
+		       
+                </td></tr>
+            </table>
+            <div class="popupSaveButtonsBlock">
+                <forms:cancel onclick="WebHooksPlugin.ExportTemplateDialog.close()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>

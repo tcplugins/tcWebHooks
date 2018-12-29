@@ -46,6 +46,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 
 public class Template {
 	@XmlAttribute
+	@Getter
 	public String id;
 
 	@XmlAttribute
