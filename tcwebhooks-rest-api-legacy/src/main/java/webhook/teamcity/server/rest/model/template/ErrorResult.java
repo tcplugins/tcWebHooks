@@ -14,8 +14,9 @@ public class ErrorResult implements Serializable {
 	private static final long serialVersionUID = -8395102761842280396L;
 	private Map<String, String> errors = new LinkedHashMap<>();
 	
-	public void addError(String fieldname, String errorMessage) {
+	public ErrorResult addError(String fieldname, String errorMessage) {
 		this.errors.put(fieldname, errorMessage);
+		return this;
 	}
 	
 	public boolean isErrored() {

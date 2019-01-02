@@ -25,7 +25,7 @@ public class WebHookManager {
 		projectWebhooks.setEnabled(webHookProjectSettings.isEnabled());
 		projectWebhooks.setProjectId(projectExternalId);
 		for (WebHookConfig config : webHookProjectSettings.getWebHooksConfigs()) {
-			projectWebhooks.addWebhook(new ProjectWebhook(config, projectExternalId, fields, beanContext));
+			projectWebhooks.addWebhook(new ProjectWebhook(config, projectExternalId, fields, beanContext, webHookFinder.getBuildTypeExternalIds(config.getEnabledBuildTypesSet())));
 		}
 		projectWebhooks.setCount(ValueWithDefault.decideIncludeByDefault(fields.isIncluded("count"), webHookProjectSettings.getWebHooksConfigs().size()));
 		return projectWebhooks;

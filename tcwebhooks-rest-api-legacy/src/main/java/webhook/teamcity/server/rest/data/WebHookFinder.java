@@ -1,5 +1,9 @@
 package webhook.teamcity.server.rest.data;
 
+import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.data.Locator;
@@ -8,25 +12,24 @@ import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.util.StringUtil;
-import webhook.teamcity.WebHookListener;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class WebHookFinder {
 
 	@NotNull private final ProjectManager projectManager;
-	@NotNull private final ProjectSettingsManager projectSettingsManager;
+	@NotNull private final WebHookSettingsManager webhookSettingsManager;
 	
 	public WebHookFinder(
 			@NotNull final ProjectManager projectManager,
-			@NotNull final ProjectSettingsManager projectSettingsManager)
+			@NotNull final WebHookSettingsManager projectSettingsManager)
 	{
 		this.projectManager = projectManager;
-		this.projectSettingsManager = projectSettingsManager;
+		this.webhookSettingsManager = projectSettingsManager;
 	}
 	
 	public static String getLocator(final WebHookConfig webhook) {
@@ -38,7 +41,7 @@ public class WebHookFinder {
 		if (sProject == null) {
 			throw new NotFoundException("No project found with that project id");
 		}
-		return (WebHookProjectSettings) projectSettingsManager.getSettings(sProject.getProjectId(), WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+		return webhookSettingsManager.getSettings(sProject.getProjectId());
 	}
 	
 	public ProjectWebhook findWebHookById(String projectExternalId, String webHookLocator, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
@@ -62,15 +65,28 @@ public class WebHookFinder {
 		
 		throw new BadRequestException("Sorry: Searching for multiple template is not supported.");		
 	}
+	
+	public int getTemplateUsageCount(String templateId) {
+		return this.webhookSettingsManager.getTemplateUsageCount(templateId);
+	}
 
 	private ProjectWebhook getWebHookConfigById(String projectExternalId, final Fields fields, final BeanContext beanContext,
 			final String singleValue) {
 		for (WebHookConfig webHookConfig : getWebHookProjectSettings(projectExternalId).getWebHooksConfigs()) {
 			
 			if (singleValue.equals(webHookConfig.getUniqueKey())) {
-				return new ProjectWebhook(webHookConfig, projectExternalId, fields, beanContext);
+				return new ProjectWebhook(webHookConfig, projectExternalId, fields, beanContext, webHookConfig.getEnabledBuildTypesSet());
 			}
 		}
 		throw new NotFoundException("Could not find a webhook with that id");
+	}
+
+	public Collection<String> getBuildTypeExternalIds(Collection<String> internalIds) {
+		return internalIds.stream()
+				.filter(id ->
+						Objects.nonNull(this.projectManager.findBuildTypeById(id))
+					 && Objects.nonNull(this.projectManager.findBuildTypeById(id).getExternalId()))
+				.map(id -> this.projectManager.findBuildTypeById(id).getExternalId())
+				.collect(Collectors.toList());
 	}
 }

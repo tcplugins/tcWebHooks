@@ -17,7 +17,6 @@ public class MainConfigTest extends WebHookAbstractSpringAwareJerseyTest {
 
     private static final String WEBHOOKS_API_BASE = "/app/rest/webhooks";
     private static final String WEBHOOKS_API_SERVER = WEBHOOKS_API_BASE + "/server";
-    private static final String WEBHOOKS_API_SERVER_JSON = WEBHOOKS_API_SERVER + "/json";
     
 
 //
