@@ -10,6 +10,7 @@ import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 
 public class WebHookVelocityVariableMessageBuilder implements VariableMessageBuilder {
 
+	private static final String PACKAGE = "webhook.teamcity.payload.variableresolver.velocity.";
 	String template;
 	Context resolver;
 	StringWriter sw;
@@ -19,13 +20,13 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 		WebHookVelocityVariableMessageBuilder builder = new WebHookVelocityVariableMessageBuilder();
 		builder.ve = new VelocityEngine();
 		
-		builder.ve.setProperty("userdirective", "webhook.teamcity.payload.variableresolver.velocity.VelocitySanitiseDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocitySanitizeDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityEscapeJsonDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityCapitaliseDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityCapitalizeDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityNowDirective, "
-											  + "webhook.teamcity.payload.variableresolver.velocity.VelocitySubStringDirective");
+		builder.ve.setProperty("userdirective", PACKAGE + "VelocitySanitiseDirective, "
+											  + PACKAGE + "VelocitySanitizeDirective, "
+											  + PACKAGE + "VelocityEscapeJsonDirective, "
+											  + PACKAGE + "VelocityCapitaliseDirective, "
+											  + PACKAGE + "VelocityCapitalizeDirective, "
+											  + PACKAGE + "VelocityNowDirective, "
+											  + PACKAGE + "VelocitySubStringDirective");
 		
 		builder.ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
 	    	      "org.apache.velocity.runtime.log.Log4JLogChute" );
