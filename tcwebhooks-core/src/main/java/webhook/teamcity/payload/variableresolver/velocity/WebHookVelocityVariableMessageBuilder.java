@@ -21,6 +21,9 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 		
 		builder.ve.setProperty("userdirective", "webhook.teamcity.payload.variableresolver.velocity.VelocitySanitiseDirective, "
 											  + "webhook.teamcity.payload.variableresolver.velocity.VelocitySanitizeDirective, "
+											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityEscapeJsonDirective, "
+											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityCapitaliseDirective, "
+											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityCapitalizeDirective, "
 											  + "webhook.teamcity.payload.variableresolver.velocity.VelocityNowDirective, "
 											  + "webhook.teamcity.payload.variableresolver.velocity.VelocitySubStringDirective");
 		
