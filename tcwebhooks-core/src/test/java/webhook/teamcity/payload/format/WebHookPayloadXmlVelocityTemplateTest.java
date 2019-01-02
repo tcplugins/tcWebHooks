@@ -26,16 +26,16 @@ import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerI
 import webhook.teamcity.payload.variableresolver.velocity.WebHooksBeanUtilsVelocityVariableResolverFactory;
 
 public class WebHookPayloadXmlVelocityTemplateTest {
-	
+
 	WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
 	WebHookPayloadXmlVelocityTemplate whp;
 	WebHookPayloadManager whpm;
 	ResponsibilityEntry responsibilityEntryOld;
 	ResponsibilityEntry responsibilityEntryNew;
-	
+
 	@Before
 	public void setup() {
-		
+
 		User user = mock(User.class);
 		when(user.getDescriptiveName()).thenReturn("Fred", "Bob");
 		responsibilityEntryOld = mock(ResponsibilityEntry.class);
@@ -44,16 +44,16 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 		when(responsibilityEntryNew.getResponsibleUser()).thenReturn(user);
 		when(responsibilityEntryOld.getComment()).thenReturn("Comment Old");
 		when(responsibilityEntryNew.getComment()).thenReturn("Comment New");
-		
+
 		SBuildServer buildServer = mock(SBuildServer.class);
 		when(buildServer.getRootUrl()).thenReturn("http://test.url");
 		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVelocityVariableResolverFactory());
 		whp = new WebHookPayloadXmlVelocityTemplate(new WebHookPayloadManager(buildServer), variableResolverManager);
 	}
-		
+
 	@Test
 	public void testRegister() {
-		
+
 		SBuildServer mockServer = mock(SBuildServer.class);
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
@@ -85,7 +85,7 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 
 	@Test
 	public void testGetFormatDescription() {
-		assertEquals("XML (Velocity template)", whp.getFormatDescription());
+		assertEquals("XML Velocity template", whp.getFormatDescription());
 	}
 
 	@Test
@@ -97,12 +97,12 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 	public void testGetTemplateEngineType() {
 		assertEquals(PayloadTemplateEngineType.VELOCITY, whp.getTemplateEngineType());
 	}
-	
+
 	@Test
 	public void testGetFormatToolTipText() {
 		assertEquals("Send an XML payload with content from a Velocity template", whp.getFormatToolTipText());
 	}
-	
+
 	@Test
 	public void testResponsibleChanged() {
 		ParametersProvider pp = mock(ParametersProvider.class);
@@ -111,11 +111,11 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 		buildType.setParametersProvider(pp);
 		MockSProject project = new MockSProject("name", "description", "projectId", "projectExternalId", buildType);
 		buildType.setProject(project);
-		
+
 		WebHookTemplateContent templateContent = WebHookTemplateContent.create(
-				"responsibilityChanged", 
-				"{ \"testing\": \"${buildTypeId}\" }", 
-				true, 
+				"responsibilityChanged",
+				"{ \"testing\": \"${buildTypeId}\" }",
+				true,
 				""
 			);
 		assertEquals("{ \"testing\": \"mockBuildType\" }", whp.responsibilityChanged(
@@ -126,9 +126,9 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 					.sBuildType(buildType)
 					.sProject(project)
 					.build(),
-				new TreeMap<String,String>(), 
+				new TreeMap<String,String>(),
 				new TreeMap<String,String>(),
 				templateContent));
-		
+
 	}
 }

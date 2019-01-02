@@ -17,15 +17,10 @@ public class LegacyJsonWebHookTemplate extends LegacyDeprecatedFormatWebHookTemp
 	}
 
 	@Override
-	public String getTemplateDescription() {
-		return "Legacy JSON";
-	}
-
-	@Override
 	public String getTemplateToolTip() {
 		return "Send the payload formatted in JSON";
 	}
-	
+
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
 		return WebHookPayloadJson.FORMAT_SHORT_NAME.equalsIgnoreCase(payloadFormat);

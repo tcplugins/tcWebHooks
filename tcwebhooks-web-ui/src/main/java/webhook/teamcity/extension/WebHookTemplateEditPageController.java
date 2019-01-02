@@ -16,6 +16,7 @@ import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
@@ -25,8 +26,9 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
 	
 	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
-	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager) {
-	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager);
+	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
+	    		WebHookSettingsManager webHookSettingsManager) {
+	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager);
 	        this.myPayloadManager = payloadManager;
 	    }
 
@@ -51,6 +53,7 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
     				if (templateConfig != null) {
     					params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
     					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST)));
+    					params.put("webHookCount", this.myWebHookSettingsManager.getTemplateUsageCount(templateConfig.getId()));
     					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
     				}
     			}

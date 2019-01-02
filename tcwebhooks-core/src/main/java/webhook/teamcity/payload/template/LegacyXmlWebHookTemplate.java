@@ -10,22 +10,17 @@ public class LegacyXmlWebHookTemplate extends LegacyDeprecatedFormatWebHookTempl
 	public LegacyXmlWebHookTemplate(WebHookTemplateManager manager) {
 		super(manager);
 	}
-	
+
 	@Override
 	public String getTemplateId() {
 		return TEMPLATE_ID;
 	}
 
 	@Override
-	public String getTemplateDescription() {
-		return "Legacy XML";
-	}
-
-	@Override
 	public String getTemplateToolTip() {
 		return "Send the payload formatted in XML";
 	}
-	
+
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
 		return WebHookPayloadXml.FORMAT_SHORT_NAME.equalsIgnoreCase(payloadFormat);

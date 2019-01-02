@@ -7,7 +7,7 @@
 		${permissionError}
 		<c:if test="${fn:length(parentProjectBeans) > 0}" >
 			<h3>WebHooks in parent Projects</h3>
-			WebHooks from parent projects may also be executed for builds in this project. Parent projects have the following webhooks: 
+			WebHooks from parent projects may also be executed for builds in this project. Parent projects have the following webhooks:
 			<table class="highlightable parametersTable">
 				<tr><th class="name" style="width:75%">Project Name</th><th>WebHook Count</th></tr>
 			<c:forEach items="${parentProjectBeans}" var="parent">
@@ -16,25 +16,25 @@
 			</table>
 			<p><p>
 		</c:if>
-	
+
 		<c:choose>
 			<c:when test="${projectExternalId == '_Root'}">
 				<h3>WebHooks configured for every TeamCity build (_Root project)</h3>
 			</c:when>
-			<c:otherwise>	
+			<c:otherwise>
 				<h3>WebHooks configured for <c:out value="${project.fullName}"/></h3>
 			</c:otherwise>
 		</c:choose>
-	
+
 		<c:if test="${fn:length(projectBean.webHookList) == 0}" >
-				<p>There are no WebHooks configured for this project.</p> 
+				<p>There are no WebHooks configured for this project.</p>
 				<a href="../webhooks/index.html?projectId=${projectExternalId}">Add project WebHooks</a>.
 		</c:if>
 		<c:if test="${fn:length(projectBean.webHookList) > 0}" >
-				<c:if test="${not projectBean.webHookProjectSettings.enabled}" >
+				<c:if test="${not projectBean.webHooksEnabledForProject}" >
 					<div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
 				</c:if>
-				<p>There are <strong>${fn:length(projectBean.webHookList)}</strong> WebHooks configured for all builds in this project. 
+				<p>There are <strong>${fn:length(projectBean.webHookList)}</strong> WebHooks configured for all builds in this project.
 					<a href="../webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.</p>
 				<table class="highlightable parametersTable">
 					<thead>
@@ -59,10 +59,9 @@
 							</c:choose>
 							<td><c:out value="${hook.enabledEventsListForWeb}"/></td>
 							<td><c:out value="${hook.enabledBuildsListForWeb}"/></td>
-						</tr>  
+						</tr>
 					</c:forEach>
 					</tbody>
 				</table>
 		</c:if>
-	</div>	
-	
+	</div>

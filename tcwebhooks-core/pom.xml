@@ -115,6 +115,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>1.9.3</version>
+		</dependency>
+
      	<!--Jetty dependencies start here -->
      	<dependency>
 	         <groupId>org.eclipse.jetty</groupId>

@@ -10,22 +10,17 @@ public class LegacyEmptyWebHookTemplate extends LegacyDeprecatedFormatWebHookTem
 	public LegacyEmptyWebHookTemplate(WebHookTemplateManager manager) {
 		super(manager);
 	}
-	
+
 	@Override
 	public String getTemplateId() {
 		return TEMPLATE_ID;
 	}
 
 	@Override
-	public String getTemplateDescription() {
-		return "Legacy Empty Payload";
-	}
-
-	@Override
 	public String getTemplateToolTip() {
 		return "Send a POST request with no content";
 	}
-	
+
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
 		return WebHookPayloadEmpty.FORMAT_SHORT_NAME.equalsIgnoreCase(payloadFormat);

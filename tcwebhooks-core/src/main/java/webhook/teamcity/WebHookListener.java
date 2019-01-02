@@ -19,7 +19,6 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.User;
 import webhook.WebHook;
@@ -32,6 +31,7 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 
 /**
@@ -40,18 +40,19 @@ import webhook.teamcity.settings.WebHookProjectSettings;
  */
 public class WebHookListener extends BuildServerAdapter {
     
-	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
+	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
+	private static final String AT_BUILD_STATE = " at buildState ";
 	public static final String WEBHOOKS_SETTINGS_ATTRIBUTE_NAME = "webhooks";
 	private final SBuildServer myBuildServer;
-    private final ProjectSettingsManager mySettings;
+    private final WebHookSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
     private final WebHookTemplateManager myManager;
     private final WebHookFactory webHookFactory;
     private final WebHookExecutor webHookExecutor;
     
     
-    public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
+    public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookTemplateManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
     						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
@@ -75,7 +76,7 @@ public class WebHookListener extends BuildServerAdapter {
 
 	private void processBuildEvent(SBuild sBuild, BuildStateEnum state) {
 			
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + " at buildState " + state.getShortName());
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, null, null, false);
@@ -83,7 +84,7 @@ public class WebHookListener extends BuildServerAdapter {
 	}
 	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
 		
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + " at buildState " + state.getShortName());
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
@@ -92,7 +93,7 @@ public class WebHookListener extends BuildServerAdapter {
 	
 	private void processResponsibilityEvent(BuildStateEnum state, WebHookResponsibilityHolder responsibilityHolder) {
 		
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + " at buildState " + state.getShortName());
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(responsibilityHolder.getSProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, state, responsibilityHolder, false);
@@ -101,7 +102,7 @@ public class WebHookListener extends BuildServerAdapter {
 	
 	private void processPinEvent(SBuild sBuild, BuildStateEnum state, String user, String comment) {
 		
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + " at buildState " + state.getShortName());
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
@@ -119,7 +120,7 @@ public class WebHookListener extends BuildServerAdapter {
 		SProject myProject = myBuildServer.getProjectManager().findProjectById(projectId);
 		projects.addAll(myProject.getProjectPath());
 		for (SProject project : projects){
-			WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(project.getProjectId(), WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+			WebHookProjectSettings projSettings = mySettings.getSettings(project.getProjectId());
 	    	if (projSettings.isEnabled()){
 		    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 		    		if ( !whc.isEnabledForSubProjects() && !myProject.getProjectId().equals(project.getProjectId())){
@@ -304,8 +305,7 @@ public class WebHookListener extends BuildServerAdapter {
 	public void buildRemovedFromQueue(SQueuedBuild queuedBuild, User user, String comment) {
 		// Only send a webhook if the build was actively removed from the queue by a user.
 		if (user != null) {
-			String username = user != null ? user.getUsername() : null;
-			this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, username, comment);
+			this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, user.getUsername(), comment);
 		}
 	}
 	
@@ -325,6 +325,11 @@ public class WebHookListener extends BuildServerAdapter {
 				BuildStateEnum.BUILD_UNPINNED, 
 				user != null ? user.getUsername() : null,
 				comment);
+	}
+	
+	@Override
+	public void serverStartup() {
+		mySettings.initialise();
 	}
 	
 }

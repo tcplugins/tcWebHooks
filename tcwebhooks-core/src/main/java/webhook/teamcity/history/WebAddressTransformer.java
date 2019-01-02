@@ -12,5 +12,6 @@ public interface WebAddressTransformer {
 	 * @return {@link GeneralisedWebAddress}
 	 */
 	public GeneralisedWebAddress getGeneralisedHostName(URL uri);
+	public GeneralisedWebAddress getGeneralisedHostName(String url);
 	
 }

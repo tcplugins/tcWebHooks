@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 		<custom-template type="buildStatusHtml" template="${branchDisplayName} ${projectId}" enabled="true"/>
  */
 
-@XmlRootElement(name="custom-template")
+@XmlRootElement(name="customTemplate")
 public class CustomTemplate {
 	private String type;
 	private String template;

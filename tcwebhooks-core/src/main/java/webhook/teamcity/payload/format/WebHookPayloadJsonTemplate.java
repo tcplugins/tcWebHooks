@@ -16,16 +16,16 @@ import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements WebHookPayload, WebHookContentObjectSerialiser {
-	
+
 	public static final String FORMAT_SHORT_NAME = "jsonTemplate";
 	Integer rank = 101;
 	String charset = "UTF-8";
-	
+
 	Gson gson = new GsonBuilder()
 			.addDeserializationExclusionStrategy(new SuperclassExclusionStrategy())
 			.addSerializationExclusionStrategy(new SuperclassExclusionStrategy())
 			.create();
-	
+
 	public WebHookPayloadJsonTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
 		super(manager, variableResolverManager);
 	}
@@ -34,10 +34,10 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	public void register(){
 		myManager.registerPayloadFormat(this);
 	}
-	
+
 	@Override
 	public String getFormatDescription() {
-		return "JSON (standard template)";
+		return "JSON Standard template";
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	public String getFormatToolTipText() {
 		return "Send a JSON payload with content from a standard template";
 	}
-	
+
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(webHookTemplateContent.getTemplateText(), this.myVariableResolverFactory.buildVariableResolver(this, content, content.getAllParameters()));
@@ -88,9 +88,9 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 		}
 		return gson.toJson(object);
 	}
-	
+
 	@Override
 	public PayloadTemplateEngineType getTemplateEngineType() {
 		return PayloadTemplateEngineType.STANDARD;
-	}	
+	}
 }

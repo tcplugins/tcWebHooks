@@ -176,12 +176,12 @@ public class WebHookProjectSettings implements ProjectSettings {
         return new WebHookUpdateResult(updateSuccess, configToUpdate);
 	}
 
-	public void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
-		addNewWebHook(projectInternalId, projectExternalId, url, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null);
+	public void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
+		addNewWebHook(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null);
 	}
 	
-	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
-		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, format, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig); 
+	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig); 
 		this.webHooksConfigs.add(newWebHook);
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
 		return new WebHookUpdateResult(true, newWebHook);
@@ -210,15 +210,4 @@ public class WebHookProjectSettings implements ProjectSettings {
 		return webHooksConfigs;
 	}
 	
-	@Getter
-	public class WebHookUpdateResult {
-		boolean updated;
-		WebHookConfig webHookConfig;
-		
-		public WebHookUpdateResult(Boolean updated, WebHookConfig webHookConfig) {
-			this.updated = updated;
-			this.webHookConfig = webHookConfig;
-		}
-	}
-
 }

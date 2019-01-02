@@ -7,34 +7,33 @@ import java.util.TreeMap;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
-import webhook.teamcity.WebHookListener;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
 public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 
 	private final SBuildServer myServer;
-	private final ProjectSettingsManager myProjectSettingsManager;
+	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final WebHookTemplateManager myWebHookTemplateManager;
 
 	public WebHookConfigFactoryImpl(
 			SBuildServer sBuildServer,
-			ProjectSettingsManager projectSettingsManager,
+			WebHookSettingsManager projectSettingsManager,
 			WebHookTemplateManager webHookTemplateManager
 
 			) {
 		myServer = sBuildServer;
-		myProjectSettingsManager = projectSettingsManager;
+		myWebHookSettingsManager = projectSettingsManager;
 		myWebHookTemplateManager = webHookTemplateManager;
 	}
 
@@ -104,7 +103,7 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 	private WebHookConfig findWebHookWithId(String projectExternalId, String webHookConfigUniqueId) throws WebHookConfigNotFoundException {
 		SProject myProject = myServer.getProjectManager().findProjectByExternalId(projectExternalId);
 		for (SProject project : myProject.getProjectPath()){
-			WebHookProjectSettings projSettings = (WebHookProjectSettings) myProjectSettingsManager.getSettings(project.getProjectId(), WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+			WebHookProjectSettings projSettings = (WebHookProjectSettings) myWebHookSettingsManager.getSettings(project.getProjectId());
 		    	if (projSettings.isEnabled()){
 			    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 			    		if (whc.isEnabledForSubProjects() == false && !myProject.getProjectId().equals(project.getProjectId())){

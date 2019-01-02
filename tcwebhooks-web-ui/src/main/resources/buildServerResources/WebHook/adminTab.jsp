@@ -4,6 +4,13 @@
 <%@ include file="/include-internal.jsp" %>
 
 		<div>
+		    <p>WebHooks are simply HTTP POST requests or "callbacks" triggered by events. 
+		    	They allow one web application (in this case TeamCity) to notify another web app of events.</p>
+        	<p>When an event occurs, the tcWebHooks plugin will submit an HTTP POST to the URL configured. 
+        		The receiving webapp is then able to use the information for any purpose. It could be used to 
+        		light a lava lamp, or post a message on an IRC channel.</p>
+			<p>There are <a href="../webhooks/search.html?show=all">${webHooksCount} WebHooks</a> configured in this TeamCity Server.<p>
+			
 	        <h2>WebHook Templates</h2>
 	        <p>There are ${webHookTemplatesCount} WebHook Templates installed in this TeamCity server.<p>
 	        <p><a href="../webhooks/templates.html">WebHook Templates</a> are a way of packaging up a set of payloads together. The template can then be re-used by any number of webhooks.</p>

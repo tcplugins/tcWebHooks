@@ -15,7 +15,6 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -34,7 +33,8 @@ import webhook.teamcity.extension.util.EnabledBuildStateResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
-import webhook.teamcity.settings.WebHookProjectSettings.WebHookUpdateResult;
+import webhook.teamcity.settings.WebHookUpdateResult;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookAjaxEditPageController extends BaseController {
@@ -54,14 +54,14 @@ public class WebHookAjaxEditPageController extends BaseController {
 		protected static final String BUILD_UNPINNED = "BuildUnpinned";
 		
 		private final WebControllerManager myWebManager;
-	    private ProjectSettingsManager mySettings;
+	    private WebHookSettingsManager mySettings;
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
 		private final WebHookTemplateResolver myTemplateResolver;
 		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookPayloadManager manager,
+	    		WebHookSettingsManager settings, WebHookPayloadManager manager,
 	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
@@ -93,14 +93,14 @@ public class WebHookAjaxEditPageController extends BaseController {
 		        		params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
 		        		noErrors = false;
 		        	} else {
-		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"));
 
 			    		if (noErrors && (projSettings != null) && (myProject != null)
 			    				&& (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT))){
 			    			if ((request.getParameter("submitAction") != null ) 
 			    				&& (request.getParameter("submitAction").equals("removeWebHook"))
 			    				&& (request.getParameter("removedWebHookId") != null)){
-			    					WebHookUpdateResult result = projSettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
+			    					WebHookUpdateResult result = mySettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
 			    					if(result.isUpdated()){
 			    						myProject.persist();
 	    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='delete' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
@@ -190,8 +190,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
-			    							WebHookUpdateResult result = projSettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
-			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    							WebHookUpdateResult result = mySettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
+			    														states, request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(result.isUpdated()){
 			    								myProject.persist();
@@ -200,7 +200,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								params.put("message", "<errors><error id=\"persistenceError\">Unable to perist webhook</error>");
 			    							}
 			    						} else if (noErrors) {
-			    							WebHookUpdateResult result = projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
+			    							WebHookUpdateResult result = mySettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
@@ -232,7 +232,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    	}
 
 	    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(myProject),
-					myManager.getRegisteredFormats()).getTemplateList());
+					myManager.getRegisteredFormats(), mySettings).getTemplateList());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
 	        		&& request.getParameter("projectId") != null ){
@@ -240,7 +240,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
 	        	if (project != null){
 	        	
-			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"));
 			    	
 			    	String message = projSettings.getWebHooksAsString();
 			    	
@@ -264,7 +264,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(),
+																			mySettings), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),

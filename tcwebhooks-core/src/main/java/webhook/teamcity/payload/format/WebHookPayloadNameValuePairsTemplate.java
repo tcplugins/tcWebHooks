@@ -39,7 +39,7 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 
 	@Override
 	public String getFormatDescription() {
-		return "Name Value Pairs - urlencoded (standard template)";
+		return "Name Value Pairs - urlencoded Standard template";
 	}
 
 	@Override

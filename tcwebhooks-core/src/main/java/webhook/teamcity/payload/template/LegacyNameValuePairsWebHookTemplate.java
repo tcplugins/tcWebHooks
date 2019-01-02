@@ -22,15 +22,10 @@ public class LegacyNameValuePairsWebHookTemplate extends LegacyDeprecatedFormatW
 	}
 
 	@Override
-	public String getTemplateDescription() {
-		return "Legacy Name/Value Pairs";
-	}
-
-	@Override
 	public String getTemplateToolTip() {
 		return "Send the payload as a set of Name/Value Pairs (www-urlencoded as if posted from a form)";
 	}
-	
+
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
 		return WebHookPayloadNameValuePairs.FORMAT_SHORT_NAME.equalsIgnoreCase(payloadFormat);

@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
@@ -22,15 +23,18 @@ public class WebHookTemplateManager {
 	private static final String TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER = " items long. Templates are ranked in the following order..";
 	private static final String TEMPLATE_NAME = " :: Template Name: ";
 	private static final String TEMPLATES_LIST_IS = " :: Templates list is ";
-	HashMap<String, WebHookPayloadTemplate> springTemplates = new HashMap<>();
-	HashMap<String, WebHookPayloadTemplate> xmlConfigTemplates = new HashMap<>();
-	Comparator<WebHookPayloadTemplate> rankComparator = new WebHookTemplateRankingComparator();
-	List<WebHookPayloadTemplate> orderedTemplateCollection = new ArrayList<>();
-	WebHookPayloadManager webHookPayloadManager;
-	WebHookTemplateJaxHelper webHookTemplateJaxHelper;
+	private HashMap<String, WebHookPayloadTemplate> springTemplates = new HashMap<>();
+	private HashMap<String, WebHookPayloadTemplate> xmlConfigTemplates = new HashMap<>();
+	private Comparator<WebHookPayloadTemplate> rankComparator = new WebHookTemplateRankingComparator();
+	private List<WebHookPayloadTemplate> orderedTemplateCollection = new ArrayList<>();
+	private final WebHookPayloadManager webHookPayloadManager;
+	private final WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 	private String configFilePath;
 	
-	public WebHookTemplateManager(WebHookPayloadManager webHookPayloadManager, WebHookTemplateJaxHelper webHookTemplateJaxHelper){
+	public WebHookTemplateManager(
+			WebHookPayloadManager webHookPayloadManager, 
+			WebHookTemplateJaxHelper webHookTemplateJaxHelper)
+	{
 		this.webHookPayloadManager = webHookPayloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
 		Loggers.SERVER.info("WebHookTemplateManager :: Starting (" + toString() + ")");

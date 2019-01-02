@@ -14,15 +14,15 @@ import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 public class WebHookPayloadXmlTemplate extends WebHookPayloadGeneric implements WebHookPayload, WebHookContentObjectSerialiser {
-	
+
 	public static final String FORMAT_SHORT_NAME = "xmlTemplate";
 	public static final String FORMAT_CONTENT_TYPE = "application/xml";
-	
+
 	Integer rank = 101;
 	String charset = "UTF-8";
-	
+
 	XStream xstream = new XStream();
-	
+
 	public WebHookPayloadXmlTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
 		super(manager, variableResolverManager);
 		xstream.setMode(XStream.NO_REFERENCES);
@@ -32,10 +32,10 @@ public class WebHookPayloadXmlTemplate extends WebHookPayloadGeneric implements 
 	public void register(){
 		myManager.registerPayloadFormat(this);
 	}
-	
+
 	@Override
 	public String getFormatDescription() {
-		return "XML (standard template)";
+		return "XML Standard template";
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class WebHookPayloadXmlTemplate extends WebHookPayloadGeneric implements 
 	public String getFormatToolTipText() {
 		return "Send an XML payload with content from a standard template";
 	}
-	
+
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(webHookTemplateContent.getTemplateText(), this.myVariableResolverFactory.buildVariableResolver(this, content, content.getAllParameters()));
@@ -86,10 +86,10 @@ public class WebHookPayloadXmlTemplate extends WebHookPayloadGeneric implements 
 		}
 		return xstream.toXML(object);
 	}
-	
+
 	@Override
 	public PayloadTemplateEngineType getTemplateEngineType() {
 		return PayloadTemplateEngineType.STANDARD;
-	}	
-	
+	}
+
 }

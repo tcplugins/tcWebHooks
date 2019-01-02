@@ -8,7 +8,10 @@ WebHooksPlugin = {
 				});
 			}
 		} else {
-		  alert(response);
+			console.log("----- begin webhooks AJAX error response -----")
+			console.log(response);
+			console.log("----- end webhooks AJAX error response -----")
+			alert("An unexpected error occured. Please see your browser's javascript console.");
 		}
 	},
     showAddDialog: function() {
@@ -25,11 +28,11 @@ WebHooksPlugin = {
     	getContainer: function () {
     		return $('deleteWebHookDialog');
     	},
-    	
+
     	formElement: function () {
     		return $('deleteWebHookForm');
     	},
-    	
+
     	showDialog: function (title, action, id) {
     		$j("#editWebHookForm input[id='webHookId']").val("none"); // Unset the edit id, so that it doesn't get animated by delete.
     		$j("input[id='webHookaction']").val(action);
@@ -41,7 +44,7 @@ WebHooksPlugin = {
 	            backgroundColor: "#ffffcc"
 	    	}, 1000 );
     	},
-    	
+
 		cancelDialog : function() {
 		    this.close();
 		    $j('li.tab').removeAttr('style');
@@ -49,16 +52,16 @@ WebHooksPlugin = {
 	            backgroundColor: "#ffffff"
 	        }, 500 );
 		},
-    	
+
     	cleanFields: function (id) {
     		$j("#deleteWebHookForm input[id='webHookId']").val(id);
     		this.cleanErrors();
     	},
-    	
+
     	cleanErrors: function () {
     		$j("#deleteWebHookForm .error").remove();
     	},
-    	
+
     	error: function($element, message) {
     		var next = $element.next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -67,7 +70,7 @@ WebHooksPlugin = {
     			$element.after("<p class='error'>" + message + "</p>");
     		}
     	},
-    	
+
     	ajaxError: function(message) {
     		var next = $j("#ajaxWebHookDeleteResult").next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -76,14 +79,14 @@ WebHooksPlugin = {
     			$j("#ajaxWebHookDeleteResult").after("<p class='error'>" + message + "</p>");
     		}
     	},
-    	
+
     	doPost: function() {
     		this.cleanErrors();
-    		
+
     		var dialog = this;
     		var webHookId = $j("#deleteWebHookForm input[id='webHookId']").val()
     	    var url = this.formElement().action + "&submitAction=removeWebHook&removedWebHookId=" + webHookId;
-    		
+
     		$j.ajax ({
     			url: url,
     			type: "POST",
@@ -94,19 +97,19 @@ WebHooksPlugin = {
 					    isErrored = true;
 					    dialog.ajaxError(thing.textContent);
 				    });
-    				if (! isErrored) { 
+    				if (! isErrored) {
     					dialog.close();
-    					
-    					// Animate the removal of the webhook table row. 
+
+    					// Animate the removal of the webhook table row.
     			        $j("#viewRow_" + $j("#deleteWebHookForm input[id='webHookId']").val())
     			            .children('td, th')
     			            .animate({ backgroundColor: "#ffffff", colour: "#ffffff", paddingTop: 0, paddingBottom: 0 })
     			            .wrapInner('<div />')	// Wrap the content in a div, so that the height can be animated.
     			            .children()
-    			            .slideUp(function() { 
+    			            .slideUp(function() {
     			            	$j(this).closest('tr').remove();
     			            	$('systemParams').updateContainer();
-    			            }); 
+    			            });
     				}
     			},
     			error: function (response) {
@@ -114,11 +117,11 @@ WebHooksPlugin = {
     				ajaxError(response);
     			}
     		});
-    		
+
     		return false;
     	}
-    })),	
-	
+    })),
+
     EditWebHookDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
             return $('editWebHookDialog');
@@ -127,7 +130,7 @@ WebHooksPlugin = {
         formElement: function () {
             return $('editWebHookForm');
         },
-        
+
 		cancelDialog : function() {
 		    this.close();
 		    $j('li.tab').removeAttr('style');
@@ -135,14 +138,14 @@ WebHooksPlugin = {
 	            backgroundColor: "#ffffff"
 	        }, 500 );
 		},
-		
+
         showDialog: function (title, action, id, tab) {
-        	
+
         	this.formElement().submitAction.value = action;
             $j(".dialogTitle").text(title);
             this.cleanFields(id);
             this.cleanErrors();
-            
+
 		    populateWebHookDialog(id);
 		    doExtraCompleted();
 		    $j("div.tabPane").css('display', 'none');
@@ -170,7 +173,7 @@ WebHooksPlugin = {
                 $element.after("<p class='error'>" + message + "</p>");
             }
         },
-        
+
         ajaxError: function(message) {
         	var next = $j("#webhookDialogAjaxResult").next();
         	if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -204,7 +207,7 @@ WebHooksPlugin = {
 		        	backgroundColor: "#eecccc"
 		        }, 500);
 		      },
-		      
+
 		      onEmptyAuthParameterError : function(elem) {
 		        $("error_authParameter").innerHTML = elem.firstChild.nodeValue;
 		        dialog.highlightErrorField($('extraAuthParameters'));
@@ -218,24 +221,24 @@ WebHooksPlugin = {
 		    	BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 		        form.enable();
 		        if (!err) {
-		        	var webHookId = "unknown"; 
+		        	var webHookId = "unknown";
 		        	$j(responseXML).find("webhook").each(function(error, webhook){
 		        		$j("#editWebHookForm input[id='webHookId']").val(webhook.id);
 				    });
-		        	$j('li.tab').removeAttr('style');	
+		        	$j('li.tab').removeAttr('style');
 		            $j("#viewRow_" + $j("#editWebHookForm input[id='webHookId']").val()).animate({
 		                backgroundColor: "#cceecc"
-		            }, 500 );	
+		            }, 500 );
 		            $('systemParams').updateContainer();
 		            dialog.close();
 		        }
 		      }
 		    }));
 
-		    return false;			
+		    return false;
 
 		},
-		
+
 		executeWebHook: function() {
 			var dialog = this;
 			if (
@@ -258,7 +261,7 @@ WebHooksPlugin = {
 						headers : {
 							'Content-Type' : 'application/json',
 							'Accept' : 'application/json'
-						},    				
+						},
 						data: JSON.stringify({
 										"url": $j('#webHookUrl').val(),
 										"projectExternalId": $j("#editWebHookForm input[id='projectExternalId']").val(),
@@ -272,8 +275,8 @@ WebHooksPlugin = {
 										"authPreemptive" : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
 										"authParameters" : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
 										"configBuildStates" : {
-											"BUILD_SUCCESSFUL" : true, 
-											"CHANGES_LOADED" : false, 
+											"BUILD_SUCCESSFUL" : true,
+											"CHANGES_LOADED" : false,
 										    "BUILD_FAILED" : true,
 										    "BUILD_BROKEN" : true,
 										    "BUILD_STARTED" : false,
@@ -291,7 +294,7 @@ WebHooksPlugin = {
 							$j('#webhookTestProgress').css("display","none");
 							dialog.cleanErrors();
 							var ul = $j('<ul>');
-							
+
 							if (response.error) {
 								ul.append($j('<li/>').text("Error: " + response.error.message + " (" + response.error.errorCode + ")"));
 							} else {
@@ -299,16 +302,15 @@ WebHooksPlugin = {
 							}
 							ul.append($j('<li/>').text("URL: " + response.url));
 							ul.append($j('<li/>').text("Duration: " + response.executionTime + " @ " + moment(response.dateTime, moment.ISO_8601).format("dddd, MMMM Do YYYY, h:mm:ss a")));
-							
+
 							$j("#webhookDialogAjaxResult").empty().append(ul);
 						},
 						error: function (response) {
 							$j('#webhookTestProgress').css("display","none");
-							console.log(response);
 							WebHooksPlugin.handleAjaxError(dialog, response);
 						}
 					});
-				}	
+				}
 			} else {
 				$j("#webhookDialogAjaxResult").empty().append("Please select a Build first");
 			}
@@ -320,20 +322,20 @@ WebHooksPlugin = {
 
 function populateBuildHistoryAjax(locator) {
 	$j('#webhookRendered').empty();
-	
+
    		if (!locator) { // We got a null or undefined locator. Empty the build list and return
 			$j("#webhookPreviewBuildId").empty();
    			console.log("populateBuildHistoryAjax() : locator is null. This should not happen");
 			return;
 		}
-   		
+
    		if (locator === 'project:_Root,') {
    			locator = '';
    		}
-   		
+
 		$j("#webhookPreviewBuildId").empty().append($j('<option></option>').val(null).text("Loading build history..."))
 		$j.ajax ({
-			url: window['base_uri'] + '/app/rest/builds?locator=' + locator 
+			url: window['base_uri'] + '/app/rest/builds?locator=' + locator
 					+ "state:finished&fields=build(id,number,status,finishDate,buildType(id,name))",
 			type: "GET",
 			headers : {
@@ -357,8 +359,7 @@ function populateBuildHistoryAjax(locator) {
 							$j('<option></option>').val(null).text("No builds found. Choose a different project.")
 						);
 				} else {
-    				console.log(response);
-    				alert(response);
+					WebHooksPlugin.handleAjaxError(dialog, response);
 				}
 			}
 		});
@@ -377,7 +378,7 @@ function doExtraCompleted(){
 	} else {
 		$j('.onBuildFixed').addClass('onCompletionDisabled');
 		$j('tr.onBuildFixed td input').prop('disabled', true);
-	} 
+	}
 	if($j('#buildFailed').is(':checked')){
 		$j('.onBuildFailed').removeClass('onCompletionDisabled');
 		$j('tr.onBuildFailed td input').prop('disabled', false);
@@ -423,7 +424,7 @@ function updateSelectedBuildTypes(){
 
 	So, using the map of registeredAuthTypes find the matching authType's options to show
 	and populate its values from the webhook's config.
-	
+
 		    "registeredAuthTypes": {
 		        "userpass": {
 		          "description": "Username/Password Authentication (Basic Auth)",
@@ -451,7 +452,7 @@ function updateSelectedBuildTypes(){
 		            }
 		          ]
 		        }
-		      }			
+		      }
 */
 
 var preemptiveToolTip = "Preemptively sends credentials on first request. " +
@@ -462,7 +463,7 @@ function populateWebHookAuthExtrasPane(webhookObj){
 	if (webhookObj.hasOwnProperty("authConfig") && ProjectBuilds.templatesAndWebhooks.registeredAuthTypes.hasOwnProperty(webhookObj.authConfig.type)){
 		$j('#extraAuthType').val(webhookObj.authConfig.type);
 		$j('#extraAuthParameters > tbody').empty();
-		$j('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive" title="' + preemptiveToolTip +'">Preemptive</label></td>' + 
+		$j('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive" title="' + preemptiveToolTip +'">Preemptive</label></td>' +
 															 '<td class="authParameterValueWrapper"><input title="' + preemptiveToolTip +'" type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
 		$j('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
 		$j.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[webhookObj.authConfig.type].parameters, function(index, paramObj){
@@ -471,7 +472,7 @@ function populateWebHookAuthExtrasPane(webhookObj){
 	} else {
 		$j('#extraAuthType').val("");
 		$j('#extraAuthParameters > tbody').empty();
-	}					
+	}
 }
 
 function populateWebHookAuthExtrasPaneFromChange(webhookObj){
@@ -480,7 +481,7 @@ function populateWebHookAuthExtrasPaneFromChange(webhookObj){
 		$j('#extraAuthParameters > tbody').empty();
 	} else {
 		$j('#extraAuthParameters > tbody').empty();
-		$j('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive" title="' + preemptiveToolTip +'">Preemptive</label></td>' + 
+		$j('#extraAuthParameters > tbody').append('<tr><td class="authParameterName"><label for="extraAuthPreemptive" title="' + preemptiveToolTip +'">Preemptive</label></td>' +
 															 '<td class="authParameterValueWrapper"><input title="' + preemptiveToolTip +'" type=checkbox name="extraAuthPreemptive" id="extraAuthPreemptive"></td></tr>');
 		if (webhookObj.hasOwnProperty("authConfig") && webhookObj.authConfig.type == authType){
 			$j('#extraAuthPreemptive').prop('checked', webhookObj.authConfig.preemptive);
@@ -491,9 +492,9 @@ function populateWebHookAuthExtrasPaneFromChange(webhookObj){
 			$j('#extraAuthPreemptive').prop('checked', webhookObj, true);
 			$j.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes[authType].parameters, function(index, paramObj){
 				$j('#extraAuthParameters > tbody').append(buildWebHookAuthParameterHtml(paramObj, webhookObj, false));
-			});					
+			});
 		}
-	
+
 	}
 }
 
@@ -503,16 +504,16 @@ function buildWebHookAuthParameterHtml(paramObj, webhookObj, setValue) {
 	if (setValue) {
 		value = 'value="' + webhookObj.authConfig.parameters[paramObj.key] + '" ';
 	}
-	
+
 	if (paramObj.required) {
 		requireText = '<span class="mandatoryAsterix" title="Mandatory field">*</span>';
 	}
-	return '<tr><td class="authParameterName"><label for="extraAuthParam_' 
-			+ paramObj.key + '" title="'+ paramObj.toolTip + '">' 
-			+ paramObj.name + requireText + '</label></td><td class="authParameterValueWrapper">' 
-			+ '<input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_' 
+	return '<tr><td class="authParameterName"><label for="extraAuthParam_'
+			+ paramObj.key + '" title="'+ paramObj.toolTip + '">'
+			+ paramObj.name + requireText + '</label></td><td class="authParameterValueWrapper">'
+			+ '<input title="'+ paramObj.toolTip + '" type=text name="extraAuthParam_'
 			+ paramObj.key + '" ' + value + 'class="authParameterValue authParameterItemValue"></td></tr>';
-			
+
 }
 
 function populateWebHookDialog(id){
@@ -520,20 +521,20 @@ function populateWebHookDialog(id){
 	$j('#buildList').empty();
 	$j.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
 		if (id === webHookKey){
-			
+
 			$j("#viewRow_" + webhook.uniqueKey).animate({
 	            backgroundColor: "#ffffcc"
 	    	}, 1000 );
-			
-			$j("#editWebHookForm input[id='webHookId']").val(webhook.uniqueKey);	
+
+			$j("#editWebHookForm input[id='webHookId']").val(webhook.uniqueKey);
 			$j('#webHookUrl').val(webhook.url);
 		    $j('#webHooksEnabled').prop('checked', webhook.enabled);
 		    $j.each(webhook.states, function(name, value){
 		    	$j('#' + value.buildStateName).prop('checked', value.enabled);
 		    });
-		    
+
 			$j('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate).change();
-			
+
 			$j('#buildTypeSubProjects').prop('checked', webhook.subProjectsEnabled);
 			$j.each(webhook.builds, function() {
 				var isChecked = '';
@@ -548,7 +549,7 @@ function populateWebHookDialog(id){
 				container.append(label);
 				$j('#buildList').append(container);
 			});
-			
+
 			populateWebHookAuthExtrasPane(webhook);
 			$j('select#extraAuthType').change(function() {
 				populateWebHookAuthExtrasPaneFromChange(webhook);
@@ -562,7 +563,7 @@ function populateWebHookDialog(id){
 	});
 	updateSelectedBuildTypes();
 	renderPreviewOnChange(); // Empty the div if no build selected.
-	
+
 }
 
 function lookupTemplateName(templateId){
@@ -636,13 +637,13 @@ function addWebHooksFromJsonCallback(){
 							.prop("id", "viewRow_" + webhook.uniqueKey)
 							.removeClass('webHookRowTemplate')
 							.addClass('webHookRow');
-			
+
 			if (webhook.uniqueKey === $j("#editWebHookForm input[id='webHookId']").val() && "addWebHook" === $j("#editWebHookForm input[id='submitAction']").val() ){
 				isNew = true;
 				newRow.hide();
 			}
 			newRow.appendTo('#webHookTable > tbody');
-			
+
 			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemUrl").text(webhook.url).click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey, '#hookPane');});
 			if (webhook.payloadTemplate === 'none') {
 				$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").text(webhook.payloadFormatForWeb);
@@ -653,18 +654,18 @@ function addWebHooksFromJsonCallback(){
 			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").text(webhook.enabledBuildsListForWeb).click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey, '#buildPane');});
 			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEdit > a").click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey,'#hookPane');});
 			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){WebHooksPlugin.showDeleteDialog(webhook.uniqueKey);});
-			
+
 			if (webhook.uniqueKey === $j("#editWebHookForm input[id='webHookId']").val()){
 				$j("#viewRow_" + webhook.uniqueKey).css('background-color', '#cceecc');
 				$j("#viewRow_" + webhook.uniqueKey).fadeIn(500);
 			}
-			
+
 		}
 		if (isNew) {
 			newRow.slideDown("slow", function(){
 	            $j("#viewRow_" + webhook.uniqueKey).animate({
 	                backgroundColor: "#ffffff"
-	            }, 2500 );				
+	            }, 2500 );
 			});
 		} else if (webhook.uniqueKey === $j("#editWebHookForm input[id='webHookId']").val()){
             $j("#viewRow_" + webhook.uniqueKey).animate({
@@ -672,7 +673,7 @@ function addWebHooksFromJsonCallback(){
             }, 1500 );
 		}
 	});
-	
+
 	//populateBuildHistory();
 }
 
@@ -724,7 +725,7 @@ BS.WebHookForm = OO.extend(BS.AbstractWebForm, {
 	        	backgroundColor: "#eecccc"
 	        }, 500);
 	      },
-	      
+
 	      onEmptyAuthParameterError : function(elem) {
 	        $("error_authParameter").innerHTML = elem.firstChild.nodeValue;
 	        dialog.highlightErrorField($('extraAuthParameters'));
@@ -738,10 +739,10 @@ BS.WebHookForm = OO.extend(BS.AbstractWebForm, {
 	    	BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 	        form.enable();
 	        if (!err) {
-	        	$j('li.tab').removeAttr('style');	
+	        	$j('li.tab').removeAttr('style');
 	            $j("#viewRow_" + $j("#editWebHookForm input[id='webHookId']").val()).animate({
 	                backgroundColor: "#cceecc"
-	            }, 500 );	
+	            }, 500 );
 	            $('systemParams').updateContainer();
 	            BS.EditWebHookDialog.close();
 	        }

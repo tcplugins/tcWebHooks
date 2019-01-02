@@ -4,8 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jdom.Element;
 
 import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
@@ -29,6 +32,7 @@ import jetbrains.buildServer.serverSide.PersistFailedException;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SPersistentEntity;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.TemplateCannotBeRemovedException;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
 import jetbrains.buildServer.users.User;
@@ -37,11 +41,6 @@ import jetbrains.buildServer.vcs.SVcsRoot;
 import jetbrains.buildServer.vcs.UnknownVcsException;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 
-import org.jdom.Element;
-
-import com.intellij.util.containers.HashMap;
-
-@SuppressWarnings("deprecation")
 public class MockSProject implements SProject {
 
 	private String name;
@@ -624,9 +623,71 @@ public class MockSProject implements SProject {
 		
 	}
 	
+	// Since TeamCity 10.0
 	
-	
-	
-	
+	@Override
+	public Parameter getOwnParameter(String paramName) {
+		return null;
+	}
+
+	@Override
+	public Parameter getParameter(String paramName) {
+		return null;
+	}
+
+	@Override
+	public String getParameterValue(String paramName) {
+		return null;
+	}
+
+	@Override
+	public SProjectFeatureDescriptor addFeature(String type, Map<String, String> params) {
+		return null;
+	}
+
+	@Override
+	public void addFeature(SProjectFeatureDescriptor feature) {
+		
+	}
+
+	@Override
+	public Collection<SProjectFeatureDescriptor> getOwnFeatures() {
+		return null;
+	}
+
+	@Override
+	public Collection<SProjectFeatureDescriptor> getOwnFeaturesOfType(String type) {
+		return null;
+	}
+
+	@Override
+	public Collection<SProjectFeatureDescriptor> getAvailableFeaturesOfType(String type) {
+		return null;
+	}
+
+	@Override
+	public Collection<SProjectFeatureDescriptor> getAvailableFeatures() {
+		return null;
+	}
+
+	@Override
+	public SProjectFeatureDescriptor removeFeature(String featureId) {
+		return null;
+	}
+
+	@Override
+	public boolean updateFeature(String featureId, String newType, Map<String, String> newParams) {
+		return false;
+	}
+
+	@Override
+	public SProjectFeatureDescriptor findFeatureById(String featureId) {
+		return null;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return false;
+	}
 
 }

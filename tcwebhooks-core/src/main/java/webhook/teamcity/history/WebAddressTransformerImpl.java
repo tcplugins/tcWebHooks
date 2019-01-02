@@ -3,13 +3,13 @@ package webhook.teamcity.history;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;
-
 
 public class WebAddressTransformerImpl implements WebAddressTransformer {
 
@@ -36,6 +36,19 @@ public class WebAddressTransformerImpl implements WebAddressTransformer {
 		return null;
 	}
 
+	@Override
+	public GeneralisedWebAddress getGeneralisedHostName(String url) {
+		try {
+			if (url != null && !url.trim().isEmpty()) {
+				return getGeneralisedHostName(new URL(url));
+			} else {
+				return getGeneralisedHostName(new URL("http://undefined"));
+			}
+		} catch (MalformedURLException e) {
+			return GeneralisedWebAddress.build("invalidUrl", GeneralisedWebAddressType.HOST_ADDRESS);
+		}
+	}
+	
 	@Nullable
 	private InetAddress extractInetAddress(String host) {
 		if (InetAddresses.isInetAddress(host)) {

@@ -27,12 +27,6 @@ public class LegacyTailoredJsonWebHookTemplate extends LegacyDeprecatedFormatWeb
 	}
 
 	@Override
-	public String getTemplateDescription() {
-		return "Legacy Tailored JSON in body";
-
-	}
-
-	@Override
 	public String getTemplateToolTip() {
 		return "Send a JSON payload with content specified by parameter named 'body'";
 	}

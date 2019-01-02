@@ -12,7 +12,6 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -21,19 +20,19 @@ import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 
 
 public class WebHookBuildTypeTabExtension extends BuildTypeTab {
-	private final ProjectSettingsManager myProjectSettingsManager;
+	private final WebHookSettingsManager myProjectSettingsManager;
 	private final String myPluginPath;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
 
 	protected WebHookBuildTypeTabExtension(
 			@NotNull ProjectManager projectManager, 
-			@NotNull ProjectSettingsManager projectSettingsManager, 
+			@NotNull WebHookSettingsManager projectSettingsManager, 
 			@NotNull WebControllerManager manager,
 			@NotNull PluginDescriptor pluginDescriptor,
 			@NotNull WebHookHistoryRepository webHookHistoryRepository,
@@ -59,7 +58,7 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
-							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
+							this.myProjectSettingsManager.getSettings(projectParent.getProjectId()),
 							buildType, 
 							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT), 
 							myWebAddressTransformer
@@ -83,7 +82,5 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 	public String getIncludeUrl() {
 		return myPluginPath + "WebHook/webHookTabWithHistory.jsp";
 	}
-
-
 	
 }

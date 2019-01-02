@@ -15,6 +15,7 @@ import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookTemplateListPageController extends WebHookTemplateBasePageController {
@@ -23,8 +24,9 @@ public class WebHookTemplateListPageController extends WebHookTemplateBasePageCo
 
 		public WebHookTemplateListPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
-	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager) {
-	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager);
+	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
+	    		WebHookSettingsManager webHookSettingsManager) {
+	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager);
 	    	this.myPayloadManager = payloadManager;
 	    }
 
@@ -41,7 +43,7 @@ public class WebHookTemplateListPageController extends WebHookTemplateBasePageCo
 	        
 	        params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
         	params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, myTemplateManager.getRegisteredTemplates(),
-        			myPayloadManager.getRegisteredFormats()).getTemplateList());
+        			myPayloadManager.getRegisteredFormats(), myWebHookSettingsManager).getTemplateList());
 
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateList.jsp", params);
 	    }

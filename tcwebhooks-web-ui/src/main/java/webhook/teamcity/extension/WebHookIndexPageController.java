@@ -13,7 +13,6 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -26,25 +25,25 @@ import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
 import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
-import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookIndexPageController extends BaseController {
 
 	    private final WebControllerManager myWebManager;
 	    private final WebHookMainSettings myMainSettings;
-	    private ProjectSettingsManager mySettings;
+	    private WebHookSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
 		private final WebHookTemplateResolver myTemplateResolver;
 		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 
 	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
+	    		WebHookSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
 	    		WebHookTemplateResolver templateResolver,
 	    		WebHookMainSettings configSettings, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
@@ -90,7 +89,7 @@ public class WebHookIndexPageController extends BaseController {
 	        	if (project != null){
 	        		
 			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-			    			mySettings.getSettings(project.getProjectId(), "webhooks");
+			    			mySettings.getSettings(project.getProjectId());
 			    	
 			        SUser myUser = SessionUser.getUser(request);
 			        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
@@ -108,7 +107,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
 			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-							myManager.getRegisteredFormats()).getTemplateList());
+							myManager.getRegisteredFormats(), mySettings).getTemplateList());
 			    	
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
@@ -116,7 +115,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(), mySettings), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
@@ -143,7 +142,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(), mySettings), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
@@ -167,7 +166,7 @@ public class WebHookIndexPageController extends BaseController {
 		        	if (project != null){
 		        		
 				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-				    			mySettings.getSettings(project.getProjectId(), "webhooks");
+				    			mySettings.getSettings(project.getProjectId());
 				    	
 				    	SUser myUser = SessionUser.getUser(request);
 				        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
@@ -180,7 +179,7 @@ public class WebHookIndexPageController extends BaseController {
 				    	
 			    		params.put("webHookList", bean);
 				    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-								myManager.getRegisteredFormats()).getTemplateList());
+								myManager.getRegisteredFormats(), mySettings).getTemplateList());
 				    	params.put("webHooksDisabled", !projSettings.isEnabled());
 				    	params.put("projectId", project.getProjectId());
 				    	params.put("haveProject", "true");
@@ -196,7 +195,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(), mySettings), 
 										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																	),

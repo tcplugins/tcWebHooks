@@ -26,7 +26,6 @@ import jetbrains.buildServer.serverSide.BuildHistory;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.TestingWebHookFactory;
 import webhook.WebHook;
 import webhook.WebHookProxyConfig;
@@ -52,12 +51,13 @@ import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVaria
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class WebHookListenerTest {
 	SBuildServer sBuildServer = mock(SBuildServer.class);
 	BuildHistory buildHistory = mock(BuildHistory.class);
 	ProjectManager projectManager = mock(ProjectManager.class);
-	ProjectSettingsManager settings = mock(ProjectSettingsManager.class);
+	WebHookSettingsManager settings = mock(WebHookSettingsManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookPayloadManager manager = mock(WebHookPayloadManager.class);
 	WebHookTemplateManager templateManager = mock(WebHookTemplateManager.class);
@@ -124,7 +124,7 @@ public class WebHookListenerTest {
 		finishedSuccessfulBuilds.add(previousSuccessfulBuild);
 		finishedFailedBuilds.add(previousFailedBuild);
 		sBuildType.setProject(sProject);
-		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(settings.getSettings(sRunningBuild.getProjectId())).thenReturn(projSettings);
 		whl.register();
 	}
 
@@ -154,7 +154,7 @@ public class WebHookListenerTest {
 	public void testBuildStartedSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState();
 		state.enable(BuildStateEnum.BUILD_STARTED);
-		projSettings.addNewWebHook("project1", "MyProject", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
+		projSettings.addNewWebHook("project1", "MyProject", "http://text/test", true, state, "testXMLtemplate", true, true, new HashSet<String>());
 		//when(webhook.isEnabled()).thenReturn(state.enabled(BuildStateEnum.BUILD_STARTED));
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
@@ -167,7 +167,7 @@ public class WebHookListenerTest {
 	@Test @Ignore
 	public void testBuildFinishedSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState().setAllEnabled();
-		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state , "JSON", "testXMLtemplate", true, true, new HashSet<String>());
+		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state , "testXMLtemplate", true, true, new HashSet<String>());
 		when(webhook.isEnabled()).thenReturn(state.allEnabled());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
@@ -181,7 +181,7 @@ public class WebHookListenerTest {
 		state.enable(BuildStateEnum.BUILD_FIXED);
 		state.enable(BuildStateEnum.BUILD_FINISHED);
 		state.enable(BuildStateEnum.BUILD_SUCCESSFUL);
-		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
+		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "testXMLtemplate", true, true, new HashSet<String>());
 		when(webhook.isEnabled()).thenReturn(state.enabled(BuildStateEnum.BUILD_FIXED));
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedFailedBuilds);
 		
@@ -193,7 +193,7 @@ public class WebHookListenerTest {
 	public void testBuildFinishedSRunningBuildSuccessAfterSuccess() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState();
 		state.enable(BuildStateEnum.BUILD_FIXED);
-		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
+		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "testXMLtemplate", true, true, new HashSet<String>());
 		when(webhook.isEnabled()).thenReturn(state.enabled(BuildStateEnum.BUILD_FIXED));
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
@@ -204,7 +204,7 @@ public class WebHookListenerTest {
 	@Test @Ignore
 	public void testBuildInterruptedSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState().setAllEnabled();
-		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
+		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "testXMLtemplate", true, true, new HashSet<String>());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.buildInterrupted(sRunningBuild);
@@ -215,7 +215,7 @@ public class WebHookListenerTest {
 	public void testBeforeBuildFinishSRunningBuild() throws FileNotFoundException, IOException {
 		BuildState state = new BuildState();
 		state.enable(BuildStateEnum.BEFORE_BUILD_FINISHED);
-		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "JSON", "testXMLtemplate", true, true, new HashSet<String>());
+		projSettings.addNewWebHook("1234", "MyProject", "http://text/test", true, state, "testXMLtemplate", true, true, new HashSet<String>());
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		
 		whl.beforeBuildFinish(sRunningBuild);
@@ -229,7 +229,7 @@ public class WebHookListenerTest {
 		String triggeredBy = "SubVersion";
 		MockSRunningBuild sRunningBuild = new MockSRunningBuild(sBuildType, triggeredBy, Status.NORMAL, "Running", "TestBuild01");
 		
-		when(settings.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(projSettings);
+		when(settings.getSettings(sRunningBuild.getProjectId())).thenReturn(projSettings);
 		
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);

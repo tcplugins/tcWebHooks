@@ -23,6 +23,11 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 	}
 
 	@Override
+	public String getTemplateDescription() {
+		return "Legacy Webhook";
+	}
+
+	@Override
 	public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) {
 		return null;
 	}
