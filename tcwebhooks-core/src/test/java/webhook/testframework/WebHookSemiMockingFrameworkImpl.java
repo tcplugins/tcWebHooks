@@ -21,7 +21,6 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
@@ -56,6 +55,7 @@ import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVaria
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
 import webhook.testframework.util.ConfigLoaderUtil;
@@ -66,7 +66,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	WebHookConfig webHookConfig;
 	SBuildServer sBuildServer = mock(SBuildServer.class);
 	BuildHistory buildHistory = mock(BuildHistory.class);
-	ProjectSettingsManager projectSettingsManager = mock(ProjectSettingsManager.class);
+	WebHookSettingsManager projectSettingsManager = mock(WebHookSettingsManager.class);
 	ProjectManager projectManager = mock(ProjectManager.class);
 	WebHookMainSettings configSettings = mock(WebHookMainSettings.class);
 	WebHookProjectSettings webHookProjectSettings = new WebHookProjectSettings();
@@ -155,7 +155,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		finishedSuccessfulBuilds.add(previousSuccessfulBuild);
 		finishedFailedBuilds.add(previousFailedBuild);
 		((MockSBuildType) sBuildType).setProject(sProject);
-		when(projectSettingsManager.getSettings(sRunningBuild.getProjectId(), "webhooks")).thenReturn(webHookProjectSettings);
+		when(projectSettingsManager.getSettings(sRunningBuild.getProjectId())).thenReturn(webHookProjectSettings);
 		
 		when(build2.getBuildTypeId()).thenReturn("bt2");
 		when(build2.getInternalId()).thenReturn("bt2");

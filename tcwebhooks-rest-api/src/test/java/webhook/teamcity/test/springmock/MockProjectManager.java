@@ -1,8 +1,6 @@
 package webhook.teamcity.test.springmock;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.List;

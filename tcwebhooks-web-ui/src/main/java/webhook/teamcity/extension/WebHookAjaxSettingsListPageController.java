@@ -12,7 +12,6 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.teamcity.TeamCityIdResolver;
@@ -22,23 +21,23 @@ import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
 import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
 import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
-import webhook.teamcity.extension.util.ProjectHistoryResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookAjaxSettingsListPageController extends BaseController {
 
 	    private final WebControllerManager myWebManager;
-	    private ProjectSettingsManager mySettings;
+	    private WebHookSettingsManager mySettings;
 	    private PluginDescriptor myPluginDescriptor;
 	    private final WebHookPayloadManager myManager;
 	    private final WebHookTemplateResolver myTemplateResolver;
 		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 
 	    public WebHookAjaxSettingsListPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor, 
+	    		WebHookSettingsManager settings, WebHookPayloadManager manager, PluginDescriptor pluginDescriptor, 
 	    		WebHookTemplateResolver webHookTemplateResolver, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
@@ -66,7 +65,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 	        		params.put("haveProject", "false");
 	        	} else {
 			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-			    			mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+			    			mySettings.getSettings(request.getParameter("projectId"));
 		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 		    													TemplatesAndProjectWebHooksBean.build(
 		    															RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
@@ -88,7 +87,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		        	SProject project = sBuildType.getProject();
 		        	if (project != null){
 				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-				    			mySettings.getSettings(project.getProjectId(), "webhooks");
+				    			mySettings.getSettings(project.getProjectId());
 		        		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 		        				TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),

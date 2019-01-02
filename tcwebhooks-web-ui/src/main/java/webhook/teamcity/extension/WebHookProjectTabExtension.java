@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -22,12 +21,13 @@ import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 
 
 public class WebHookProjectTabExtension extends ProjectTab {
 	
-	private final ProjectSettingsManager myProjectSettingsManager;
+	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final String myPluginPath;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
@@ -35,12 +35,12 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	protected WebHookProjectTabExtension(
 			@NotNull PagePlaces pagePlaces, 
 			@NotNull ProjectManager projectManager, 
-			@NotNull ProjectSettingsManager projectSettingsManager, 
+			@NotNull WebHookSettingsManager webHookSettingsManager, 
 			@NotNull PluginDescriptor pluginDescriptor,
 			@NotNull WebHookHistoryRepository webHookHistoryRepository,
 			@NotNull WebAddressTransformer webAddressTransformer) {
 		super("webHooks", "WebHooks", pagePlaces, projectManager);
-		this.myProjectSettingsManager = projectSettingsManager;
+		this.myWebHookSettingsManager = webHookSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		myWebHookHistoryRepository = webHookHistoryRepository;
 		myWebAddressTransformer = webAddressTransformer;
@@ -63,7 +63,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
-							(WebHookProjectSettings) this.myProjectSettingsManager.getSettings(projectParent.getProjectId(), "webhooks"),
+							(WebHookProjectSettings) this.myWebHookSettingsManager.getSettings(projectParent.getProjectId()),
 							null, 
 							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT), 
 							myWebAddressTransformer

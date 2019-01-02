@@ -17,15 +17,12 @@ import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.server.rest.data.DataProvider;
-import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookFinder;
 import webhook.teamcity.server.rest.errors.WebHookPermissionException;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.util.BeanContext;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 import webhook.teamcity.settings.WebHookConfig;
-import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 @Path(WebHooksRequest.API_WEBHOOKS_URL)
 public class WebHooksRequest {

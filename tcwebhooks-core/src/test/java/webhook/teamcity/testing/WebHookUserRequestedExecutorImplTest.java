@@ -35,7 +35,6 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.WebHookExecutionStats;
 import webhook.WebHookTestServer;
 import webhook.WebHookTestServerTestBase;
@@ -72,6 +71,7 @@ import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVaria
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
@@ -87,7 +87,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	
 	private SBuildServer server = mock(SBuildServer.class);
-	private ProjectSettingsManager projectSettingsManager = mock(ProjectSettingsManager.class);
+	private WebHookSettingsManager projectSettingsManager = mock(WebHookSettingsManager.class);
 	
 	private WebHookPayloadManager webHookPayloadManager = new WebHookPayloadManager(server);
 	private WebHookTemplateJaxTestHelper webHookTemplateJaxTestHelper = new WebHookTemplateJaxTestHelper();
@@ -153,7 +153,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-slackcompact-jsonTemplate-AllEnabled.xml"));
 		webHookProjectSettings = framework.getWebHookProjectSettings(); 
 
-		when(projectSettingsManager.getSettings(anyString(), anyString())).thenReturn(webHookProjectSettings);
+		when(projectSettingsManager.getSettings(anyString())).thenReturn(webHookProjectSettings);
 		when(parametersProvider.getAll()).thenReturn(new TreeMap<String,String>());
 		
 		buildType.setParametersProvider(parametersProvider);

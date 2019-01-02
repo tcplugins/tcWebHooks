@@ -48,6 +48,10 @@
      <bean id="webHookProjectSettings" 
      	class="webhook.teamcity.settings.WebHookProjectSettings" 
      	/>
+     			
+     <bean id="webHookSettingsManager" 
+     	class="webhook.teamcity.settings.WebHookSettingsManagerImpl" 
+     	/>
 
      <bean id="webHookProjectSettingsFactory" 
      	class="webhook.teamcity.settings.WebHookProjectSettingsFactory" 

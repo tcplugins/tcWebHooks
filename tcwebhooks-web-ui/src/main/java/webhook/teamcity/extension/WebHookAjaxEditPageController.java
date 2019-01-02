@@ -15,7 +15,6 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -35,6 +34,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookProjectSettings.WebHookUpdateResult;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookAjaxEditPageController extends BaseController {
@@ -54,14 +54,14 @@ public class WebHookAjaxEditPageController extends BaseController {
 		protected static final String BUILD_UNPINNED = "BuildUnpinned";
 		
 		private final WebControllerManager myWebManager;
-	    private ProjectSettingsManager mySettings;
+	    private WebHookSettingsManager mySettings;
 	    private final String myPluginPath;
 	    private final WebHookPayloadManager myManager;
 		private final WebHookTemplateResolver myTemplateResolver;
 		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
 	    
 	    public WebHookAjaxEditPageController(SBuildServer server, WebControllerManager webManager, 
-	    		ProjectSettingsManager settings, WebHookPayloadManager manager,
+	    		WebHookSettingsManager settings, WebHookPayloadManager manager,
 	    		WebHookTemplateResolver templateResolver, PluginDescriptor pluginDescriptor, WebHookAuthenticatorProvider authenticatorProvider) {
 	        super(server);
 	        myWebManager = webManager;
@@ -93,7 +93,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 		        		params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
 		        		noErrors = false;
 		        	} else {
-		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"));
 
 			    		if (noErrors && (projSettings != null) && (myProject != null)
 			    				&& (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT))){
@@ -240,7 +240,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
 	        	if (project != null){
 	        	
-			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"), "webhooks");
+			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"));
 			    	
 			    	String message = projSettings.getWebHooksAsString();
 			    	

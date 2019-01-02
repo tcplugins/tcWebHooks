@@ -8,25 +8,24 @@ import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.util.StringUtil;
-import webhook.teamcity.WebHookListener;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class WebHookFinder {
 
 	@NotNull private final ProjectManager projectManager;
-	@NotNull private final ProjectSettingsManager projectSettingsManager;
+	@NotNull private final WebHookSettingsManager webhookSettingsManager;
 	
 	public WebHookFinder(
 			@NotNull final ProjectManager projectManager,
-			@NotNull final ProjectSettingsManager projectSettingsManager)
+			@NotNull final WebHookSettingsManager projectSettingsManager)
 	{
 		this.projectManager = projectManager;
-		this.projectSettingsManager = projectSettingsManager;
+		this.webhookSettingsManager = projectSettingsManager;
 	}
 	
 	public static String getLocator(final WebHookConfig webhook) {
@@ -38,7 +37,7 @@ public class WebHookFinder {
 		if (sProject == null) {
 			throw new NotFoundException("No project found with that project id");
 		}
-		return (WebHookProjectSettings) projectSettingsManager.getSettings(sProject.getProjectId(), WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+		return webhookSettingsManager.getSettings(sProject.getProjectId());
 	}
 	
 	public ProjectWebhook findWebHookById(String projectExternalId, String webHookLocator, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {

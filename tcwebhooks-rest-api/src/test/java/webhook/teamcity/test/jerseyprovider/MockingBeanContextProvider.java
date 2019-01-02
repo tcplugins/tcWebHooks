@@ -34,11 +34,9 @@ import static org.mockito.Mockito.*;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.BeanContext;
-import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.PathTransformer;
 import jetbrains.buildServer.server.rest.RequestPathTransformInfo;
-import jetbrains.buildServer.server.rest.jersey.SimplePathTransformer;
 import jetbrains.buildServer.server.rest.util.BeanFactory;
 
 /**

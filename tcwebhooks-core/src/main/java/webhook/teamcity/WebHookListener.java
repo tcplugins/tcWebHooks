@@ -19,7 +19,6 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.User;
 import webhook.WebHook;
@@ -32,6 +31,7 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 
 /**
@@ -44,14 +44,14 @@ public class WebHookListener extends BuildServerAdapter {
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	public static final String WEBHOOKS_SETTINGS_ATTRIBUTE_NAME = "webhooks";
 	private final SBuildServer myBuildServer;
-    private final ProjectSettingsManager mySettings;
+    private final WebHookSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
     private final WebHookTemplateManager myManager;
     private final WebHookFactory webHookFactory;
     private final WebHookExecutor webHookExecutor;
     
     
-    public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
+    public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookTemplateManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
     						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
@@ -119,7 +119,7 @@ public class WebHookListener extends BuildServerAdapter {
 		SProject myProject = myBuildServer.getProjectManager().findProjectById(projectId);
 		projects.addAll(myProject.getProjectPath());
 		for (SProject project : projects){
-			WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(project.getProjectId(), WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+			WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(project.getProjectId());
 	    	if (projSettings.isEnabled()){
 		    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 		    		if ( !whc.isEnabledForSubProjects() && !myProject.getProjectId().equals(project.getProjectId())){
