@@ -1,7 +1,10 @@
 package webhook.teamcity.test.springmock;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
@@ -26,6 +29,11 @@ import jetbrains.buildServer.vcs.SVcsRoot;
 public class MockProjectManager implements ProjectManager {
 	
 	SProject testProject = mock(SProject.class);
+	
+	public MockProjectManager() {
+		when(testProject.getProjectId()).thenReturn("project01");
+	}
+	
 
 	@Override
 	public SVcsRoot findVcsRootById(long id) {
@@ -71,8 +79,7 @@ public class MockProjectManager implements ProjectManager {
 
 	@Override
 	public List<SProject> getActiveProjects() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<SProject>( Arrays.asList( testProject ) );
 	}
 
 	@Override
