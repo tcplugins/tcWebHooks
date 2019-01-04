@@ -33,7 +33,7 @@ import webhook.teamcity.extension.util.EnabledBuildStateResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookProjectSettings;
-import webhook.teamcity.settings.WebHookProjectSettings.WebHookUpdateResult;
+import webhook.teamcity.settings.WebHookUpdateResult;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")

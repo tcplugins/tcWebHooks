@@ -210,15 +210,4 @@ public class WebHookProjectSettings implements ProjectSettings {
 		return webHooksConfigs;
 	}
 	
-	@Getter
-	public class WebHookUpdateResult {
-		boolean updated;
-		WebHookConfig webHookConfig;
-		
-		public WebHookUpdateResult(Boolean updated, WebHookConfig webHookConfig) {
-			this.updated = updated;
-			this.webHookConfig = webHookConfig;
-		}
-	}
-
 }
