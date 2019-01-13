@@ -100,7 +100,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    			if ((request.getParameter("submitAction") != null ) 
 			    				&& (request.getParameter("submitAction").equals("removeWebHook"))
 			    				&& (request.getParameter("removedWebHookId") != null)){
-			    					WebHookUpdateResult result = projSettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
+			    					WebHookUpdateResult result = mySettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
 			    					if(result.isUpdated()){
 			    						myProject.persist();
 	    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='delete' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
@@ -190,7 +190,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						}
 			    						
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
-			    							WebHookUpdateResult result = projSettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
+			    							WebHookUpdateResult result = mySettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
 			    														states,request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(result.isUpdated()){
@@ -200,7 +200,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    								params.put("message", "<errors><error id=\"persistenceError\">Unable to perist webhook</error>");
 			    							}
 			    						} else if (noErrors) {
-			    							WebHookUpdateResult result = projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
+			    							WebHookUpdateResult result = mySettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);

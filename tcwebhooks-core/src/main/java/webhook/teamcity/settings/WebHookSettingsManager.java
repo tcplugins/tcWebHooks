@@ -22,5 +22,7 @@ public interface WebHookSettingsManager {
 	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig);
+	
 
+	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter);
 }
