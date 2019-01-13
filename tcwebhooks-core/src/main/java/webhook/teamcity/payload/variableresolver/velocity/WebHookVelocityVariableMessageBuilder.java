@@ -26,7 +26,8 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 											  + PACKAGE + "VelocityCapitaliseDirective, "
 											  + PACKAGE + "VelocityCapitalizeDirective, "
 											  + PACKAGE + "VelocityNowDirective, "
-											  + PACKAGE + "VelocitySubStringDirective");
+											  + PACKAGE + "VelocitySubStringDirective, "
+											  + PACKAGE + "VelocityToJsonDirective");
 		
 		builder.ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
 	    	      "org.apache.velocity.runtime.log.Log4JLogChute" );
