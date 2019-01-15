@@ -431,6 +431,44 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	}
 	
 	@Test
+	public void testRequestWebHookExecutionWebHookTemplateExecutionRequestForAddedToQueue() {
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
+				server, mainSettings,
+				webHookConfigFactory, 
+				webHookFactory,
+				webHookTemplateResolver, 
+				webHookPayloadManager, 
+				webHookHistoryItemFactory,
+				webHookHistoryRepository,
+				webAddressTransformer,
+				null, 
+				variableResolverManager
+				);
+		
+		BuildState addedToQueueBuildState = new BuildState();
+		addedToQueueBuildState.setEnabled(BuildStateEnum.BUILD_ADDED_TO_QUEUE, true);
+		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
+		
+		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
+				.buildId(2L)
+				.projectExternalId(sproject.getExternalId())
+				.testBuildState(BuildStateEnum.BUILD_ADDED_TO_QUEUE)
+				.uniqueKey(loadedConfig.getUniqueKey())
+				.format("jsontemplate")
+				.url("http://localhost:12345/webhook")
+				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildId}"))
+				.defaultTemplate(new WebHookTemplateText(false, "non-Branch text for build: ${buildId}"))
+				.build();
+		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookTemplateExecutionRequest);
+		
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
+		Loggers.SERVER.debug("################# " + historyItem.getWebhookErrorStatus().getMessage());
+		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
+		
+	}
+	
+	@Test
 	public void testRequestWebHookExecutionWebHookTemplateExecutionRequestReturns200() throws InterruptedException {
 		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,

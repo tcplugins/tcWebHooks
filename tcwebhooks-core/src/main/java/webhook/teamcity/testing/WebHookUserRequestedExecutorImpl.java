@@ -90,13 +90,29 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 						)
 				);		
 		
-		wh = myWebHookContentBuilder.buildWebHookContent(
-				wh, 
-				webHookConfig,
-				myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()), 
-				webHookExecutionRequest.getTestBuildState(), 
-				true
-			);
+		if (   webHookExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) 
+			|| webHookExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)) {
+				
+			wh = myWebHookContentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig, 
+					new TestingSQueuedBuild(myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId())), 
+					webHookExecutionRequest.getTestBuildState(), 
+					"a testing user", 
+					"A test execution comment", 
+					true
+				);
+				
+		} else {
+		
+			wh = myWebHookContentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig,
+					myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()), 
+					webHookExecutionRequest.getTestBuildState(), 
+					true
+				);
+		}
 		
 		WebHookStringRenderer renderer = myWebHookPayloadManager.getFormat(webHookExecutionRequest.getPayloadFormat()).getWebHookStringRenderer();
 
@@ -121,13 +137,29 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		
 		WebHookContentBuilder contentBuilder = createDummyContentBuilder(webHookTemplateExecutionRequest);
 		
-		wh = contentBuilder.buildWebHookContent(
-				wh, 
-				webHookConfig,
-				myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()), 
-				webHookTemplateExecutionRequest.getTestBuildState(), 
-				true
-			);
+		if (   webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) 
+			|| webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)) {
+			
+			wh = contentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig, 
+					new TestingSQueuedBuild(myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId())), 
+					webHookTemplateExecutionRequest.getTestBuildState(), 
+					"a testing user", 
+					"A test execution comment", 
+					true
+				);
+			
+		} else {
+		
+			wh = contentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig,
+					myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()), 
+					webHookTemplateExecutionRequest.getTestBuildState(), 
+					true
+				);
+		}
 		
 		WebHookStringRenderer renderer = myWebHookPayloadManager.getFormat(webHookTemplateExecutionRequest.getFormat()).getWebHookStringRenderer();
 

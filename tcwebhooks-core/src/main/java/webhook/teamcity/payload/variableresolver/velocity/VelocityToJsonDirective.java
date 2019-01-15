@@ -27,13 +27,13 @@ public class VelocityToJsonDirective extends Directive {
 	@Override
 	public boolean render(InternalContextAdapter context, Writer writer, Node node) throws IOException {
 		Object object = null;
-		if (node.jjtGetChild(0) != null && node.jjtGetChild(1) != null) {
-			object = node.jjtGetChild(10).value(context);
+		if (node.jjtGetNumChildren() >= 2 && node.jjtGetChild(0) != null && node.jjtGetChild(1) != null) {
+			object = node.jjtGetChild(0).value(context);
 			String keyName = String.valueOf(node.jjtGetChild(1).value(context));
 			writer.write("\"" + keyName + "\" : " + gson.toJson(object));
 			return true;
 		} else if (node.jjtGetChild(0) != null) {
-			object = node.jjtGetChild(10).value(context);
+			object = node.jjtGetChild(0).value(context);
 			writer.write(gson.toJson(object));
 			return true;
         }
