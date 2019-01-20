@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 
 public class JsonToHtmlPrettyPrintingRenderer implements WebHookStringRenderer {
 
-	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	JsonParser jp = new JsonParser();
 	HtmlRenderer htmlr = new HtmlRenderer();
 
