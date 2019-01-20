@@ -119,7 +119,7 @@
 													</td>
 													<td class="buildRemovedFromQueue"><label style='white-space:nowrap;'>
 														<input onclick='selectBuildState();' class="buildState" id="buildRemovedFromQueue" name="BuildRemovedFromQueue" type=checkbox />
-														 Build Removed from Queue</label>
+														 Build Removed from Queue by User</label>
 													</td>
 												</tr>
 												<tr style="border:none;"><td>&nbsp;</td>
@@ -211,7 +211,7 @@
 							            		<tr><td>Build Event:</td>
 							            		<td> <select name="webhookPreviewBuildEvent" id="webhookPreviewBuildEvent" class="templateAjaxRefresh">
 								            			<option value="buildAddedToQueue">Build Added to Queue</option>
-								            			<option value="buildRemovedFromQueue">Build Removed from Queue</option>
+								            			<option value="buildRemovedFromQueue">Build Removed from Queue by User</option>
 								            			<option value="buildStarted">Build Started</option>
 								            			<option value="changesLoaded">Changes Loaded</option>
 								            			<option value="buildInterrupted">Build Interrupted</option>

@@ -159,7 +159,7 @@
             <table class="templateDialogFormTable">
             	<tr><td>Build Events:</td>
             		<td class="buildAddedToQueue" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildAddedToQueue" name="BuildAddedToQueue" type=checkbox /> Build Added to Queue</label></td>
-            		<td class="buildRemovedFromQueue" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildRemovedFromQueue" name="BuildRemovedFromQueue" type=checkbox /> Build Removed from Queue</label></td>
+            		<td class="buildRemovedFromQueue" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildRemovedFromQueue" name="BuildRemovedFromQueue" type=checkbox /> Build Removed from Queue by User</label></td>
             	</tr>
             	<tr><td></td>
             		<td class="buildStarted" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildStarted" name="BuildStarted" type=checkbox /> Build Started</label></td>

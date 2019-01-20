@@ -488,8 +488,11 @@ public class WebHookListener extends BuildServerAdapter {
 	
 	@Override
 	public void buildRemovedFromQueue(SQueuedBuild queuedBuild, User user, String comment) {
-		String username = user != null ? user.getUsername() : null;
-		this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, username, comment);
+		// Only send a webhook if the build was actively removed from the queue by a user.
+		if (user != null) {
+			String username = user != null ? user.getUsername() : null;
+			this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, username, comment);
+		}
 	}
 
 }

@@ -2,7 +2,7 @@ package webhook.teamcity;
 
 public enum BuildStateEnum {
     BUILD_ADDED_TO_QUEUE	("buildAddedToQueue",		"been added to the build queue",		"Build Added to Queue"),                
-    BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue"),                
+    BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue by User"),                
     BUILD_STARTED 			("buildStarted",			"started",					"Build Started"),                
     CHANGES_LOADED 			("changesLoaded",			"loaded changes",			"Changes Loaded"),                
     BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted"),

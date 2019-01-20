@@ -502,7 +502,7 @@ public class WebHookConfig {
 				enabledStates += ", Build Added to Queue";
 			}
 			if (states.enabled(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)){
-				enabledStates += ", Build Removed from Queue";
+				enabledStates += ", Build Removed from Queue by User";
 			}
 			if (states.enabled(BuildStateEnum.BUILD_STARTED)){
 				enabledStates += ", Build Started";
