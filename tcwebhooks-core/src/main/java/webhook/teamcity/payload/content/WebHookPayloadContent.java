@@ -27,6 +27,7 @@ import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.payload.util.StringUtils;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolver;
@@ -157,7 +158,8 @@ public class WebHookPayloadContent {
 			setProjectId(TeamCityIdResolver.getProjectId(buildType.getProject()));
 			setProjectInternalId(TeamCityIdResolver.getInternalProjectId(buildType.getProject()));
 			setProjectExternalId(TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
-			setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
+			setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
+			setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
 		
@@ -240,9 +242,9 @@ public class WebHookPayloadContent {
     		} catch (NoSuchMethodError e){
     			Loggers.SERVER.debug("WebHookPayloadContent :: Could not get Branch Info by calling sRunningBuild.getBranch(). Probably an old version of TeamCity");
     		}
-    		setBuildStatusUrl(server.getRootUrl() + "/viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
+    		setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
+    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
-    		setRootUrl(server.getRootUrl());
 			setBuildStatusHtml(variableResolverFactory, buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 			setBuildIsPersonal(sRunningBuild.isPersonal());
 		}
