@@ -1,6 +1,7 @@
 package webhook.teamcity.testing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -61,10 +62,12 @@ import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.content.ExtraParametersMap;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
+import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
@@ -154,6 +157,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 
 		when(projectSettingsManager.getSettings(anyString(), anyString())).thenReturn(webHookProjectSettings);
 		when(parametersProvider.getAll()).thenReturn(new TreeMap<String,String>());
+		
+		buildType.setParametersProvider(parametersProvider);
 		
 		WebHookTemplateEntity templateEntity = webHookTemplateJaxTestHelper.readTemplate("src/main/resources/webhook/teamcity/payload/template/SlackComCompactWebHookTemplate.xml");
 		webHookTemplateManager.registerTemplateFormatFromXmlEntity(templateEntity);
@@ -260,7 +265,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.build();
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 		
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
 		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
 	}
@@ -298,7 +303,50 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
+		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
+		
+		stopWebServer(s);
+	}
+	
+	@Test
+	public void testRequestWebHookExecutionWebHookExecutionRequestForAddedToQueue() throws InterruptedException {
+		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
+				server, mainSettings,
+				webHookConfigFactory, 
+				webHookFactory,
+				webHookTemplateResolver, 
+				webHookPayloadManager, 
+				webHookHistoryItemFactory,
+				webHookHistoryRepository,
+				webAddressTransformer,
+				webHookContentBuilder, 
+				variableResolverManager
+				);
+		
+		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxTestHelper);
+		slackCompact.register();
+		
+		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
+				.buildId(1L)
+				.uniqueKey("new")
+				.projectExternalId("MyProject")
+				.testBuildState(BuildStateEnum.BUILD_ADDED_TO_QUEUE)
+				
+				.url("http://localhost:58001/200")
+				.templateId("slack.com-compact")
+				.payloadFormat("jsonTemplate")
+				.authEnabled(false)
+				.configBuildStates(finishedBuildState)
+				.build();
+		
+		WebHookTestServer s = startWebServer();
+		
+		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
+		
+		assertTrue(s.getRequestBody().contains("been added to the build queue"));
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
+		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
 		
 		stopWebServer(s);
@@ -338,7 +386,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 		
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
 		
 		stopWebServer(s);
@@ -386,7 +434,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 		
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
 		
 		stopWebServer(s);
@@ -423,7 +471,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.build();
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookTemplateExecutionRequest);
 		
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
 		Loggers.SERVER.debug("################# " + historyItem.getWebhookErrorStatus().getMessage());
 		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
@@ -431,7 +479,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	}
 	
 	@Test
-	public void testRequestWebHookExecutionWebHookTemplateExecutionRequestForAddedToQueue() {
+	public void testRequestWebHookExecutionWebHookTemplateExecutionRequestForAddedToQueue() throws InterruptedException {
 		WebHookUserRequestedExecutor executorImpl = new WebHookUserRequestedExecutorImpl(
 				server, mainSettings,
 				webHookConfigFactory, 
@@ -455,16 +503,21 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.testBuildState(BuildStateEnum.BUILD_ADDED_TO_QUEUE)
 				.uniqueKey(loadedConfig.getUniqueKey())
 				.format("jsontemplate")
-				.url("http://localhost:12345/webhook")
-				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildId}"))
-				.defaultTemplate(new WebHookTemplateText(false, "non-Branch text for build: ${buildId}"))
+				.url("http://localhost:58001/200")
+				.defaultBranchTemplate(new WebHookTemplateBranchText("branch Text for build: ${buildTypeId}"))
+				.defaultTemplate(new WebHookTemplateText(false, "non-Branch text for build: ${buildTypeId}"))
 				.build();
+		
+		WebHookTestServer s = startWebServer();
+		
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookTemplateExecutionRequest);
 		
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
-		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
-		Loggers.SERVER.debug("################# " + historyItem.getWebhookErrorStatus().getMessage());
-		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
+		assertEquals("non-Branch text for build: name", s.getRequestBody());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
+		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
+		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
+		
+		stopWebServer(s);
 		
 	}
 	
@@ -502,8 +555,9 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookTemplateExecutionRequest);
 
+		assertEquals("branch Text for build: 123456", s.getRequestBody());
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
-		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getIncovationCount());
+		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());
 		
 		stopWebServer(s);

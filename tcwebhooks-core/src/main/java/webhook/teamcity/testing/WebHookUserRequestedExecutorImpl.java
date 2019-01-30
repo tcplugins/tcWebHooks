@@ -296,9 +296,28 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 			WebHookConfig webHookConfig, WebHookContentBuilder contentBuilder, WebHook wh) {
 		SBuild sRunningBuild = myServer.findBuildInstanceById(buildId);
 		try {
-			wh = contentBuilder.buildWebHookContent(wh, webHookConfig, sRunningBuild, 
-						testBuildState, true);
 			
+			if (   testBuildState.equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) 
+				|| testBuildState.equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)) 
+			{
+				wh = contentBuilder.buildWebHookContent(
+						wh, 
+						webHookConfig, 
+						new TestingSQueuedBuild(sRunningBuild), 
+						testBuildState,
+						"a testing user", 
+						"A test execution comment", 
+						true
+					);			
+			} else {
+				wh = contentBuilder.buildWebHookContent(
+						wh, 
+						webHookConfig, 
+						sRunningBuild, 
+						testBuildState, 
+						true
+					);
+			}
 			Loggers.SERVER.debug("#### CONTENT #### " + wh.getPayload());
 			WebHookListener.doPost(wh, webHookConfig.getPayloadFormat());
 			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
