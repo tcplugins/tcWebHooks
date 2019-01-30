@@ -344,7 +344,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookExecutionRequest);
 		
-		assertTrue(s.getRequestBody().contains("been added to the build queue"));
+		assertTrue(s.getRequestBody().contains("Been Added To The Build Queue"));
 		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());

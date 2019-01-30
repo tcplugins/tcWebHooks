@@ -45,6 +45,7 @@ public class WebHookPayloadJsonVelocityTemplateTest {
 		when(responsibilityEntryNew.getComment()).thenReturn("Comment New");
 		
 		SBuildServer buildServer = mock(SBuildServer.class);
+		when(buildServer.getRootUrl()).thenReturn("http://test.url");
 		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVelocityVariableResolverFactory());
 		whp = new WebHookPayloadJsonVelocityTemplate(new WebHookPayloadManager(buildServer), variableResolverManager);
 	}

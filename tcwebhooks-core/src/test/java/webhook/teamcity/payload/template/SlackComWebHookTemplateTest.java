@@ -83,6 +83,7 @@ public class SlackComWebHookTemplateTest {
 		BuildHistory buildHistory = mock(BuildHistory.class);
 		Status buildHistoryStatus = Status.FAILURE;
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedBuilds);
+		when (sBuildServer.getRootUrl()).thenReturn("http://test.url");
 		when (sBuildServer.getHistory()).thenReturn(buildHistory);
 		when (previousBuild.getBuildStatus()).thenReturn(buildHistoryStatus);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);

@@ -84,6 +84,7 @@ public class ElasticSearchWebHookTemplateTest {
 		finishedBuilds.add(previousBuild);
 		BuildHistory buildHistory = mock(BuildHistory.class);
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedBuilds);
+		when(sBuildServer.getRootUrl()).thenReturn("http://my-server/");
 		when (sBuildServer.getHistory()).thenReturn(buildHistory);
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);

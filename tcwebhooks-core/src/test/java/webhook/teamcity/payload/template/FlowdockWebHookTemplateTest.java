@@ -48,6 +48,7 @@ public class FlowdockWebHookTemplateTest {
 	@Test
 	public void test() throws JDOMException, IOException, WebHookPayloadContentAssemblyException {
 		SBuildServer sBuildServer = mock(SBuildServer.class);
+		when(sBuildServer.getRootUrl()).thenReturn("http://test.url");
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
 		WebHookTemplateJaxHelper webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();

@@ -1,6 +1,7 @@
 package webhook.teamcity.payload.util;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class VariableMessageBuilderTestBase {
 		teamcityProperties.put("config", "This is some config thing");
 		teamcityProperties.put("builder.appVersion", "This is the appVersion");
 		sBuildServer = mock(SBuildServer.class);
+		when(sBuildServer.getRootUrl()).thenReturn("http://test.url");
 		allProperties = new LinkedHashMap<>();
 		allProperties.put("teamcity", new ExtraParametersMap(teamcityProperties));
 		allProperties.put("webhook", new ExtraParametersMap(extraParameters));

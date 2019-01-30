@@ -36,7 +36,7 @@ public class WebHookPayloadContentTest {
 
 		WebHookPayloadContent content = framework.getWebHookContent();
 		System.out.println(content.getBuildStatusHtml());
-		assertTrue(content.getBuildStatusHtml().equals(htmlStatus));
+		assertEquals(htmlStatus, content.getBuildStatusHtml());
 	}
 
 	@Test

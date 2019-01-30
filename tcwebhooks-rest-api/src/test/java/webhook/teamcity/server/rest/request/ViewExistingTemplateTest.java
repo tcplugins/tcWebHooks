@@ -324,7 +324,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	
-    	assertEquals(4, responseMsg.getTemplates().size());
+    	assertEquals(5, responseMsg.getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.id);
     	prettyPrint(responseMsg);
     }
@@ -337,7 +337,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_XML_TYPE).get(Template.class);
     	
-    	assertEquals(4, responseMsg.getTemplates().size());
+    	assertEquals(5, responseMsg.getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.id);
     	//prettyPrint(responseMsg);
     }
@@ -350,7 +350,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	
     	WebHookTemplateConfig responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/fullConfig").accept(MediaType.APPLICATION_XML_TYPE).get(WebHookTemplateConfig.class);
     	
-    	assertEquals(4, responseMsg.getTemplates().getTemplates().size());
+    	assertEquals(5, responseMsg.getTemplates().getTemplates().size());
     	assertEquals("slack.com-compact", responseMsg.getId());
     	//prettyPrint(responseMsg);
     }  
