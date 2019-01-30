@@ -45,7 +45,7 @@ public class ResponseCodeFilter implements Filter {
 		chain.doFilter(request, response);
 		
 		if (callback != null){
-			callback.updateRepsoneCode(((HttpServletResponse) response).getStatus());
+			callback.updateResponseCode(((HttpServletResponse) response).getStatus());
 		}
 		logger.info("Response code is: " + ((HttpServletResponse) response).getStatus());
 	}

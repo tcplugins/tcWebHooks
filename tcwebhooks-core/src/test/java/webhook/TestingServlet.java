@@ -23,9 +23,11 @@ public class TestingServlet extends HttpServlet
 	private static final long serialVersionUID = 1L;
 	Integer response; 
 	Logger logger = LoggerFactory.getLogger(TestingServlet.class);
+	private ResponseEvent callback;
 
-	public TestingServlet(Integer response) {
+	public TestingServlet(Integer response, ResponseEvent callback) {
 		this.response = response;
+		this.callback = callback;
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -39,6 +41,9 @@ public class TestingServlet extends HttpServlet
 					this.printParams(request, response);
 				} else {
 					String requestBody = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.name());
+					if (callback != null){
+						callback.updateRequestBody(requestBody);
+					}
 					response.getWriter().println(requestBody);
 				}
 				break;

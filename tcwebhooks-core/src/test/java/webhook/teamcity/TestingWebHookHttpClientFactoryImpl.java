@@ -24,7 +24,7 @@ public class TestingWebHookHttpClientFactoryImpl implements WebHookHttpClientFac
 	}
 	
 	public interface InvocationCountable {
-		public abstract int getIncovationCount();
+		public abstract int getInvocationCount();
 	}
 
 
@@ -41,7 +41,7 @@ public class TestingWebHookHttpClientFactoryImpl implements WebHookHttpClientFac
 		}
 
 		@Override
-		public int getIncovationCount() {
+		public int getInvocationCount() {
 			return invocationCount;
 		}
 

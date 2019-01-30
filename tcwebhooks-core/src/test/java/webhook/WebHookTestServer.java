@@ -14,6 +14,7 @@ public class WebHookTestServer implements ResponseEvent {
 
 		Server server;
 		public int lastResponseCode = -1;
+		public String lastRequestBody = null;
 		
 		
 		public Server getServer() {
@@ -31,13 +32,13 @@ public class WebHookTestServer implements ResponseEvent {
 			ctx.setContextPath("/");
 			
 			
-			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK)), "/200");
-			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/302");
-			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/500");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK, this)), "/200");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY, this)), "/302");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, this)), "/500");
 			
-			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK)), "/auth/200");
-			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY)), "/auth/302");
-			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)), "/auth/500");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_OK, this)), "/auth/200");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_MOVED_TEMPORARILY, this)), "/auth/302");
+			ctx.addServlet(new ServletHolder(new TestingServlet(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, this)), "/auth/500");
 			
 			ctx.addFilter(new FilterHolder(new ResponseCodeFilter(this)), "/*" , EnumSet.of(DispatcherType.REQUEST));
 	
@@ -63,10 +64,20 @@ public class WebHookTestServer implements ResponseEvent {
 		}
 
 		@Override
-		public void updateRepsoneCode(int responseCode) {
+		public void updateResponseCode(int responseCode) {
 			synchronized (server) {
 				this.lastResponseCode = responseCode;
 			}
+		}
+
+		@Override
+		public String getRequestBody() {
+			return this.lastRequestBody;
+		}
+
+		@Override
+		public void updateRequestBody(String requestBody) {
+			this.lastRequestBody = requestBody;
 		}
 		
 
