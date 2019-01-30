@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="100" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="4"><template id="1"><template-text use-for-branch-template="false">{
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><webhook-template id="slack.com-compact" enabled="true" rank="100" format="jsonTemplate"><template-description>Slack.com Compact Notification</template-description><template-tool-tip>POSTs a very compact slack.com notification</template-tool-tip><preferred-date-format></preferred-date-format><templates max-id="5"><template id="1"><template-text use-for-branch-template="false">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
@@ -49,7 +49,14 @@
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{
-        "fallback" : "${buildStateDescription} - ${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}",
-        "text" : "${buildName} &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}"
+        "fallback" : "Queued : &lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt; :: has ${capitalise(buildStateDescription)}",
+        "text" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt; :: has ${capitalise(buildStateDescription)}"
     }]
-}</template-text><branch-template-text></branch-template-text><states><state type="buildAddedToQueue" enabled="true"/><state type="buildRemovedFromQueue" enabled="true"/></states></template></templates></webhook-template>
+}</template-text><branch-template-text></branch-template-text><states><state type="buildAddedToQueue" enabled="true"/></states></template><template id="5"><template-text use-for-branch-template="true">{
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments" : [{
+        "fallback" : "De-queued : &lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt; :: has ${capitalise(buildStateDescription)} by ${triggeredBy}",
+        "text" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt; :: has ${capitalise(buildStateDescription)} by ${triggeredBy}"
+    }]
+}</template-text><branch-template-text></branch-template-text><states><state type="buildRemovedFromQueue" enabled="true"/></states></template></templates></webhook-template>
