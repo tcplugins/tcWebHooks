@@ -8,6 +8,7 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public abstract class WebHookTemplateBasePageController extends BaseController {
@@ -17,15 +18,17 @@ public abstract class WebHookTemplateBasePageController extends BaseController {
 	    final PluginDescriptor myPluginDescriptor;
 		final WebHookTemplateManager myTemplateManager;
 		final WebHookPluginDataResolver myWebHookPluginDataResolver;
+		final WebHookSettingsManager myWebHookSettingsManager;
 
 	    public WebHookTemplateBasePageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
-	    		WebHookTemplateManager webHookTemplateManager) {
+	    		WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager) {
 	        super(server);
 	        myWebManager = webManager;
 	        myPluginDescriptor = pluginDescriptor;
 	        myWebHookPluginDataResolver = webHookPluginDataResolver;
 	        myTemplateManager = webHookTemplateManager;
+	        myWebHookSettingsManager = webHookSettingsManager;
 	    }
 	    
 	    protected abstract String getUrl();

@@ -40,9 +40,15 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		this.myProjectSettingsManager = projectSettingsManager;
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookPayloadManager = webHookPayloadManager;
-		this.projectSettingsMap = rebuildProjectSettingsMap();
-		for (String projectId : this.projectSettingsMap.keySet()) {
-			this.rebuildWebHooksEnhanced(projectId);
+	}
+	
+	@Override
+	public void initialise() {
+		if (this.projectSettingsMap == null) {
+			this.projectSettingsMap = rebuildProjectSettingsMap();
+			for (String projectId : this.projectSettingsMap.keySet()) {
+				this.rebuildWebHooksEnhanced(projectId);
+			}
 		}
 	}
 
@@ -126,7 +132,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 				searchField(result, filter.getTextSearch(), Match.URL, e.getWebHookConfig().getUrl());
 			}
 			
-			if (e.getTags().contains(filter.textSearch.toLowerCase())) {
+			if (filter.textSearch != null && e.getTags().contains(filter.textSearch.toLowerCase())) {
 				result.addMatch(Match.TAG);
 			}
 			
@@ -165,13 +171,26 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	
 	private void rebuildWebHooksEnhanced(String projectInternalId) {
 		SProject sProject = myProjectManager.findProjectById(projectInternalId);
+		Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
 		for (WebHookConfig c: getWebHooksConfigs(projectInternalId)) {
+			String templateName = "missing template";
+			try {
+				templateName = this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate()).getTemplateDescription();
+			} catch (NullPointerException ex) {
+				Loggers.SERVER.warn(String.format(
+						"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s", 
+						c.getUniqueKey(),
+						sProject.getExternalId(),
+						c.getPayloadTemplate(),
+						c.getUrl()));
+			}
+			
 			WebHookConfigEnhanced configEnhanced = WebHookConfigEnhanced.builder()
 														   .payloadFormat(c.getPayloadFormat())
 														   .payloadFormatDescription(this.myWebHookPayloadManager.getFormat(c.getPayloadFormat()).getFormatDescription())
 														   .projectExternalId(sProject.getExternalId())
 														   .templateId(c.getPayloadTemplate())
-														   .templateDescription(this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate()).getTemplateDescription())
+														   .templateDescription(templateName)
 														   .webHookConfig(c)
 														   .build();
 			configEnhanced.addTag(c.getPayloadFormat())
@@ -181,6 +200,18 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
 		}
+	}
+
+	@Override
+	public int getTemplateUsageCount(String templateId, String formatShortName) {
+		int count = 0;
+		for (WebHookConfigEnhanced e : this.webhooksEnhanced.values()) {
+			if (templateId.equalsIgnoreCase(e.getTemplateId())
+					&& formatShortName.equalsIgnoreCase(e.getPayloadFormat())) {
+				count++;
+			}
+		}
+		return count;
 	}
 	
 }

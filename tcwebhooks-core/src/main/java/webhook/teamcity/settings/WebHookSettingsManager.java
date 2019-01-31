@@ -8,6 +8,7 @@ import webhook.teamcity.auth.WebHookAuthConfig;
 
 public interface WebHookSettingsManager {
 
+	public void initialise();
 	public WebHookProjectSettings getSettings(String projectInternalId);
 	public boolean iswebHooksEnabledForProject(String projectInernalId);
 	
@@ -25,4 +26,6 @@ public interface WebHookSettingsManager {
 	
 
 	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter);
+	
+	public int getTemplateUsageCount(String templateId, String formatShortName);
 }

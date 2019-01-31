@@ -1,5 +1,6 @@
 package webhook.teamcity.settings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 public class WebHookSearchResult {
-	private List<Match> matches;
+	private List<Match> matches = new ArrayList<>();
 	@Setter
 	private WebHookConfigEnhanced webHookConfigEnhanced;
 	

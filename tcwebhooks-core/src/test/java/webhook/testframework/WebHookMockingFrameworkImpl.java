@@ -3,6 +3,7 @@ package webhook.testframework;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 import java.io.File;
 import java.io.IOException;
@@ -149,6 +150,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
 //		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
+		when(settings.getTemplateUsageCount((String)any(),(String)any())).thenReturn(0);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.STANDARD)).thenReturn(variableResolverFactory);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY)).thenReturn(legacyVariableResolverFactory);
 		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);
@@ -411,6 +413,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public WebHookVariableResolverManager getWebHookVariableResolverManager() {
 		return this.webHookVariableResolverManager;
+	}
+
+	@Override
+	public WebHookSettingsManager getWebHookSettingsManager() {
+		return this.settings;
 	}
 
 }

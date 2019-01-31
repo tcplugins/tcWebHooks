@@ -11,17 +11,22 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class RegisteredWebHookTemplateBean {
 	
 	Map<String,SimpleTemplate> templateList = new LinkedHashMap<>();
 
-	public static RegisteredWebHookTemplateBean build(List<WebHookPayloadTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
+	public static RegisteredWebHookTemplateBean build(
+			List<WebHookPayloadTemplate> registeredTemplates, 
+			List<WebHookPayload> webhookFormats,
+			WebHookSettingsManager myWebHookSettingsManager) 
+	{
 		RegisteredWebHookTemplateBean bean = new RegisteredWebHookTemplateBean();
 		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
-					SimpleTemplate template = SimpleTemplate.build(t, f);
+					SimpleTemplate template = SimpleTemplate.build(t, f, myWebHookSettingsManager.getTemplateUsageCount(t.getTemplateId(), f.getFormatShortName()));
 					bean.templateList.put(template.getTemplateId(), template);
 				}
 			}
@@ -29,12 +34,19 @@ public class RegisteredWebHookTemplateBean {
 		return bean;
 	}
 	
-	public static RegisteredWebHookTemplateBean build(WebHookTemplateManager templateManager, List<WebHookPayloadTemplate> registeredTemplates, List<WebHookPayload> webhookFormats) {
+	public static RegisteredWebHookTemplateBean build(
+			WebHookTemplateManager templateManager, 
+			List<WebHookPayloadTemplate> registeredTemplates, 
+			List<WebHookPayload> webhookFormats, 
+			WebHookSettingsManager myWebHookSettingsManager) 
+	{
 		RegisteredWebHookTemplateBean bean = new RegisteredWebHookTemplateBean();
 		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
-					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateId(), TemplateState.BEST));
+					SimpleTemplate template = SimpleTemplate.build(t, f, 
+												templateManager.getTemplateState(t.getTemplateId(), TemplateState.BEST), 
+												myWebHookSettingsManager.getTemplateUsageCount(t.getTemplateId(), f.getFormatShortName()));
 					bean.templateList.put(template.getTemplateId(), template);
 				}
 			}
@@ -61,8 +73,9 @@ public class RegisteredWebHookTemplateBean {
 		private List<BuildStateEnum> supportedBuildEnumStates = new ArrayList<>();
 		private List<String> supportedBranchStates = new ArrayList<>();
 		private TemplateState templateState;
+		private int webhookUsageCount = 0;
 
-		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format) {
+		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format, int usageCount) {
 			SimpleTemplate temp = new SimpleTemplate();
 			
 			temp.description = webHookTemplate.getTemplateDescription() + " (" + format.getFormatDescription() + ")";
@@ -78,11 +91,12 @@ public class RegisteredWebHookTemplateBean {
 			for (BuildStateEnum s : webHookTemplate.getSupportedBranchBuildStates()){
 				temp.supportedBranchStates.add(s.getShortName());
 			}
+			temp.webhookUsageCount = usageCount;
 			return temp;
 		}
 		
-		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format, TemplateState templateState ) {
-			SimpleTemplate temp = build(webHookTemplate, format);
+		public static SimpleTemplate build(WebHookPayloadTemplate webHookTemplate, WebHookPayload format, TemplateState templateState, int usageCount ) {
+			SimpleTemplate temp = build(webHookTemplate, format, usageCount);
 			temp.templateState = templateState;
 			return temp;
 		}
@@ -125,6 +139,10 @@ public class RegisteredWebHookTemplateBean {
 
 		public TemplateState getTemplateState() {
 			return templateState;
+		}
+		
+		public int getWebhookUsageCount() {
+			return webhookUsageCount;
 		}
 	}		
 }

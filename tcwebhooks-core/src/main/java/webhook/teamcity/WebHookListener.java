@@ -327,4 +327,9 @@ public class WebHookListener extends BuildServerAdapter {
 				comment);
 	}
 	
+	@Override
+	public void serverStartup() {
+		mySettings.initialise();
+	}
+	
 }

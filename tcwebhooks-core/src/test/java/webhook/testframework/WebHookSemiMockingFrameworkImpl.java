@@ -1,5 +1,6 @@
 package webhook.testframework;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -141,6 +142,12 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		
 		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor);
 		
+<<<<<<< HEAD
+=======
+		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookPayloadManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory);
+	
+		when(projectSettingsManager.getTemplateUsageCount((String)any(),(String)any())).thenReturn(0);
+>>>>>>> Add support for showing webhook count on Templates list page.
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
@@ -297,6 +304,11 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	@Override
 	public WebHookVariableResolverManager getWebHookVariableResolverManager() {
 		return this.webHookVariableResolverManager;
+	}
+
+	@Override
+	public WebHookSettingsManager getWebHookSettingsManager() {
+		return this.projectSettingsManager;
 	}
 
 }

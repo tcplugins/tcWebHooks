@@ -20,6 +20,7 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
+import webhook.teamcity.settings.WebHookSettingsManager;
 
 public interface WebHookMockingFramework {
 	
@@ -31,6 +32,7 @@ public interface WebHookMockingFramework {
 	public WebHookPayloadContent getWebHookContent();
 	public WebHookPayloadManager getWebHookPayloadManager();
 	public WebHookProjectSettings getWebHookProjectSettings();
+	public WebHookSettingsManager getWebHookSettingsManager();
 	public WebHookTemplateManager getWebHookTemplateManager();
 	public WebHookTemplateResolver getWebHookTemplateResolver();
 	public WebHookAuthenticatorProvider getWebHookAuthenticatorProvider();

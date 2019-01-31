@@ -107,7 +107,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
 			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-							myManager.getRegisteredFormats()).getTemplateList());
+							myManager.getRegisteredFormats(), mySettings).getTemplateList());
 			    	
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
@@ -115,7 +115,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(), mySettings), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
@@ -142,7 +142,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(), mySettings), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
@@ -179,7 +179,7 @@ public class WebHookIndexPageController extends BaseController {
 				    	
 			    		params.put("webHookList", bean);
 				    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-								myManager.getRegisteredFormats()).getTemplateList());
+								myManager.getRegisteredFormats(), mySettings).getTemplateList());
 				    	params.put("webHooksDisabled", !projSettings.isEnabled());
 				    	params.put("projectId", project.getProjectId());
 				    	params.put("haveProject", "true");
@@ -195,7 +195,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(), mySettings), 
 										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																	),

@@ -232,7 +232,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	    	}
 
 	    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(myProject),
-					myManager.getRegisteredFormats()).getTemplateList());
+					myManager.getRegisteredFormats(), mySettings).getTemplateList());
 	    	
 	        if (request.getMethod().equalsIgnoreCase("get")
 	        		&& request.getParameter("projectId") != null ){
@@ -264,7 +264,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats()), 
+																			myManager.getRegisteredFormats(),
+																			mySettings), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
