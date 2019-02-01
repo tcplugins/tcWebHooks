@@ -53,6 +53,7 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
     				if (templateConfig != null) {
     					params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
     					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST)));
+    					params.put("webHookCount", this.myWebHookSettingsManager.getTemplateUsageCount(templateConfig.getId(), templateConfig.getFormat()));
     					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
     				}
     			}

@@ -1,7 +1,7 @@
 WebHooksPlugin = {
 	handleAjaxError: function(dialog, response) {
 		dialog.cleanErrors();
-		if (response.status === 422) {
+		if (response.status === 422 || response.status === 409) {
 			if (response.responseJSON.errored) {
 				$j.each(response.responseJSON.errors, function(index, errorMsg){
 					dialog.ajaxError(errorMsg)
@@ -894,11 +894,11 @@ WebHooksPlugin = {
     	},
     	
     	ajaxError: function(message) {
-    		var next = $j("#ajaxDeleteResult").next();
+    		var next = $j("#ajaxTemplateDeleteResult").next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
     			next.text(message);
     		} else {
-    			$j("#ajaxDeleteResult").after("<p class='error'>" + message + "</p>");
+    			$j("#ajaxTemplateDeleteResult").after("<p class='error'>" + message + "</p>");
     		}
     	},
     	
@@ -921,7 +921,7 @@ WebHooksPlugin = {
     			},
     			error: function (response) {
     				console.log(response);
-    				alert(response);
+    				WebHooksPlugin.handleAjaxError(dialog, response);
     			}
     		});
     		

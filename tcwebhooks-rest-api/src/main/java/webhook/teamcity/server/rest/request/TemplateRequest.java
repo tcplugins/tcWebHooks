@@ -47,6 +47,7 @@ import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHoo
 import webhook.teamcity.server.rest.data.WebHookTemplateStates;
 import webhook.teamcity.server.rest.errors.BadRequestException;
 import webhook.teamcity.server.rest.errors.JaxbClassCastException;
+import webhook.teamcity.server.rest.errors.TemplateInUseException;
 import webhook.teamcity.server.rest.errors.TemplatePermissionException;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
@@ -394,11 +395,19 @@ public class TemplateRequest {
 	  if (webHookTemplateConfigWrapper.getStatus().isStateUnknown()) {
 		  throw new OperationException("You cannot delete a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
 	  }
+	  int templateUsageCount = myDataProvider.getWebHookFinder().getTemplateUsageCount(webHookTemplateConfigWrapper.getTemplateConfig().getId(), webHookTemplateConfigWrapper.getTemplateConfig().getFormat());
+	  if ( templateUsageCount > 0) {
+		  throw new TemplateInUseException(
+				  "Cannot delete template with associated webhooks", 
+				  new ErrorResult()
+				  	.addError("error", "Cannot delete template with associated webhooks")
+				  	.addError("webHookCount", "Associated webhook count: " + String.valueOf(templateUsageCount)));
+	  }
 	  if (myTemplateManager.removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getId())) {
 		  if (persistAllXmlConfigTemplates("delete Template")){
 			  return;
 		  } else {
-			  throw new OperationException("There was an error deleting your template. It was possible persist the change.");
+			  throw new OperationException("There was an error deleting your template. Unable to persist the change to disk.");
 		  }
 	  } else {
 		  throw new OperationException("The template you wished to delete was not removed. It does not appear to be an XML defined template.");

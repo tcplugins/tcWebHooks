@@ -61,6 +61,10 @@ public class WebHookFinder {
 		
 		throw new BadRequestException("Sorry: Searching for multiple template is not supported.");		
 	}
+	
+	public int getTemplateUsageCount(String templateId, String formatShortName) {
+		return this.webhookSettingsManager.getTemplateUsageCount(templateId, formatShortName);
+	}
 
 	private ProjectWebhook getWebHookConfigById(String projectExternalId, final Fields fields, final BeanContext beanContext,
 			final String singleValue) {
