@@ -43,6 +43,18 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		item.setTest(true);
 		return item;
 	}
+	
+
+	@Override
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
+			SBuildType buildType, WebHookErrorStatus errorStatus) {
+		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, buildType, errorStatus);
+		addGeneralisedWebAddress(whc, item);
+		addSProject(item);
+		addBuildTypeData(item);
+		item.setTest(true);
+		return item;
+	}
 
 	@Override
 	public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,

@@ -15,7 +15,8 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.WebHookFactory;
-import webhook.teamcity.WebHookListener;
+import webhook.teamcity.executor.WebHookRunner;
+import webhook.teamcity.executor.WebHookRunnerFactory;
 import webhook.teamcity.history.GeneralisedWebAddress;
 import webhook.teamcity.history.GeneralisedWebAddressType;
 import webhook.teamcity.history.WebAddressTransformer;
@@ -206,7 +207,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 														)
 												);
 		WebHookHistoryItem webHookHistoryItem = executeWebHook(webHookExecutionRequest.getBuildId(), webHookExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh);
-		myWebHookHistoryRepository.addHistoryItem(webHookHistoryItem);
+		//myWebHookHistoryRepository.addHistoryItem(webHookHistoryItem);
 		return webHookHistoryItem; 
 
 		
@@ -293,61 +294,41 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	}
 
 	private WebHookHistoryItem executeWebHook(Long buildId, BuildStateEnum testBuildState,
-			WebHookConfig webHookConfig, WebHookContentBuilder contentBuilder, WebHook wh) {
+			WebHookConfig webHookConfig, WebHookContentBuilder contentBuilder, WebHook wh) 
+	{
+		
+		WebHookRunnerFactory myWebHookRunnerFactory = new WebHookRunnerFactory(
+				myWebHookPayloadManager, 
+				contentBuilder, 
+				myWebHookHistoryRepository, 
+				myWebHookHistoryItemFactory);
+		
 		SBuild sRunningBuild = myServer.findBuildInstanceById(buildId);
-		try {
-			
-			if (   testBuildState.equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) 
-				|| testBuildState.equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)) 
-			{
-				wh = contentBuilder.buildWebHookContent(
-						wh, 
-						webHookConfig, 
-						new TestingSQueuedBuild(sRunningBuild), 
-						testBuildState,
-						"a testing user", 
-						"A test execution comment", 
-						true
-					);			
-			} else {
-				wh = contentBuilder.buildWebHookContent(
-						wh, 
-						webHookConfig, 
-						sRunningBuild, 
-						testBuildState, 
-						true
-					);
-			}
-			Loggers.SERVER.debug("#### CONTENT #### " + wh.getPayload());
-			WebHookListener.doPost(wh, webHookConfig.getPayloadFormat());
-			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
-							webHookConfig,
-							wh.getExecutionStats(), 
-							sRunningBuild,
-							null);
-		} catch (WebHookExecutionException ex){
-			wh.getExecutionStats().setErrored(true);
-			wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-			Loggers.SERVER.error(WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL + ex.getMessage());
-			Loggers.SERVER.debug(ex);
-			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
-							webHookConfig,
-							wh.getExecutionStats(), 
-							sRunningBuild,
-							new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode())
-				);
-		} catch (Exception ex){
-			wh.getExecutionStats().setErrored(true);
-			wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-			Loggers.SERVER.error(WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-			Loggers.SERVER.debug(WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-			return myWebHookHistoryItemFactory.getWebHookHistoryTestItem(
-							webHookConfig,
-							wh.getExecutionStats(), 
-							sRunningBuild,
-							new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE)
-					);					
+		WebHookRunner webHookRunner;
+		
+		if (   testBuildState.equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) 
+			|| testBuildState.equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)) 
+		{
+			webHookRunner = myWebHookRunnerFactory.getRunner(
+												wh, 
+												webHookConfig, 
+												new TestingSQueuedBuild(sRunningBuild), 
+												testBuildState, 
+												"a testing user", 
+												"A test execution comment",
+												true
+											);
+		} else {
+			webHookRunner = myWebHookRunnerFactory.getRunner(
+												wh, 
+												webHookConfig, 
+												sRunningBuild, 
+												testBuildState, 
+												true
+											);
 		}
+		webHookRunner.run();
+		return webHookRunner.getWebHookHistoryItem();
 	}
 
 	private static class NonDiscrimatoryTemplateResolver extends WebHookTemplateResolver {

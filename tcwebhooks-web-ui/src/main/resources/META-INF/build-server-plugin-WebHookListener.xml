@@ -12,6 +12,14 @@
 		class="webhook.teamcity.TestListener" 
   		init-method="register" 
   		/-->
+  		
+	<bean id="webHookExecutor"
+        class="webhook.teamcity.executor.WebHookThreadingExecutorImpl"
+        />
+  		
+	<bean id="webHookRunnerFactory"
+        class="webhook.teamcity.executor.WebHookRunnerFactory"
+        />
   
 	<bean id="webHookHistoryRepository"
         class="webhook.teamcity.history.WebHookHistoryRepositoryImpl"
