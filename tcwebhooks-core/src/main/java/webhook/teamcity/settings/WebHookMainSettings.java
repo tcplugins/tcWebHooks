@@ -42,7 +42,10 @@ public class WebHookMainSettings implements MainConfigProcessor {
     	WebHookMainConfig tempConfig = new WebHookMainConfig();
     	Element webhooksElement = rootElement.getChild("webhooks");
     	if(webhooksElement != null){
-			Element extraInfoElement = webhooksElement.getChild("info");
+    		if (webhooksElement.getAttribute("useThreadedExecutor") != null) {
+    			tempConfig.setThreadPoolExecutor(Boolean.parseBoolean(webhooksElement.getAttributeValue("useThreadedExecutor")));
+    		}
+    		Element extraInfoElement = webhooksElement.getChild("info");
 	        if(extraInfoElement != null)
 	        {
 	        	if ((extraInfoElement.getAttribute("text") != null) 
@@ -114,6 +117,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
     	Loggers.SERVER.info("WebHookMainSettings: re-writing main settings");
     	Loggers.SERVER.debug(NAME + ":writeTo :: " + parentElement.toString());
     	Element el = new Element("webhooks");
+    	el.setAttribute("useThreadedExecutor", Boolean.toString(webHookMainConfig.useThreadedExecutor()));
         if(	  webHookMainConfig != null 
            && webHookMainConfig.getProxyHost() != null && webHookMainConfig.getProxyHost().length() > 0
            && webHookMainConfig.getProxyPort() != null && webHookMainConfig.getProxyPort() > 0 )
@@ -171,5 +175,9 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	
 	public int getHttpResponseTimeout() {
 		return this.webHookMainConfig.getHttpResponseTimeout();
+	}
+	
+	public boolean useThreadedExecutor() {
+		return this.webHookMainConfig.useThreadedExecutor();
 	}
 }

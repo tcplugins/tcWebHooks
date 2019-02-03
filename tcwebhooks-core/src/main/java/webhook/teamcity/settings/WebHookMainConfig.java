@@ -28,6 +28,7 @@ public class WebHookMainConfig {
 	private List<Pattern> noProxyPatterns;
 	private Integer httpConnectionTimeout;
 	private Integer httpResponseTimeout;
+	private boolean useThreadedExecutor = true;
 	
 	public final String SINGLE_HOST_REGEX = "^[^./~`'\"]+(?:/.*)?$";
 	public final String HOSTNAME_ONLY_REGEX = "^([^/]+)(?:/.*)?$";
@@ -284,6 +285,14 @@ public class WebHookMainConfig {
 	
 	public void setHttpResponseTimeout(Integer httpResponseimeout) {
 		this.httpResponseTimeout = httpResponseimeout;
+	}
+	
+	public boolean useThreadedExecutor() {
+		return useThreadedExecutor;
+	}
+	
+	public void setThreadPoolExecutor(boolean threadPoolSender) {
+		this.useThreadedExecutor = threadPoolSender;
 	}
 
 }
