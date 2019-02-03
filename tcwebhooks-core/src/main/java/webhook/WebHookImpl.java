@@ -493,12 +493,12 @@ public class WebHookImpl implements WebHook {
 
 	@Override
 	public void setConnectionTimeOut(int httpConnectionTimeout) {
-		RequestConfig.copy(this.requestConfig).setConnectTimeout(httpConnectionTimeout * 1000).build();
+		this.requestConfig = RequestConfig.copy(this.requestConfig).setConnectTimeout(httpConnectionTimeout * 1000).build();
 	}
 
 	@Override
 	public void setResponseTimeOut(int httpResponseTimeout) {
-		RequestConfig.copy(this.requestConfig).setSocketTimeout(httpResponseTimeout* 1000).build();
+		this.requestConfig = RequestConfig.copy(this.requestConfig).setSocketTimeout(httpResponseTimeout * 1000).build();
 	}
 	
 }
