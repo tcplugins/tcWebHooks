@@ -76,12 +76,12 @@
 												   <li class='tab' id="templatePaneTab"><a href="#templatePane">Preview &amp; Test</a></li>
 								  </ul>
 						 <div class='panel-container'>
-									<div id='hookPane'>
+									<div id='hookPane' class="tabPane">
 											<table style="border:none;">
 												
 												<tr style="border:none;">
 													<td>URL:</td>
-													<td colspan=2 style="padding-left:0.5em;"><input autocomplete="on" id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;"/></td>
+													<td colspan=2 style="padding-left:0.5em;"><input autocomplete="on" id="webHookUrl" name="URL" type=text maxlength=512 style="margin: 0pt; padding: 0pt; width: 36em;" autofocus></td>
 												</tr>
 												<tr>
 													<td></td>
@@ -89,7 +89,7 @@
 												</tr>
 												<tr style="border:none;">
 													<td><label class="webhookEnabled" for="webHooksEnabled">Enabled:</label></td>
-													<td style="padding-left:2px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled" style="margin-left:0.5em; padding-left:0.5em;"/></td>
+													<td style="padding-left:2px;" colspan=2><input id="webHooksEnabled" type=checkbox name="webHooksEnabled" style="margin-left:0.5em; padding-left:0.5em;"></td>
 												</tr>
 												
 												<tr style="border:none;"><td style="vertical-align:text-top; padding-top:0.33em;">Payload Format:</td>
@@ -168,13 +168,13 @@
 					    					
 					    			</div><!--hookPane -->
 					    			
-					    			<div id='buildPane'>
+					    			<div id='buildPane' class="tabPane">
 					    				<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input name="buildTypeAll" onclick="toggleAllBuildTypesSelected();" type=checkbox style="padding-right: 1em;" class="buildType_all"><strong>All Project Builds</strong></label></p>
 					    				<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input id="buildTypeSubProjects" name="buildTypeSubProjects" onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" class="buildType_subprojects"><strong>All Sub-Project Builds</strong></label></p>
 					            		<div id='buildList' style="padding:0;">
 						            	</div>
 						            </div><!--buildPane -->
-					    			<div id='extrasPane'>
+					    			<div id='extrasPane' class="tabPane">
 					    				<div id='extrasAuthPanel'>
 						    				<h2>Authentication</h2>
 						    				<div class="extraAuthParametersWrapper">
@@ -190,7 +190,7 @@
 											</div>
 						            	</div>
 						            </div><!--extrasPane -->
-						            <div id='templatePane'>
+						            <div id='templatePane' class="tabPane">
 						            	<div id='templateLeftPanel'>
 						            		<div class="webHookPreviewHeader">						            		
 							            		<table>
