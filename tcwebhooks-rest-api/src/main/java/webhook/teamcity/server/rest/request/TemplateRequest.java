@@ -396,7 +396,7 @@ public class TemplateRequest {
 		  throw new OperationException("You cannot delete a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
 	  }
 	  int templateUsageCount = myDataProvider.getWebHookFinder().getTemplateUsageCount(webHookTemplateConfigWrapper.getTemplateConfig().getId(), webHookTemplateConfigWrapper.getTemplateConfig().getFormat());
-	  if ( templateUsageCount > 0) {
+	  if (webHookTemplateConfigWrapper.getStatus().equals(TemplateState.USER_DEFINED) &&  templateUsageCount > 0) {
 		  throw new TemplateInUseException(
 				  "Cannot delete template with associated webhooks", 
 				  new ErrorResult()

@@ -118,15 +118,6 @@ WebHooksPlugin = {
         },
 
         cleanFields: function (data) {
-        	/*
-            $j("#repoEditFilterForm input[id='debrepo.uuid']").val(data.uuid);
-            $j("#repoEditFilterForm input[id='debrepofilter.id']").val(data.id);
-            $j(".runnerFormTable input[id='debrepofilter.regex']").val(data.regex);
-            $j(".runnerFormTable input[id='debrepofilter.dist']").val(data.dist);
-            $j(".runnerFormTable input[id='debrepofilter.component']").val(data.component);
-            $j(".runnerFormTable select[id='debrepofilter.buildtypeid']").val(data.build);
-            $j("#repoEditFilterForm input[id='projectId']").val(data.projectId);
-			*/
             this.cleanErrors();
         },
 
@@ -872,6 +863,7 @@ WebHooksPlugin = {
     		$j(".dialogTitle").text(title);
     		this.cleanFields(data);
     		this.cleanErrors();
+    		this.updateWarning(data);
     		this.showCentered();
     	},
     	
@@ -899,6 +891,16 @@ WebHooksPlugin = {
     			next.text(message);
     		} else {
     			$j("#ajaxTemplateDeleteResult").after("<p class='error'>" + message + "</p>");
+    		}
+    	},
+    	
+    	updateWarning: function (data) {
+    		if (data.templateState === 'USER_OVERRIDDEN') {
+    			$j('#deleteTemplateWarningMessage').html("Deleting this template will revert any webhooks to use the template bundled with tcWebHooks. <br>There are " + data.webHookCount + " webhooks associated with this template.")
+    		} else if (data.templateState === 'USER_DEFINED' && data.webHookCount > 0) {
+    			$j('#deleteTemplateWarningMessage').html("This template cannnot be deleted because there are " + data.webHookCount + " webhooks associated with it.")
+    		} else {
+    			$j('#deleteTemplateWarningMessage').html("Click Delete to remove this template.")
     		}
     	},
     	

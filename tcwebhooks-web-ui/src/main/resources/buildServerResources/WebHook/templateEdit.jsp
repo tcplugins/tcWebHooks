@@ -56,7 +56,7 @@
 			      <a href="#" title="Disable Template" onclick="WebHooksPlugin.disableTemplate('${webhookTemplateBean.templateId}'); return false">Disable template...</a>
 		        </l:li>
 		        <l:li>
-			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate({ templateId: '${webhookTemplateBean.templateId}' }); return false">Delete template...</a>
+			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate({ templateId: '${webhookTemplateBean.templateId}', templateState: '${webhookTemplateBean.templateState}', webHookCount: ${webHookCount} }); return false">Delete template...</a>
 		        </l:li>
 		      </jsp:body>
 		    </authz:authorize>
@@ -153,7 +153,7 @@
           	</c:otherwise>
           </c:choose>          
           <th style="width:15%;" title="The number of webhooks using this template">Associated Webhooks:</th>
-          <td style="width:35%;" colspan=3>${webHookCount} webhooks(s)</td>
+          <td style="width:35%;" colspan=3>${webHookCount} webhook(s)</td>
         </tr>
       </table>
 
@@ -413,7 +413,8 @@
                              onsubmit="return WebHooksPlugin.DeleteTemplateDialog.doPost();">
 
             <table class="runnerFormTable">
-                <tr><td id="deleteTemplateWarningMessage">This is a default warning. You should not be seeing this. 
+                <tr><td>
+                	<div id="deleteTemplateWarningMessage">This is a default warning. You should not be seeing this.</div> 
                         <div id="ajaxTemplateDeleteResult"></div>
                 </td></tr>
             </table>
