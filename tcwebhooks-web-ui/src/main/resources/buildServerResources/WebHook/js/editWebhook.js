@@ -135,7 +135,7 @@ WebHooksPlugin = {
 	            backgroundColor: "#ffffff"
 	        }, 500 );
 		},
-
+		
         showDialog: function (title, action, id, tab) {
         	
         	this.formElement().submitAction.value = action;
@@ -145,8 +145,10 @@ WebHooksPlugin = {
             
 		    populateWebHookDialog(id);
 		    doExtraCompleted();
+		    $j("div.tabPane").css('display', 'none');
+		    $j('#tab-container').easytabs('select', tab);
+		    $j(tab).css('display', 'block');
 		    this.showCentered();
-		    $j('#webHookUrl').focus();            
         },
 
         cleanFields: function (data) {
@@ -178,18 +180,6 @@ WebHooksPlugin = {
         	}
         },
 
-        doValidate: function() {
-            var errorFound = false;
-
-            var name = $j('input[id="debrepo.name"]');
-            if (name.val() == "") {
-                this.error(name, "Please set the repository name");
-                errorFound = true;
-            }
-
-            return !errorFound;
-        },
-		
 		doPost: function() {
 		    this.formElement().payloadTemplate.value = lookupTemplate(this.formElement().payloadFormatHolder.value);
 		    this.formElement().payloadFormat.value = lookupFormat(this.formElement().payloadFormatHolder.value);
