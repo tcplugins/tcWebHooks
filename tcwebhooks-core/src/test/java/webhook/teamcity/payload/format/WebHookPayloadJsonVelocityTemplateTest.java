@@ -17,6 +17,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.users.User;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
+import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -117,10 +118,14 @@ public class WebHookPayloadJsonVelocityTemplateTest {
 				true, 
 				""
 			);
-		assertEquals("{ \"testing\": \"mockBuildType\" }", whp.responsibleChanged(
-				buildType, 
-				responsibilityEntryOld,
-				responsibilityEntryNew,
+		assertEquals("{ \"testing\": \"mockBuildType\" }", whp.responsibilityChanged(
+				WebHookResponsibilityHolder
+					.builder()
+					.responsibilityEntryOld(responsibilityEntryOld)
+					.responsibilityEntryNew(responsibilityEntryNew)
+					.sBuildType(buildType)
+					.sProject(project)
+					.build(),
 				new TreeMap<String,String>(), 
 				new TreeMap<String,String>(),
 				templateContent));

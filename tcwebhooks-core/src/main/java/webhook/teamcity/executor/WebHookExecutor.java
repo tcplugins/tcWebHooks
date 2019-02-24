@@ -2,9 +2,7 @@ package webhook.teamcity.executor;
 
 import org.jetbrains.annotations.NotNull;
 
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
@@ -30,22 +28,6 @@ public interface WebHookExecutor {
 			boolean isTest
 		);
 	
-	/**
-	 * Executor for Responsibility changed.
-	 * @param webHook
-	 * @param sBuildType
-	 * @param responsibilityEntryOld
-	 * @param responsibilityEntryNew
-	 */
-	public void execute(
-			@NotNull WebHook webHook,
-			@NotNull WebHookConfig whc,
-			@NotNull SBuildType sBuildType,
-            @NotNull ResponsibilityEntry responsibilityEntryOld,
-            @NotNull ResponsibilityEntry responsibilityEntryNew,
-            boolean isTest
-		);
-	
 	/** 
 	 * Executor for other build events.
 	 * @param sBuild
@@ -58,5 +40,20 @@ public interface WebHookExecutor {
 			BuildStateEnum state,
 			boolean isTest
 		);
+
+	/**
+	 * Executor for responsibility events.
+	 * @param webHook
+	 * @param webHookConfig
+	 * @param state
+	 * @param responsibilityHolder
+	 * @param isTest
+	 */
+	public void execute(
+			@NotNull WebHook webHook, 
+			@NotNull WebHookConfig whc, 
+			@NotNull BuildStateEnum state,
+			@NotNull WebHookResponsibilityHolder responsibilityHolder, 
+			boolean isTest);
 
 }

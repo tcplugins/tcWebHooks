@@ -46,6 +46,16 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 	
 
 	@Override
+	public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
+			SBuildType sBuildType, WebHookErrorStatus errorStatus) {
+		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, sBuildType, errorStatus);
+		addGeneralisedWebAddress(whc, item);
+		addSProject(item);
+		addBuildTypeData(item);
+		return item;
+	}
+	
+	@Override
 	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
 			SBuildType buildType, WebHookErrorStatus errorStatus) {
 		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, buildType, errorStatus);
@@ -53,16 +63,6 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		addSProject(item);
 		addBuildTypeData(item);
 		item.setTest(true);
-		return item;
-	}
-
-	@Override
-	public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
-			SBuildType sBuildType, WebHookErrorStatus errorStatus) {
-		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, sBuildType, errorStatus);
-		addGeneralisedWebAddress(whc, item);
-		addSProject(item);
-		addBuildTypeData(item);
 		return item;
 	}
 
@@ -76,6 +76,17 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		return item;
 	}
 	
+
+	@Override
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
+			SProject sProject, WebHookErrorStatus errorStatus) {
+		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, sProject, errorStatus);
+		addGeneralisedWebAddress(whc, item);
+		addSProject(item);
+		addBuildTypeData(item);
+		item.setTest(true);
+		return item;
+	}
 	
 	private void addGeneralisedWebAddress(WebHookConfig whc, WebHookHistoryItem item) {
 		try {
@@ -91,8 +102,10 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 	}
 	
 	private void addBuildTypeData(WebHookHistoryItem item) {
-		item.setBuildTypeName(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getName());
-		item.setBuildTypeExternalId(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getExternalId());
+		if (item.getBuildTypeId() != null) {
+			item.setBuildTypeName(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getName());
+			item.setBuildTypeExternalId(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getExternalId());
+		}
 	}
 
 }

@@ -672,6 +672,25 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				return null;
 			}
 		}
+
+		@Override
+		public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc, 
+				WebHookExecutionStats webHookExecutionStats,
+				SProject sProject, WebHookErrorStatus errorStatus) {
+			try {
+				return new WebHookHistoryItem(
+						"prodjectId", sProject.getName(), 
+						"buildTypeId", 
+						"buildTypeName", "buildTypeExternalId", 1L, whc, 
+						webHookExecutionStats, 
+						errorStatus, new LocalDateTime(), 
+						webAddressTransformer.getGeneralisedHostName(new URL(whc.getUrl())),
+						true);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
 		
 	}
 }

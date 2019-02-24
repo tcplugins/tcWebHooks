@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;

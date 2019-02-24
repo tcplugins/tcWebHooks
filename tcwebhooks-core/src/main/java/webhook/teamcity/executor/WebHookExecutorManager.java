@@ -1,8 +1,6 @@
 package webhook.teamcity.executor;
 
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
@@ -34,14 +32,14 @@ public class WebHookExecutorManager implements WebHookExecutor {
 			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, user, comment, isTest);
 		}
 	}
-
+	
 	@Override
-	public void execute(WebHook webHook, WebHookConfig whc, SBuildType sBuildType,
-			ResponsibilityEntry responsibilityEntryOld, ResponsibilityEntry responsibilityEntryNew, boolean isTest) {
+	public void execute(WebHook webHook, WebHookConfig whc, BuildStateEnum state,
+			WebHookResponsibilityHolder responsibilityHolder, boolean isTest) {
 		if (myWebHookMainSettings.useThreadedExecutor()) {
-			myWebHookThreadingExecutor.execute(webHook, whc, sBuildType, responsibilityEntryOld, responsibilityEntryNew, isTest);
+			myWebHookThreadingExecutor.execute(webHook, whc, state, responsibilityHolder, isTest);
 		} else {
-			myWebHookSerialExecutor.execute(webHook, whc, sBuildType, responsibilityEntryOld, responsibilityEntryNew, isTest);
+			myWebHookSerialExecutor.execute(webHook, whc, state, responsibilityHolder, isTest);
 		}
 	}
 

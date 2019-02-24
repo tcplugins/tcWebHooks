@@ -1,8 +1,6 @@
 package webhook.teamcity.executor;
 
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import lombok.AllArgsConstructor;
 import webhook.WebHook;
@@ -29,13 +27,13 @@ public class WebHookSerialExecutorImpl implements WebHookSerialExecutor {
 	}
 
 	@Override
-	public void execute(WebHook webhook, WebHookConfig whc, SBuildType sBuildType, 
-			ResponsibilityEntry responsibilityEntryOld,	ResponsibilityEntry responsibilityEntryNew, boolean isTest) 
-	{
+	public void execute(WebHook webhook, WebHookConfig whc, BuildStateEnum state,
+			WebHookResponsibilityHolder responsibilityHolder, boolean isTest) {
+		
 		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: About to start runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
-		webHookRunnerFactory.getRunner(webhook, whc, sBuildType, responsibilityEntryOld, responsibilityEntryNew, isTest).run();
+		webHookRunnerFactory.getRunner(webhook, whc, state, responsibilityHolder, isTest).run();
 		
 		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: Finished runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());

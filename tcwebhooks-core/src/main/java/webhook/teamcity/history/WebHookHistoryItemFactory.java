@@ -34,4 +34,9 @@ public interface WebHookHistoryItemFactory {
 													SBuildType buildType, 
 													WebHookErrorStatus errorStatus);
 
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc,
+													WebHookExecutionStats executionStats,
+													SProject sProject, 
+													WebHookErrorStatus errorStatus);
+
 }	

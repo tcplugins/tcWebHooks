@@ -32,8 +32,6 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 	Integer rank = 101;
 	String charset = "UTF-8";
 	
-	Gson gson = new GsonBuilder().create();
-	
 	public WebHookPayloadNameValuePairsTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
 		super(manager, variableResolverManager);
 	}
