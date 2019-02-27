@@ -372,4 +372,10 @@ public class MockSBuildServer implements SBuildServer {
 		return false;
 	}
 
+	@Override
+	public boolean isStarted() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

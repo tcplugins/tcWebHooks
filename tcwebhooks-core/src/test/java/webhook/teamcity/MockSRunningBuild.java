@@ -37,6 +37,7 @@ import jetbrains.buildServer.serverSide.TriggeredBy;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.serverSide.artifacts.SArtifactDependency;
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.buildLog.BuildLog;
 import jetbrains.buildServer.serverSide.comments.Comment;
 import jetbrains.buildServer.serverSide.impl.RunningBuildState;
@@ -59,6 +60,7 @@ import jetbrains.buildServer.vcs.VcsModification;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 import jetbrains.buildServer.vcs.VcsRootNotFoundException;
+import jetbrains.buildServer.vcs.VcsRootStatus;
 import jetbrains.vcs.api.VcsService;
 
 public class MockSRunningBuild implements SRunningBuild {
@@ -372,6 +374,18 @@ public class MockSRunningBuild implements SRunningBuild {
 						// TODO Auto-generated method stub
 						return null;
 					}
+
+					@Override
+					public VcsRootStatus getStatus() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public int getEffectiveModificationCheckInterval() {
+						// TODO Auto-generated method stub
+						return 0;
+					}
 				};
 			}
 			
@@ -476,6 +490,12 @@ public class MockSRunningBuild implements SRunningBuild {
 			public Map<String, String> getAttributes() {
 				// TODO Auto-generated method stub
 				return null;
+			}
+
+			@Override
+			public void setDescription(String newDescription) throws AccessDeniedException {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

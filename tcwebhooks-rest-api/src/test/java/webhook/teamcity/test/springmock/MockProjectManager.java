@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -291,6 +292,20 @@ public class MockProjectManager implements ProjectManager {
 
 	@Override
 	public SProject getCommonParentProject(Collection<SProject> projects) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Comparator<SProject> getProjectsComparator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Comparator<SBuildType> getBuildTypesComparator() {
 		// TODO Auto-generated method stub
 		return null;
 	}

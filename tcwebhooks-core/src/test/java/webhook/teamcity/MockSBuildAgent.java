@@ -261,6 +261,18 @@ public class MockSBuildAgent implements SBuildAgent, BuildAgent {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public int getAgentPoolId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getCommunicationProtocolType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }
