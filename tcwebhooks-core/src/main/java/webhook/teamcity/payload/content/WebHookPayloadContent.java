@@ -10,7 +10,6 @@ import java.util.SortedMap;
 
 import com.intellij.util.containers.hash.LinkedHashMap;
 
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
@@ -29,6 +28,7 @@ import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.payload.WebHookResponsibility;
 import webhook.teamcity.payload.util.StringUtils;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
@@ -80,7 +80,7 @@ public class WebHookPayloadContent {
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
 		private List<WebHooksChanges> changes = new ArrayList<>();
-		private WebHookResponsibilityHolder responsibilityInfo;
+		private WebHookResponsibility responsibilityInfo;
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -152,7 +152,7 @@ public class WebHookPayloadContent {
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum state, Map<String,String> templates) {
 			
-			//setResponsibilityInfo(responsibilityHolder);
+			setResponsibilityInfo(responsibilityHolder);
 			setNotifyType(state.getShortName());
 			setProjectName(responsibilityHolder.getSProject().getName());
 			setProjectId(TeamCityIdResolver.getProjectId(responsibilityHolder.getSProject()));
@@ -206,10 +206,10 @@ public class WebHookPayloadContent {
 		}
 		
 		public void setResponsibilityInfo(WebHookResponsibilityHolder responsibilityHolder) {
-			this.responsibilityInfo = responsibilityHolder;
+			this.responsibilityInfo = WebHookResponsibility.build(responsibilityHolder);
 		}
 		
-		public WebHookResponsibilityHolder getResponsibilityInfo() {
+		public WebHookResponsibility getResponsibilityInfo() {
 			return responsibilityInfo;
 		}
 
