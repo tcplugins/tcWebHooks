@@ -70,11 +70,6 @@
 	    <url>http://repository.jetbrains.com/all</url>
 	  </repository>
 	</repositories>
-	<dependencies>
-
-  		 
-	</dependencies>
-	
 
 	<developers>
 		<developer>
