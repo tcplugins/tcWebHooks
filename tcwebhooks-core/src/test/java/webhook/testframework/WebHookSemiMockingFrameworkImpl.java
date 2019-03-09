@@ -143,13 +143,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		
 		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor);
-		
-<<<<<<< HEAD
-=======
-		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookPayloadManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory);
-	
 		when(projectSettingsManager.getTemplateUsageCount((String)any(),(String)any())).thenReturn(0);
->>>>>>> Add support for showing webhook count on Templates list page.
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);
