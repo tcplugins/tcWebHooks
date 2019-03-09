@@ -153,7 +153,7 @@
           	</c:otherwise>
           </c:choose>          
           <th style="width:15%;" title="The number of webhooks using this template">Associated Webhooks:</th>
-          <td style="width:35%;" colspan=3>${webHookCount} webhook(s)</td>
+          <td style="width:35%;" colspan=3><a href="search.html?templateId=${webhookTemplateBean.templateId}">${webHookCount} webhook(s)</a></td>
         </tr>
       </table>
 

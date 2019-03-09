@@ -1,6 +1,7 @@
 package webhook.teamcity.settings;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import webhook.teamcity.BuildState;
@@ -9,7 +10,6 @@ import webhook.teamcity.auth.WebHookAuthConfig;
 public interface WebHookSettingsManager {
 
 	public void initialise();
-	public WebHookProjectSettings getSettings(String projectInternalId);
 	public boolean iswebHooksEnabledForProject(String projectInernalId);
 	
 	public List<WebHookConfig> getWebHooksConfigs(String projectInternalId);
@@ -28,4 +28,6 @@ public interface WebHookSettingsManager {
 	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter);
 	
 	public int getTemplateUsageCount(String templateId, String formatShortName);
+	public Map<String, List<WebHookSearchResult>> findWebHooksByProject(WebHookSearchFilter buildFilter);
+	public WebHookProjectSettings getSettings(String projectInternalId);
 }

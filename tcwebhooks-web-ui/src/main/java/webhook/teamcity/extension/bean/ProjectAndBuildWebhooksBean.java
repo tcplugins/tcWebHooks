@@ -44,6 +44,21 @@ public class ProjectAndBuildWebhooksBean {
 		return bean;
 	}
 
+	public static ProjectAndBuildWebhooksBean newInstance (SProject project, List<WebHookConfig> webHooks, boolean isAdmin, WebAddressTransformer webAddressTransformer) {
+		ProjectAndBuildWebhooksBean bean = new ProjectAndBuildWebhooksBean();
+		bean.project = project;
+		bean.isAdmin = isAdmin;
+		bean.projectWebhooksWithAddress = new ArrayList<>();
+		
+		for (WebHookConfig c : webHooks) {
+			bean.projectWebhooksWithAddress.add(new WebHookConfigWithGeneralisedAddressWrapper(
+					c, getGeneralisedWebAddress(webAddressTransformer, c.getUrl())
+					));
+		}
+		
+		return bean;
+	}
+
 	public int getProjectWebhookCount(){
 		return this.projectWebhooksWithAddress.size();
 	}

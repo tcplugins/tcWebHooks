@@ -63,6 +63,8 @@ import webhook.testframework.util.ConfigLoaderUtil;
 
 public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework {
 	
+	private WebHookSemiMockingFrameworkImpl() {}
+	
 	WebHookPayloadContent content;
 	WebHookConfig webHookConfig;
 	SBuildServer sBuildServer = mock(SBuildServer.class);

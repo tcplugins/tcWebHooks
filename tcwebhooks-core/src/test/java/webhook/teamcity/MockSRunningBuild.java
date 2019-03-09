@@ -375,13 +375,13 @@ public class MockSRunningBuild implements SRunningBuild {
 						return null;
 					}
 
-					@Override
+					//@Override
 					public VcsRootStatus getStatus() {
 						// TODO Auto-generated method stub
 						return null;
 					}
 
-					@Override
+					//@Override
 					public int getEffectiveModificationCheckInterval() {
 						// TODO Auto-generated method stub
 						return 0;
@@ -492,7 +492,7 @@ public class MockSRunningBuild implements SRunningBuild {
 				return null;
 			}
 
-			@Override
+			//@Override
 			public void setDescription(String newDescription) throws AccessDeniedException {
 				// TODO Auto-generated method stub
 				

@@ -125,28 +125,63 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter) {
 		List<WebHookSearchResult> webhookResultList = new ArrayList<>();
 		for (WebHookConfigEnhanced e : this.webhooksEnhanced.values()) {
-			WebHookSearchResult result = new WebHookSearchResult();
-			if (filter.getTextSearch() != null) {
-				searchField(result, filter.getTextSearch(), Match.PAYLOAD_FORMAT, e.getPayloadFormat(), e.getPayloadFormatDescription());
-				searchField(result, filter.getTextSearch(), Match.TEMPLATE, e.getTemplateId(), e.getTemplateDescription());
-				searchField(result, filter.getTextSearch(), Match.URL, e.getWebHookConfig().getUrl());
+			addMatchingWebHook(filter, webhookResultList, e);
+		}
+		return webhookResultList;
+	}
+
+	@Override
+	public Map<String, List<WebHookSearchResult>> findWebHooksByProject(WebHookSearchFilter filter) {
+		Map<String,List<WebHookSearchResult>> projectGroupedResults = new LinkedHashMap<>();
+		for (Map.Entry<String, WebHookProjectSettings> entry : this.projectSettingsMap.entrySet()) {
+			List<WebHookSearchResult> webhookResultList = new ArrayList<>();
+			for (WebHookConfig c : entry.getValue().getWebHooksConfigs()) {
+				addMatchingWebHook(filter, webhookResultList, this.webhooksEnhanced.get(c.getUniqueKey()));
 			}
-			
-			if (filter.textSearch != null && e.getTags().contains(filter.textSearch.toLowerCase())) {
-				result.addMatch(Match.TAG);
+			if ( !webhookResultList.isEmpty()) {
+				projectGroupedResults.put(entry.getKey(), webhookResultList);
 			}
-			
-			if (filter.getTemplateId() != null) {
-				matchField(result, filter.getTemplateId(), Match.TEMPLATE, e.getTemplateId());
-			}
-			
-			if ( ! result.getMatches().isEmpty() ) {
-				result.setWebHookConfigEnhanced(e);
-				webhookResultList.add(result);
+		}
+		return projectGroupedResults;
+	}
+	
+	private void addMatchingWebHook(WebHookSearchFilter filter, List<WebHookSearchResult> webhookResultList,
+			WebHookConfigEnhanced e) {
+		WebHookSearchResult result = new WebHookSearchResult();
+		if (filter.getTextSearch() != null) {
+			searchField(result, filter.getTextSearch(), Match.PAYLOAD_FORMAT, e.getPayloadFormat(), e.getPayloadFormatDescription());
+			searchField(result, filter.getTextSearch(), Match.TEMPLATE, e.getTemplateId(), e.getTemplateDescription());
+			searchField(result, filter.getTextSearch(), Match.URL, e.getWebHookConfig().getUrl());
+		}
+		
+		if (filter.textSearch != null && e.getTags().contains(filter.textSearch.toLowerCase())) {
+			result.addMatch(Match.TAG);
+		}
+		
+		if (filter.getFormatShortName() != null) {
+			matchField(result, filter.getFormatShortName(), Match.PAYLOAD_FORMAT, e.getPayloadFormat());
+		}
+		if (filter.getTemplateId() != null) {
+			matchField(result, filter.getTemplateId(), Match.TEMPLATE, e.getTemplateId());
+		}
+		if (filter.getUrlSubString() != null) {
+			searchField(result, filter.getUrlSubString(), Match.URL, e.getWebHookConfig().getUrl());
+		}
+		if (filter.getWebhookId() != null) {
+			matchField(result, filter.getWebhookId(), Match.ID, e.getWebHookConfig().getUniqueKey());
+		}
+		if (!filter.getTags().isEmpty()) {
+			for (String tag: e.getTags()) {
+				if (filter.getTags().contains(tag.toLowerCase())) {
+					result.addMatch(Match.TAG);
+				}
 			}
 		}
 		
-		return webhookResultList;
+		if ( ! result.getMatches().isEmpty() ) {
+			result.setWebHookConfigEnhanced(e);
+			webhookResultList.add(result);
+		}
 	}
 	
 	private void matchField(WebHookSearchResult result, String searchString, Match matchType, String...fields) {
@@ -213,5 +248,5 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		}
 		return count;
 	}
-	
+
 }

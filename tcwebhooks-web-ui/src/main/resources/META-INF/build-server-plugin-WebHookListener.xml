@@ -62,6 +62,10 @@
      	class="webhook.teamcity.extension.WebHookIndexPageController" 
      	init-method="register" 
      	/>
+ 
+    <bean id="webHookSearchController"
+     	class="webhook.teamcity.extension.WebHookSearchController" 
+     	/>
      	
     <bean id="webHookTemplateListPageController" 
      	class="webhook.teamcity.extension.WebHookTemplateListPageController" 

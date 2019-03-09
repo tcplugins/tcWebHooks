@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 tr.onCompletionDisabled td {
 	color: #ccc;
 }
@@ -715,4 +716,749 @@ div.fs-upload-dragexit {
 	{
 	cursor: default;
 	cursor: not-allowed
+=======
+tr.onCompletionDisabled td {
+	color: #ccc;
+}
+
+tr.onCompletion td, tr.onDuring td {
+	padding-top: 1.5em;
+}
+
+td.buildStateDisabled {
+	color: #ccc;
+}
+
+input[type=checkbox], input[type=radio] {
+	vertical-align:middle;
+}
+
+div#buildList{
+	padding: 1em;
+}
+
+label {
+	padding: 0.5em;
+	border-top: 1px black;
+}
+
+label.webhookEnabled {
+	padding: 0em;
+}
+
+.webHookRowTemplate {
+	display:none;
+}
+
+#currentTemplateRaw, #currentTemplateRendered, #currentTemplatePreview, #webhookPreviewRendered {
+	margin: 0.5em  0em 0.5em 0em;
+	width:auto;
+	height:25em;
+	border: solid 1px;
+	border-color: #999;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: scroll;
+	
+}
+
+#currentTemplatePreview {
+	width:50em;
+	height:25em;
+}
+
+#webhookPreviewRendered pre .hljs,
+#currentTemplatePreview pre code.hljs, 
+.endpointPayload pre code.hljs {
+	overflow-x: visible;
+}
+
+#webhookPreviewRenderedAjaxResult, 
+#previewTempleteItemDialogAjaxResult, 
+#webhookDialogAjaxResult, 
+#webhookTestProgress {
+	padding: 1.5em;
+}
+
+.etabs { margin: 0; padding: 0 0 0 1em; }
+.tab { display: inline-block; zoom:1; *display:inline; background: #eee; border: solid 1px #999; border-bottom: none; -moz-border-radius: 4px 4px 0 0; -webkit-border-radius: 4px 4px 0 0; }
+.tab a { font-size: 14px; line-height: 2em; display: block; padding: 0 10px; outline: none; }
+.tab a:hover { text-decoration: underline; }
+.tab.active { background: #fff; padding-top: 6px; position: relative; top: 1px; border-color: #666; }
+.tab a.active { font-weight: bold; }
+.tab-container .panel-container { background: #fff; border-top: solid #ccc 1px; padding: 10px;}
+.tab-container { -moz-border-radius: 0 4px 4px 4px; -webkit-border-radius: 0 4px 4px 4px; }
+
+
+ul.commalist {
+  display: inline;
+  list-style: none;
+  padding:0;
+  
+}
+
+ul.commalist li {
+  display: inline;
+  white-space:nowrap;
+}
+
+ul.commalist li:after {
+  content: ", ";
+}
+
+ul.commalist li:last-child:after {
+    content: "";
+}
+
+table.settings td.nowrap {
+  white-space:nowrap;
+}
+
+table#webHookTemplateTable th {
+	text-align:left;
+	padding-left: 1em;
+	font-size: 90%;
+	font-weight: bold;
+}
+
+table#webHookTemplateTable td{
+	padding:1em;
+} 
+
+
+table#webHookTemplateTable tr:hover td {
+	background-color: #eeeeee !important;
+}
+
+#table.endpointRequestsTable {
+	/*max-width: 90%;*/
+}
+
+div.xxendpointPayload {
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    /*overflow-y: none;*/
+    background-color: #eeeeee;
+}
+
+div.endpointWrapper {
+	border: 1px solid #ccc;
+	margin-bottom: 1em;
+}
+
+div.endpointPayloadHeader {
+	background-color: rgb(245, 245, 245);
+	border-bottom: 1px solid #ccc;
+	padding: 0.5em;
+	
+}
+
+ul.payloadHeading {
+    padding: 0;
+}
+
+ul.payloadHeading li {
+    display: inline;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+li.payloadDate {
+	 font-weight: bold;
+}
+
+li.payloadContentType {
+	 font-style: italic;
+}
+
+div.endpointPayload pre {
+	margin:0px; 
+	border:none; 
+	border-right:none;
+    height: auto;
+    max-height: 500px;
+    width:auto;
+    max-width: 100%;
+    overflow: auto;
+    word-break: normal !important;
+    word-wrap: normal !important;
+    white-space: pre !important;
+    padding: 1em;
+}
+
+div.endpointPayloadHidden {
+	display: none;
+}
+
+div.endpointPayload div.tableWrapper table.settings {
+	margin-top:0px; 
+	border:none; 
+	border-right:none;
+}
+
+div.endpointPayload div.tableWrapper {
+	margin-top:0px; 
+	border:none; 
+	border-right:none;
+	height: auto;
+    max-height: 500px;
+    width:auto;
+    max-width: 100%;
+    overflow: auto;
+    word-break: normal !important;
+    word-wrap: normal !important;
+}
+
+div.endpointPayload div.tableWrapper table.settings thead tr {
+	background-color: rgb(245, 245, 245);
+}
+
+div.endpointPayload div.tableWrapper table.settings th :last-child, div.endpointPayload table.settings tr :last-child {
+	border-right:none;
+}
+
+div.endpointPayloadHeader {
+	cursor: pointer; 
+}
+
+div.endpointPayloadHeaders {
+	display:none;
+}
+
+div.endpointPayloadHeaders table {
+	margin-left:40px;
+}
+
+div.endpointPayloadHeaders table th {
+	text-align: left;
+	font-size:15px;
+}
+
+div.endpointPayloadHeaders table td {
+	padding:0.15em;
+}
+
+div.endpointPayloadHeaders table tr :first-child {
+	text-align:right;
+	font-weight: bold;	
+}
+
+#editWebHookDialog {
+	width: 50em;
+}
+
+#buildSuccessful.buildState, #buildFailed.buildState {
+    margin-left: 2px;
+}
+
+#addTemplateItemDialog #buildSuccessful.buildState, 
+#addTemplateItemDialog #buildFailed.buildState, 
+#editTemplateItemDialog #buildSuccessful.buildState, 
+#editTemplateItemDialog #buildFailed.buildState { 
+    margin-left: 0px;
+}
+
+#hookPane, #buildPane, #extrasPane, #templatePane {
+	min-height:38em;
+} 
+
+#buildPane {
+	overflow:auto;
+}
+
+/*
+span.templateRenderHeader {
+	display: table-cell;
+}
+
+div#templateLeftPanel {
+	display: table;
+}
+
+div#templateLeftPanel > div {
+	display: table-row;
+}*/
+
+div.popupSaveButtonsBlock {
+	padding-left: 0.75em;
+}
+
+select#currentTemplateBuildId, select#currentTemplateBuildEvent {
+	width: 100%;
+}
+
+.maxtoggle {
+	float:right;
+}
+
+a.restore {
+	display:none;
+}
+
+.authParameterName {
+	padding-right:1em;
+	text-align: right;
+}
+
+.authParameterName > label {
+	padding:0;
+}
+
+.authParameterValueWrapper {
+	width: 85%;
+}
+
+.authParameterValue {
+	width: 100%;
+}
+
+div.extraAuthParametersWrapper {
+	padding: 2em;
+	padding-top: 0.5em;
+} 
+
+table#webhookTemplateHeader {
+	margin-top:1em;
+}
+
+table#webhookTemplateHeader th {
+	text-alight:right;
+}
+
+table#webhookTemplateHeader, table#webhookTemplateHeader tr, table#webhookTemplateHeader th, table#webhookTemplateHeader td {
+	border: none;
+}
+
+div#webHookSearchForm {
+	float:right;
+}
+
+table#webHookSearchTable {
+	border: none;
+}
+
+table#webHookSearchTable tr {
+	border: 1px solid #ccc;
+}
+
+table#webHookSearchTable tr.projectTitle th {
+	text-align: left;
+	padding:1em;
+	padding-left: 2px;
+	font-size: 1.25em;
+}
+
+table#webHookSearchTable tr.blankRow, table#webHookSearchTable tr.blankRow td, table#webHookSearchTable tr.projectTitle, table#webHookSearchTable tr.projectTitle th {
+	border-left: none;
+	border-right: none;
+	border-bottom: none;
+	border-top: none;
+}
+
+table.templateTable {
+	border:none;
+}
+
+table.templateTable td.buildTemplateAction {
+	padding-left:0;
+	text-align: center;
+	width:16%;
+}
+
+table.templateTable td {
+	padding-left: 2em;
+}
+
+table.templateTable th {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+table.templateTable tr {
+	border-left: 1px solid #ccc;
+}
+
+table.templateTable tr.blankline, table.templateTable tr.blankline td {
+	border-left: none;
+	border-right: none;
+	background: white;
+}
+	
+table.templateTable tr.templateHeading th {
+	text-align: left;
+	padding-left: 1.5em;
+	padding-top: 0.75em;
+	padding-bottom: 0.75em;
+	
+}
+
+table.templateTable tr td.templateTableBuildTitle {
+	font-weight: bold;
+	padding-top: 1.5em;
+	padding-bottom: 1.5em;
+	padding-left: 1em;
+}
+
+tr.templateHeading {
+	background-color: rgb(245, 245, 245);
+}
+
+#deleteWebHookDialogSubmit, #repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit {
+	background-color: red;
+	background-image: linear-gradient(to bottom, #e06667, #e50000);
+}
+
+table.templateTable tr td.templateTableTemplateTitle {
+	font-weight: bold;
+	padding-top: 1.5em;
+	padding-bottom: 1.5em;
+	padding-left: 1em;
+}
+
+ul.templateBuildStates {
+  display: inline;
+  list-style: none;
+  padding:0;
+}
+
+ul.templateBuildStates li {
+  display: inline;
+}
+
+ul.templateBuildStates li:after {
+  content: ", ";
+}
+
+ul.templateBuildStates li:last-child:after {
+    content: "";
+}
+
+/*
+#editor { 
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}*/
+
+.editor {
+	width: 98%;
+	height: 28em;
+	margin:0px;
+	border-top: none;
+	border: 1px #ccc solid;
+}
+
+div#editTemplateItemDialog {
+	width: 80%;
+	min-width: 80em;
+	max-width: 1000px;
+}
+
+div#previewTemplateItemDialog {
+	min-width: 52em;
+	max-width: 1000px;
+}
+
+table.templateDialogFormTable {
+	width: 100%;
+    min-width: 48em;
+    margin-bottom: 6px;
+    table-layout: fixed;
+}
+
+table.templateDialogFormTable label {
+	cursor: pointer;
+}
+
+table.templateDialogFormTable label.checkboxLooksDisabled {
+	color: #999;
+	cursor: not-allowed;
+}
+
+div#templateWrapper {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
+div#templateVariables {
+	display: table-cell;
+}
+
+div#templateEditor {
+	display: table-cell;
+	vertical-align:top;
+	width: 70%;
+}
+
+.templateVariablesOverflow {
+	vertical-align:top;
+	overflow-y:scroll;
+	height: 40em;
+}
+
+ul#templateVariableList li {
+	list-style: none;
+	padding:0;
+	cursor: pointer;
+}
+
+ul#templateVariableList li:hover {
+	background-color: #F6F6F6;
+	text-weight: bold;
+}
+
+div#templateEditor ul.etabs {
+	padding: 0px;
+	margin-left: 1em;
+	margin-top: 1.25em;
+}
+
+div#templateEditor ul.etabs li {
+	text-align: center;
+	font-weight: bold;
+}
+
+div#templateEditor ul.etabs li#branchOptionTab {
+	text-align: right;
+	font-weight: normal;
+ 	border:none; 
+ 	background:#fff;
+}
+
+
+#deleteTemplateDialogSubmit, #deleteTemplateItemDialogSubmit {
+	background-color: red;
+	background-image: linear-gradient(to bottom, #e06667, #e50000);
+}
+
+#editTemplateItemDialogPreview {
+	float:right;
+}
+
+#webhookPreviewBuildId,
+#webhookPreviewBuildEvent,
+#previewTemplateItemDialogProjectSelect, 
+#previewTemplateItemDialogBuildSelect,
+#previewTemplateItemDialogBuildStateSelect {
+	text-align: left;
+	width: 80%;
+}
+
+.webHookPreviewHeader table {
+	width: 100%;
+}
+
+/*
+div#templateEditor ul.etabs li {
+	border-bottom: solid 1px #999;
+}
+
+div#templateEditor .etabs .tab.active {
+	border-bottom: none;
+}*/
+
+tr.templateDetails > td > div > input {
+	width:90%;
+}
+
+div.stats-table-wrapper {
+	display: table;
+	width: 100%;
+}
+
+div.webhookCounts {
+	display: table-row;
+	width:100%;
+    height:150px;
+    /*padding:1em;*/
+}
+
+div.webhookCounts div.webhookCount {
+	display: table-cell;
+    height: 100px;
+    border: 2px solid;
+    margin-right: 1em;
+    width: 20%;
+}
+
+div.webhookCounts div.spacer {
+	display: table-cell;
+	width: 3%;
+}
+
+div.webhookCounts div span.count {
+	display:block;
+    font-size: 50px;
+    /*height: 80%; */
+    position: relative;
+    line-height: 120px;
+    text-align: center;
+}
+
+div.webhookCounts div span.description {
+	display:block;
+    height: 20%;
+    text-align: center;
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+    /*line-height: 20px;*/
+}
+
+div.webhookOkCount {
+	border-color: #008500;
+	color: #008500;
+}
+
+div.webhookOkCount span.description {
+	background-color: #008500;
+	color: #fff;
+}
+
+div.webhookErrorCount {
+	border-color: #A70000;
+	color: #A70000;
+}
+
+div.webhookErrorCount span.description {
+	background-color: #A70000;
+	color: #fff;
+}
+
+div.webhookSkippedCount {
+	border-color: #858585;
+	color: #858585;
+}
+
+div.webhookSkippedCount span.description {
+	background-color: #858585;
+	color: #fff;
+}
+
+div.webhookTotalCount span.description {
+	background-color: #000;
+	color: #fff;
+}
+
+span.lowercase {
+	text-transform:lowercase;
+}
+
+#webhookDialogPreview {
+	float: right;
+}
+
+#currentTemplateName {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: bold;
+}
+
+#webhookDialogAjaxResult li, #previewTempleteItemDialogAjaxResult li {
+	list-style: none;
+}
+
+div#webhookTestProgress {
+	display: none;
+}
+
+td.webHookRowItemFormat {
+	cursor: default;
+}
+
+span.testingLimitations {
+	float: right;
+	clear: right;
+}
+
+div.upload {
+	align-content: center;
+	
+}
+
+div#fs-uploaded {
+	display: none;
+	min-height: 18em;
+}
+
+div#fs-uploaded table td {
+	padding: 0.25em;
+}
+
+input#importTemplateDialogSubmit {
+	visibility: hidden;
+}
+
+div#template-parse-error {
+	margin-top: 1em;
+	visibility: hidden;
+	font-weight:  bold;
+}
+
+div.fs-upload-target {
+	height: 18em;
+	align-content: center;
+	cursor: pointer;
+	background-color: #F9F9F9;
+	text-align: center;
+	padding-top: 2em;
+	border: #999 dashed 2px;
+  	border-radius:10px;
+  	box-shadow: 0px 0px 0px 1px #fff inset;
+}
+
+div.fs-upload-target:hover, div.fs-upload-dragover {
+	background-color: #F3F3F3;
+	border-color: #0096ff;
+}
+
+div.fs-upload-dragexit {
+	background-color: #F9F9F9;
+	border: #999 dashed 2px;
+}
+
+/*! formstone v1.4.10 [upload.css] 2018-08-03 | GPL-3.0 License | formstone.it */
+.fs-upload {
+	position: relative;
+	overflow: hidden
+}
+
+.fs-upload, .fs-upload *, .fs-upload :after, .fs-upload :before,
+	.fs-upload:after, .fs-upload:before {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-transition: none;
+	transition: none;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important
+}
+
+.fs-upload-input {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: -1px;
+	opacity: 0;
+	pointer-events: none
+}
+
+.fs-upload-target {
+
+	
+}
+
+.fs-upload-disabled .fs-upload-target, .no-touch .fs-upload-disabled:hover .fs-upload-target
+	{
+	cursor: default;
+	cursor: not-allowed
+>>>>>>> More work on settings stuff
 }
