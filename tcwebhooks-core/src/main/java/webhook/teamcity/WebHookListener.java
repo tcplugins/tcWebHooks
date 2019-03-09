@@ -1,10 +1,11 @@
 package webhook.teamcity;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
@@ -17,21 +18,16 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.User;
-
-import org.apache.http.HttpStatus;
-import org.apache.http.impl.EnglishReasonPhraseCatalog;
-import org.jetbrains.annotations.NotNull;
-
 import webhook.WebHook;
-import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
+import webhook.teamcity.executor.WebHookExecutor;
+import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
@@ -52,27 +48,22 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookMainSettings myMainSettings;
     private final WebHookPayloadManager myManager;
     private final WebHookFactory webHookFactory;
-    private final WebHookTemplateResolver webHookTemplateResolver;
-    private final WebHookContentBuilder webHookContentBuilder;
-    private final WebHookHistoryRepository webHookHistoryRepository;
-    private final WebHookHistoryItemFactory webHookHistoryItemFactory;
+    private final WebHookExecutor webHookExecutor;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
     						WebHookMainSettings configSettings, WebHookPayloadManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
     						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
-    						WebHookHistoryItemFactory historyItemFactory) {
+    						WebHookHistoryItemFactory historyItemFactory,
+    						WebHookExecutor executor) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
         myMainSettings = configSettings;
         myManager = manager;
         webHookFactory = factory;
-        webHookTemplateResolver = resolver;
-        webHookContentBuilder = contentBuilder;
-        webHookHistoryRepository = historyRepository;
-        webHookHistoryItemFactory = historyItemFactory;
+        webHookExecutor = executor;
         
         Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Starting");
     }
@@ -84,94 +75,27 @@ public class WebHookListener extends BuildServerAdapter {
 
 	private void processBuildEvent(SBuild sBuild, BuildStateEnum state) {
 			
-			boolean overrideIsEnabled = false;
-
-			Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + " at buildState " + state.getShortName());
-			for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
-				WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-				try {
-					wh = webHookContentBuilder.buildWebHookContent(wh, whc, sBuild, state, overrideIsEnabled);
-					
-					doPost(wh, whc.getPayloadFormat());
-					Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									sBuild,
-									null)
-						);
-				} catch (WebHookExecutionException ex){
-					wh.getExecutionStats().setErrored(true);
-					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									sBuild,
-									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
-						);
-				} catch (Exception ex){
-					wh.getExecutionStats().setErrored(true);
-					wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									sBuild,
-									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
-							);
-				}
-	    	}
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + " at buildState " + state.getShortName());
+		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
+			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+			webHookExecutor.execute(wh, whc, sBuild, state, false);
+    	}
 	}
 	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
-		
-		boolean overrideIsEnabled = false;
 		
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + " at buildState " + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-			try {
-				wh = webHookContentBuilder.buildWebHookContent(wh, whc, sBuild, state, user, comment, overrideIsEnabled);
-				
-				doPost(wh, whc.getPayloadFormat());
-				Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-				webHookHistoryRepository.addHistoryItem(
-						webHookHistoryItemFactory.getWebHookHistoryItem(
-								whc,
-								wh.getExecutionStats(), 
-								sBuild.getBuildType(),
-								null)
-						);
-			} catch (WebHookExecutionException ex){
-				wh.getExecutionStats().setErrored(true);
-				wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-				Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-				Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-				webHookHistoryRepository.addHistoryItem(
-						webHookHistoryItemFactory.getWebHookHistoryItem(
-								whc,
-								wh.getExecutionStats(), 
-								sBuild.getBuildType(),
-								new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
-						);
-			} catch (Exception ex){
-				wh.getExecutionStats().setErrored(true);
-				wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-				Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-				Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-				webHookHistoryRepository.addHistoryItem(
-						webHookHistoryItemFactory.getWebHookHistoryItem(
-								whc,
-								wh.getExecutionStats(), 
-								sBuild.getBuildType(),
-								new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
-						);
-			}
+			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
+		}
+	}
+	
+	private void processResponsibilityEvent(BuildStateEnum state, WebHookResponsibilityHolder responsibilityHolder) {
+		
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + " at buildState " + state.getShortName());
+		for (WebHookConfig whc : getListOfEnabledWebHooks(responsibilityHolder.getSProject().getProjectId())){
+			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+			webHookExecutor.execute(wh, whc, state, responsibilityHolder, false);
 		}
 	}
 
@@ -243,113 +167,32 @@ public class WebHookListener extends BuildServerAdapter {
     	processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED);
 	}
     
+    /**
+     * Called when responsibility for several tests at once is changed. <br>
+	 * Some events may be omitted when the responsibility was changed on another node, 
+	 * i.e. it's not called on read-only node when the responsibility was assigned and 
+	 * immediately removed on the main server.
+     * 
+     * @since 6.0
+     */
 	@Override
-	public void responsibleChanged(SProject project,
-			Collection<TestName> testNames, ResponsibilityEntry entry,
+	public void responsibleChanged(
+			SProject project,
+			Collection<TestName> testNames, 
+			ResponsibilityEntry entry,
 			boolean isUserAction) {
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId() + " at buildState responsibilityChanged");
-		for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())){
-					WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-					try {
-						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
-						WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, project, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
-						wh.setContentType(payloadFormat.getContentType());
-						wh.setPayload(payloadFormat.responsibleChanged(project, 
-								testNames, 
-								entry, 
-									isUserAction, 
-									whc.getParams(), whc.getEnabledTemplates(), templateForThisBuild));
-						wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
-						doPost(wh, whc.getPayloadFormat());
-						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-						webHookHistoryRepository.addHistoryItem(
-								webHookHistoryItemFactory.getWebHookHistoryItem(
-										whc,
-										wh.getExecutionStats(), 
-										project,
-										null)
-							);
-					} catch (WebHookExecutionException ex){
-						wh.getExecutionStats().setErrored(true);
-						wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-						Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
-						Loggers.SERVER.debug(ex);
-						webHookHistoryRepository.addHistoryItem(
-								webHookHistoryItemFactory.getWebHookHistoryItem(
-										whc,
-										wh.getExecutionStats(), 
-										project,
-										new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
-							);
-					} catch (Exception ex){
-						wh.getExecutionStats().setErrored(true);
-						wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-						Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-						Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-						webHookHistoryRepository.addHistoryItem(
-								webHookHistoryItemFactory.getWebHookHistoryItem(
-										whc,
-										wh.getExecutionStats(), 
-										project,
-										new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
-								);					
-					}
-
-     	}
+			
+		processResponsibilityEvent(
+				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				WebHookResponsibilityHolder
+					.builder()
+					.sProject(project)
+					.testNames(testNames)
+					.isUserAction(isUserAction)
+					.build()
+				);
 	}
 
-	@Override
-	public void responsibleChanged(SProject project, TestNameResponsibilityEntry oldTestNameResponsibilityEntry, TestNameResponsibilityEntry newTestNameResponsibilityEntry, boolean isUserAction) {
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId() + " at buildState responsibilityChanged");
-		for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())){
-				WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-				try {
-						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
-						WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, project, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
-						wh.setContentType(payloadFormat.getContentType());
-						wh.setPayload(payloadFormat.responsibleChanged(project, 
-									oldTestNameResponsibilityEntry, 
-									newTestNameResponsibilityEntry, 
-									isUserAction, 
-									whc.getParams(), whc.getEnabledTemplates(), templateForThisBuild));
-						wh.setEnabled(wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
-						doPost(wh, whc.getPayloadFormat());
-						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-						webHookHistoryRepository.addHistoryItem(
-								webHookHistoryItemFactory.getWebHookHistoryItem(
-										whc,
-										wh.getExecutionStats(), 
-										project,
-										null)
-							);
-				} catch (WebHookExecutionException ex){
-					wh.getExecutionStats().setErrored(true);
-					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
-					Loggers.SERVER.debug(ex);
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									project,
-									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
-						);
-				} catch (Exception ex){
-					wh.getExecutionStats().setErrored(true);
-					wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									project,
-									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
-							);					
-				}
-     	}
-	}
-	
 	/**
 	 * New version of responsibleChanged, which has some bugfixes, but 
 	 * is only available in versions 7.0 and above.    
@@ -361,118 +204,80 @@ public class WebHookListener extends BuildServerAdapter {
 	@Override
 	public void responsibleChanged(@NotNull SBuildType sBuildType,
             @NotNull ResponsibilityEntry responsibilityEntryOld,
-            @NotNull ResponsibilityEntry responsibilityEntryNew){
+            @NotNull ResponsibilityEntry responsibilityEntryNew) {
 		
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuildType.getProjectId() + " at buildState responsibilityChanged");
-		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuildType.getProjectId())){
-			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-				try {	
-						WebHookPayload payloadFormat = myManager.getFormat(whc.getPayloadFormat());
-						WebHookTemplateContent templateForThisBuild = webHookTemplateResolver.findWebHookTemplate(BuildStateEnum.RESPONSIBILITY_CHANGED, sBuildType, payloadFormat.getFormatShortName(), whc.getPayloadTemplate());
-						wh.setContentType(payloadFormat.getContentType());
-						wh.setPayload(payloadFormat.responsibleChanged(sBuildType, 
-									responsibilityEntryOld, 
-									responsibilityEntryNew, 
-									WebHookContentBuilder.mergeParameters(whc.getParams(),sBuildType, WebHookContentBuilder.getPreferredDateFormat(templateForThisBuild)),
-									whc.getEnabledTemplates(), 
-									templateForThisBuild)
-								);
-						wh.setEnabled(whc.isEnabledForBuildType(sBuildType) && wh.getBuildStates().enabled(BuildStateEnum.RESPONSIBILITY_CHANGED));
-						doPost(wh, whc.getPayloadFormat());
-						Loggers.ACTIVITIES.debug(WEB_HOOK_LISTENER + myManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
-						webHookHistoryRepository.addHistoryItem(
-								webHookHistoryItemFactory.getWebHookHistoryItem(
-										whc,
-										wh.getExecutionStats(), 
-										sBuildType,
-										null)
-							);
-				} catch (WebHookExecutionException ex){
-					wh.getExecutionStats().setErrored(true);
-					wh.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + ex.getMessage());
-					Loggers.SERVER.debug(ex);
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									sBuildType,
-									new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()))
-						);
-				} catch (Exception ex){
-					wh.getExecutionStats().setErrored(true);
-					wh.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-					Loggers.SERVER.error(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-					Loggers.SERVER.debug(WEB_HOOK_LISTENER + wh.getExecutionStats().getTrackingIdAsString() + " :: URL: " + wh.getUrl(), ex);
-					webHookHistoryRepository.addHistoryItem(
-							webHookHistoryItemFactory.getWebHookHistoryItem(
-									whc,
-									wh.getExecutionStats(), 
-									sBuildType,
-									new WebHookErrorStatus(ex, ex.getMessage(), WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE))
-							);					
-				}
-     	}
-	}
-	
-	public void responsibleRemoved(SProject project, TestNameResponsibilityEntry entry){
-		
-	}
-	
-    
-	/** doPost
-	 * 
-	 * @param wh
-	 * @param payloadFormat
-	 */
-	public static void doPost(WebHook wh, String payloadFormat) {
-		try {
-			if (wh.isEnabled()){
-				wh.post();
-				Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: WebHook triggered : " 
-						+ wh.getUrl() + " using format " + payloadFormat 
-						+ " returned " + wh.getStatus() 
-						+ " " + wh.getErrorReason());	
-				Loggers.SERVER.debug(WEB_HOOK_LISTENER + ":doPost :: content dump: " + wh.getPayload());
-				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
-				if (wh.isErrored()){
-					Loggers.SERVER.error(wh.getErrorReason());
-				}
-				if (wh.getStatus() == null) {
-					Loggers.SERVER.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
-					throw new WebHookHttpExecutionException("WebHook endpoint returned null response code");
-				} else if (wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES) {
-					Loggers.SERVER.warn(WEB_HOOK_LISTENER + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
-					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response (" + EnglishReasonPhraseCatalog.INSTANCE.getReason(wh.getStatus(), null) +")", wh.getStatus());
-				}
-			} else {
-				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	
-			}
-		} catch (FileNotFoundException e) {
-			Loggers.SERVER.warn(WEB_HOOK_LISTENER + ":doPost :: " 
-					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
-			Loggers.SERVER.debug(e);
-			throw new WebHookHttpExecutionException("A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + ")", e);
-		} catch (IOException e) {
-			Loggers.SERVER.warn(WEB_HOOK_LISTENER + ":doPost :: " 
-					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
-			Loggers.SERVER.debug(e);
-			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);
-		}
-		
+		processResponsibilityEvent(
+				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				WebHookResponsibilityHolder
+					.builder()
+					.sBuildType(sBuildType)
+					.sProject(sBuildType.getProject())
+					.responsibilityEntryOld(responsibilityEntryOld)
+					.responsibilityEntryNew(responsibilityEntryNew)
+					.build()
+				);
 	}
 	
 	/**
-	 * Support for listening to events where a user has modified a build result and "marked as successful" or "marked as failed".
+	 * Called when responsibility for several build problems at once is changed.<br>
+	 * Some events may be omitted when the responsibility was changed on another 
+	 * node, i.e. it's not called on read-only node when the responsibility was 
+	 * assigned and immediately removed on the main server.
 	 * 
-	 * Checks if the list of problems has gone to zero (from greater than zero) or vice versa. If so, it fires the finished event. 
+	 * @since 8.0
+	 */
+	@Override
+	public void responsibleChanged(
+			@NotNull SProject project,
+            @NotNull Collection<BuildProblemInfo> buildProblems,
+            @Nullable ResponsibilityEntry entry) 
+	{
+		processResponsibilityEvent(
+				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				WebHookResponsibilityHolder
+					.builder()
+					.sProject(project)
+					.buildProblems(buildProblems)
+					.responsibilityEntryNew(entry)
+					.build()
+			);
+	}
+	
+   /**
+    * Called when responsibility for several tests at once is changed.
+    * @param project the project
+    * @param entry the new responsibility entry for each test
+    * @since 7.0
+    */
+	@Override
+	public void responsibleRemoved(
+			SProject project, 
+			TestNameResponsibilityEntry entry)
+	{
+		processResponsibilityEvent(
+				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				WebHookResponsibilityHolder
+					.builder()
+					.state(ResponsibilityEntry.State.FIXED)
+					.sProject(project)
+					.testNameResponsibilityEntry(entry)
+					.build()
+			);
+	}
+	
+	/**
+	 * Support for listening to events where a user has modified a build result 
+	 * and "marked as successful" or "marked as failed".
+	 * 
+	 * Checks if the list of problems has gone to zero (from greater than zero) 
+	 * or vice versa. If so, it fires the finished event. 
 	 */
 	@Override
 	public void buildProblemsChanged(SBuild build, List<BuildProblemData> before, List<BuildProblemData> after) {
 		if (build instanceof SFinishedBuild 
 				&& (   
-						 !before.isEmpty() && after.isEmpty()		// Problems count changed to zero (muted)
-					  || before.isEmpty()  && !after.isEmpty() 		// Problems count changed from zero to greater than zero. 
+					   ! before.isEmpty() &&   after.isEmpty()		// Problems count changed to zero (muted)
+					  || before.isEmpty() && ! after.isEmpty() 		// Problems count changed from zero to greater than zero. 
 				)
 			)
 		{
@@ -494,5 +299,5 @@ public class WebHookListener extends BuildServerAdapter {
 			this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, username, comment);
 		}
 	}
-
+	
 }

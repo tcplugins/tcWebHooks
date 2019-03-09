@@ -9,6 +9,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.convertor.ExtraParametersMapToJsonConvertor;
+import webhook.teamcity.payload.convertor.UserSingleValueConverter;
 import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
@@ -47,6 +48,7 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 		XStream xstream = new XStream(new JsonHierarchicalStreamDriver());
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToJsonConvertor());
+        xstream.registerConverter(new UserSingleValueConverter());
         xstream.alias("build", WebHookPayloadContent.class);
         /* For some reason, the items are coming back as "@name" and "@value"
          * so strip those out with a regex.

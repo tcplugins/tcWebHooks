@@ -9,9 +9,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
@@ -31,8 +28,6 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 	
 	Integer rank = 101;
 	String charset = "UTF-8";
-	
-	Gson gson = new GsonBuilder().create();
 	
 	public WebHookPayloadNameValuePairsTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
 		super(manager, variableResolverManager);

@@ -10,9 +10,14 @@ import org.apache.velocity.runtime.parser.node.Node;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import webhook.teamcity.payload.convertor.SuperclassExclusionStrategy;
+
 public class VelocityToJsonDirective extends Directive {
 
-	Gson gson = new GsonBuilder().create();
+	Gson gson = new GsonBuilder()
+			.addDeserializationExclusionStrategy(new SuperclassExclusionStrategy())
+			.addSerializationExclusionStrategy(new SuperclassExclusionStrategy())
+			.create();
 
 	@Override
 	public String getName() {

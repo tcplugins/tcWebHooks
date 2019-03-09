@@ -9,6 +9,7 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
+import webhook.teamcity.payload.convertor.SuperclassExclusionStrategy;
 import webhook.teamcity.payload.template.render.JsonToHtmlPrettyPrintingRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
@@ -20,7 +21,10 @@ public class WebHookPayloadJsonTemplate extends WebHookPayloadGeneric implements
 	Integer rank = 101;
 	String charset = "UTF-8";
 	
-	Gson gson = new GsonBuilder().create();
+	Gson gson = new GsonBuilder()
+			.addDeserializationExclusionStrategy(new SuperclassExclusionStrategy())
+			.addSerializationExclusionStrategy(new SuperclassExclusionStrategy())
+			.create();
 	
 	public WebHookPayloadJsonTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
 		super(manager, variableResolverManager);

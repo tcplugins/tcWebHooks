@@ -43,6 +43,7 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		item.setTest(true);
 		return item;
 	}
+	
 
 	@Override
 	public WebHookHistoryItem getWebHookHistoryItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
@@ -51,6 +52,17 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		addGeneralisedWebAddress(whc, item);
 		addSProject(item);
 		addBuildTypeData(item);
+		return item;
+	}
+	
+	@Override
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
+			SBuildType buildType, WebHookErrorStatus errorStatus) {
+		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, buildType, errorStatus);
+		addGeneralisedWebAddress(whc, item);
+		addSProject(item);
+		addBuildTypeData(item);
+		item.setTest(true);
 		return item;
 	}
 
@@ -64,6 +76,17 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 		return item;
 	}
 	
+
+	@Override
+	public WebHookHistoryItem getWebHookHistoryTestItem(WebHookConfig whc, WebHookExecutionStats webHookExecutionStats,
+			SProject sProject, WebHookErrorStatus errorStatus) {
+		WebHookHistoryItem item =  new WebHookHistoryItem(whc, webHookExecutionStats, sProject, errorStatus);
+		addGeneralisedWebAddress(whc, item);
+		addSProject(item);
+		addBuildTypeData(item);
+		item.setTest(true);
+		return item;
+	}
 	
 	private void addGeneralisedWebAddress(WebHookConfig whc, WebHookHistoryItem item) {
 		try {
@@ -79,8 +102,10 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 	}
 	
 	private void addBuildTypeData(WebHookHistoryItem item) {
-		item.setBuildTypeName(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getName());
-		item.setBuildTypeExternalId(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getExternalId());
+		if (item.getBuildTypeId() != null) {
+			item.setBuildTypeName(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getName());
+			item.setBuildTypeExternalId(myProjectManager.findBuildTypeById(item.getBuildTypeId()).getExternalId());
+		}
 	}
 
 }

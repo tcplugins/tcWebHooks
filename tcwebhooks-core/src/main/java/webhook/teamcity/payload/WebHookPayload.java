@@ -1,21 +1,13 @@
 package webhook.teamcity.payload;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 
-import org.jetbrains.annotations.NotNull;
-
 import jetbrains.buildServer.messages.Status;
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
-import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
-import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
-import jetbrains.buildServer.tests.TestName;
+import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 public interface WebHookPayload extends WebHookContentObjectSerialiser {
@@ -149,34 +141,28 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
     		Status newStatus, 
     		SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 	
+	/** 
+	 * ResponsibilityChanged handler for all responsibility events.<p>
+	 * @since tcWebHooks 1.2.0
+	 * 
+	 * Builds and assembles the webhook payload for all Responsibility Changed events.
+	 * Returns the webhook body ready to send, which must be already formatted in the 
+	 * correct format to match the "Content-Type" and "Character Set".<p>
+	 * 
+	 * This method supersedes the previous responsibility methods, and must be capable
+	 * of handling the various payloads (which get assembled into a 
+	 * {@link WebHookResponsibilityHolder} instance.
+	 * 
+	 * @param responsibilityHolder
+	 * @param mergeParameters
+	 * @param enabledTemplates
+	 * @param templateForThisBuild
+	 * @return the Payload as a string representation.
+	 */
+	String responsibilityChanged(WebHookResponsibilityHolder responsibilityHolder,
+			SortedMap<String, String> mergeParameters, Map<String, String> enabledTemplates,
+			WebHookTemplateContent templateForThisBuild); 
 
-    /**
-     * Used by TC 6.5 and below
-     * @param sBuildType
-     * @param responsibilityInfoOld
-     * @param responsibilityInfoNew
-     * @param isUserAction
-     * @param extraParameters
-     * @return Formatted payload for the WebHook to send for the responsibleChanged event.
-     */
-    String responsibleChanged(@NotNull SBuildType sBuildType, 
-    		@NotNull ResponsibilityInfo responsibilityInfoOld, 
-    		@NotNull ResponsibilityInfo responsibilityInfoNew, 
-    		boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
-
-    /**
-     * Used by TC 7.x and above
-     * @param sBuildType
-     * @param responsibilityEntryOld
-     * @param responsibilityEntryNew
-     * @param params
-     * @return Formatted payload for the WebHook to send for the responsibleChanged event.
-     */
-	String responsibleChanged(SBuildType sBuildType,
-			ResponsibilityEntry responsibilityEntryOld,
-			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate); 
-    
 	/**
 	 * Gets the content type of the format.
 	 * Should return a string like "application/json"
@@ -218,16 +204,6 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
      */
 	String getCharset();
 
-	
-	String responsibleChanged(SProject project,
-			TestNameResponsibilityEntry oldTestNameResponsibilityEntry,
-			TestNameResponsibilityEntry newTestNameResponsibilityEntry,
-			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
-
-	String responsibleChanged(SProject project, Collection<TestName> testNames,
-			ResponsibilityEntry entry, boolean isUserAction,
-			SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
-	
 	/**
 	 * Get the {@link WebHookStringRenderer}, which is responsible for rendering the 
 	 * payload as an HTML string. Must convert the output to properly escape HTML and
@@ -243,6 +219,6 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * 
 	 * @return One of the {@link PayloadTemplateEngineType} enums
 	 */
-	public abstract PayloadTemplateEngineType getTemplateEngineType(); 
-	
+	public abstract PayloadTemplateEngineType getTemplateEngineType();
+
 }

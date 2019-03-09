@@ -31,6 +31,9 @@ import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
+import webhook.teamcity.executor.WebHookExecutor;
+import webhook.teamcity.executor.WebHookRunnerFactory;
+import webhook.teamcity.executor.WebHookSerialExecutorImpl;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
@@ -46,6 +49,7 @@ import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
+import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
@@ -97,11 +101,12 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private WebHookListener webHookListener;
 	private WebHookAuthenticatorProvider authenticatorProvider;
 	private WebHookTemplateJaxHelper webHookTemplateJaxHelper;
-	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
-	private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
-	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
-	private WebHookVariableResolverManager webHookVariableResolverManager = new WebHookVariableResolverManagerImpl();
-	
+	private WebHookHistoryRepository historyRepository;
+	private WebAddressTransformer webAddressTransformer;
+	private WebHookHistoryItemFactory historyItemFactory;
+	private WebHookVariableResolverManager webHookVariableResolverManager;
+	private WebHookRunnerFactory webHookRunnerFactory;
+	private WebHookExecutor webHookExecutor;
 	
 	public static WebHookSemiMockingFrameworkImpl create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
 		WebHookSemiMockingFrameworkImpl framework = new WebHookSemiMockingFrameworkImpl();
@@ -116,18 +121,26 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		
-		webHookPayloadManager = setupPayloadManagerAndRegisterPayloadFormats();
 		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
+		webHookVariableResolverManager = new WebHookVariableResolverManagerImpl();
+		VariableResolverFactory variableResolverFactory =  new WebHooksBeanUtilsVariableResolverFactory();
+		webHookVariableResolverManager.registerVariableResolverFactory(variableResolverFactory);
+		variableResolverFactory.setWebHookVariableResolverManager(webHookVariableResolverManager);
+		webHookPayloadManager = setupPayloadManagerAndRegisterPayloadFormats();
 		
 		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
 		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager);
-		webHookVariableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
 		webHookContentBuilder =  new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver, webHookVariableResolverManager);
 		
 		authenticatorProvider = setupAuthenticatorProviderAndRegisterFactories();
+		webAddressTransformer = new WebAddressTransformerImpl();
+		historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
+		historyRepository = new WebHookHistoryRepositoryImpl();
+		webHookRunnerFactory = new WebHookRunnerFactory(webHookPayloadManager, webHookContentBuilder, historyRepository, historyItemFactory);
+		webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		
-		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookPayloadManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory);
-	
+		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookPayloadManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);

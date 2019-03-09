@@ -1,19 +1,13 @@
 package webhook.teamcity.payload.format;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
-import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
-import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
-import jetbrains.buildServer.tests.TestName;
+import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
@@ -118,23 +112,14 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	public Integer getRank() {
 		return this.rank;
 	}
-
-	@Override
-	public String responsibleChanged(SBuildType buildType,
-			ResponsibilityInfo responsibilityInfoOld,
-			ResponsibilityInfo responsibilityInfoNew, boolean isUserAction,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		return "";
-	}
-
-	@Override
-	public String responsibleChanged(SBuildType sBuildType,
-			ResponsibilityEntry responsibilityEntryOld,
-			ResponsibilityEntry responsibilityEntryNew,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		return "";
-	}
 	
+	@Override
+	public String responsibilityChanged(WebHookResponsibilityHolder responsibilityHolder,
+			SortedMap<String, String> mergeParameters, Map<String, String> enabledTemplates,
+			WebHookTemplateContent templateForThisBuild) {
+		return "";
+	}
+
 	@Override
 	public void setRank(Integer rank) {
 		this.rank = rank;
@@ -148,21 +133,6 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	@Override
 	public void setPayloadManager(WebHookPayloadManager webhookPayloadManager) {
 		myManager = webhookPayloadManager;
-	}
-
-	@Override
-	public String responsibleChanged(SProject project,
-			TestNameResponsibilityEntry oldTestNameResponsibilityEntry,
-			TestNameResponsibilityEntry newTestNameResponsibilityEntry,
-			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		return "";
-	}
-
-	@Override
-	public String responsibleChanged(SProject project,
-			Collection<TestName> testNames, ResponsibilityEntry entry,
-			boolean isUserAction, SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		return "";
 	}
 
 	@Override
@@ -191,5 +161,5 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	public PayloadTemplateEngineType getTemplateEngineType() {
 		return PayloadTemplateEngineType.LEGACY;
 	}
-	
+
 }

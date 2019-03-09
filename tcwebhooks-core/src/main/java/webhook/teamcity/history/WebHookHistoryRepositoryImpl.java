@@ -47,7 +47,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuildType(String buildTypeId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> buildTypeItems = new ArrayList<>();
 		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (item.getBuildTypeId().equals(buildTypeId)) {
+			if (buildTypeId.equals(item.getBuildTypeId())) {
 				buildTypeItems.add(item);
 			}
 		}
@@ -59,7 +59,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuild(Long buildId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> buildItems = new ArrayList<>();
 		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (item.getBuildId().equals(buildId)) {
+			if (buildId.equals(item.getBuildId())) {
 				buildItems.add(item);
 			}
 		}

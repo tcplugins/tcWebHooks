@@ -26,7 +26,6 @@ import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.TestingWebHookFactory;
 import webhook.WebHook;
-import webhook.WebHookImpl;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
@@ -40,6 +39,9 @@ import webhook.teamcity.auth.AbstractWebHookAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
+import webhook.teamcity.executor.WebHookExecutor;
+import webhook.teamcity.executor.WebHookRunnerFactory;
+import webhook.teamcity.executor.WebHookSerialExecutorImpl;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
@@ -131,11 +133,14 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
 	private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
+	private WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(manager, contentBuilder, historyRepository, historyItemFactory);
+	private WebHookExecutor webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
+
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository, historyItemFactory);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);

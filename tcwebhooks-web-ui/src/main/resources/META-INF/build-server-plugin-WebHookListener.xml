@@ -6,12 +6,33 @@
 	<bean id="webHookListener" 
 		class="webhook.teamcity.WebHookListener" 
   		init-method="register" 
-  		/>
+  		>
+        <constructor-arg ref="webHookExecutor"/>
+  	</bean>
   		
 	<!-- bean id="testListener" 
 		class="webhook.teamcity.TestListener" 
   		init-method="register" 
   		/-->
+  		
+	<bean id="webHookExecutor"
+        class="webhook.teamcity.executor.WebHookExecutorManager">
+        <constructor-arg ref="webHookMainSettings"/>
+        <constructor-arg ref="webHookSerialExecutor"/>
+        <constructor-arg ref="webHookThreadingExecutor"/>
+    </bean>
+  		
+	<bean id="webHookSerialExecutor"
+        class="webhook.teamcity.executor.WebHookSerialExecutorImpl"
+        />
+  		
+	<bean id="webHookThreadingExecutor"
+        class="webhook.teamcity.executor.WebHookThreadingExecutorImpl"
+        />
+  		
+	<bean id="webHookRunnerFactory"
+        class="webhook.teamcity.executor.WebHookRunnerFactory"
+        />
   
 	<bean id="webHookHistoryRepository"
         class="webhook.teamcity.history.WebHookHistoryRepositoryImpl"

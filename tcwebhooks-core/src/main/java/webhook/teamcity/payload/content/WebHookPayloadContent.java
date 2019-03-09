@@ -24,9 +24,11 @@ import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.payload.WebHookResponsibility;
 import webhook.teamcity.payload.util.StringUtils;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
@@ -78,6 +80,7 @@ public class WebHookPayloadContent {
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
 		private List<WebHooksChanges> changes = new ArrayList<>();
+		private WebHookResponsibility responsibilityInfo;
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -88,10 +91,12 @@ public class WebHookPayloadContent {
 		 * @param extraParameters
 		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
-		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuildType buildType, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
-			populateCommonContent(variableResolverFactory, server, buildType, buildState, templates);
+		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
+			populateCommonContent(variableResolverFactory, server, responsibilityHolder, buildState, templates);
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
-			this.teamcityProperties =  new ExtraParametersMap(buildType.getParametersProvider().getAll());
+			if (responsibilityHolder.getSBuildType() != null) {
+				this.teamcityProperties =  new ExtraParametersMap(responsibilityHolder.getSBuildType().getParametersProvider().getAll());
+			}
 		}
 		
 		/**
@@ -145,6 +150,76 @@ public class WebHookPayloadContent {
 		 * @param buildType
 		 * @param state
 		 */
+		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum state, Map<String,String> templates) {
+			
+			setResponsibilityInfo(responsibilityHolder);
+			setNotifyType(state.getShortName());
+			setProjectName(responsibilityHolder.getSProject().getName());
+			setProjectId(TeamCityIdResolver.getProjectId(responsibilityHolder.getSProject()));
+			setProjectInternalId(TeamCityIdResolver.getInternalProjectId(responsibilityHolder.getSProject()));
+			setProjectExternalId(TeamCityIdResolver.getExternalProjectId(responsibilityHolder.getSProject()));
+			setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
+			setBuildStateDescription(state.getDescriptionSuffix());
+			String oldUser = "Nobody";
+			String newUser = "Nobody";
+			try {
+				oldUser = responsibilityHolder.getResponsibilityEntryOld().getResponsibleUser().getDescriptiveName();
+			} catch (Exception e) {}
+			try {
+				newUser = responsibilityHolder.getResponsibilityEntryNew().getResponsibleUser().getDescriptiveName();
+				setComment(responsibilityHolder.getResponsibilityEntryNew().getComment());
+				
+			} catch (Exception e) {}
+			
+			if (responsibilityHolder.getSBuildType() != null) {
+				SBuildType buildType = responsibilityHolder.getSBuildType();
+				setBuildRunners(buildType.getBuildRunners());
+				setBuildFullName(buildType.getFullName());
+				setBuildName(buildType.getName());
+				setBuildTypeId(TeamCityIdResolver.getBuildTypeId(buildType));
+	    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
+	    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
+	    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
+	    		setMessage("Build " + buildType.getFullName()
+	    		+ " has changed responsibility from " 
+	    		+ oldUser
+	    		+ " to "
+	    		+ newUser
+	    		+ " with comment '" 
+	    		+ getComment().trim()
+	    		+ "'"
+	    				);
+	    		setText(buildType.getFullName()
+	    				+ " changed responsibility from " 
+	    				+ oldUser
+	    				+ " to "
+	    				+ newUser
+	    				+ " with comment '" 
+	    				+ getComment().trim()
+	    				+ "'"
+	    				);
+			}
+			
+			setResponsibilityUserOld(oldUser);
+			setResponsibilityUserNew(newUser);
+
+		}
+		
+		public void setResponsibilityInfo(WebHookResponsibilityHolder responsibilityHolder) {
+			this.responsibilityInfo = WebHookResponsibility.build(responsibilityHolder);
+		}
+		
+		public WebHookResponsibility getResponsibilityInfo() {
+			return responsibilityInfo;
+		}
+
+		/**
+		 * Used by Build Queued.
+		 * Therefore, does not have access to a specific build instance.
+		 * @param server
+		 * @param buildType
+		 * @param state
+		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
 			
 			setNotifyType(state.getShortName());
@@ -152,8 +227,8 @@ public class WebHookPayloadContent {
 			setBuildFullName(buildType.getFullName());
 			setBuildName(buildType.getName());
 			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(buildType));
-    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
-    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
+			setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
+			setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
 			setProjectName(buildType.getProjectName());
 			setProjectId(TeamCityIdResolver.getProjectId(buildType.getProject()));
 			setProjectInternalId(TeamCityIdResolver.getInternalProjectId(buildType.getProject()));
