@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
-import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
 import jetbrains.buildServer.tests.TestName;
 import lombok.Builder;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;

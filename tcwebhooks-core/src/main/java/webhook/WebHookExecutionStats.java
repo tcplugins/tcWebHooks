@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.http.Header;
-import org.apache.http.HttpRequest;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 
 import lombok.Data;

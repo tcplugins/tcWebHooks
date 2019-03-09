@@ -3,20 +3,13 @@
  */
 package webhook.teamcity.payload.format;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
-import jetbrains.buildServer.responsibility.ResponsibilityEntry;
-import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
-import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
-import jetbrains.buildServer.tests.TestName;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.WebHookPayload;

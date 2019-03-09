@@ -41,7 +41,6 @@ import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
 public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExecutor {
 	
-	private static final String WEB_HOOK_USER_REQUESTED_EXECUTOR_IMPL = "WebHookUserRequestedExecutorImpl";
 	private final SBuildServer myServer;
 	private final WebHookMainSettings myMainSettings;
 	private final WebHookConfigFactory myWebHookConfigFactory;
