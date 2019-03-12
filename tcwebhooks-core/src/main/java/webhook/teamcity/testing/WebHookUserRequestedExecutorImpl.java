@@ -103,13 +103,27 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					true
 				);
 				
+		} else if (webHookExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_PINNED)
+			|| webHookExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_UNPINNED)) {
+			
+			wh = myWebHookContentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig,
+					myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()), 
+					webHookExecutionRequest.getTestBuildState(),
+					"a testing user", 
+					"A test execution comment", 
+					true
+					);
 		} else {
 		
 			wh = myWebHookContentBuilder.buildWebHookContent(
 					wh, 
 					webHookConfig,
 					myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()), 
-					webHookExecutionRequest.getTestBuildState(), 
+					webHookExecutionRequest.getTestBuildState(),
+					null,
+					null,
 					true
 				);
 		}
@@ -149,7 +163,18 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					"A test execution comment", 
 					true
 				);
-			
+		} else if (webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_PINNED)
+				|| webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_UNPINNED)) {
+				
+				wh = myWebHookContentBuilder.buildWebHookContent(
+						wh, 
+						webHookConfig,
+						myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()), 
+						webHookTemplateExecutionRequest.getTestBuildState(),
+						"a testing user", 
+						"A test execution comment", 
+						true
+						);			
 		} else {
 		
 			wh = contentBuilder.buildWebHookContent(
@@ -157,6 +182,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookConfig,
 					myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()), 
 					webHookTemplateExecutionRequest.getTestBuildState(), 
+					null,
+					null,
 					true
 				);
 		}
@@ -317,12 +344,27 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 												"A test execution comment",
 												true
 											);
+			
+	} else if (testBuildState.equals(BuildStateEnum.BUILD_PINNED)
+		|| testBuildState.equals(BuildStateEnum.BUILD_UNPINNED)) {
+		
+			webHookRunner = myWebHookRunnerFactory.getRunner(
+												wh, 
+												webHookConfig, 
+												sRunningBuild, 
+												testBuildState,
+												"a testing user", 
+												"A test execution comment",
+												true
+											);		
 		} else {
 			webHookRunner = myWebHookRunnerFactory.getRunner(
 												wh, 
 												webHookConfig, 
 												sRunningBuild, 
-												testBuildState, 
+												testBuildState,
+												null,
+												null,
 												true
 											);
 		}

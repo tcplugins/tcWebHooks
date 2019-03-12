@@ -43,16 +43,17 @@ public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 	}
 
 	@Override
-	public void execute(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isTest) 
-	{
+	public void execute(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String user, String comment,
+			boolean isTest) {
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: About to schedule runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 		
-		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, isTest);
+		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, user, comment, isTest);
 		executorServices.getNormalExecutorService().execute(runner);
 		
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: Finished scheduling runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
+		
 	}
 	
 }

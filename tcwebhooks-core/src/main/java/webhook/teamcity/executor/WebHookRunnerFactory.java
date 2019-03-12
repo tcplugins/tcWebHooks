@@ -19,14 +19,17 @@ public class WebHookRunnerFactory {
 	private WebHookHistoryRepository webHookHistoryRepository;
 	private WebHookHistoryItemFactory webHookHistoryItemFactory;
 
-	public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isTest) {
+	public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username,
+			String comment, boolean isTest) {
 		return new BuildEventWebHookRunner(
 				webHookPayloadManager, 
 				webHookContentBuilder, 
 				webHookHistoryRepository, 
 				webHookHistoryItemFactory, 
 				whc, 
-				state, 
+				state,
+				username,
+				comment,
 				isTest,	// Test enables override too.
 				webhook,
 				sBuild,
@@ -69,8 +72,5 @@ public class WebHookRunnerFactory {
 				isTest
 			);
 	}
-
-
-	
 
 }

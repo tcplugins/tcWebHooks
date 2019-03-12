@@ -533,6 +533,12 @@ public class WebHookConfig {
 					enabledStates += ", Build Successful";
 				}
 			}
+			if (states.enabled(BuildStateEnum.BUILD_PINNED)){
+				enabledStates += ", Build Pinned";
+			}
+			if (states.enabled(BuildStateEnum.BUILD_UNPINNED)){
+				enabledStates += ", Build Unpinned";
+			}
 			if (enabledStates.length() > 0){
 				return enabledStates.substring(1);
 			} else {

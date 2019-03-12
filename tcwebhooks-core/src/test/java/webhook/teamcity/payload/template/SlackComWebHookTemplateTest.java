@@ -89,7 +89,7 @@ public class SlackComWebHookTemplateTest {
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
 
-		wh = webHookContentBuilder.buildWebHookContent(wh, webhookSlackCompact, sRunningBuild, BuildStateEnum.BUILD_SUCCESSFUL, true);
+		wh = webHookContentBuilder.buildWebHookContent(wh, webhookSlackCompact, sRunningBuild, BuildStateEnum.BUILD_SUCCESSFUL, null, null, true);
 		System.out.println(wh.getPayload());
 		//wh = webHookContentBuilder.buildWebHookContent(wh, whc, sRunningBuild, state, overrideIsEnabled);
 	}

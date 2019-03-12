@@ -24,12 +24,12 @@ public class WebHookExecutorManager implements WebHookExecutor {
 	}
 
 	@Override
-	public void execute(WebHook webHook, WebHookConfig whc, SQueuedBuild sBuild, BuildStateEnum state, String user,
+	public void execute(WebHook webHook, WebHookConfig whc, SQueuedBuild sBuild, BuildStateEnum state, String username,
 			String comment, boolean isTest) {
 		if (myWebHookMainSettings.useThreadedExecutor()) {
-			myWebHookThreadingExecutor.execute(webHook, whc, sBuild, state, user, comment, isTest);
+			myWebHookThreadingExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
 		} else {
-			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, user, comment, isTest);
+			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
 		}
 	}
 	
@@ -44,11 +44,12 @@ public class WebHookExecutorManager implements WebHookExecutor {
 	}
 
 	@Override
-	public void execute(WebHook webHook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, boolean isTest) {
+	public void execute(WebHook webHook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username,
+			String comment, boolean isTest) {
 		if (myWebHookMainSettings.useThreadedExecutor()) {
-			myWebHookThreadingExecutor.execute(webHook, whc, sBuild, state, isTest);
+			myWebHookThreadingExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
 		} else {
-			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, isTest);
+			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
 		}
 	}
 

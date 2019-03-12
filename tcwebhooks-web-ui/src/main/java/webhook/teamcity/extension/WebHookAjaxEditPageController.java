@@ -50,6 +50,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 		protected static final String BUILD_FIXED = "BuildFixed";
 		protected static final String BUILD_FAILED = "BuildFailed";
 		protected static final String BUILD_SUCCESSFUL = "BuildSuccessful";
+		protected static final String BUILD_PINNED = "BuildPinned";
+		protected static final String BUILD_UNPINNED = "BuildUnpinned";
 		
 		private final WebControllerManager myWebManager;
 	    private ProjectSettingsManager mySettings;
@@ -144,6 +146,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BEFORE_BUILD_FINISHED, BEFORE_FINISHED);
 			    						buildStateResolver.checkAndAddBuildStateIfEitherSet(request, states, BuildStateEnum.BUILD_FINISHED, BUILD_SUCCESSFUL,BUILD_FAILED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_PINNED, BUILD_PINNED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_UNPINNED, BUILD_UNPINNED);
 			    						
 			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){
 			    							buildTypeSubProjects = true;

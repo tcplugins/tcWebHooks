@@ -14,6 +14,8 @@ import webhook.teamcity.settings.WebHookConfig;
 public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements WebHookRunner {
 	
 	private final SBuild sBuild;
+	private String username;
+	private String comment;
 	
 	public BuildEventWebHookRunner(
 			WebHookPayloadManager webhookPayloadManager,
@@ -22,6 +24,8 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 			WebHookHistoryItemFactory webHookHistoryItemFactory, 
 			WebHookConfig whc, 
 			BuildStateEnum state,
+			String username,
+			String comment,
 			boolean overrideIsEnabled, 
 			WebHook webhook, 
 			SBuild sBuild,
@@ -37,11 +41,13 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 			  webhook,
 			  isTest);
 		this.sBuild = sBuild;
+		this.username = username;
+		this.comment = comment;
 	}
 	
 	@Override
 	protected WebHook getWebHookContent() {
-		return webHookContentBuilder.buildWebHookContent(webhook, whc, sBuild, state, overrideIsEnabled);
+		return webHookContentBuilder.buildWebHookContent(webhook, whc, sBuild, state, username, comment, overrideIsEnabled);
 	}
 	
 	@Override

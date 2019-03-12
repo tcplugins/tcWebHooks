@@ -76,7 +76,7 @@ public class WebHookContentBuilderTest {
 		WebHookConfig whc = mock(WebHookConfig.class);
 		when(whc.getPayloadFormat()).thenReturn("JSON");
 		
-		wh = builder.buildWebHookContent(wh, whc, sRunningBuild, BuildStateEnum.BUILD_FINISHED, true);
+		wh = builder.buildWebHookContent(wh, whc, sRunningBuild, BuildStateEnum.BUILD_FINISHED, null, null, true);
 		fail("Not yet implemented");
 	}
 	

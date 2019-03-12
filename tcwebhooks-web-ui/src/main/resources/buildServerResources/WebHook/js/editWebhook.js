@@ -282,7 +282,9 @@ WebHooksPlugin = {
 										    "BEFORE_BUILD_FINISHED" : false,
 										    "RESPONSIBILITY_CHANGED" : false,
 											"BUILD_FIXED" : true,
-										    "BUILD_INTERRUPTED" : false
+										    "BUILD_INTERRUPTED" : false,
+										    "BUILD_PINNED" : false,
+										    "BUILD_UNPINNED" : false
 									    }
 									}),
 						success:function(response){
