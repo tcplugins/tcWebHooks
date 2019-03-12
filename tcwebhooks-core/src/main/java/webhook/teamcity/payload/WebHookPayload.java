@@ -82,6 +82,35 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
     String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment);
     
     /**
+     * Extracts the required information from the sBuild and extraParameters configured in the webhook
+     * or build parameters and returns a String of the WebHook payload.
+     * 
+     * @param sBuild
+     * @param extraParameters
+     * @param templates
+     * @param webHookTemplate
+     * @param username
+     * @param comment
+     * @return Formatted payload for the WebHook to send for the buildPinned event.
+     */
+	String buildPinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String username, String comment);
+
+	/**
+	 * Extracts the required information from the sBuild and extraParameters configured in the webhook
+	 * or build parameters and returns a String of the WebHook payload.
+	 * 
+	 * @param sBuild
+	 * @param extraParameters
+	 * @param templates
+	 * @param webHookTemplate
+	 * @param username
+	 * @param comment
+	 * @return Formatted payload for the WebHook to send for the buildUnpinned event.
+	 */
+	String buildUnpinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String username, String comment);
+	
+	
+    /**
      * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
      * or build parameters and returns a String of the WebHook payload.
      *  

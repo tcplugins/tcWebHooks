@@ -78,7 +78,7 @@ public class WebHookListener extends BuildServerAdapter {
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + " at buildState " + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-			webHookExecutor.execute(wh, whc, sBuild, state, false);
+			webHookExecutor.execute(wh, whc, sBuild, state, null, null, false);
     	}
 	}
 	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
@@ -96,6 +96,15 @@ public class WebHookListener extends BuildServerAdapter {
 		for (WebHookConfig whc : getListOfEnabledWebHooks(responsibilityHolder.getSProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, state, responsibilityHolder, false);
+		}
+	}
+	
+	private void processPinEvent(SBuild sBuild, BuildStateEnum state, String user, String comment) {
+		
+		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + " at buildState " + state.getShortName());
+		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
+			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
 		}
 	}
 
@@ -298,6 +307,24 @@ public class WebHookListener extends BuildServerAdapter {
 			String username = user != null ? user.getUsername() : null;
 			this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, username, comment);
 		}
+	}
+	
+	@Override
+	public void buildPinned(SBuild build, User user, String comment) {
+		this.processPinEvent(
+				build, 
+				BuildStateEnum.BUILD_PINNED, 
+				user != null ? user.getUsername() : null, 
+				comment);
+	}
+	
+	@Override
+	public void buildUnpinned(SBuild build, User user, String comment) {
+		this.processPinEvent(
+				build, 
+				BuildStateEnum.BUILD_UNPINNED, 
+				user != null ? user.getUsername() : null,
+				comment);
 	}
 	
 }

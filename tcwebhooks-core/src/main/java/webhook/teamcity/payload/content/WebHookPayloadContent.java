@@ -82,6 +82,7 @@ public class WebHookPayloadContent {
 		private ExtraParametersMap teamcityProperties;
 		private List<WebHooksChanges> changes = new ArrayList<>();
 		private WebHookResponsibility responsibilityInfo;
+		private String pinEventUsername;
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -114,6 +115,38 @@ public class WebHookPayloadContent {
 			this.teamcityProperties =  new ExtraParametersMap(sQueuedBuild.getBuildType().getParametersProvider().getAll());
 		}
 
+		/**
+		 * Constructor: Called by Pin events.
+		 * @param variableResolverFactory
+		 * @param server
+		 * @param sBuild
+		 * @param previousBuild
+		 * @param buildState
+		 * @param extraParameters
+		 * @param teamcityParameters
+		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
+		 */
+		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sBuild, 
+				BuildStateEnum buildState, 
+				Map<String, String> extraParameters, 
+				Map<String, String> teamcityProperties,
+				Map<String, String> templates,
+				String username,
+				String comment) {
+			
+			this.extraParameters =  new ExtraParametersMap(extraParameters);
+			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
+    		populateCommonContent(variableResolverFactory, server, sBuild, null, buildState, templates);
+    		populateMessageAndText(sBuild, buildState, templates);
+    		populateArtifacts(sBuild);
+    		if (username != null) {
+    			this.pinEventUsername = username; 
+    		}
+    		if (comment != null) {
+    			this.comment = comment;
+    		}
+		}
+		
 		/**
 		 * Constructor: Called by everything except RepsonsibilityChanged.
 		 * @param variableResolverFactory
@@ -258,11 +291,11 @@ public class WebHookPayloadContent {
 		/**
 		 * Used by everything except ResponsibilityChanged. Is passed a valid build instance. 
 		 * @param server
-		 * @param sRunningBuild
+		 * @param sBuild
 		 * @param previousBuild
 		 * @param buildState
 		 */
-		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild,
+		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState, Map<String, String> templates) {
 			
 			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
@@ -279,40 +312,43 @@ public class WebHookPayloadContent {
 				catch (NullPointerException | IllegalArgumentException ex) {}
 			} 
 			
-			setBuildStartTime(format.format(sRunningBuild.getStartDate()));
+			setBuildStartTime(format.format(sBuild.getStartDate()));
 			
-			if (sRunningBuild instanceof SRunningBuild && (SRunningBuild) sRunningBuild.getFinishDate() != null) {
-				setBuildFinishTime(format.format(((SRunningBuild) sRunningBuild).getFinishDate()));
+			if (sBuild instanceof SRunningBuild && ((SRunningBuild) sBuild).getFinishDate() != null) {
+				setBuildFinishTime(format.format(((SRunningBuild) sBuild).getFinishDate()));
+			}
+			if (sBuild instanceof SFinishedBuild && ((SFinishedBuild) sBuild).getFinishDate() != null) {
+				setBuildFinishTime(format.format(((SFinishedBuild) sBuild).getFinishDate()));
 			}
 			
 			setCurrentTime(format.format(new Date()));
 
 			setBuildEventType(buildState);
-			setBuildResult(sRunningBuild, previousBuild, buildState);
-			setBuildStatus(sRunningBuild.getStatusDescriptor().getText(), buildState);
+			setBuildResult(sBuild, previousBuild, buildState);
+			setBuildStatus(sBuild.getStatusDescriptor().getText(), buildState);
     		setNotifyType(buildState.getShortName());
-    		setBuildRunners(sRunningBuild.getBuildType().getBuildRunners());
-    		setBuildFullName(sRunningBuild.getBuildType().getFullName());
-    		setBuildName(sRunningBuild.getBuildType().getName());
-			setBuildId(Long.toString(sRunningBuild.getBuildId()));
-			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sRunningBuild.getBuildType()));
-    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(sRunningBuild.getBuildType()));
-    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(sRunningBuild.getBuildType()));
-    		setProjectName(sRunningBuild.getBuildType().getProjectName());
-    		setProjectId(TeamCityIdResolver.getProjectId(sRunningBuild.getBuildType().getProject()));
-    		setProjectInternalId(TeamCityIdResolver.getInternalProjectId(sRunningBuild.getBuildType().getProject()));
-    		setProjectExternalId(TeamCityIdResolver.getExternalProjectId(sRunningBuild.getBuildType().getProject()));
-    		setBuildNumber(sRunningBuild.getBuildNumber());
-    		setAgentName(sRunningBuild.getAgentName());
-    		setAgentOs(sRunningBuild.getAgent().getOperatingSystemName());
-    		setAgentHostname(sRunningBuild.getAgent().getHostName());
-    		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
-    		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
-    		setTags(sRunningBuild.getTags());
-    		setChanges(sRunningBuild.getContainingChanges());
+    		setBuildRunners(sBuild.getBuildType().getBuildRunners());
+    		setBuildFullName(sBuild.getBuildType().getFullName());
+    		setBuildName(sBuild.getBuildType().getName());
+			setBuildId(Long.toString(sBuild.getBuildId()));
+			setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sBuild.getBuildType()));
+    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(sBuild.getBuildType()));
+    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(sBuild.getBuildType()));
+    		setProjectName(sBuild.getBuildType().getProjectName());
+    		setProjectId(TeamCityIdResolver.getProjectId(sBuild.getBuildType().getProject()));
+    		setProjectInternalId(TeamCityIdResolver.getInternalProjectId(sBuild.getBuildType().getProject()));
+    		setProjectExternalId(TeamCityIdResolver.getExternalProjectId(sBuild.getBuildType().getProject()));
+    		setBuildNumber(sBuild.getBuildNumber());
+    		setAgentName(sBuild.getAgentName());
+    		setAgentOs(sBuild.getAgent().getOperatingSystemName());
+    		setAgentHostname(sBuild.getAgent().getHostName());
+    		setTriggeredBy(sBuild.getTriggeredBy().getAsString());
+    		setComment(WebHooksComment.build(sBuild.getBuildComment()));
+    		setTags(sBuild.getTags());
+    		setChanges(sBuild.getContainingChanges());
     		try {
-    			if (sRunningBuild.getBranch() != null){
-	    			setBranch(sRunningBuild.getBranch());
+    			if (sBuild.getBranch() != null){
+	    			setBranch(sBuild.getBranch());
 	    			setBranchName(getBranch().getName());
 	    			setBranchDisplayName(getBranch().getDisplayName());
 	    			setBranchIsDefault(getBranch().isDefaultBranch());
@@ -327,7 +363,7 @@ public class WebHookPayloadContent {
     		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
 			setBuildStatusHtml(variableResolverFactory, buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
-			setBuildIsPersonal(sRunningBuild.isPersonal());
+			setBuildIsPersonal(sBuild.isPersonal());
 		}
 		
 		public List<String> getBuildTags() {
@@ -465,6 +501,8 @@ public class WebHookPayloadContent {
 
 					}
 				}
+			} else if (buildState == BuildStateEnum.BUILD_PINNED || buildState == BuildStateEnum.BUILD_UNPINNED) {
+				return;
 			} else {
 				this.buildResult = WebHookPayload.BUILD_STATUS_RUNNING;
 				this.buildResultDelta = WebHookPayload.BUILD_STATUS_UNKNOWN;
@@ -722,6 +760,10 @@ public class WebHookPayloadContent {
 
 		public void setText(String text) {
 			this.text = text;
+		}
+		
+		public String getPinEventUsername() {
+			return pinEventUsername;
 		}
 		
 		public void setResponsibilityUserOld(String responsibilityUserOld) {

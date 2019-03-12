@@ -36,8 +36,10 @@ public interface WebHookExecutor {
 	public void execute(
 			@NotNull WebHook webHook,
 			@NotNull WebHookConfig whc,
-			SBuild sBuild, 
-			BuildStateEnum state,
+			@NotNull SBuild sBuild, 
+			@NotNull BuildStateEnum state,
+			String user, 
+			String comment,
 			boolean isTest
 		);
 

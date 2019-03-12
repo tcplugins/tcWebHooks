@@ -16,7 +16,7 @@ public class WebHookBuildStateConverterTest {
 		// ALL_ENABLED should not be everything anymore. We are deliberately not including
 		// Broken/Fixed as that is not technically every build.
 		BuildState state = WebHookBuildStateConverter.convert(OldStyleBuildState.ALL_ENABLED);
-		assertTrue(state.allEnabled());
+		assertEquals(true, state.allEnabled());
 	}
 	
 	@Test

@@ -28,11 +28,13 @@ public class WebHookBuildStateConverter {
 		newStates.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
 		newStates.setEnabled(BuildStateEnum.BUILD_FAILED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
 
-		// If BUILD_CHANGED_STATUS was set, the user probably wanted to know iof the build went from broken to fixed.
+		// If BUILD_CHANGED_STATUS was set, the user probably wanted to know if the build went from broken to fixed.
 		// Therefore, translate those into the right new settings.
 		//newStates.setEnabled(BuildStateEnum.BUILD_BROKEN, 	OldStyleBuildState.enabled(OldStyleBuildState.BUILD_CHANGED_STATUS, oldState));
 		//newStates.setEnabled(BuildStateEnum.BUILD_FIXED, 	OldStyleBuildState.enabled(OldStyleBuildState.BUILD_CHANGED_STATUS, oldState));
 		
+		newStates.setEnabled(BuildStateEnum.BUILD_PINNED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
+		newStates.setEnabled(BuildStateEnum.BUILD_UNPINNED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
 		return newStates;
 	}
 }

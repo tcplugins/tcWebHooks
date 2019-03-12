@@ -223,7 +223,7 @@ WebHooksPlugin = {
 							templateText : { content: "" },
 							branchTemplateText :  { content: "" },
 							buildState : [ 
-										{ type: "buildAddedToQueue", enabled : false, editable: true },
+										{ type: "buildAddedToQueue",	 enabled : false, editable: true },
 										{ type: "buildRemovedFromQueue", enabled : false, editable: true },
 										{ type: "buildStarted", 		 enabled : false, editable: true },
 										{ type: "changesLoaded", 		 enabled : false, editable: true },
@@ -233,7 +233,9 @@ WebHooksPlugin = {
 										{ type: "buildFailed", 			 enabled : false, editable: true },
 										{ type: "buildFixed", 			 enabled : false, editable: true },
 										{ type: "buildBroken", 			 enabled : false, editable: true },
-										{ type: "responsibilityChanged", enabled : false, editable: true }
+										{ type: "responsibilityChanged", enabled : false, editable: true },
+										{ type: "buildPinned", 			 enabled : false, editable: true },
+										{ type: "buildUnpinned",		 enabled : false, editable: true }
 									]					
 					};
 					

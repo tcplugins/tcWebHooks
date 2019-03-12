@@ -16,6 +16,8 @@
         <state type="buildFixed" enabled="false" />
         <state type="buildFailed" enabled="true" />
         <state type="responsibilityChanged" enabled="true" />
+        <state type="buildPinned" enabled="true" />
+        <state type="buildUnpinned" enabled="true" />
       </states>
        <parameters>
 	    <param name="color" value="red" />

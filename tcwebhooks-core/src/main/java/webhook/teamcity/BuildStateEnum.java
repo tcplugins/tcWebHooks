@@ -12,7 +12,9 @@ public enum BuildStateEnum {
 	BUILD_FAILED			("buildFailed", 			"failed", 								"Build Failed", 					"Finished (Failed)"),
 	BUILD_FIXED				("buildFixed", 				"been fixed",							"Build Fixed",						"Finished (Fixed)"),
 	BUILD_BROKEN			("buildBroken", 			"broken",								"Build Broken",						"Finished (Broken)"),
-	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",				"Build Responsibility Changed", 	"Responsibility Changed");
+	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",				"Build Responsibility Changed", 	"Responsibility Changed"),
+	BUILD_PINNED			("buildPinned", 			"been pinned",							"Build Pinned",						"Pinned"), 
+	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned");
     
     private final String shortName;
     private final String descriptionSuffix;
@@ -79,7 +81,7 @@ public enum BuildStateEnum {
 	 * @return an array of just the build states that are notifiable
 	 */
 	public static BuildStateEnum[] getNotifyStates(){
-		final BuildStateEnum[] notifyStates = {BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED };
+		final BuildStateEnum[] notifyStates = {BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED, BUILD_PINNED, BUILD_UNPINNED };
 		return notifyStates;
 	}
 }
