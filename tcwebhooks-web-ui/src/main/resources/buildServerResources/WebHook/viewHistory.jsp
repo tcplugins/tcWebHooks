@@ -37,10 +37,10 @@
         BS.Navigation.items = [
 		  {title: "Projects", url: '<c:url value="/overview.html"/>'},
 		  <c:if test="${haveProject}"> 
-		  	{title: "${projectName}", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
+		  	{title: "<c:out value="${projectName}"/>", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
 		  </c:if>
 		  <c:if test="${haveBuild}"> 
-		  	{title: "${buildName}", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
+		  	{title: "<c:out value="${buildName}"/>", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
 		  </c:if>
           {title: "${title}", selected:true}
         ];
@@ -93,22 +93,22 @@
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
 					<c:if test="${not empty historyItem.buildId}">
-					    <td><a href="../viewLog.html?buildId=${historyItem.buildId}">${historyItem.buildTypeName} #${historyItem.buildId}</a></td>
+					    <td><a href="../viewLog.html?buildId=${historyItem.buildId}"><c:out value="${historyItem.buildTypeName}"/> #${historyItem.buildId}</a></td>
 					</c:if>
 					<c:if test="${empty historyItem.buildId}">
-					    <td><a href="../viewType.html?buildTypeId=${historyItem.buildTypeExternalId}">${historyItem.buildTypeName}</a></td>
+					    <td><a href="../viewType.html?buildTypeId=<c:out value="${historyItem.buildTypeExternalId}"/>"><c:out value="${historyItem.buildTypeName}"/></a></td>
 					</c:if>
 					
 					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
-						<td><span title="Webhook from project '${historyItem.webHookConfig.projectExternalId}'">${historyItem.webHookExecutionStats.url}</span></td>
+						<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
 					</c:if>
 					
 					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
-						<td><span title="You do not have permission to see the full URL for this webhook (no 'EDIT_PROJECT' permission on '${historyItem.webHookConfig.projectExternalId}')">** ${historyItem.url}</span></td>
+						<td><span title="You do not have permission to see the full URL for this webhook (no 'EDIT_PROJECT' permission on '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>')">** <c:out value="${historyItem.url}"/></span></td>
 					</c:if>
 					
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}${historyItem.test}">undefined</c:out></td>
-					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
+					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: <c:out value="${historyItem.webHookExecutionStats.statusReason}"/></td>
 	   				</tr>
 	        	
 	        </c:forEach>
