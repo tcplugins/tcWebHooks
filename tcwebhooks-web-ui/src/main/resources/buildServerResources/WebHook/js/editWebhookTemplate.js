@@ -319,7 +319,7 @@ WebHooksPlugin = {
 			});
 		}, 
 		handleGetSuccess: function (action) {
-			$j("#templateHeading").html(myJson.parentTemplate.description);
+			$j("#templateHeading").html(htmlEscape(myJson.parentTemplate.description));
 			// If we have the pluralised name, pass the reference to a singular form.
 			// This works around Jackson 2.x using singular names, and Jackson 1.x using plural.
 			if (typeof myJson.parentTemplate.templateItems !== 'undefined' 
@@ -386,7 +386,7 @@ WebHooksPlugin = {
 			});
 		}, 
 		handlePutSuccess: function () {
-			$j("#templateHeading").html(myJson.parentTemplateDescription);
+			$j("#templateHeading").html(htmlEscape(myJson.parentTemplateDescription));
 			this.updateCheckboxes();
 			this.updateEditor();
 		},
@@ -486,7 +486,7 @@ WebHooksPlugin = {
 						if (project.id === '_Root') { 
 							myselect.append( $j('<option></option>').val(project.id).html(project.id) );
 						} else {
-							myselect.append( $j('<option></option>').val(project.id).html(project.name) );
+							myselect.append( $j('<option></option>').val(project.id).html(htmlEscape(project.name)) );
 						}
 					});
 					$j("#previewTemplateItemDialogProjectSelect").empty().append(myselect.html()).off().change(
@@ -527,7 +527,7 @@ WebHooksPlugin = {
     				myselect.append( $j('<option></option>').val(null).html("Choose a Build...") );
     				$j(response.build).each(function(index, build) {
     					//console.log(build);
-    					var desc = build.buildType.name 
+    					var desc = htmlEscape(build.buildType.name) 
     							  + "#" + build.number 
     							  + " - " + build.status + " ("
     							  + moment(build.finishDate, moment.ISO_8601).fromNow()
@@ -609,7 +609,7 @@ WebHooksPlugin = {
 	    							  + webhook.format + " :: " + webhook.template
 	    							  + ")";
 	    					
-							myselect.append( $j('<option></option>').val(webhook.id).html(desc) );
+							myselect.append( $j('<option></option>').val(webhook.id).html(htmlEscape(desc)) );
 	    				});
 	    				$j("#previewTemplateItemDialogWebHookSelect").empty().append(myselect.html()).off().change(
 								function() {
@@ -733,11 +733,11 @@ WebHooksPlugin = {
 					var ul = $j('<ul>');
 					
 					if (response.error) {
-						ul.append($j('<li/>').html("Error: " + response.error.message + " (" + response.error.errorCode + ")"));
+						ul.append($j('<li/>').html("Error: " + htmlEscape(response.error.message) + " (" + response.error.errorCode + ")"));
 					} else {
-						ul.append($j('<li/>').html("Success: " + response.statusReason + " (" + response.statusCode + ")"));
+						ul.append($j('<li/>').html("Success: " + htmlEscape(response.statusReason) + " (" + response.statusCode + ")"));
 					}
-					ul.append($j('<li/>').html("URL: " + response.url));
+					ul.append($j('<li/>').html("URL: " + htmlEscape(response.url)));
 					ul.append($j('<li/>').html("Duration: " + response.executionTime + " @ " + moment(response.dateTime, moment.ISO_8601).format("dddd, MMMM Do YYYY, h:mm:ss a")));
 					
 					$j("#previewTempleteItemDialogAjaxResult").empty().append(ul.html());
@@ -1106,3 +1106,12 @@ WebHooksPlugin = {
     	}
     }))
 };
+
+function htmlEscape(str) {
+	return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}

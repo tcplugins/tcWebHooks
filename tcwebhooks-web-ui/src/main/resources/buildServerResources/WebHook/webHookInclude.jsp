@@ -2,7 +2,6 @@
         var ProjectBuilds = ${projectWebHooksAsJson};
         </script>
 
-	    <!-- <p><label for="webHookEnabled" style="width:30em;"><input id="webHookEnabled" type="checkbox" ${webHooksEnabledAsChecked}/> Process WebHooks for this project</label></p>-->
 	    <br/>
 	    <table id="webHookTable" class="settings">
 	   		<thead>
@@ -99,7 +98,7 @@
 																	<td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
 																		<select id="payloadFormatHolder" name="payloadFormatHolder" class="templateAjaxRefresh">
 																		    <c:forEach items="${formatList}" var="template">
-																				<option value="${template.templateFormatCombinationKey}">${template.description}</option>
+																				<option value="${template.templateFormatCombinationKey}"><c:out value="${template.description}" /></option>
 																			</c:forEach>
 																		</select>
 																	</td></tr>
@@ -239,7 +238,7 @@
 		            
 			</div> <!-- webHookFormContents -->
 
-            <input type="hidden" id="projectExternalId" name="projectExternalId" value="${projectExternalId}"/>
+            <input type="hidden" id="projectExternalId" name="projectExternalId" value="<c:out value="${projectExternalId}"/>"/>
             <input type="hidden" id="webHookId" name="webHookId" value=""/>
             <input type="hidden" id="payloadFormat" name="payloadFormat" value=""/>
             <input type="hidden" id="payloadTemplate" name="payloadTemplate" value=""/>

@@ -42,9 +42,9 @@
 	        <c:forEach items="${history}" var="historyItem">
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
-					<td>${historyItem.webHookExecutionStats.url}</td>
+					<td><c:out value="${historyItem.webHookExecutionStats.url}"/></td>
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}">undefined</c:out></td>
-					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
+					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: <c:out value="${historyItem.webHookExecutionStats.statusReason}"/></td>
 	   				</tr>
 	        	
 	        </c:forEach>

@@ -33,10 +33,10 @@
         BS.Navigation.items = [
 		  {title: "Projects", url: '<c:url value="/overview.html"/>'},
 		  <c:if test="${haveProject}"> 
-		  	{title: "${projectName}", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
+		  	{title: "<c:out value="${projectName}"/>", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
 		  </c:if>
 		  <c:if test="${haveBuild}"> 
-		  	{title: "${buildName}", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
+		  	{title: "<c:out value="${buildName}"/>", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
 		  </c:if>
           {title: "${title}", selected:true}
         ];
@@ -106,7 +106,7 @@
 	
 	function renderPreviewOnChange() {
 		if ($j('#payloadFormatHolder').val()) {
-			$j('#currentTemplateName').html(lookupTemplateName($j('#payloadFormatHolder').val()));
+			$j('#currentTemplateName').html(htmlEscape(lookupTemplateName($j('#payloadFormatHolder').val())));
 		} else {
 			$j('#currentTemplateName').html("&nbsp;");
 		}
@@ -184,11 +184,11 @@
     
         <c:choose>  
     		<c:when test="${haveBuild}"> 
-			    <h2 class="noBorder">WebHooks applicable to build ${buildName}</h2>
+			    <h2 class="noBorder">WebHooks applicable to build <c:out value="${buildName}"/></h2>
 			    To edit all webhooks for builds in the project <a href="index.html?projectId=${projectExternalId}">edit Project webhooks</a>.
          	</c:when>  
          	<c:otherwise>  
-			    <h2 class="noBorder">WebHooks configured for project ${projectName}</h2>
+			    <h2 class="noBorder">WebHooks configured for project <c:out value="${projectName}"/></h2>
          	</c:otherwise>  
 		</c:choose>  
 
@@ -264,10 +264,10 @@
 	        $('systemParams').updateContainer = function() {
         <c:choose>  
     		<c:when test="${haveBuild}"> 
-	          	$j.get("settingsList.html?buildTypeId=${buildExternalId}", function(data) {
+	          	$j.get("settingsList.html?buildTypeId=<c:out value="${buildExternalId}"/>", function(data) {
          	</c:when>  
          	<c:otherwise>  
-	          	$j.get("settingsList.html?projectId=${projectId}", function(data) {
+	          	$j.get("settingsList.html?projectId=<c:out value="${projectId}"/>", function(data) {
          	</c:otherwise>  
 		</c:choose>  	        
 	          		ProjectBuilds = data;

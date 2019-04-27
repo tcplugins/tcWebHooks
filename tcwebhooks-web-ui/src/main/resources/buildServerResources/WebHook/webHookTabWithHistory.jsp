@@ -13,7 +13,7 @@
 				<h3 class="title actionBar" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for every TeamCity build (_Root)</h3>
 			</c:when>
 			<c:otherwise>	
-				<h3 class="title actionBar" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for ${project.project.fullName}</h3>
+				<h3 class="title actionBar" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for <c:out value="${project.project.fullName}" /></h3>
 			</c:otherwise>
 		</c:choose>
 	
@@ -21,7 +21,7 @@
 		<c:if test="${project.projectWebhookCount == 0}" >
 				<div style='margin-left: 1em; margin-right:1em;'>
 				<p>There are no WebHooks configured for this project.</p> 
-				<a href="./webhooks/index.html?projectId=${project.externalProjectId}">Add project WebHooks</a>.
+				<a href="./webhooks/index.html?projectId=<c:out value="${project.externalProjectId}" />">Add project WebHooks</a>.
 				</div>
 		</c:if>
 		<c:if test="${project.projectWebhookCount > 0}" >
@@ -30,7 +30,7 @@
 					<div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
 				</c:if>
 				<p>There are <strong>${project.projectWebhookCount}</strong> WebHooks configured for all builds in this project. 
-					<a href="./webhooks/index.html?projectId=${project.externalProjectId}">Edit project WebHooks</a>.</p>
+					<a href="./webhooks/index.html?projectId=<c:out value="${project.externalProjectId}" />">Edit project WebHooks</a>.</p>
 				<table class="testList dark borderBottom">
 					<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
 					<tbody>
@@ -51,18 +51,18 @@
 
 			<c:forEach items="${project.buildWebhooks}" var="config">
 
-				<div style='margin-top: 2.5em;'><h3 class="title" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for ${projectName} &gt; ${config.buildName}</h3>
+				<div style='margin-top: 2.5em;'><h3 class="title" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for <c:out value="${projectName}"/> &gt; <c:out value="${config.buildName}"/></h3>
 				
 				<c:if test="${config.hasNoBuildWebHooks}" >
 						<div style='margin-left: 1em; margin-right:1em;'>
 						<p>There are no WebHooks configured for this specific build.</p> 
-						<a href="./webhooks/index.html?buildTypeId=${config.buildExternalId}">Add build WebHooks</a>.
+						<a href="./webhooks/index.html?buildTypeId=<c:out value="${config.buildExternalId}" />">Add build WebHooks</a>.
 						</div>
 				</c:if>
 				<c:if test="${config.hasBuildWebHooks}" >
 						<div style='margin-left: 1em; margin-right:1em;'>
 						<p>There are <strong>${config.buildCount}</strong> WebHooks for this specific build. 
-							<a href="./webhooks/index.html?buildTypeId=${config.buildExternalId}">Edit build WebHooks</a>.</p>
+							<a href="./webhooks/index.html?buildTypeId=<c:out value="${config.buildExternalId}" />">Edit build WebHooks</a>.</p>
 						<table class="testList dark borderBottom">
 							<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
 							<tbody>
@@ -94,22 +94,22 @@
 	        		<tr>
 					<td>${historyItem.webHookExecutionStats.initTimeStamp}</td>
 					<c:if test="${not empty historyItem.buildId}">
-					    <td><a href="../viewLog.html?buildId=${historyItem.buildId}">${historyItem.buildTypeName} #${historyItem.buildId}</a></td>
+					    <td><a href="../viewLog.html?buildId=<c:out value="${historyItem.buildId}"/>"><c:out value="${historyItem.buildTypeName}"/> #<c:out value="${historyItem.buildId}"/></a></td>
 					</c:if>
 					<c:if test="${empty historyItem.buildId}">
-					    <td><a href="../viewType.html?buildTypeId=${historyItem.buildTypeExternalId}">${historyItem.buildTypeName}</a></td>
+					    <td><a href="../viewType.html?buildTypeId=<c:out value="${historyItem.buildTypeExternalId}"/>"><c:out value="${historyItem.buildTypeName}"/></a></td>
 					</c:if>
 					
 					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
-						<td><span title="Webhook from project '${historyItem.webHookConfig.projectExternalId}'">${historyItem.webHookExecutionStats.url}</span></td>
+						<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
 					</c:if>
 					
 					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
-						<td><span title="You do not have permission to see the full URL for this webhook (no 'EDIT_PROJECT' permission on '${historyItem.webHookConfig.projectExternalId}')">** ${historyItem.url}</span></td>
+						<td><span title="You do not have permission to see the full URL for this webhook (no 'EDIT_PROJECT' permission on '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>')">** <c:out value="${historyItem.url}"/></span></td>
 					</c:if>
 					
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}${historyItem.test}">undefined</c:out></td>
-					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: ${historyItem.webHookExecutionStats.statusReason}</td>
+					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: <c:out value="${historyItem.webHookExecutionStats.statusReason}"/></td>
 	   				</tr>
 	        	
 	        </c:forEach>

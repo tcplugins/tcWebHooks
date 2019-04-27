@@ -33,10 +33,10 @@
         BS.Navigation.items = [
 		  {title: "Projects", url: '<c:url value="/overview.html"/>'},
 		  <c:if test="${haveProject}"> 
-		  	{title: "${projectName}", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
+		  	{title: "<c:out value="${projectName}"/>", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
 		  </c:if>
 		  <c:if test="${haveBuild}"> 
-		  	{title: "${buildName}", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
+		  	{title: "<c:out value="${buildName}"/>", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
 		  </c:if>
           {title: "${title}", selected:true}
         ];
@@ -68,7 +68,7 @@
 			  		<table>
 			  		<tr><th colspan="2">HTTP Headers sent with this request</th><tr>
 			  		<c:forEach items="${item.headers}" var="headerThing">
-			  			<tr><td>${headerThing.key}:</td><td>${headerThing.value}</td></tr>
+			  			<tr><td><c:out value="${headerThing.key}"/>:</td><td><c:out value="${headerThing.value}"/></td></tr>
 			  		</c:forEach>
 			  		</table>
 			  	</div>

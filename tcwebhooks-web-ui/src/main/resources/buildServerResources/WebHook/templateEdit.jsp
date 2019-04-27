@@ -119,7 +119,7 @@
           <th style="width:10%;" title="Determines Template ordering in the WebHook UI (smallest number first)">Rank:</th><td style="width:10%; border:none;">${webhookTemplateBean.rank}</td>
           <c:choose>
 		  	<c:when test="${not empty webhookTemplateBean.dateFormat}">
-          	<th style="width:15%;" title="Used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none;">${webhookTemplateBean.dateFormat}</td>
+          	<th style="width:15%;" title="Used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none;"><c:out value="${webhookTemplateBean.dateFormat}"/></td>
           	</c:when>
           	<c:otherwise>
           	<th style="width:15%;">Date Format:</th><td style="border:none;"><i>none</i></td>
@@ -127,14 +127,14 @@
           </c:choose>
         </tr>
         <tr>
-          <th style="width:15%;" title="Shown in the WebHook UI when choosing a Payload">Template Description:</th><td style="width:35%;">${webhookTemplateBean.templateDescription}</td>
+          <th style="width:15%;" title="Shown in the WebHook UI when choosing a Payload">Template Description:</th><td style="width:35%;"><c:out value="${webhookTemplateBean.templateDescription}"/></td>
           <th style="width:15%;">Payload Format:</th><td style="width:35%;" colspan=3>${webhookTemplateBean.payloadFormat}</td>
         </tr>
         <tr>
           <th style="width:15%;" title="Used in the UI to show extra information about a Template">Tooltip Text:</th>
           <c:choose>
 		  	<c:when test="${not empty webhookTemplateBean.toolTipText}">
-	          <td style="width:85%;" colspan="5">${webhookTemplateBean.toolTipText}</td>
+	          <td style="width:85%;" colspan="5"><c:out value="${webhookTemplateBean.toolTipText}"/></td>
           	</c:when>
           	<c:otherwise>
 	          <td style="width:85%;" colspan="5"><i>none</i></td>

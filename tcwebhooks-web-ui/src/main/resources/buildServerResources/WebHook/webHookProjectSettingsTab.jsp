@@ -11,7 +11,7 @@
 			<table class="highlightable parametersTable">
 				<tr><th class="name" style="width:75%">Project Name</th><th>WebHook Count</th></tr>
 			<c:forEach items="${parentProjectBeans}" var="parent">
-				<tr><td><a href="../webhooks/index.html?projectId=${parent.externalProjectId}">${parent.sensibleProjectName}</a></td><td>${fn:length(parent.webHookList)} webhooks configured</td></tr>
+				<tr><td><a href="../webhooks/index.html?projectId=${parent.externalProjectId}"><c:out value="${parent.sensibleProjectName}"/></a></td><td>${fn:length(parent.webHookList)} webhooks configured</td></tr>
 			</c:forEach>
 			</table>
 			<p><p>
@@ -22,7 +22,7 @@
 				<h3>WebHooks configured for every TeamCity build (_Root project)</h3>
 			</c:when>
 			<c:otherwise>	
-				<h3>WebHooks configured for ${project.fullName}</h3>
+				<h3>WebHooks configured for <c:out value="${project.fullName}"/></h3>
 			</c:otherwise>
 		</c:choose>
 	
