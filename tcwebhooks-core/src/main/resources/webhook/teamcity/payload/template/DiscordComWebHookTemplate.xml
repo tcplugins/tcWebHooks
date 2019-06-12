@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<webhook-template id="discordapp.com" enabled="true" rank="100" format="jsonTemplate">
+<webhook-template id="discord.com" enabled="true" rank="100" format="jsonTemplate">
     <default-template use-for-branch-template="false">{
         "embeds": [
             {
