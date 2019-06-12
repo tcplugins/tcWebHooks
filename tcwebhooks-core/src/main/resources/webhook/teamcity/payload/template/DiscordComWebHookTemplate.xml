@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<webhook-template id="discord.com" enabled="true" rank="100" format="jsonTemplate">
+    <default-template use-for-branch-template="false">{
+        "embeds": [
+            {
+                "title" : "${capitalise(buildStateDescription)} : ${buildName} build #${buildNumber}",
+                "url" : "${buildStatusUrl}",
+                "author" : {
+                    "name" : "TeamCity",
+                    "url" : "${rootUrl}",
+                    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                },
+                "fields": [
+                    
+                    { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                    { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                    { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                    { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                    { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                    { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                ]
+            }
+        ]
+    }</default-template>
+    <default-branch-template>{
+        "embeds": [
+            {
+                "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildNumber}",
+                "url": "${buildStatusUrl}",
+                "author": {
+                    "name": "TeamCity",
+                    "url": "${rootUrl}",
+                    "icon_url": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                },
+                "fields": [
+                    
+                    { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                    { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                    { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                    { "name" : "Branch", "value" : "${branchDisplayName}", "inline": true },
+                    { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                    { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                    { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                ]
+            }
+        ]
+    }</default-branch-template>
+    <template-description>Discord JSON templates</template-description>
+    <template-tool-tip>Supports the discordapp.com JSON webhooks endpoint</template-tool-tip>
+    <preferred-date-format></preferred-date-format>
+    <templates max-id="5">
+        <template id="0">
+            <template-text use-for-branch-template="false">{
+                "embeds": [
+                    {
+                        "title" : "Failed (broken) : ${buildName} build #${buildNumber}",
+                        "url" : "${buildStatusUrl}",
+                        "color" : 13631488,
+                        "author" : {
+                            "name" : "TeamCity",
+                            "url" : "${rootUrl}",
+                            "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</template-text>
+            <branch-template-text>{
+                "embeds": [
+                    {
+                        "title": "Failed (broken) : ${buildName} [${branchDisplayName}] build #${buildNumber}",
+                        "url": "${buildStatusUrl}",
+                        "color" : 13631488,
+                        "author": {
+                            "name": "TeamCity",
+                            "url": "${rootUrl}",
+                            "icon_url": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Branch", "value" : "${branchDisplayName}", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</branch-template-text>
+            <states>
+                <state type="buildBroken" enabled="true"/>
+            </states>
+        </template>
+        <template id="1">
+            <template-text use-for-branch-template="false">{
+                "embeds": [
+                    {
+                        "title" : "Success (fixed) : ${buildName} build #${buildNumber}",
+                        "url" : "${buildStatusUrl}",
+                        "color": 3581519,
+                        "author" : {
+                            "name" : "TeamCity",
+                            "url" : "${rootUrl}",
+                            "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</template-text>
+            <branch-template-text>{
+                "embeds": [
+                    {
+                        "title": "Success (fixed) : ${buildName} [${branchDisplayName}] build #${buildNumber}",
+                        "url": "${buildStatusUrl}",
+                        "color": 3581519,
+                        "author": {
+                            "name": "TeamCity",
+                            "url": "${rootUrl}",
+                            "icon_url": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Branch", "value" : "${branchDisplayName}", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</branch-template-text>
+            <states>
+                <state type="buildFixed" enabled="true"/>
+            </states>
+        </template>
+        <template id="2">
+            <template-text use-for-branch-template="false">{
+                "embeds": [
+                    {
+                        "title" : "${capitalise(buildStateDescription)} : ${buildName} build #${buildNumber}",
+                        "url" : "${buildStatusUrl}",
+                        "author" : {
+                            "name" : "TeamCity",
+                            "url" : "${rootUrl}",
+                            "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</template-text>
+            <branch-template-text>{
+                "embeds": [
+                    {
+                        "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildNumber}",
+                        "url": "${buildStatusUrl}",
+                        "author": {
+                            "name": "TeamCity",
+                            "url": "${rootUrl}",
+                            "icon_url": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Branch", "value" : "${branchDisplayName}", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</branch-template-text>
+            <states>
+                <state type="beforeBuildFinish" enabled="true"/>
+            </states>
+        </template>
+        <template id="3">
+            <template-text use-for-branch-template="false">{
+                "embeds": [
+                    {
+                        "title" : "Failed : ${buildName} build #${buildNumber}",
+                        "url" : "${buildStatusUrl}",
+                        "color" : 13631488,
+                        "author" : {
+                            "name" : "TeamCity",
+                            "url" : "${rootUrl}",
+                            "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</template-text>
+            <branch-template-text>{
+                "embeds": [
+                    {
+                        "title": "Failed : ${buildName} build #${buildNumber}",
+                        "url": "${buildStatusUrl}",
+                        "color": 13631488,
+                        "author": {
+                            "name": "TeamCity",
+                            "url": "${rootUrl}",
+                            "icon_url": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Branch", "value" : "${branchDisplayName}", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</branch-template-text>
+            <states>
+                <state type="buildFailed" enabled="true"/>
+            </states>
+        </template>
+        <template id="4">
+            <template-text use-for-branch-template="false">{
+                "embeds": [
+                    {
+                        "title" : "Success : ${buildName} build #${buildNumber}",
+                        "url" : "${buildStatusUrl}",
+                        "color" : 3581519,
+                        "author" : {
+                            "name" : "TeamCity",
+                            "url" : "${rootUrl}",
+                            "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</template-text>
+            <branch-template-text>{
+                "embeds": [
+                    {
+                        "title": "Success : ${buildName} build #${buildNumber}",
+                        "url": "${buildStatusUrl}",
+                        "color": 3581519,
+                        "author": {
+                            "name": "TeamCity",
+                            "url": "${rootUrl}",
+                            "icon_url": "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png"
+                        },
+                        "fields": [
+                            
+                            { "name" : "Status", "value" : "${buildStatus}", "inline": false },
+                            { "name" : "Project Name", "value" : "[${projectName}](${rootUrl}/project.html?projectId=${projectExternalId})", "inline": true },
+                            { "name" : "Build Name", "value" : "[${buildName}](${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId})", "inline": true },
+                            { "name" : "Branch", "value" : "${branchDisplayName}", "inline": true },
+                            { "name" : "Commit", "value" : "[${substr(build.vcs.number,0,7,32)}](${buildStatusUrl}&amp;tab=buildChangesDiv)", "inline": true },
+                            { "name" : "Triggered By", "value" : "${triggeredBy}", "inline" : true },
+                            { "name" : "Agent", "value" : "${agentName}", "inline" : true }
+                        ]
+                    }
+                ]
+            }</branch-template-text>
+            <states>
+                <state type="buildSuccessful" enabled="true"/>
+            </states>
+        </template>
+    </templates>
+</webhook-template>
