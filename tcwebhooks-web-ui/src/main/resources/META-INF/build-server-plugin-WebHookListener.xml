@@ -310,6 +310,14 @@
 		</property>
 	</bean>
 	
+	<bean id="discordComXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.DiscordComXmlWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>100</value>
+		</property>
+	</bean>
+	
 	<bean id="slackComXmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.SlackComXmlWebHookTemplate"
 		init-method="register">
