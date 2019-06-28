@@ -33,7 +33,7 @@ WebHooksPlugin = {
     	showDialog: function (title, action, id) {
     		$j("#editWebHookForm input[id='webHookId']").val("none"); // Unset the edit id, so that it doesn't get animated by delete.
     		$j("input[id='webHookaction']").val(action);
-    		$j(".dialogTitle").html(title);
+    		$j(".dialogTitle").text(title);
     		this.cleanFields(id);
     		this.cleanErrors();
     		this.showCentered();
@@ -139,7 +139,7 @@ WebHooksPlugin = {
         showDialog: function (title, action, id, tab) {
         	
         	this.formElement().submitAction.value = action;
-            $j(".dialogTitle").html(title);
+            $j(".dialogTitle").text(title);
             this.cleanFields(id);
             this.cleanErrors();
             
