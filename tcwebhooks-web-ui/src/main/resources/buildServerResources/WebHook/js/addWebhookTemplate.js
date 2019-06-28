@@ -29,7 +29,7 @@ WebHooksPlugin = {
     	
     	showDialog: function (title, action, data) {
     		$j("input[id='WebhookTemplateaction']").val(action);
-    		$j(".dialogTitle").html(title);
+    		$j(".dialogTitle").text(title);
     		$j("#addTemplateForm #addTemplateDialogSubmit").hide();
     		$j("#addTemplateForm #addTemplateDialogExpand").show();
     		$j("#addTemplateForm .templateDetails").hide();
@@ -77,8 +77,6 @@ WebHooksPlugin = {
     		this.cleanErrors();
     		
     		var dialog = this;
-    		//console.log($j("input[id='WebhookTemplateaction']").val());
-    		
     		var myJsonContent = {
     				id : $j("#addTemplateForm input[id='template.id']").val(),
 					description : $j("#addTemplateForm input[id='template.description']").val(),
@@ -87,8 +85,6 @@ WebHooksPlugin = {
 					format : "jsonTemplate",
     		};
 			
-    		console.log(myJsonContent);
-    		
     		$j.ajax ({
     			url: window['base_uri'] + '/app/rest/webhooks/templates',
     			type: "POST",
