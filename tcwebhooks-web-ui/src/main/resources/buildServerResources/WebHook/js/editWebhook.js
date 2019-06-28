@@ -536,9 +536,8 @@ function populateWebHookDialog(id){
 			$j('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate + "_" + webhook.payloadFormat).change();
 			
 			$j('#buildTypeSubProjects').prop('checked', webhook.subProjectsEnabled);
-			$j.each(webhook.builds, function(){
-				var thing = $j(this.buildTypeName).text();
-				console.log(thing);
+			$j.each(webhook.builds, function() {
+				console.log('Adding subproject', this.buildTypeId, 'named', this.buildTypeName);
 				var isChecked = '';
 				if (this.enabled) {
 					isChecked = ' checked';
