@@ -87,7 +87,7 @@ WebHooksPlugin = {
 			this.clearEditor();
 
             $j("input[id='WebhookTemplateaction']").val(action);
-            $j(".dialogTitle").html(title);
+            $j(".dialogTitle").text(title);
             this.cleanFields(data);
             this.cleanErrors();
             this.showCentered();
@@ -98,7 +98,7 @@ WebHooksPlugin = {
         	this.getTemplateDataOrGetParentOnFailure(data.templateId, data.templateNumber, action)
         	
         	$j("input[id='WebhookTemplateaction']").val(action);
-        	$j(".dialogTitle").html(title);
+        	$j(".dialogTitle").text(title);
         	this.cleanFields(data);
         	this.cleanErrors();
         	this.showCentered();
@@ -109,7 +109,7 @@ WebHooksPlugin = {
         	this.getWebHookTemplateData(data.templateId, data.templateNumber, action);
         	
             $j("input[id='WebhookTemplateaction']").val(action);
-            $j(".dialogTitle").html(title);
+            $j(".dialogTitle").text(title);
             this.cleanFields(data);
             this.cleanErrors();
             this.showCentered();
@@ -803,7 +803,7 @@ WebHooksPlugin = {
     	
     	showDialog: function (title, action, data) {
     		$j("input[id='WebhookTemplateaction']").val(action);
-    		$j(".dialogTitle").html(title);
+    		$j(".dialogTitle").text(title);
     		this.cleanFields(data);
     		this.cleanErrors();
     		this.showCentered();
@@ -878,7 +878,7 @@ WebHooksPlugin = {
     	
     	showDialog: function (title, action, data) {
     		$j("input[id='WebhookTemplateaction']").val(action);
-    		$j(".dialogTitle").html(title);
+    		$j(".dialogTitle").text(title);
     		this.cleanFields(data);
     		this.cleanErrors();
     		this.showCentered();
@@ -955,7 +955,7 @@ WebHooksPlugin = {
     		this.getTemplateData(templateId, action);
     		
     		$j("input[id='WebhookTemplateaction']").val(action);
-    		$j(".dialogTitle").html(title);
+    		$j(".dialogTitle").text(title);
     		
     		if (action == 'copyTemplate') {
 	    		$j("#editTemplateForm .templateEdit").hide();

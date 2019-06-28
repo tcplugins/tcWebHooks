@@ -29,7 +29,7 @@ WebHooksPlugin = {
     	
     	showDialog: function (title, action, data) {
     		$j("input[id='WebhookTemplateaction']").val(action);
-    		$j(".dialogTitle").html(title);
+    		$j(".dialogTitle").text(title);
     		$j("#addTemplateForm #addTemplateDialogSubmit").hide();
     		$j("#addTemplateForm #addTemplateDialogExpand").show();
     		$j("#addTemplateForm .templateDetails").hide();
