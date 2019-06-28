@@ -13,7 +13,7 @@ WebHookRestApiHealthStatus = {
     	
     	showDialog: function (title, action, filePath) {
     		$j("#fixPluginForm input[id='FixPluginaction']").val(action);
-    		$j("#fixPluginDialog .dialogTitle").html(title);
+    		$j("#fixPluginDialog .dialogTitle").text(title);
     		this.cleanFields(filePath);
     		this.cleanErrors();
     		this.showCentered();
