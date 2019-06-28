@@ -106,7 +106,7 @@
 	
 	function renderPreviewOnChange() {
 		if ($j('#payloadFormatHolder').val()) {
-			$j('#currentTemplateName').html(htmlEscape(lookupTemplateName($j('#payloadFormatHolder').val())));
+			$j('#currentTemplateName').text(lookupTemplateName($j('#payloadFormatHolder').val()));
 		} else {
 			$j('#currentTemplateName').html("&nbsp;");
 		}
@@ -158,8 +158,8 @@
 					success:(function(data){
 									if(data.errored) {
 										$j('#webhookPreviewRendered').html(
-												"<b>An error occured building the payload preview</b><br><div style='padding:1em;'>" +
-												data.exception.detailMessage + "</div>");
+												"<b>An error occured building the payload preview</b><br>").append(
+												$j("<div style='padding:1em;'></div>").text(data.exception.detailMessage));
 									} else {
 										$j('#webhookPreviewRendered').html(data.html);
 										
