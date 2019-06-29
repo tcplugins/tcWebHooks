@@ -446,9 +446,8 @@
 					} else {
 						jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html("").append($j("<a href='template.html?template=" + webhook.payloadTemplate +"'></a>").text(webhook.payloadFormatForWeb));
 					}
-					// Note: Assuming these .*ForWeb members are clean/safe
-					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").html(webhook.enabledEventsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
-					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").html(webhook.enabledBuildsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#buildPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").text(webhook.enabledEventsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
+					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").text(webhook.enabledBuildsListForWeb).click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey, '#buildPane');});
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEdit > a").click(function(){BS.EditWebHookDialog.showDialog(webhook.uniqueKey,'#hookPane');});
 					jQueryWebhook("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){BS.WebHookForm.removeWebHook(webhook.uniqueKey,'#hookPane');});
 					

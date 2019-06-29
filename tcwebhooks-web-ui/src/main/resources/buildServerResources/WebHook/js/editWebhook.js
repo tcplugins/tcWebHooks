@@ -654,8 +654,8 @@ function addWebHooksFromJsonCallback(){
 			} else {
 				$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemFormat").html("").append($j("<a href='template.html?template=" + webhook.payloadTemplate +"'></a>").text(webhook.payloadFormatForWeb));
 			}
-			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").html(webhook.enabledEventsListForWeb).click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey,'#hookPane');});
-			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").html(webhook.enabledBuildsListForWeb).click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey, '#buildPane');});
+			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEvents").text(webhook.enabledEventsListForWeb).click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey,'#hookPane');});
+			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemBuilds").text(webhook.enabledBuildsListForWeb).click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey, '#buildPane');});
 			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemEdit > a").click(function(){WebHooksPlugin.showEditDialog(webhook.uniqueKey,'#hookPane');});
 			$j("#viewRow_" + webhook.uniqueKey + " > td.webHookRowItemDelete > a").click(function(){WebHooksPlugin.showDeleteDialog(webhook.uniqueKey);});
 			
