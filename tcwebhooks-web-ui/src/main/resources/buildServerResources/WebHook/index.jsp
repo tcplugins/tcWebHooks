@@ -383,12 +383,19 @@
 					jQueryWebhook('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate + "_" + webhook.payloadFormat).change();
 					
 					jQueryWebhook('#buildTypeSubProjects').prop('checked', webhook.subProjectsEnabled);
-					jQueryWebhook.each(webhook.builds, function(){
-						 if (this.enabled){
-					 	 	jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
-						 } else {
-						 	 jQueryWebhook('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + this.buildTypeName + '</label></p>');
-						 }
+					jQueryWebhook.each(webhook.builds, function() {
+						console.log('Adding subproject', this.buildTypeId, 'named', this.buildTypeName);
+						var isChecked = '';
+						if (this.enabled) {
+							isChecked = ' checked';
+						}
+						var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
+						var label = $j('<label></label>');
+						label.text(this.buildTypeName);
+						label.prepend(cbox);
+						var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
+						container.append(label);
+						$j('#buildList').append(container);
 					});
 					
 					populateWebHookAuthExtrasPane(webhook);
