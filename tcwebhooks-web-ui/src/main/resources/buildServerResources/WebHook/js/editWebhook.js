@@ -542,8 +542,10 @@ function populateWebHookDialog(id){
 				if (this.enabled) {
 					isChecked = ' checked';
 				}
-				var label = $j('<label><input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single"></label>');
+				var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
+				var label = $j('<label></label>');
 				label.text(this.buildTypeName);
+				label.prepend(cbox);
 				var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
 				container.append(label);
 				$j('#buildList').append(container);
