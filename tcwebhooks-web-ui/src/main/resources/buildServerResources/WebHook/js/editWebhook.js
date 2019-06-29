@@ -221,7 +221,6 @@ WebHooksPlugin = {
 		        	var webHookId = "unknown"; 
 		        	$j(responseXML).find("webhook").each(function(error, webhook){
 		        		$j("#editWebHookForm input[id='webHookId']").val(webhook.id);
-		        		console.log(webhook.id);
 				    });
 		        	$j('li.tab').removeAttr('style');	
 		            $j("#viewRow_" + $j("#editWebHookForm input[id='webHookId']").val()).animate({
@@ -300,7 +299,6 @@ WebHooksPlugin = {
 							ul.append($j('<li/>').html("Duration: " + response.executionTime + " @ " + moment(response.dateTime, moment.ISO_8601).format("dddd, MMMM Do YYYY, h:mm:ss a")));
 							
 							$j("#webhookDialogAjaxResult").empty().append(ul.html());
-							console.log(response);
 						},
 						error: function (response) {
 							$j('#webhookTestProgress').css("display","none");
@@ -343,13 +341,11 @@ function populateBuildHistoryAjax(locator) {
 				var myselect = $j('<select>');
 				myselect.append( $j('<option></option>').val(null).html("Choose a Build...") );
 				$j(response.build).each(function(index, build) {
-					//console.log(build);
 					var desc = htmlEscape(build.buildType.name) 
 							  + "#" + build.number 
 							  + " - " + build.status + " ("
 							  + moment(build.finishDate, moment.ISO_8601).fromNow()
 							  + ")";
-					//console.log(desc);
 					myselect.append( $j('<option></option>').val(build.id).html(desc) );
 				});
 				$j("#webhookPreviewBuildId").empty().append(myselect.html());
@@ -539,8 +535,6 @@ function populateWebHookDialog(id){
 			
 			$j('#buildTypeSubProjects').prop('checked', webhook.subProjectsEnabled);
 			$j.each(webhook.builds, function(){
-				var thing = $j(this.buildTypeName).text();
-				console.log(thing);
 				 if (this.enabled){
 			 	 	$j('#buildList').append('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input checked onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">' + htmlEscape(this.buildTypeName) + '</label></p>');
 				 } else {
@@ -644,9 +638,6 @@ function addWebHooksFromJsonCallback(){
 							.prop("id", "viewRow_" + webhook.uniqueKey)
 							.removeClass('webHookRowTemplate')
 							.addClass('webHookRow');
-			
-			console.log(webhook.uniqueKey + " :: " + $j("#editWebHookForm input[id='webHookId']").val() );
-			console.log("addWebHook :: " + $j("#editWebHookForm input[id='submitAction']").val() );
 			
 			if (webhook.uniqueKey === $j("#editWebHookForm input[id='webHookId']").val() && "addWebHook" === $j("#editWebHookForm input[id='submitAction']").val() ){
 				isNew = true;

@@ -193,7 +193,6 @@ WebHooksPlugin = {
 			myJson.branchTemplateText.content = editorBranch.getValue();
 			
     		$j(myJson.buildState).each(function() {
-    			//console.log(this.type + " :: "+ this.enabled);
     			this.enabled = $j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked");
     		});
 
@@ -252,8 +251,6 @@ WebHooksPlugin = {
 						&& myJson.parentTemplate.templateItem.length > 0) 
 					{
 						$j(myJson.parentTemplate.templateItem).each(function(thing, templateItem) {
-							//console.log(templateItem);
-							//console.log(templateItem.enabled);
 							if (typeof templateItem.buildStates !== 'undefined' 
 								&& templateItem.buildStates != null 
 								&& templateItem.buildStates > 0)
@@ -263,9 +260,7 @@ WebHooksPlugin = {
 							$j(templateItem.buildState).each(function(index, itembuildState){
 								if (itembuildState.enabled) {
 									$j(myJson.buildState).each(function(thang, buildState) {
-										//console.log(buildState);
 										if (buildState.type == itembuildState.type) {
-											//console.log("they match " + buildState + templateItem);
 											buildState.editable = false;
 										}
 									});
@@ -304,7 +299,6 @@ WebHooksPlugin = {
 				},
 				success: function (response) {
 					myJson = response;
-					//console.log(myJson);
 					dialog.handleGetSuccess(action);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
@@ -349,7 +343,6 @@ WebHooksPlugin = {
 					'Accept' : 'application/json'
 				},
 				success: function (response) {
-					//console.log(response);
 					dialog.close();
 					$("buildEventTemplatesContainer").refresh();
 				},
@@ -361,7 +354,6 @@ WebHooksPlugin = {
 		}, 
 		postTemplateData: function () {
 			var dialog = this;
-			//console.log($j("input[id='WebhookTemplateaction']").val());
 			var templateSubUri = "/templateItem";
 			if ($j("input[id='WebhookTemplateaction']").val() === "addDefaultTemplate") {
 				templateSubUri = "/defaultTemplate";
@@ -395,7 +387,6 @@ WebHooksPlugin = {
         	if (action === 'copyBuildEventTemplate' || action === 'addBuildEventTemplate') {
         		if (myJson.id == 'defaultTemplate') {
             		$j(myJson.buildState).each(function() {
-            			//console.log(this.type + " :: "+ this.enabled);
             			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.enabled);
             			if (this.enabled) {
             				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
@@ -403,7 +394,6 @@ WebHooksPlugin = {
             		});
         		} else {
             		$j(myJson.buildState).each(function() {
-            			//console.log(this.type + " :: "+ this.enabled);
             			$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", false).prop( "disabled", ! this.editable && ! this.enabled);
             			if (this.editable && ! this.enabled) {
             				$j("#editTemplateItemForm td[class='" + this.type + "'] label").removeClass("checkboxLooksDisabled");
@@ -413,7 +403,6 @@ WebHooksPlugin = {
         		myJson.id = '_new';
         	} else {
 	    		$j(myJson.buildState).each(function() {
-	    			//console.log(this.type + " :: "+ this.enabled);
 	    			if (action === 'addDefaultTemplate') {
 	    				$j("#editTemplateItemForm input[id='" + this.type + "']").prop( "checked", this.editable).prop( "disabled", true);
 	    			} else {
@@ -439,14 +428,12 @@ WebHooksPlugin = {
 				editor.session.setValue("");
 				editorBranch.session.setValue("");				
 			} else {
-				//console.log(myJson.templateText.content);
 				editor.session.setValue(myJson.templateText.content);
 				editorBranch.session.setValue(myJson.branchTemplateText.content);
 			}
 		},
 		
 		doPost: function() {
-			//console.log(myJson);
 			if (myJson.id == '_new' || myJson.id == '_copy') {
 				this.postWebHookTemplateData();
 			} else {
@@ -482,7 +469,6 @@ WebHooksPlugin = {
 					var myselect = $j('<select>');
 					myselect.append( $j('<option></option>').val(null).html("Choose a Project...") );
 					$j(response.project).each(function(index, project) {
-						//console.log(project);
 						if (project.id === '_Root') { 
 							myselect.append( $j('<option></option>').val(project.id).html(project.id) );
 						} else {
@@ -526,7 +512,6 @@ WebHooksPlugin = {
     				var myselect = $j('<select>');
     				myselect.append( $j('<option></option>').val(null).html("Choose a Build...") );
     				$j(response.build).each(function(index, build) {
-    					//console.log(build);
     					var desc = htmlEscape(build.buildType.name) 
     							  + "#" + build.number 
     							  + " - " + build.status + " ("
@@ -571,7 +556,6 @@ WebHooksPlugin = {
     					selectedItem = null;
     				}
     			}
-    			console.log("Found checkbox: " + checkbox.name + " : " + label + " : " + isChecked);
     		});
     		$j("#previewTemplateItemDialogBuildStateSelect").empty().append(myselect.html());
     		$j("#previewTemplateItemDialogBuildStateSelect").val(selectedItem);
@@ -603,7 +587,6 @@ WebHooksPlugin = {
 	    				var myselect = $j('<select>');
 	    				myselect.append( $j('<option></option>').val(null).html("Choose a WebHook... (or enter a URL below)") );
 	    				$j(response.webhooks).each(function(index, webhook) {
-	    					//console.log(webhook);
 	    					var desc = WebHooksPlugin.PreviewTemplateItemDialog.elipsizeUrl(webhook.url)
 	    							  + " ("
 	    							  + webhook.format + " :: " + webhook.template
@@ -672,7 +655,6 @@ WebHooksPlugin = {
     					'Accept' : 'text/html'
     				},
     				success: function (response) {
-    					console.log(response.responseText);
 						$j('#currentTemplatePreview').html(response.responseText);
 						hljs.highlightBlock($j('#currentTemplatePreview pre code'));
     					$j('pre code').each(function(i, block) {
@@ -684,12 +666,9 @@ WebHooksPlugin = {
     					if (response.status === 422) {
     						$j('#currentTemplatePreview').html(response.responseText);
     					} else {
-    					
 	    					$j('#currentTemplatePreview').html(response.responseText);
-	    					//hljs.highlightBlock($j('#currentTemplatePreview pre code'));
-	    					
 	    					$j('pre code').each(function(i, block) {
-	    						console.log("blah " + block);
+	    						console.log("code block: " + block);
 	    					    hljs.highlightBlock(block);
 	    					  });
     					}
@@ -741,7 +720,6 @@ WebHooksPlugin = {
 					ul.append($j('<li/>').html("Duration: " + response.executionTime + " @ " + moment(response.dateTime, moment.ISO_8601).format("dddd, MMMM Do YYYY, h:mm:ss a")));
 					
 					$j("#previewTempleteItemDialogAjaxResult").empty().append(ul.html());
-					console.log(response);
 				},
 				error: function (response) {
 					$j('#webhookTestProgress').css("display","none");
@@ -859,7 +837,6 @@ WebHooksPlugin = {
     		this.cleanErrors();
     		
 			var dialog = this;
-			//console.log($j("input[id='WebhookTemplateaction']").val());
 			
 			var templateId = $j("#deleteTemplateItemForm input[id='templateId']").val()
 			var templateNumber = $j("#deleteTemplateItemForm input[id='templateNumber']").val()
@@ -933,8 +910,6 @@ WebHooksPlugin = {
     		this.cleanErrors();
     		
     		var dialog = this;
-    		console.log($j("input[id='WebhookTemplateaction']").val());
-    		
     		var templateId = $j("#deleteTemplateForm input[id='templateId']").val()
     		
     		$j.ajax ({
@@ -969,7 +944,6 @@ WebHooksPlugin = {
     	
     	showDialog: function (title, action, templateId) {
     		
-    		console.log(templateId);
     		this.getTemplateData(templateId, action);
     		
     		$j("input[id='WebhookTemplateaction']").val(action);
@@ -998,7 +972,6 @@ WebHooksPlugin = {
 			$j("#editTemplateForm input[id='template.rank']").val(myJson.rank);
 			$j("#editTemplateForm input[id='template.dateFormat']").val(myJson.preferredDateFormat);
 			$j("#editTemplateForm select#payloadFormat").val(myJson.format);
-			console.log(myJson);
 		},    	
     	
     	cleanFields: function () {
@@ -1044,7 +1017,6 @@ WebHooksPlugin = {
     		    },
     		    success: function (response) {
     				myJson = response;
-    				//console.log(myJson);
     				dialog.handleGetSuccess(action);
     		    }
     		});
@@ -1054,8 +1026,6 @@ WebHooksPlugin = {
     		this.cleanErrors();
     		
     		var dialog = this;
-    		//console.log($j("input[id='WebhookTemplateaction']").val());
-    		
     		var action = $j("input[id='WebhookTemplateaction']").val();
     		var httpMethod = "POST";
     		var URL  = window['base_uri'] + '/app/rest/webhooks/templates';
@@ -1074,8 +1044,6 @@ WebHooksPlugin = {
 			myJson.preferredDateFormat = $j("#editTemplateForm input[id='template.dateFormat']").val();
 			myJson.format = $j("#editTemplateForm select#payloadFormat").val()
 						
-    		console.log(myJson);
-    		
     		$j.ajax ({
     			url: URL,
     			type: httpMethod,
@@ -1088,7 +1056,6 @@ WebHooksPlugin = {
     			success: function (response) {
     				var action = $j("input[id='WebhookTemplateaction']").val();
     				dialog.close();
-    				console.log(action);
     				if (action === "editTemplate") {
     					$("templateInfoContainer").refresh();
     				} else {

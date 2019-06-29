@@ -84,8 +84,6 @@ WebHooksPlugin = {
     		this.cleanErrors();
     		
     		var dialog = this;
-    		//console.log($j("input[id='WebhookTemplateaction']").val());
-    		
     		var myJsonContent = {
     				id : $j("#addTemplateForm input[id='template.id']").val(),
 					description : $j("#addTemplateForm input[id='template.description']").val(),
@@ -162,8 +160,6 @@ WebHooksPlugin = {
 					$j("#template-parse-error").css("display", "block")
 											   .css("visibility", "visible");
 				}
-				console.log( my_template );
-				console.log( "ID of uploaded template is: " + my_template.id );
 			}
 
 			reader.readAsText(file);	

@@ -1,27 +1,29 @@
 package webhook.teamcity;
 
 public enum BuildStateEnum {
-    BUILD_ADDED_TO_QUEUE	("buildAddedToQueue",		"been added to the build queue",		"Build Added to Queue"),                
-    BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue by User"),                
-    BUILD_STARTED 			("buildStarted",			"started",					"Build Started"),                
-    CHANGES_LOADED 			("changesLoaded",			"loaded changes",			"Changes Loaded"),                
-    BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted"),
-    BEFORE_BUILD_FINISHED	("beforeBuildFinish", 		"nearly finished",			"Build Almost Completed"),
-	BUILD_FINISHED 			("buildFinished", 			"finished",					"Build Finished"),
-	BUILD_SUCCESSFUL		("buildSuccessful", 		"completed successfully",   "Build Successful"),
-	BUILD_FAILED			("buildFailed", 			"failed", 					"Build Failed"),
-	BUILD_FIXED				("buildFixed", 				"been fixed",				"Build Fixed"),
-	BUILD_BROKEN			("buildBroken", 			"broken",					"Build Broken"),
-	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",	"Build Responsibility Changed");
+    BUILD_ADDED_TO_QUEUE	("buildAddedToQueue",		"been added to the build queue",		"Build Added to Queue", 	"Queued"),                
+    BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue by User", "De-queued"),                
+    BUILD_STARTED 			("buildStarted",			"started",					"Build Started", 	"Started"),                
+    CHANGES_LOADED 			("changesLoaded",			"loaded changes",			"Changes Loaded", 	"Changes Loaded"),                
+    BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",			"Build Interrupted", "Interrupted"),
+    BEFORE_BUILD_FINISHED	("beforeBuildFinish", 		"nearly finished",			"Build Almost Completed", "Almost Completed"),
+	BUILD_FINISHED 			("buildFinished", 			"finished",					"Build Finished",	"Finished"),
+	BUILD_SUCCESSFUL		("buildSuccessful", 		"completed successfully",   "Build Successful", "Finished (Success)"),
+	BUILD_FAILED			("buildFailed", 			"failed", 					"Build Failed", 	"Finished (Failed)"),
+	BUILD_FIXED				("buildFixed", 				"been fixed",				"Build Fixed",		"Finished (Fixed)"),
+	BUILD_BROKEN			("buildBroken", 			"broken",					"Build Broken",		"Finished (Broken)"),
+	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",	"Build Responsibility Changed", "Responsibility Changed");
     
     private final String shortName;
     private final String descriptionSuffix;
     private final String shortDescription;
+    private final String buildStatusDescription;
     
-    private BuildStateEnum(String shortname, String descriptionSuffix, String shortDescription){
+    private BuildStateEnum(String shortname, String descriptionSuffix, String shortDescription, String buildStatusDescription){
     	this.shortName = shortname;
     	this.descriptionSuffix = descriptionSuffix;
     	this.shortDescription = shortDescription;
+    	this.buildStatusDescription = buildStatusDescription;
     }
     
     /**

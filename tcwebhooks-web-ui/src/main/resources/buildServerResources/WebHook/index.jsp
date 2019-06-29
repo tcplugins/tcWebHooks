@@ -188,13 +188,11 @@
 	    				var myselect = jQueryWebhook('<select>');
 	    				myselect.append( jQueryWebhook('<option></option>').val(null).html("Choose a Build...") );
 	    				jQueryWebhook(response.build).each(function(index, build) {
-	    					console.log(build);
 	    					var desc = build.buildType.name 
 	    							  + "#" + build.number 
 	    							  + " - " + build.status + " ("
 	    							  + moment(build.finishDate, moment.ISO_8601).fromNow()
 	    							  + ")";
-	    					console.log(desc);
 							myselect.append( jQueryWebhook('<option></option>').val(build.id).html(desc) );
 	    				});
 	    				jQueryWebhook("#currentTemplateBuildId").empty().append(myselect.html());
