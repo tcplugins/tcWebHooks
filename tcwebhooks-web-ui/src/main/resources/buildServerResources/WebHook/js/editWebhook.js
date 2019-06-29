@@ -338,8 +338,8 @@ function populateBuildHistoryAjax(locator) {
 				'Accept' : 'application/json'
 			},
 			success: function (response) {
-				var myselect = $j('<select>');
-				myselect.append( $j('<option></option>').val(null).text("Choose a Build...") );
+				var myselect = $j("#webhookPreviewBuildId");
+				myselect.empty().append( $j('<option></option>').val(null).text("Choose a Build...") );
 				$j(response.build).each(function(index, build) {
 					//console.log(build);
 					var desc = build.buildType.name
@@ -350,7 +350,6 @@ function populateBuildHistoryAjax(locator) {
 					//console.log(desc);
 					myselect.append( $j('<option></option>').val(build.id).text(desc) );
 				});
-				$j("#webhookPreviewBuildId").empty().append(myselect);
 			},
 			error: function (response) {
 				if (response.status == 404) {
