@@ -520,7 +520,7 @@ WebHooksPlugin = {
     				myselect.append( $j('<option></option>').val(null).text("Choose a Build...") );
     				$j(response.build).each(function(index, build) {
     					//console.log(build);
-    					var desc = build.buildType.name)
+    					var desc = build.buildType.name
     							  + "#" + build.number 
     							  + " - " + build.status + " ("
     							  + moment(build.finishDate, moment.ISO_8601).fromNow()
