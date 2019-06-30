@@ -185,8 +185,8 @@
 	    				'Accept' : 'application/json'
 	    			},
 	    			success: function (response) {
-	    				var myselect = jQueryWebhook('<select>');
-	    				myselect.append( jQueryWebhook('<option></option>').val(null).text("Choose a Build...") );
+	    				var myselect = jQueryWebhook('#currentTemplateBuildId');
+	    				myselect.empty().append( jQueryWebhook('<option></option>').val(null).text("Choose a Build...") );
 	    				jQueryWebhook(response.build).each(function(index, build) {
 	    					console.log(build);
 	    					var desc = build.buildType.name 
@@ -195,9 +195,8 @@
 	    							  + moment(build.finishDate, moment.ISO_8601).fromNow()
 	    							  + ")";
 	    					console.log(desc);
-							myselect.append( jQueryWebhook('<option></option>').val(build.id).text(desc) );
+						myselect.append( jQueryWebhook('<option></option>').val(build.id).text(desc) );
 	    				});
-	    				jQueryWebhook("#currentTemplateBuildId").empty().append(myselect);
 	    			},
 	    			error: function (response) {
 	    				if (response.status == 404) {

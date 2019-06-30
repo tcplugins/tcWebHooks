@@ -472,8 +472,8 @@ WebHooksPlugin = {
 					'Accept' : 'application/json'
 				},
 				success: function (response) {
-					var myselect = $j('<select>');
-					myselect.append( $j('<option></option>').val(null).text("Choose a Project...") );
+					var myselect = $j('#previewTemplateItemDialogProjectSelect');
+					myselect.empty().append( $j('<option></option>').val(null).text("Choose a Project...") );
 					$j(response.project).each(function(index, project) {
 						//console.log(project);
 						if (project.id === '_Root') { 
@@ -482,7 +482,7 @@ WebHooksPlugin = {
 							myselect.append( $j('<option></option>').val(project.id).text(project.name) );
 						}
 					});
-					$j("#previewTemplateItemDialogProjectSelect").empty().append(myselect).off().change(
+					myselect.off().change(
 							function() {
 								WebHooksPlugin.PreviewTemplateItemDialog.loadBuildList( $j(this).val() );
 								WebHooksPlugin.PreviewTemplateItemDialog.loadWebHookList( $j(this).val() );
@@ -516,8 +516,8 @@ WebHooksPlugin = {
     				'Accept' : 'application/json'
     			},
     			success: function (response) {
-    				var myselect = $j('<select>');
-    				myselect.append( $j('<option></option>').val(null).text("Choose a Build...") );
+    				var myselect = $j('#previewTemplateItemDialogBuildSelect');
+    				myselect.empty().append( $j('<option></option>').val(null).text("Choose a Build...") );
     				$j(response.build).each(function(index, build) {
     					//console.log(build);
     					var desc = build.buildType.name
@@ -528,8 +528,7 @@ WebHooksPlugin = {
     					
 						myselect.append( $j('<option></option>').val(build.id).text(desc) );
     				});
-    				$j("#previewTemplateItemDialogBuildSelect").empty().append(myselect);
-    	    		$j("#previewTemplateItemDialogBuildSelect").off().change( function() {
+    	    		myselect.off().change( function() {
         				WebHooksPlugin.PreviewTemplateItemDialog.renderPreview();
     	    		});
     			},
@@ -547,9 +546,9 @@ WebHooksPlugin = {
     	},
     	
     	loadBuildEventList: function () {
-    		var selectedItem = $j("#previewTemplateItemDialogBuildStateSelect").val();
-			var myselect = $j('<select>');
-			myselect.append( $j('<option></option>').val(null).text("Choose a Build Event to simulate...") );
+    		var myselect = $j('#previewTemplateItemDialogBuildStateSelect');
+		var selectedItem = myselect.val();
+		myselect.empty().append( $j('<option></option>').val(null).text("Choose a Build Event to simulate...") );
     		$j("#editTemplateItemForm input.buildState[type=checkbox]").each(function (index, checkbox) {
     			var label = checkbox.nextSibling.nodeValue;
     			var isChecked = $j('input#' + checkbox.id).is(':checked');
@@ -566,9 +565,8 @@ WebHooksPlugin = {
     			}
     			console.log("Found checkbox: " + checkbox.name + " : " + label + " : " + isChecked);
     		});
-    		$j("#previewTemplateItemDialogBuildStateSelect").empty().append(myselect);
-    		$j("#previewTemplateItemDialogBuildStateSelect").val(selectedItem);
-    		$j("#previewTemplateItemDialogBuildStateSelect").off().change( function() {
+    		myselect.val(selectedItem);
+    		myselect.off().change( function() {
     				WebHooksPlugin.PreviewTemplateItemDialog.renderPreview();
     		});
     	},
@@ -587,14 +585,14 @@ WebHooksPlugin = {
     				'Accept' : 'application/json'
     			},
     			success: function (response) {
+				var myselect = $j('#previewTemplateItemDialogWebHookSelect');
     				if (response.count === 0) {
-    					$j("#previewTemplateItemDialogWebHookSelect").empty().append(
+    					myselect.empty().append(
     							$j('<option></option>').val(null).text("No WebHooks found. Choose a different project or specify a URL.")
     						);
     					WebHooksPlugin.PreviewTemplateItemDialog.handleWebHookListChange(null); // Enable the URL input box.
     				} else {
-	    				var myselect = $j('<select>');
-	    				myselect.append( $j('<option></option>').val(null).text("Choose a WebHook (or enter a URL below)...") );
+	    				myselect.empty().append( $j('<option></option>').val(null).text("Choose a WebHook (or enter a URL below)...") );
 	    				$j(response.webhooks).each(function(index, webhook) {
 	    					//console.log(webhook);
 	    					var desc = WebHooksPlugin.PreviewTemplateItemDialog.elipsizeUrl(webhook.url)
@@ -604,7 +602,7 @@ WebHooksPlugin = {
 	    					
 							myselect.append( $j('<option></option>').val(webhook.id).text(desc) );
 	    				});
-	    				$j("#previewTemplateItemDialogWebHookSelect").empty().append(myselect).off().change(
+	    				myselect.off().change(
 								function() {
 									WebHooksPlugin.PreviewTemplateItemDialog.handleWebHookListChange( $j(this).val() );
 									WebHooksPlugin.PreviewTemplateItemDialog.renderPreview();
