@@ -65,7 +65,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	}
 
 	private URL findXmlFileUrlInVariousClassloaders(String xmlFile) {
-		final ClassLoader[] classLoaders = {DiscordComXmlWebHookTemplate.class.getClassLoader(), ElasticSearchXmlWebHookTemplate.class.getClassLoader(), ClassLoader.getSystemClassLoader()}; 
+		final ClassLoader[] classLoaders = {AbstractXmlBasedWebHookTemplate.class.getClassLoader(), ClassLoader.getSystemClassLoader()}; 
 		URL url = null;
 		for (ClassLoader cl : classLoaders){
 			if (cl != null){
