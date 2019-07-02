@@ -61,10 +61,10 @@ public class DiscordComWebHookTemplateTest {
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager, variableResolverManager);
 		webHookPayloadJsonTemplate.register();
 
-		SlackComCompactXmlWebHookTemplate slackCompactTemplate = new SlackComCompactXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
+		DiscordComXmlWebHookTemplate discordTemplate = new DiscordComXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
 		templateResolver = new WebHookTemplateResolver(templateManager);
 		
-		slackCompactTemplate.register();
+		discordTemplate.register();
 		webHookContentBuilder = new WebHookContentBuilder(payloadManager, templateResolver, variableResolverManager);
 		
 		WebHookConfig webhookDiscordCom  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-discordcom.xml"));

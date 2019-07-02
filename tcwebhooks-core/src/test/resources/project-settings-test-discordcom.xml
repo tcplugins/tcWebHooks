@@ -2,7 +2,7 @@
 <settings>
 
   <webhooks enabled="true">
-    <webhook url="http://127.0.0.1:9200/teamcity-${now(yyyy-MM)}/buildevent" enabled="true" format="jsontemplate" template="discordcom">
+    <webhook url="http://127.0.0.1:9200/teamcity-${now(yyyy-MM)}/buildevent" enabled="true" format="jsontemplate" template="discord.com">
       <states>
         <state type="buildFinished" enabled="true" />
         <state type="buildSuccessful" enabled="true" />
