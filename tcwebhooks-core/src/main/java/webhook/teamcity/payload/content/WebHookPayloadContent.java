@@ -3,12 +3,12 @@ package webhook.teamcity.payload.content;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.SortedMap;
-
-import com.intellij.util.containers.hash.LinkedHashMap;
 
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -64,8 +64,9 @@ public class WebHookPayloadContent {
 		responsibilityUserNew;
 		Boolean branchIsDefault;
 		
-		@Getter @Setter
-		Boolean buildIsPersonal;
+		@Getter @Setter Boolean buildIsPersonal;
+		@Getter @Setter BuildStateEnum buildEventType;
+		@Getter @Setter BuildStateEnum derivedBuildEventType;
 		
 		Branch branch;
 		List<String> buildRunners;
@@ -125,6 +126,8 @@ public class WebHookPayloadContent {
 		private void populateCommonContent(SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
 			
 			setNotifyType(state.getShortName());
+			setBuildEventType(state);
+			setDerivedBuildEventType(state);
 			setBuildRunners(buildType.getBuildRunners());
 			setBuildFullName(buildType.getFullName().toString());
 			setBuildName(buildType.getName());
@@ -187,8 +190,8 @@ public class WebHookPayloadContent {
 			
 			setCurrentTime(format.format(new Date()));
 
-			setBuildStatus(sRunningBuild.getStatusDescriptor().getText());
 			setBuildResult(sRunningBuild, previousBuild, buildState);
+			setBuildStatus(sRunningBuild.getStatusDescriptor().getText(), buildState);
     		setNotifyType(buildState.getShortName());
     		setBuildRunners(sRunningBuild.getBuildType().getBuildRunners());
     		setBuildFullName(sRunningBuild.getBuildType().getFullName().toString());
@@ -346,20 +349,28 @@ public class WebHookPayloadContent {
 					this.buildResult = WebHookPayload.BUILD_STATUS_SUCCESS;
 					if (this.buildResultPrevious.equals(this.buildResult)){
 						this.buildResultDelta = WebHookPayload.BUILD_STATUS_NO_CHANGE;
+						this.derivedBuildEventType = BuildStateEnum.BUILD_SUCCESSFUL;
 					} else {
 						this.buildResultDelta = WebHookPayload.BUILD_STATUS_FIXED;
+						this.derivedBuildEventType = BuildStateEnum.BUILD_FIXED;
+
 					}
 				} else {
 					this.buildResult = WebHookPayload.BUILD_STATUS_FAILURE;
 					if (this.buildResultPrevious.equals(this.buildResult)){
 						this.buildResultDelta = WebHookPayload.BUILD_STATUS_NO_CHANGE;
+						this.derivedBuildEventType = BuildStateEnum.BUILD_FAILED;
+
 					} else {
 						this.buildResultDelta = WebHookPayload.BUILD_STATUS_BROKEN;
+						this.derivedBuildEventType = BuildStateEnum.BUILD_BROKEN;
+
 					}
 				}
 			} else {
 				this.buildResult = WebHookPayload.BUILD_STATUS_RUNNING;
 				this.buildResultDelta = WebHookPayload.BUILD_STATUS_UNKNOWN;
+				this.derivedBuildEventType = buildState;
 			}
 			
 		}
@@ -370,8 +381,13 @@ public class WebHookPayloadContent {
 			return buildStatus;
 		}
 
-		public void setBuildStatus(String buildStatus) {
-			this.buildStatus = buildStatus;
+		public void setBuildStatus(String buildStatus, BuildStateEnum buildState) {
+			this.buildStatus = "Running".equalsIgnoreCase(buildStatus) 
+					&& BuildStateEnum.BUILD_FINISHED.equals(buildState)
+					&& Objects.nonNull(derivedBuildEventType)
+					
+				? this.derivedBuildEventType.getBuildStatusDescription()
+				: buildStatus;
 		}
 
 		public String getBuildResult() {
