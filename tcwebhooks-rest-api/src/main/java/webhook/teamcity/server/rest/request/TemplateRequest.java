@@ -1,5 +1,11 @@
 package webhook.teamcity.server.rest.request;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,6 +20,11 @@ import javax.ws.rs.core.Response;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.patch.Patch;
+
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
@@ -26,6 +37,7 @@ import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.TemplateValidator;
@@ -37,10 +49,10 @@ import webhook.teamcity.server.rest.errors.BadRequestException;
 import webhook.teamcity.server.rest.errors.JaxbClassCastException;
 import webhook.teamcity.server.rest.errors.TemplatePermissionException;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
+import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
-import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
@@ -154,7 +166,7 @@ public class TemplateRequest {
 			  .header("Content-Disposition", "attachment; filename=\"" + template.getId() + ".json\"")
 			  .build(); 
   }
-
+  
 	private Template buildAndPersistTemplate(Template newTemplate, String updateMode, WebHookTemplateConfig template) {
 		template.setTemplateDescription(newTemplate.description);
 	    template.setFormat(newTemplate.format);
@@ -186,7 +198,7 @@ public class TemplateRequest {
 	    myTemplateManager.registerTemplateFormatFromXmlConfig(template);
 	    
 		if (persistAllXmlConfigTemplates(updateMode)){
-	    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+	    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
 	    } else {
 	    	throw new OperationException(ERROR_SAVING_TEMPLATE);
 	    }
@@ -281,7 +293,7 @@ public class TemplateRequest {
 		  
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
 		  if (persistAllXmlConfigTemplates(updateMode)){
-			  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+			  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
 		  } else {
 			  throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
@@ -314,7 +326,7 @@ public class TemplateRequest {
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
 
-	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(webHookTemplateConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId()), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(webHookTemplateConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
 	  
 	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfig, newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
@@ -325,7 +337,7 @@ public class TemplateRequest {
 	  if (webHookTemplateConfig.getId().equals(rawConfig.getId())) {
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(rawConfig);
 		  if (persistAllXmlConfigTemplates("update Template")){
-		  	return myTemplateManager.getTemplateConfig(rawConfig.getId());
+		  	return myTemplateManager.getTemplateConfig(rawConfig.getId(), TemplateState.BEST);
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
@@ -345,7 +357,7 @@ public class TemplateRequest {
 	  }
 	  
 	  WebHookTemplateConfig newConfig = WebHookTemplateConfigBuilder.buildConfig(rawConfig);
-	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId()), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
 	  
 	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfig, newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
@@ -474,6 +486,10 @@ public class TemplateRequest {
 		  									 @PathParam("templateContentType") String templateContentType) {
 	  checkTemplateReadPermission();
 	  WebHookTemplateItemConfigWrapper template = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
+	  return getTemplateContent(template, templateContentType);
+  }
+  
+  public String getTemplateContent(WebHookTemplateItemConfigWrapper template, String templateContentType) {
 	  if (template == null){
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
@@ -515,6 +531,158 @@ public class TemplateRequest {
   }
   
   /**
+   * /webhooks/templates/id:elasticsearch/PROVIDED/templateItems/id:1/
+   * /webhooks/templates/id:elasticsearch/templateItems/defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:defaultTemplate
+   */
+  @GET
+  @Path("/{templateLocator1}/templateItems/{templateItemId1}/{templateContentType1}/diff/{templateLocator2}/templateItems/{templateItemId2}/{templateContentType2}")
+  @Produces({"text/plain"})
+  public String diffTemplateItem(
+		  @PathParam("templateLocator1") String templateLocator1,
+		  @PathParam("templateItemId1") String templateItemId1,
+		  @PathParam("templateContentType1") String templateContentType1,
+  		  @PathParam("templateLocator2") String templateLocator2,
+		  @PathParam("templateItemId2") String templateItemId2,
+		  @PathParam("templateContentType2") String templateContentType2,
+		  @QueryParam("context") String context) {
+	  
+	  checkTemplateReadPermission();
+	  WebHookTemplateItemConfigWrapper templateItem1 = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator1, templateItemId1);
+	  WebHookTemplateItemConfigWrapper templateItem2 = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator2, templateItemId2);
+	  Integer contextLines = Objects.nonNull(context) ? Integer.valueOf(context) : 100;
+	  
+	  Template template1 = new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator1), new Fields("$short"), myBeanContext);   
+	  Template template2 = new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator2), new Fields("$short"), myBeanContext);   
+
+	  
+	  String content1 = getTemplateContent(templateItem1, templateContentType1);
+	  String content2 = getTemplateContent(templateItem2, templateContentType2);
+	  
+	  List<String> text1=Arrays.asList(content1.split("\n"));
+	  List<String> text2=Arrays.asList(content2.split("\n"));
+	  
+	  try {
+		  //generating diff information.
+		  Patch<String> diff = DiffUtils.diff(text1, text2);
+		  
+		  //generating unified diff format
+		  List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(
+				"webhooks/templates/id:" + template1.getId() + ",status:" + template1.status +  "/templateItems/" + templateItemId1 + "/" + templateContentType1, 
+				"webhooks/templates/id:" + template2.getId() + ",status:" + template2.status +  "/templateItems/" + templateItemId2 + "/" + templateContentType2, 
+		  		text1, diff, contextLines);
+		  
+		  return unifiedDiff.stream().collect(Collectors.joining("\n"));
+	} catch (DiffException e) {
+		throw new OperationException(e.getMessage());
+	}
+  }
+  /**
+   * /webhooks/templates/id:elasticsearch/PROVIDED/templateItems/id:1/
+   * /webhooks/templates/id:elasticsearch/templateItems/defaultTemplate
+   * /webhooks/templates/id:elasticsearch/templateItems/id:defaultTemplate
+   */
+  @GET
+  @Path("/{templateLocator1}/diff/{templateLocator2}")
+  @Produces({"text/plain"})
+  public String diffTemplateItem(
+		  @PathParam("templateLocator1") String templateLocator1,
+  		  @PathParam("templateLocator2") String templateLocator2,
+		  @QueryParam("fields") String fields,
+		  @QueryParam("context") String context) {
+	  
+	  checkTemplateReadPermission();
+	  Integer contextLines = Objects.nonNull(context) ? Integer.valueOf(context) : 100;
+	  
+	  Template template1 = new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator1), new Fields(fields), myBeanContext);   
+	  Template template2 = new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator2), new Fields(fields), myBeanContext);   
+
+	  int maxTemplateTypes = template1.getTemplates().size() > template2.getTemplates().size() ? template1.getTemplates().size() : template2.getTemplates().size();
+	  
+	  try {
+	  
+		  List<String> unifiedDiffs = new ArrayList<>();
+		  
+		  if (Objects.nonNull(template1.defaultTemplate) || Objects.nonNull(template2.defaultTemplate)) {
+			  unifiedDiffs.addAll(getTemplateItemContentDiffs(template1, template1.defaultTemplate, template2, template2.defaultTemplate, contextLines));
+			  unifiedDiffs.addAll(getTemplateItemBranchContentDiffs(template1, template1.defaultTemplate, template2, template2.defaultTemplate, contextLines));
+		  }			  
+		  
+		  for (int i = 0; i < maxTemplateTypes; i++) {
+			  TemplateItem templateItem1 = null;
+			  TemplateItem templateItem2 = null;
+			  if (template1.getTemplates().size() > i){
+				  templateItem1 = template1.getTemplates().get(i);
+			  }
+			  if (template2.getTemplates().size() > i){
+				  templateItem2 = template2.getTemplates().get(i);
+			  }
+			  unifiedDiffs.addAll(getTemplateItemContentDiffs(template1, templateItem1, template2, templateItem2, contextLines));
+			  unifiedDiffs.addAll(getTemplateItemBranchContentDiffs(template1, templateItem1, template2, templateItem2, contextLines));
+		  }
+		  
+		  return unifiedDiffs.stream().collect(Collectors.joining("\n"));
+	} catch (DiffException e) {
+		throw new OperationException(e.getMessage());
+	}
+  }
+  
+  private List<String> getTemplateItemContentDiffs(Template template1, TemplateItem templateItem1, 
+		  										   Template template2, TemplateItem templateItem2,
+		  										   Integer contextLines) throws DiffException {
+	  String content1 = "";
+	  String content2 = "";
+	  String id1 = "none";
+	  String id2 = "none";
+	  if (Objects.nonNull(templateItem1) && Objects.nonNull(templateItem1.getTemplateText())) {
+		  content1 = templateItem1.getTemplateText().content;
+		  id1 = templateItem1.getId();
+	  }
+	  if (Objects.nonNull(templateItem2) && Objects.nonNull(templateItem2.getTemplateText())) {
+		  content2 = templateItem2.getTemplateText().content;
+		  id2 = templateItem2.getId();
+	  }
+	  List<String> text1=Arrays.asList(content1.split("\n"));
+	  List<String> text2=Arrays.asList(content2.split("\n"));
+	  
+	  return UnifiedDiffUtils.generateUnifiedDiff(
+			    "webhooks/templates/id:" + template1.getId() + ",status:" + template1.status +  "/templateItems/" + id1 + "/templateText", 
+			    "webhooks/templates/id:" + template2.getId() + ",status:" + template2.status +  "/templateItems/" + id2 + "/templateText", 
+			  	text1, 
+			  	DiffUtils.diff(text1, text2), 
+			  	contextLines
+			  	);
+}
+  
+  private List<String> getTemplateItemBranchContentDiffs(Template template1, TemplateItem templateItem1, 
+														 Template template2, TemplateItem templateItem2,
+														 Integer contextLines) throws DiffException {
+	  String content1 = "";
+	  String content2 = "";
+	  String id1 = "none";
+	  String id2 = "none";
+	  if (Objects.nonNull(templateItem1) && Objects.nonNull(templateItem1.getBranchTemplateText())) {
+		  content1 = templateItem1.getBranchTemplateText().content;
+		  id1 = templateItem1.getId();
+	  }
+	  if (Objects.nonNull(templateItem2) && Objects.nonNull(templateItem2.getBranchTemplateText())) {
+		  content2 = templateItem2.getBranchTemplateText().content;
+		  id2 = templateItem2.getId();
+	  }
+	  List<String> text1=Arrays.asList(content1.split("\n"));
+	  List<String> text2=Arrays.asList(content2.split("\n"));
+	  
+	  return UnifiedDiffUtils.generateUnifiedDiff(
+			  // webhooks/templates/id:slack.com/templateItems/defaultTemplate/branchTemplateContent
+			  "webhooks/templates/id:" + template1.getId() + ",status:" + template1.status +  "/templateItems/" + id1 + "/branchTemplateText", 
+			  "webhooks/templates/id:" + template2.getId() + ",status:" + template2.status +  "/templateItems/" + id2 + "/branchTemplateText", 
+			  text1, 
+			  DiffUtils.diff(text1, text2), 
+			  contextLines
+			  );
+  }
+
+/**
    * /webhooks/templates/id:elasticsearch/templateItems/id:1
    * /webhooks/templates/id:elasticsearch/templateItems/defaultTemplate
    * /webhooks/templates/id:elasticsearch/templateItems/id:defaultTemplate

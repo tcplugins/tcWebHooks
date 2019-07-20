@@ -150,12 +150,22 @@ public class WebHookTemplateManager {
 		}
 	}
 	
-	public WebHookTemplateConfig getTemplateConfig(String formatShortname){
+	public WebHookTemplateConfig getTemplateConfig(String formatShortname, TemplateState templateState){
 		synchronized (orderedTemplateCollection) {
-			if (xmlConfigTemplates.containsKey(formatShortname)){
+			if (springTemplates.containsKey(formatShortname) 
+					&& xmlConfigTemplates.containsKey(formatShortname)
+					&& TemplateState.PROVIDED.equals(templateState))
+			{
+				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(formatShortname).getAsEntity());
+			}
+			if (xmlConfigTemplates.containsKey(formatShortname) 
+				&& ( TemplateState.BEST.equals(templateState) || getTemplateState(formatShortname, templateState).equals(templateState)))
+			{
 				return WebHookTemplateConfigBuilder.buildConfig(xmlConfigTemplates.get(formatShortname).getAsEntity());
 			}
-			if (springTemplates.containsKey(formatShortname)){
+			if (springTemplates.containsKey(formatShortname)
+				&& ( TemplateState.BEST.equals(templateState) || TemplateState.PROVIDED.equals(templateState) || getTemplateState(formatShortname, templateState).equals(templateState)))
+			{
 				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(formatShortname).getAsEntity());
 			}
 			return null;
@@ -190,8 +200,8 @@ public class WebHookTemplateManager {
 		return matchingTemplates;
 	}
 	
-	public TemplateState getTemplateState(String template){
-		if (springTemplates.containsKey(template) && xmlConfigTemplates.containsKey(template)){
+	public TemplateState getTemplateState(String template, TemplateState templateState){
+		if ((TemplateState.BEST.equals(templateState) || TemplateState.USER_OVERRIDDEN.equals(templateState)) && springTemplates.containsKey(template) && xmlConfigTemplates.containsKey(template)){
 			return TemplateState.USER_OVERRIDDEN;
 		} else if (springTemplates.containsKey(template)){
 			return TemplateState.PROVIDED;
@@ -205,6 +215,7 @@ public class WebHookTemplateManager {
 		PROVIDED 		("Template bundled with tcWebhooks"), 
 		USER_DEFINED 	("User defined template"), 
 		USER_OVERRIDDEN ("Overridden by user defined template"), 
+		BEST			("Template in its most specific state"), // Only used for finding. Template will never actually be in this state. 
 		UNKNOWN			("Unknown origin");
 		
 		private final String description;
@@ -231,6 +242,10 @@ public class WebHookTemplateManager {
 		public boolean isStateUnknown()
 		{
 			return TemplateState.UNKNOWN.equals(this);
+		}
+		public boolean isStateAny()
+		{
+			return TemplateState.BEST.equals(this);
 		}
 	}
 

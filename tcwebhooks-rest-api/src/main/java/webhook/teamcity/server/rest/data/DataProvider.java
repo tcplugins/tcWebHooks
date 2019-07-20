@@ -11,6 +11,7 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
@@ -52,7 +53,7 @@ public class DataProvider {
 		List<WebHookTemplateConfigWrapper> templates = new ArrayList<>();
 		for (WebHookTemplateConfig template : this.myTemplateManager.getRegisteredTemplateConfigs()){
 			templates.add(new WebHookTemplateConfigWrapper(template, 
-														   this.myTemplateManager.getTemplateState(template.getId()),
+														   this.myTemplateManager.getTemplateState(template.getId(), TemplateState.BEST),
 														   WebHookTemplateStates.build(template)
 														  )
 						 );

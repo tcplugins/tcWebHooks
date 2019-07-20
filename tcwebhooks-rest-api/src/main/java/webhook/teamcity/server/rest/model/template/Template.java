@@ -14,9 +14,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.intellij.openapi.util.text.StringUtil;
-
-import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
@@ -27,9 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.server.rest.WebHookWebLinks;
-import webhook.teamcity.server.rest.data.DataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;

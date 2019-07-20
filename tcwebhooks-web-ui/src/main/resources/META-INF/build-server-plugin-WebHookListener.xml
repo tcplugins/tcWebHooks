@@ -96,6 +96,11 @@
      	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
      	init-method="register" 
      	/>
+     	
+    <bean id="webHookTemplateDiffPageController" 
+     	class="webhook.teamcity.extension.WebHookTemplateDiffPageController" 
+     	init-method="register" 
+     	/>
 
      <bean id="webHookAjaxSettingsListPageController" 
      	class="webhook.teamcity.extension.WebHookAjaxSettingsListPageController" 

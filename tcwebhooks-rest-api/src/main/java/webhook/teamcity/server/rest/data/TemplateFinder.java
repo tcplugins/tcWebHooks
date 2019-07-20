@@ -7,6 +7,7 @@ import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
@@ -35,7 +36,7 @@ public class TemplateFinder {
 			throw new BadRequestException("Empty template locator is not supported.");
 		}
 
-		final Locator locator = new Locator(templateLocator, "id", "name",
+		final Locator locator = new Locator(templateLocator, "id", "name", "type",
 				Locator.LOCATOR_SINGLE_VALUE_UNUSED_NAME);
 
 		if (locator.isSingleValue()) {
@@ -44,45 +45,46 @@ public class TemplateFinder {
 			WebHookTemplateConfig template = null;
 			@NotNull
 			final String singleValue = locator.getSingleValue();
-			template = myTemplateManager.getTemplateConfig(singleValue);
+			template = myTemplateManager.getTemplateConfig(singleValue, TemplateState.BEST);
 			if (template != null) {
 				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getId()), 
+														myTemplateManager.getTemplateState(template.getId(), TemplateState.BEST), 
 														WebHookTemplateStates.build(template));
 			}
 			throw new NotFoundException(
-					"No template found by name '"
+					"No template found by id '"
 							+ singleValue + "'.");
 			
 		} else if (locator.getSingleDimensionValue("id") != null){
 			WebHookTemplateConfig template = null;
-			@NotNull
-			final String templateId = locator.getSingleDimensionValue("id");
-			template = myTemplateManager.getTemplateConfig(templateId);
+			@NotNull final String templateId = locator.getSingleDimensionValue("id");
+			@NotNull final TemplateState templateState = getTemplateStateDimension(locator);
+			template = myTemplateManager.getTemplateConfig(templateId, templateState);
 			if (template != null) {
 				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getId()),
+														myTemplateManager.getTemplateState(template.getId(), templateState),
 														WebHookTemplateStates.build(template)
 														);
 			}
 			throw new NotFoundException(
 					"No template found by id '"
-							+ templateId + "'.");
+							+ templateId + "' and state '"+ templateState.toString() +"'.");
 			
 		} else if (locator.getSingleDimensionValue("name") != null){
 			WebHookTemplateConfig template = null;
-			@NotNull
-			final String templateName = locator.getSingleDimensionValue("name");
-			template = myTemplateManager.getTemplateConfig(templateName);
+			@NotNull final String templateName = locator.getSingleDimensionValue("name");
+			@NotNull final TemplateState templateState = getTemplateStateDimension(locator);
+
+			template = myTemplateManager.getTemplateConfig(templateName, templateState);
 			if (template != null) {
 				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getId()),
+														myTemplateManager.getTemplateState(template.getId(), templateState),
 														WebHookTemplateStates.build(template)
 														);
 			}
 			throw new NotFoundException(
 					"No template found by name '"
-							+ templateName + "'.");	
+							+ templateName + "' and state '"+ templateState.toString() +"'.");
 			
 		}
 		
@@ -90,6 +92,13 @@ public class TemplateFinder {
 
 	}
 	
+	private TemplateState getTemplateStateDimension(Locator locator) {
+		if (locator.getSingleDimensionValue("status") != null) {
+			return TemplateState.valueOf(locator.getSingleDimensionValue("status"));
+		}
+		return TemplateState.BEST;
+	}
+
 	public WebHookTemplateItemConfigWrapper findTemplateByIdAndTemplateContentById(String templateLocator, String templateContentLocator) {
 		
 		WebHookTemplateConfigWrapper templateConfigWrapper =  findTemplateById(templateLocator);
@@ -153,4 +162,5 @@ public class TemplateFinder {
 				"No templateItem found by id '"
 						+ templateId + "'.");
 	}
+
 }
