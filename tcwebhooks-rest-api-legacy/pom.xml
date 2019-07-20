@@ -96,8 +96,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 <!-- 	         <plugin>
@@ -297,6 +297,13 @@
 			<version>1.1</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+		    <groupId>io.github.java-diff-utils</groupId>
+		    <artifactId>java-diff-utils</artifactId>
+		    <version>4.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
