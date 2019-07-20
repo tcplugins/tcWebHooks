@@ -134,10 +134,22 @@
           <th style="width:15%;" title="Used in the UI to show extra information about a Template">Tooltip Text:</th>
           <c:choose>
 		  	<c:when test="${not empty webhookTemplateBean.toolTipText}">
-	          <td style="width:85%;" colspan="5"><c:out value="${webhookTemplateBean.toolTipText}"/></td>
+	          <td style="width:35%;"><c:out value="${webhookTemplateBean.toolTipText}"/></td>
           	</c:when>
           	<c:otherwise>
-	          <td style="width:85%;" colspan="5"><i>none</i></td>
+	          <td style="width:35%;"><i>none</i></td>
+          	</c:otherwise>
+          </c:choose>         
+          
+          <th style="width:15%;">Template Status:</th>
+           
+          <c:choose>
+		  	<c:when test="${webhookTemplateBean.templateState.isStateUserOverridden()}">
+	          <td style="width:35%;" colspan=3><c:out value="${webhookTemplateBean.templateState.description}"/>. 
+	          <a href="./template-diff.html?template=${webhookTemplateBean.templateId}">Show differences</a></td>
+          	</c:when>
+          	<c:otherwise>
+	          <td style="width:35%;" colspan=3><c:out value="${webhookTemplateBean.templateState.description}"/></td>
           	</c:otherwise>
           </c:choose>          
         </tr>

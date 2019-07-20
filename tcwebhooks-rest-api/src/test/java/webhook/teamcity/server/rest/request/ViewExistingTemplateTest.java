@@ -9,12 +9,14 @@ import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES
 import java.io.FileNotFoundException;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
@@ -22,6 +24,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.FlowdockXmlWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
@@ -99,6 +102,28 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	prettyPrint(responseMsg);
     }    
     
+    @Test(expected=UniformInterfaceException.class)
+    public void testJsonTemplateNotFoundWhenProvidedRequested() throws FileNotFoundException, JAXBException {
+    	
+    	WebResource webResource = resource();
+    	WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates("../tcwebhooks-core/src/test/resources/webhook-templates.xml");
+    	assertEquals("There should be 3 templates loaded from file", 3, templatesList.getWebHookTemplateList().size());
+    	
+    	for (WebHookTemplateEntity templateEntity : templatesList.getWebHookTemplateList()){
+    		webHookTemplateManager.registerTemplateFormatFromXmlEntity(templateEntity);
+    	}
+    	
+    	try {
+    		webResource.path(API_TEMPLATES_URL + "/id:testXMLtemplate,status:PROVIDED").queryParam("fields","$long").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
+    	} catch (UniformInterfaceException ex) {
+        	// I've not figured out how to invoke the exception handler, so "NotFoundException" returns 500
+        	// in Grizzly tests.
+        	assertEquals(500, ex.getResponse().getStatus());
+    		throw ex;
+    	}
+
+    }      
+    
     @Test
     public void testJsonTemplatesRequestUsingLotsOfRegisteredTemplatesButOnlyReturningOne() throws FileNotFoundException, JAXBException {
     	
@@ -126,7 +151,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	assertEquals(1, responseMsg.getTemplates().size());
     	assertEquals("elasticsearch", responseMsg.id);
-    	
+    	assertEquals(TemplateState.PROVIDED.toString(), responseMsg.status);
     	prettyPrint(responseMsg);
     }  
     

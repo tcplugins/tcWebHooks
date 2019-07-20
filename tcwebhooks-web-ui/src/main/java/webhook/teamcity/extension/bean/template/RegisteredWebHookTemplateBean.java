@@ -34,7 +34,7 @@ public class RegisteredWebHookTemplateBean {
 		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
-					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateId()));
+					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateId(), TemplateState.BEST));
 					bean.templateList.put(template.getTemplateFormatCombinationKey(), template);
 				}
 			}

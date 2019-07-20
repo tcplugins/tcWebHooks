@@ -19,11 +19,11 @@ import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class WebHookTemplateEditPageController extends WebHookTemplateBasePageController {
+public class WebHookTemplateDiffPageController extends WebHookTemplateBasePageController {
 
 		private final WebHookPayloadManager myPayloadManager;
 	
-	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
+	    public WebHookTemplateDiffPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
 	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager) {
 	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager);
@@ -32,7 +32,7 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
 
 	    @Override
 	    protected String getUrl() {
-	    	return "/webhooks/template.html";
+	    	return "/webhooks/template-diff.html";
 	    }
 
 	    @Nullable
@@ -51,7 +51,7 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
     				if (templateConfig != null) {
     					params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
     					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST)));
-    					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
+    					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateDiff.jsp", params);
     				}
     			}
 	    		
