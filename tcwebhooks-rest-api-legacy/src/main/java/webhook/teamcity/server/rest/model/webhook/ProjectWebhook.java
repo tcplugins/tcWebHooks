@@ -48,7 +48,7 @@ import webhook.teamcity.settings.WebHookConfig;
 @NoArgsConstructor
 @Getter @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType (propOrder = { "url", "id", "projectId", "enabled", "format", "template", "webUrl", "href", "states", "parameters", "customTemplates", "authentication" })
+@XmlType (propOrder = { "url", "id", "projectId", "enabled", "template", "webUrl", "href", "states", "parameters", "customTemplates", "authentication" })
 public class ProjectWebhook {
 	
 	@XmlAttribute
@@ -62,9 +62,6 @@ public class ProjectWebhook {
 	
 	@XmlAttribute
 	public String projectId;
-	
-	@XmlAttribute
-	public String format;
 	
 	@XmlAttribute
 	private String template;
@@ -93,7 +90,6 @@ public class ProjectWebhook {
 		this.id = ValueWithDefault.decideDefault(fields.isIncluded("id", true, true), config.getUniqueKey());
 		this.enabled = ValueWithDefault.decideDefault(fields.isIncluded("enabled", true, true), config.getEnabled());
 		this.projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, true), projectExternalId);
-		this.format = ValueWithDefault.decideDefault(fields.isIncluded("format", true, true), config.getPayloadFormat());
 		this.template = ValueWithDefault.decideDefault(fields.isIncluded("template", true, true), config.getPayloadTemplate());
 		webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl", false, false), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookUrl(projectExternalId));
 		href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(projectExternalId, config));
