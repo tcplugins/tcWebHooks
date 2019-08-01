@@ -135,14 +135,14 @@ public class WebHookPayloadContent {
 				BuildStateEnum buildState, 
 				Map<String, String> extraParameters, 
 				Map<String, String> teamcityProperties,
-				Map<String, String> templates,
+				Map<String, String> customTemplates,
 				String username,
 				String comment) {
 			
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
-    		populateCommonContent(variableResolverFactory, server, sBuild, null, buildState, templates);
-    		populateMessageAndText(sBuild, buildState, templates);
+    		populateCommonContent(variableResolverFactory, server, sBuild, null, buildState, customTemplates);
+    		populateMessageAndText(sBuild, buildState, customTemplates);
     		populateArtifacts(sBuild);
     		if (username != null) {
     			this.pinEventUsername = username; 
@@ -160,19 +160,19 @@ public class WebHookPayloadContent {
 		 * @param previousBuild
 		 * @param buildState
 		 * @param extraParameters
-		 * @param teamcityParameters
+		 * @param teamcityProperties
 		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
 				Map<String, String> extraParameters, 
 				Map<String, String> teamcityProperties,
-				Map<String, String> templates) {
+				Map<String, String> customTemplates) {
 			
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
-    		populateCommonContent(variableResolverFactory, server, sRunningBuild, previousBuild, buildState, templates);
-    		populateMessageAndText(sRunningBuild, buildState, templates);
+    		populateCommonContent(variableResolverFactory, server, sRunningBuild, previousBuild, buildState, customTemplates);
+    		populateMessageAndText(sRunningBuild, buildState, customTemplates);
     		populateArtifacts(sRunningBuild);
 		}
 
@@ -185,9 +185,11 @@ public class WebHookPayloadContent {
 		/**
 		 * Used by RepsonsiblityChanged.
 		 * Therefore, does not have access to a specific build instance.
+	 	 * @param variableResolverFactory
 		 * @param server
-		 * @param buildType
+	 	 * @param responsibilityHolder
 		 * @param state
+	 	 * @param templates
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum state, Map<String,String> templates) {
 

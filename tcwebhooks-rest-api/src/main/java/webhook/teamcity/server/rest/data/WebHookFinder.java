@@ -63,7 +63,7 @@ public class WebHookFinder {
 	}
 	
 	public int getTemplateUsageCount(String templateId, String formatShortName) {
-		return this.webhookSettingsManager.getTemplateUsageCount(templateId, formatShortName);
+		return this.webhookSettingsManager.getTemplateUsageCount(templateId);
 	}
 
 	private ProjectWebhook getWebHookConfigById(String projectExternalId, final Fields fields, final BeanContext beanContext,

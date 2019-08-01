@@ -29,6 +29,7 @@
         /js/bs/editBuildType.js
         /js/bs/editProject.js
         /js/bs/adminActions.js
+        ${jspHome}WebHook/js/editWebhook.js
       </bs:linkScript>
 
     <script type="text/javascript">

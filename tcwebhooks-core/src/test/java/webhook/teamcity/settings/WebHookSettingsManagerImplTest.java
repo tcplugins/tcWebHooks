@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.jdom.JDOMException;
@@ -32,8 +33,8 @@ public class WebHookSettingsManagerImplTest {
 	@Mock ProjectManager projectManager;
 	@Mock ProjectSettingsManager projectSettingsManager;
 	
-	WebHookSettingsManager webHookSettingsManager;
-	WebHookProjectSettings projectSettings;
+	private WebHookSettingsManager webHookSettingsManager;
+	private WebHookProjectSettings projectSettings;
 	
 	@Before
 	public void setup() throws JDOMException, IOException {
@@ -42,7 +43,7 @@ public class WebHookSettingsManagerImplTest {
 		when(sProject.getProjectId()).thenReturn("project01");
 		when(sProject.getExternalId()).thenReturn("MyProject");
 		when(sProject.getName()).thenReturn("My Project");
-		when(projectManager.getActiveProjects()).thenReturn(Arrays.asList(sProject));
+		when(projectManager.getActiveProjects()).thenReturn(Collections.singletonList(sProject));
 		when(projectManager.findProjectById(anyString())).thenReturn(sProject);
 		
 		projectSettings = new WebHookProjectSettings();
@@ -50,9 +51,17 @@ public class WebHookSettingsManagerImplTest {
 		
 		when(projectSettingsManager.getSettings("project01", "webhooks")).thenReturn(projectSettings);
 		
-		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(BuildStateEnum.BUILD_STARTED, new ExtraParametersMap(new HashMap<String, String>()), new ExtraParametersMap(new HashMap<String, String>()));
+		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
+														BuildStateEnum.BUILD_STARTED,
+														new ExtraParametersMap(new HashMap<String, String>()),
+														new ExtraParametersMap(new HashMap<String, String>())
+												);
 		
-		ElasticSearchXmlWebHookTemplate elasticTemplate = new ElasticSearchXmlWebHookTemplate(framework.getWebHookTemplateManager(), framework.getWebHookPayloadManager(), new WebHookTemplateJaxHelperImpl());
+		ElasticSearchXmlWebHookTemplate elasticTemplate = new ElasticSearchXmlWebHookTemplate(
+														framework.getWebHookTemplateManager(),
+														framework.getWebHookPayloadManager(),
+														new WebHookTemplateJaxHelperImpl()
+												);
 		elasticTemplate.register();
 		
 		webHookSettingsManager = new WebHookSettingsManagerImpl(
@@ -98,8 +107,7 @@ public class WebHookSettingsManagerImplTest {
 
 	@Test
 	public void testGetTemplateUsageCount() {
-		assertEquals(1, webHookSettingsManager.getTemplateUsageCount("elasticsearch", "jsonTemplate"));
-		assertEquals(0, webHookSettingsManager.getTemplateUsageCount("something", "jsonTemplate"));
-		assertEquals(0, webHookSettingsManager.getTemplateUsageCount("elasticsearch", "jsonVelocityTemplate"));
+		assertEquals(1, webHookSettingsManager.getTemplateUsageCount("elasticsearch"));
+		assertEquals(0, webHookSettingsManager.getTemplateUsageCount("something"));
 	}
 }

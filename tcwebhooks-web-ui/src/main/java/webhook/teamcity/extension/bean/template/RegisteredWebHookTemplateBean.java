@@ -26,7 +26,7 @@ public class RegisteredWebHookTemplateBean {
 		for (WebHookPayloadTemplate t : registeredTemplates){
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
-					SimpleTemplate template = SimpleTemplate.build(t, f, myWebHookSettingsManager.getTemplateUsageCount(t.getTemplateId(), f.getFormatShortName()));
+					SimpleTemplate template = SimpleTemplate.build(t, f, myWebHookSettingsManager.getTemplateUsageCount(t.getTemplateId()));
 					bean.templateList.put(template.getTemplateId(), template);
 				}
 			}
@@ -46,7 +46,7 @@ public class RegisteredWebHookTemplateBean {
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
 					SimpleTemplate template = SimpleTemplate.build(t, f, 
 												templateManager.getTemplateState(t.getTemplateId(), TemplateState.BEST), 
-												myWebHookSettingsManager.getTemplateUsageCount(t.getTemplateId(), f.getFormatShortName()));
+												myWebHookSettingsManager.getTemplateUsageCount(t.getTemplateId()));
 					bean.templateList.put(template.getTemplateId(), template);
 				}
 			}

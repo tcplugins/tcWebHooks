@@ -6,8 +6,10 @@
 	<properties>
     	<majorVersion>1.2.0-alpha.3</majorVersion>
     	<buildNumber>snapshot</buildNumber>
-    	<gitHash>${GIT_HASH}</gitHash>
-    	<gitBranch>${GIT_BRANCH}</gitBranch>    	
+    	<!--suppress UnresolvedMavenProperty -->
+		<gitHash>${GIT_HASH}</gitHash>
+    	<!--suppress UnresolvedMavenProperty -->
+		<gitBranch>${GIT_BRANCH}</gitBranch>
     	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>10.0</teamcityVersion>

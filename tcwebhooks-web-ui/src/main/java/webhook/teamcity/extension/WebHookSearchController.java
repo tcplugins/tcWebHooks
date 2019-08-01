@@ -100,6 +100,7 @@ public class WebHookSearchController extends BaseController {
     			.textSearch(request.getParameter("search"))
     			.urlSubString(request.getParameter("url"))
     			.webhookId(request.getParameter("webhookId"))
+				.projectExternalId(request.getParameter("project"))
     		.build();
     	
     	for (String tag: getTags(request)) {

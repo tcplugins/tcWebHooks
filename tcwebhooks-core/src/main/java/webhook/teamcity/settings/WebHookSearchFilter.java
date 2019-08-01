@@ -16,6 +16,7 @@ public class WebHookSearchFilter {
 	@Builder.Default String templateId = null;
 	@Builder.Default String formatShortName = null;
 	@Builder.Default String urlSubString = null;
+	@Builder.Default String projectExternalId = null;
 	@Builder.Default Set<String> tags = new HashSet<String>();
 	
 	public void addTag(String tag) {

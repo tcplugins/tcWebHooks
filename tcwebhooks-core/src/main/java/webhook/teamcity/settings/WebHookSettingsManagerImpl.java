@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -145,13 +146,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		return projectGroupedResults;
 	}
 	
-	private void addMatchingWebHook(WebHookSearchFilter filter, List<WebHookSearchResult> webhookResultList,
-			WebHookConfigEnhanced e) {
+	private void addMatchingWebHook(WebHookSearchFilter filter, List<WebHookSearchResult> webhookResultList, WebHookConfigEnhanced e) {
 		WebHookSearchResult result = new WebHookSearchResult();
 		if (filter.getTextSearch() != null) {
 			searchField(result, filter.getTextSearch(), Match.PAYLOAD_FORMAT, e.getPayloadFormat(), e.getPayloadFormatDescription());
 			searchField(result, filter.getTextSearch(), Match.TEMPLATE, e.getTemplateId(), e.getTemplateDescription());
 			searchField(result, filter.getTextSearch(), Match.URL, e.getWebHookConfig().getUrl());
+			searchField(result, filter.getTextSearch(), Match.PROJECT, e.getProjectExternalId());
 		}
 		
 		if (filter.textSearch != null && e.getTags().contains(filter.textSearch.toLowerCase())) {
@@ -166,6 +167,9 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		}
 		if (filter.getUrlSubString() != null) {
 			searchField(result, filter.getUrlSubString(), Match.URL, e.getWebHookConfig().getUrl());
+		}
+		if (filter.getProjectExternalId() != null) {
+			searchField(result, filter.getProjectExternalId(), Match.PROJECT, e.getProjectExternalId());
 		}
 		if (filter.getWebhookId() != null) {
 			matchField(result, filter.getWebhookId(), Match.ID, e.getWebHookConfig().getUniqueKey());
@@ -206,43 +210,46 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	
 	private void rebuildWebHooksEnhanced(String projectInternalId) {
 		SProject sProject = myProjectManager.findProjectById(projectInternalId);
-		Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
-		for (WebHookConfig c: getWebHooksConfigs(projectInternalId)) {
-			String templateName = "missing template";
-			try {
-				templateName = this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate()).getTemplateDescription();
-			} catch (NullPointerException ex) {
-				Loggers.SERVER.warn(String.format(
-						"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s", 
-						c.getUniqueKey(),
-						sProject.getExternalId(),
-						c.getPayloadTemplate(),
-						c.getUrl()));
+		if (Objects.nonNull(sProject)) {
+			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
+			for (WebHookConfig c : getWebHooksConfigs(projectInternalId)) {
+				String templateName = "missing template";
+				try {
+					templateName = this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate()).getTemplateDescription();
+				} catch (NullPointerException ex) {
+					Loggers.SERVER.warn(String.format(
+							"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s",
+							c.getUniqueKey(),
+							sProject.getExternalId(),
+							c.getPayloadTemplate(),
+							c.getUrl()));
+				}
+
+				WebHookConfigEnhanced configEnhanced = WebHookConfigEnhanced.builder()
+						.payloadFormat(c.getPayloadFormat())
+						.payloadFormatDescription(this.myWebHookPayloadManager.getFormat(c.getPayloadFormat()).getFormatDescription())
+						.projectExternalId(sProject.getExternalId())
+						.templateId(c.getPayloadTemplate())
+						.templateDescription(templateName)
+						.webHookConfig(c)
+						.build();
+				configEnhanced.addTag(c.getPayloadFormat())
+						.addTag(sProject.getExternalId())
+						.addTag(c.getPayloadTemplate());
+
+				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
+				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
 			}
-			
-			WebHookConfigEnhanced configEnhanced = WebHookConfigEnhanced.builder()
-														   .payloadFormat(c.getPayloadFormat())
-														   .payloadFormatDescription(this.myWebHookPayloadManager.getFormat(c.getPayloadFormat()).getFormatDescription())
-														   .projectExternalId(sProject.getExternalId())
-														   .templateId(c.getPayloadTemplate())
-														   .templateDescription(templateName)
-														   .webHookConfig(c)
-														   .build();
-			configEnhanced.addTag(c.getPayloadFormat())
-			 			  .addTag(sProject.getExternalId())
-			 			  .addTag(c.getPayloadTemplate());
-			
-			this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
-			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
+		} else {
+			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);
 		}
 	}
 
 	@Override
-	public int getTemplateUsageCount(String templateId, String formatShortName) {
+	public int getTemplateUsageCount(String templateId) {
 		int count = 0;
 		for (WebHookConfigEnhanced e : this.webhooksEnhanced.values()) {
-			if (templateId.equalsIgnoreCase(e.getTemplateId())
-					&& formatShortName.equalsIgnoreCase(e.getPayloadFormat())) {
+			if (templateId.equalsIgnoreCase(e.getTemplateId())) {
 				count++;
 			}
 		}

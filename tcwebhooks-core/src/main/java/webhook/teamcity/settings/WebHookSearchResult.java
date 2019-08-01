@@ -17,6 +17,6 @@ public class WebHookSearchResult {
 	}
 
 	public enum Match {
-		TAG, URL, ID, TEMPLATE, PAYLOAD_FORMAT
+		TAG, URL, ID, TEMPLATE, PAYLOAD_FORMAT, PROJECT
 	}
 }

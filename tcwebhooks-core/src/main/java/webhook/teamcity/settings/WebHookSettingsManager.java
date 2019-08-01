@@ -27,7 +27,7 @@ public interface WebHookSettingsManager {
 
 	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter);
 	
-	public int getTemplateUsageCount(String templateId, String formatShortName);
+	public int getTemplateUsageCount(String templateId);
 	public Map<String, List<WebHookSearchResult>> findWebHooksByProject(WebHookSearchFilter buildFilter);
 	public WebHookProjectSettings getSettings(String projectInternalId);
 }

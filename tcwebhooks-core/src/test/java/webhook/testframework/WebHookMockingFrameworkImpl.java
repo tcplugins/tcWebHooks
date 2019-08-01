@@ -150,7 +150,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
 //		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
-		when(settings.getTemplateUsageCount((String)any(),(String)any())).thenReturn(0);
+		when(settings.getTemplateUsageCount((String)any())).thenReturn(0);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.STANDARD)).thenReturn(variableResolverFactory);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY)).thenReturn(legacyVariableResolverFactory);
 		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);

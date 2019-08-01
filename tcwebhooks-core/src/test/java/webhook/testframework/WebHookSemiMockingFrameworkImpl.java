@@ -143,7 +143,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		
 		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor);
-		when(projectSettingsManager.getTemplateUsageCount((String)any(),(String)any())).thenReturn(0);
+		when(projectSettingsManager.getTemplateUsageCount((String)any())).thenReturn(0);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
 		when(sBuildServer.getHistory()).thenReturn(buildHistory);

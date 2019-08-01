@@ -128,7 +128,9 @@
         </tr>
         <tr>
           <th style="width:15%;" title="Shown in the WebHook UI when choosing a Payload">Template Description:</th><td style="width:35%;"><c:out value="${webhookTemplateBean.templateDescription}"/></td>
-          <th style="width:15%;">Payload Format:</th><td style="width:35%;" colspan=3>${webhookTemplateBean.payloadFormat}</td>
+          <th style="width:15%;">Payload Format:</th><td style="width:15%;" colspan=1>${webhookTemplateBean.payloadFormat}</td>
+          <th style="width:15%;" title="The number of webhooks using this template">Associated Webhooks:</th>
+          <td style="width:15%;" colspan=1><a href="search.html?templateId=${webhookTemplateBean.templateId}">${webHookCount}&nbsp;webhook(s)</a></td>
         </tr>
         <tr>
           <th style="width:15%;" title="Used in the UI to show extra information about a Template">Tooltip Text:</th>
@@ -145,15 +147,13 @@
            
           <c:choose>
 		  	<c:when test="${webhookTemplateBean.templateState.isStateUserOverridden()}">
-	          <td style="width:35%;" colspan=1><c:out value="${webhookTemplateBean.templateState.description}"/>. 
+	          <td style="width:35%;" colspan=3><c:out value="${webhookTemplateBean.templateState.description}"/>. 
 	          <a href="./template-diff.html?template=${webhookTemplateBean.templateId}">Show differences</a></td>
           	</c:when>
           	<c:otherwise>
-	          <td style="width:35%;" colspan=1><c:out value="${webhookTemplateBean.templateState.description}"/></td>
+	          <td style="width:35%;" colspan=3><c:out value="${webhookTemplateBean.templateState.description}"/></td>
           	</c:otherwise>
           </c:choose>          
-          <th style="width:15%;" title="The number of webhooks using this template">Associated Webhooks:</th>
-          <td style="width:35%;" colspan=3><a href="search.html?templateId=${webhookTemplateBean.templateId}">${webHookCount} webhook(s)</a></td>
         </tr>
       </table>
 

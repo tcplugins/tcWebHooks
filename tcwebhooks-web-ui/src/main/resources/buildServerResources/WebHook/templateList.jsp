@@ -109,7 +109,7 @@
 				</td>
 				<td class="nowrap">${template.templateState.description}</td>
 				
-				<td>${template.webhookUsageCount} webhook(s)</td>
+				<td><a href="search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
 
 		<c:choose>  
     		<c:when test="${template.templateId == 'none'}"> 		
