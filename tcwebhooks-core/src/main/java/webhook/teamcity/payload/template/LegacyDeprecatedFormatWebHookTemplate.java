@@ -8,9 +8,10 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
-public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookPayloadTemplate {
+public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookPayloadTemplate {
 	
 	Set<BuildStateEnum> states = new HashSet<>();
 	
@@ -20,30 +21,6 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 		for (BuildStateEnum b : BuildStateEnum.getNotifyStates()){
 			states.add(b);
 		}
-	}
-
-	@Override
-	public String getTemplateDescription() {
-		return "Legacy Webhook";
-	}
-
-	@Override
-	public String getTemplateToolTip() {
-		return "The legacy non-templated webhooks.";
-	}
-
-	@Override
-	public String getTemplateId() {
-		return "none";
-	}
-	
-	@Override
-	public boolean supportsPayloadFormat(String payloadFormat) {
-		return  payloadFormat.equalsIgnoreCase("JSON") || 
-				payloadFormat.equalsIgnoreCase("nvpairs") || 
-				payloadFormat.equalsIgnoreCase("xml") || 
-				payloadFormat.equalsIgnoreCase("tailoredjson") || 
-				payloadFormat.equalsIgnoreCase("none");
 	}
 	
 	@Override
@@ -69,8 +46,9 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 	@Override
 	public void register() {
 		super.register(this);
-		
 	}
+
+	public abstract String getLegacyFormat();
 
 	/**
 	 * Return an empty dateFormat string. This should then let
@@ -83,12 +61,16 @@ public class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTempla
 
 	@Override
 	public WebHookTemplateEntity getAsEntity() {
-		return null;
+		return WebHookTemplateEntity.build(getAsConfig());
 	}
 
 	@Override
 	public WebHookTemplateConfig getAsConfig() {
-		return null;
+		WebHookTemplateConfig config = new WebHookTemplateConfig();
+		config.setFormat(getLegacyFormat());
+		config.setRank(getRank());
+		config.setId(getTemplateId());
+		return config;
 	}
 
 }

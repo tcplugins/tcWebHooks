@@ -34,6 +34,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.settings.converter.PayloadToTemplateConverter;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 @Builder @AllArgsConstructor
@@ -122,6 +123,10 @@ public class WebHookConfig {
 		if (e.getAttribute(ATTR_TEMPLATE) != null){
 			this.setPayloadTemplate(e.getAttributeValue(ATTR_TEMPLATE));
 		}
+		
+		// Transform payload and template to template.
+		this.setPayloadTemplate(PayloadToTemplateConverter.transformPayloadToTemplate(this.getPayloadFormat(), this.getPayloadTemplate()));
+		this.setPayloadFormat(null);
 		
 		if(e.getChild(EL_STATES) != null){
 			Element eStates = e.getChild(EL_STATES);
@@ -350,7 +355,7 @@ public class WebHookConfig {
 		Element el = new Element("webhook");
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute(ATTR_ENABLED, String.valueOf(this.enabled));
-		el.setAttribute(ATTR_FORMAT, String.valueOf(this.payloadFormat).toLowerCase());
+		//el.setAttribute(ATTR_FORMAT, String.valueOf(this.payloadFormat).toLowerCase());
 		el.setAttribute(ATTR_TEMPLATE, String.valueOf(this.payloadTemplate));
 		
 		Element statesEl = new Element(EL_STATES);
@@ -631,7 +636,7 @@ public class WebHookConfig {
 		return ""; 
 	}
 	
-	public String getPayloadFormat() {
+	private String getPayloadFormat() {
 		return payloadFormat;
 	}
 	

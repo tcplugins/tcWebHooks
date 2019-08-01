@@ -22,7 +22,7 @@ public class RegisteredWebHookTemplateBean {
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
 					SimpleTemplate template = SimpleTemplate.build(t, f);
-					bean.templateList.put(template.getTemplateFormatCombinationKey(), template);
+					bean.templateList.put(template.getTemplateId(), template);
 				}
 			}
 		}
@@ -35,7 +35,7 @@ public class RegisteredWebHookTemplateBean {
 			for (WebHookPayload f :webhookFormats){
 				if (t.supportsPayloadFormat(f.getFormatShortName())){
 					SimpleTemplate template = SimpleTemplate.build(t, f, templateManager.getTemplateState(t.getTemplateId(), TemplateState.BEST));
-					bean.templateList.put(template.getTemplateFormatCombinationKey(), template);
+					bean.templateList.put(template.getTemplateId(), template);
 				}
 			}
 		}
@@ -57,7 +57,6 @@ public class RegisteredWebHookTemplateBean {
 		private String templateToolTip;
 		private String formatShortName;
 		private String formatDescription;
-		private String templateFormatCombinationKey;
 		private List<String> supportedStates = new ArrayList<>();
 		private List<BuildStateEnum> supportedBuildEnumStates = new ArrayList<>();
 		private List<String> supportedBranchStates = new ArrayList<>();
@@ -72,7 +71,6 @@ public class RegisteredWebHookTemplateBean {
 			temp.formatDescription = format.getFormatDescription();
 			temp.templateId = webHookTemplate.getTemplateId();
 			temp.formatShortName = format.getFormatShortName().toLowerCase();
-			temp.templateFormatCombinationKey = webHookTemplate.getTemplateId() + "_" + format.getFormatShortName().toLowerCase();
 			for (BuildStateEnum s : webHookTemplate.getSupportedBuildStates()){
 				temp.supportedStates.add(s.getShortName());
 				temp.supportedBuildEnumStates.add(s);
@@ -124,11 +122,7 @@ public class RegisteredWebHookTemplateBean {
 		public List<BuildStateEnum> getSupportedBuildEnumStates() {
 			return supportedBuildEnumStates;
 		}
-		
-		public String getTemplateFormatCombinationKey() {
-			return templateFormatCombinationKey;
-		}
-		
+
 		public TemplateState getTemplateState() {
 			return templateState;
 		}

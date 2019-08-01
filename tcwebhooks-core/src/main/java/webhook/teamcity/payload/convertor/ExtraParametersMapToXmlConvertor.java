@@ -1,6 +1,7 @@
 package webhook.teamcity.payload.convertor;
 
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import webhook.teamcity.payload.content.ExtraParametersMap;
 
@@ -16,7 +17,9 @@ public class ExtraParametersMapToXmlConvertor implements Converter {
             MarshallingContext context) {
     	ExtraParametersMap map = (ExtraParametersMap) myMap;
     	for (Entry<String, String> entry : map.getEntriesAsSet()){
-    		this.addNode(writer, entry.getKey().trim(), entry.getValue().toString().trim());
+    		if (Objects.nonNull(entry.getValue())) {
+				this.addNode(writer, entry.getKey().trim(), entry.getValue().toString().trim());
+			}
     	}
     }
     

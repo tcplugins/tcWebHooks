@@ -2,7 +2,6 @@ package webhook.teamcity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import jetbrains.buildServer.messages.Status;
@@ -20,17 +18,10 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.TestingWebHookFactory;
 import webhook.WebHook;
-import webhook.WebHookImpl;
-import webhook.teamcity.payload.WebHookPayloadManager;
-import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
-import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class WebHookContentBuilderTest {
@@ -63,23 +54,6 @@ public class WebHookContentBuilderTest {
 		sBuildType.setProject(sProject);
 	}
 
-	@Test @Ignore
-	public void testBuildWebHookContent() throws WebHookPayloadContentAssemblyException {
-		
-		WebHookPayloadManager manager = new WebHookPayloadManager(server);
-		WebHookPayloadJson whp = new WebHookPayloadJson(manager, resolverManager);
-		whp.register();
-		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(manager, webHookTemplateJaxHelper);
-		WebHookTemplateResolver resolver = new WebHookTemplateResolver(webHookTemplateManager);
-		WebHookContentBuilder builder = new WebHookContentBuilder(manager, resolver, resolverManager);
-		WebHook wh = factory.getWebHook();
-		WebHookConfig whc = mock(WebHookConfig.class);
-		when(whc.getPayloadFormat()).thenReturn("JSON");
-		
-		wh = builder.buildWebHookContent(wh, whc, sRunningBuild, BuildStateEnum.BUILD_FINISHED, null, null, true);
-		fail("Not yet implemented");
-	}
-	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsPersonal() {
 		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);

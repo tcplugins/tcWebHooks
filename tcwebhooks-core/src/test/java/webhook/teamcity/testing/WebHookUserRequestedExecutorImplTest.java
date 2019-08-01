@@ -26,8 +26,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.google.gson.GsonBuilder;
-
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
@@ -92,10 +90,10 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	private ProjectSettingsManager projectSettingsManager = mock(ProjectSettingsManager.class);
 	
 	private WebHookPayloadManager webHookPayloadManager = new WebHookPayloadManager(server);
-	private WebHookConfigFactory webHookConfigFactory = new WebHookConfigFactoryImpl(server, projectSettingsManager, webHookPayloadManager);
 	private WebHookTemplateJaxTestHelper webHookTemplateJaxTestHelper = new WebHookTemplateJaxTestHelper();
 	private WebHookTemplateManager webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxTestHelper);
-	private WebHookTemplateResolver webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager);
+	private WebHookTemplateResolver webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
+	private WebHookConfigFactory webHookConfigFactory = new WebHookConfigFactoryImpl(server, projectSettingsManager, webHookTemplateManager);
 	
 	private WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
 	
@@ -111,7 +109,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	private WebHookAuthenticatorProvider webHookAuthenticatorProvider = new WebHookAuthenticatorProvider();
 
 	private WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, webHookAuthenticatorProvider, webHookHttpClientFactory);
-	private WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver, variableResolverManager);
+	private WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(server, webHookTemplateResolver, variableResolverManager);
 	
 	private MockSBuildType buildType = new MockSBuildType("name", "description", "buildTypeId");
 	private SProject sproject = new MockSProject("My Project", "description", "project01", "MyProject", buildType);
@@ -172,11 +170,12 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookConfigFactory, 
 				webHookFactory,
 				webHookTemplateResolver, 
-				webHookPayloadManager, 
+				webHookPayloadManager,
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
 				webAddressTransformer,
-				webHookContentBuilder, variableResolverManager
+				webHookContentBuilder, 
+				variableResolverManager
 			);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -187,7 +186,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				
 				.url("http://localhost:12345/webhook")
 				.templateId("slack.com-compact")
-				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
 				.configBuildStates(finishedBuildState)
 				.build();
@@ -259,7 +257,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				
 				.url("http://localhost:12345/webhook")
 				.templateId("slack.com-compact")
-				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
 				.configBuildStates(finishedBuildState)
 				.build();
@@ -293,7 +290,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				
 				.url("http://localhost:58001/200")
 				.templateId("slack.com-compact")
-				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
 				.configBuildStates(finishedBuildState)
 				.build();
@@ -335,7 +331,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				
 				.url("http://localhost:58001/200")
 				.templateId("slack.com-compact")
-				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
 				.configBuildStates(finishedBuildState)
 				.build();
@@ -376,7 +371,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				
 				.url("http://localhost:58001/200")
 				.templateId("slack.com-compact")
-				.payloadFormat("jsonTemplate")
 				.authEnabled(false)
 				.configBuildStates(finishedBuildState)
 				.build();
@@ -416,7 +410,6 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				
 				.url("http://localhost:58001/auth/200")
 				.templateId("slack.com-compact")
-				.payloadFormat("jsonTemplate")
 				.authEnabled(true)
 				.authType("userpass")
 				.authParameters(new HashMap<String,String>() {

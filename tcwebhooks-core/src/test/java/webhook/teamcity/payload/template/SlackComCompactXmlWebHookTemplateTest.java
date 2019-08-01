@@ -55,7 +55,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		slackCompact.register();
 		webHookTemplateManager.registerTemplateFormatFromSpring(slackCompact);
 		
-		WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver, webHookVariableResolverManager);
+		WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(server, webHookTemplateResolver, webHookVariableResolverManager);
 		
 		WebHookTemplateContent webHookTemplateContentChangesLoaded = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.CHANGES_LOADED, slackCompact.getTemplateId(), payloadFormat);
 		assertNotNull(webHookTemplateContentChangesLoaded);
@@ -76,7 +76,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
     	WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates("src/test/resources/testSlackCompactOverriden/webhook-templates.xml");
 		webHookTemplateManager.registerAllXmlTemplates(templatesList);
 		
-		WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(webHookPayloadManager, webHookTemplateResolver, webHookVariableResolverManager);
+		WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(server, webHookTemplateResolver, webHookVariableResolverManager);
 		
 		WebHookTemplateContent webHookTemplateContentChangesLoaded = webHookContentBuilder.findTemplateForState(sRunningBuild, BuildStateEnum.CHANGES_LOADED, slackCompact.getTemplateId(), payloadFormat);
 		assertNull(webHookTemplateContentChangesLoaded);
@@ -91,7 +91,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		setupPayloadManagerAndRegisterJsonTemplate();
 		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
-		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager);
+		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
 		webHookVariableResolverManager  = new WebHookVariableResolverManagerImpl();
 		webHookVariableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
 		setupSbuildMock();

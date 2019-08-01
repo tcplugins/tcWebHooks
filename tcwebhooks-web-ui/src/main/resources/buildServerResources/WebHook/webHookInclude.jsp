@@ -98,7 +98,7 @@
 																	<td style="padding:0; margin:0; left: 0px;"><label style='white-space:nowrap;'>
 																		<select id="payloadFormatHolder" name="payloadFormatHolder" class="templateAjaxRefresh">
 																		    <c:forEach items="${formatList}" var="template">
-																				<option value="${template.templateFormatCombinationKey}"><c:out value="${template.description}" /></option>
+																				<option value="${template.templateId}"><c:out value="${template.description}" /></option>
 																			</c:forEach>
 																		</select>
 																	</td></tr>

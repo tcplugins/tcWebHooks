@@ -61,9 +61,9 @@
 		});
 		
 		$j('#payloadFormatHolder').change(function() {
-			var formatName = $j(this).val();
-				$j.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(formatKey, template){
-				if (formatName === formatKey){
+			var templateId = $j(this).val();
+				$j.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
+				if (templateId === templateKey){
 					$j("#hookPane .buildState").each(function(thing, state){
 						if (($j.inArray(state.id, template.supportedStates) >= 0) &&
 							($j.inArray(state.id, template.supportedBranchStates) >= 0))

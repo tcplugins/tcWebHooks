@@ -16,7 +16,6 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private String url;
 	private String uniqueKey; 
 	private boolean enabled;
-	private String payloadFormat;
 	private String payloadTemplate;
 	private String payloadFormatForWeb = "Unknown";
 	private List<StateBean> states = new ArrayList<>();
@@ -38,7 +37,6 @@ public class WebhookConfigAndBuildTypeListHolder {
 		url = config.getUrl();
 		uniqueKey = config.getUniqueKey();
 		enabled = config.getEnabled();
-		payloadFormat = config.getPayloadFormat();
 		payloadTemplate = config.getPayloadTemplate();
 		setEnabledEventsListForWeb(config.getEnabledListAsString());
 		setEnabledBuildsListForWeb(config.getBuildTypeCountAsFriendlyString());
@@ -51,22 +49,22 @@ public class WebhookConfigAndBuildTypeListHolder {
 		}
 		WebHookPayloadTemplate t = null;
 		
-		if (payloadFormat != null){
-			for (WebHookPayloadTemplate template : templateList){
-				if (template.supportsPayloadFormat(payloadFormat) && template.getTemplateId().equals(payloadTemplate)){
-					t = template;
-				}
+		for (WebHookPayloadTemplate template : templateList){
+			if (template.getTemplateId().equals(payloadTemplate)){
+				t = template;
 			}
+		}
 			
+		if (t != null){
 			for (WebHookPayload payload : registeredPayloads){
-				if (payload.getFormatShortName().equalsIgnoreCase(payloadFormat)){
-					if (t != null){
-						this.payloadFormatForWeb = t.getTemplateDescription() + " (" + payload.getFormatDescription() + ")";
-					} else {
-						this.payloadFormatForWeb = payload.getFormatDescription();
-					}
+				if (t.supportsPayloadFormat(payload.getFormatShortName())){
+					this.payloadFormatForWeb = t.getTemplateDescription() + " (" + payload.getFormatDescription() + ")";
+					break;
 				}
 			}
+		}
+		if (this.payloadFormatForWeb.equalsIgnoreCase("Unknown")) {
+			this.payloadFormatForWeb = "Unknown Template: '" + payloadTemplate + "'";
 		}
 	}
 

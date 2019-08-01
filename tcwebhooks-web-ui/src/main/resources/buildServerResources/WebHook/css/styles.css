@@ -400,7 +400,7 @@ ul.templateBuildStates li:last-child:after {
 }*/
 
 .editor {
-	width: 98%;
+	/*width: 98%;*/
 	height: 28em;
 	margin:0px;
 	border-top: none;
@@ -422,7 +422,7 @@ table.templateDialogFormTable {
 	width: 100%;
     min-width: 48em;
     margin-bottom: 6px;
-    table-layout: fixed;
+    /*table-layout: fixed;*/
 }
 
 table.templateDialogFormTable label {

@@ -13,6 +13,7 @@ import com.thoughtworks.xstream.XStream;
 
 public class WebHookPayloadXml extends WebHookPayloadGeneric {
 
+	public static final String FORMAT_SHORT_NAME = "xml";
 	private Integer rank = 100; 
 
 	public WebHookPayloadXml(WebHookPayloadManager wpm, WebHookVariableResolverManager variableResolverManager) {
@@ -36,7 +37,7 @@ public class WebHookPayloadXml extends WebHookPayloadGeneric {
 	}
 
 	public String getFormatShortName() {
-		return "xml";
+		return FORMAT_SHORT_NAME;
 	}
 
 	public String getFormatToolTipText() {

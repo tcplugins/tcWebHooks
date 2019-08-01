@@ -24,6 +24,7 @@ import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
+import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -45,13 +46,13 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	private final WebHookMainSettings myMainSettings;
 	private final WebHookConfigFactory myWebHookConfigFactory;
 	private final WebHookTemplateResolver myWebHookTemplateResolver;
-	private final WebHookPayloadManager myWebHookPayloadManager;
 	private final WebHookFactory myWebHookFactory;
 	private final WebHookHistoryItemFactory myWebHookHistoryItemFactory;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
 	private final WebHookContentBuilder myWebHookContentBuilder;
 	private final WebHookVariableResolverManager myWebHookVariableResolverManager;
+	private final WebHookPayloadManager myWebHookPayloadManager;
 	
 	public WebHookUserRequestedExecutorImpl(
 			SBuildServer server,
@@ -71,12 +72,12 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		myWebHookConfigFactory = webHookConfigFactory;
 		myWebHookFactory = webHookFactory;
 		myWebHookTemplateResolver = webHookTemplateResolver;
-		myWebHookPayloadManager = webHookPayloadManager;
 		myWebHookHistoryItemFactory = webHookHistoryItemFactory;
 		myWebHookHistoryRepository = webHookHistoryRepository;
 		myWebAddressTransformer = webAddressTransformer;
 		myWebHookContentBuilder = webHookContentBuilder;
 		myWebHookVariableResolverManager = webHookVariableResolverManager;
+		myWebHookPayloadManager = webHookPayloadManager;
 	}
 
 
@@ -127,11 +128,11 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					true
 				);
 		}
-		
-		WebHookStringRenderer renderer = myWebHookPayloadManager.getFormat(webHookExecutionRequest.getPayloadFormat()).getWebHookStringRenderer();
+		WebHookPayload webHookPayload = myWebHookTemplateResolver.getTemplatePayloadFormat(webHookExecutionRequest.getTemplateId());
+		WebHookStringRenderer renderer = webHookPayload.getWebHookStringRenderer();
 
 		try {
-			return new WebHookRenderResult(renderer.render(wh.getPayload()), webHookExecutionRequest.getPayloadFormat());
+			return new WebHookRenderResult(renderer.render(wh.getPayload()), webHookPayload.getFormatShortName());
 		} catch (WebHookHtmlRendererException ex){
 			Loggers.SERVER.info(ex);
 			return new WebHookRenderResult(wh.getPayload(), ex);
@@ -149,7 +150,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 						)
 				);
 		
-		WebHookContentBuilder contentBuilder = createDummyContentBuilder(webHookTemplateExecutionRequest);
+		WebHookContentBuilder contentBuilder = createDummyContentBuilder(webHookTemplateExecutionRequest, myWebHookPayloadManager);
 		
 		if (   webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_ADDED_TO_QUEUE) 
 			|| webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE)) {
@@ -209,24 +210,24 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	 * @return
 	 */
 	private WebHookContentBuilder createDummyContentBuilder(
-			WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
+			WebHookTemplateExecutionRequest webHookTemplateExecutionRequest, WebHookPayloadManager payloadManager) {
 		
 		// We need an alternative WebHookTemplateManager. We'll use the injected payload manager, but create our
 		// own jaxHelper. The jaxHelper is only used to persist the template, which we won't do in this class.
 		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(myWebHookPayloadManager, new NoOpJaxHelper());
 		
 		WebHookTemplateConfig webHookTemplateConfig = webHookTemplateExecutionRequest.toConfig();
-		WebHookTemplateResolver webHookTemplateResolver = new NonDiscrimatoryTemplateResolver(webHookTemplateManager, webHookTemplateConfig);
+		WebHookTemplateResolver webHookTemplateResolver = new NonDiscrimatoryTemplateResolver(webHookTemplateManager, webHookTemplateConfig, payloadManager);
 		webHookTemplateManager.registerTemplateFormatFromXmlConfig(webHookTemplateConfig);
 		
-		return new WebHookContentBuilder(myWebHookPayloadManager, webHookTemplateResolver, myWebHookVariableResolverManager );
+		return new WebHookContentBuilder(myServer, webHookTemplateResolver, myWebHookVariableResolverManager );
 	}
 	
 	@Override
 	public WebHookHistoryItem requestWebHookExecution(WebHookExecutionRequest webHookExecutionRequest) {
 		WebHookConfig webHookConfig = myWebHookConfigFactory.build(webHookExecutionRequest);
 		
-		WebHookContentBuilder contentBuilder = new WebHookContentBuilder(myWebHookPayloadManager, myWebHookTemplateResolver, myWebHookVariableResolverManager);
+		WebHookContentBuilder contentBuilder = new WebHookContentBuilder(myServer, myWebHookTemplateResolver, myWebHookVariableResolverManager);
 		WebHook wh = myWebHookFactory.getWebHook(webHookConfig, 
 												myMainSettings.getProxyConfigForUrl(
 														webHookConfig.getUrl()
@@ -296,7 +297,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 						)
 				);
 		
-		WebHookContentBuilder contentBuilder = createDummyContentBuilder(webHookTemplateExecutionRequest);
+		WebHookContentBuilder contentBuilder = createDummyContentBuilder(webHookTemplateExecutionRequest, myWebHookPayloadManager);
 		
 		WebHookHistoryItem webHookHistoryItem = executeWebHook(webHookTemplateExecutionRequest.getBuildId(), webHookTemplateExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh); 
 		webHookHistoryItem.getWebHookExecutionStats().setEnabled(true);
@@ -324,7 +325,6 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	{
 		
 		WebHookRunnerFactory myWebHookRunnerFactory = new WebHookRunnerFactory(
-				myWebHookPayloadManager, 
 				contentBuilder, 
 				myWebHookHistoryRepository, 
 				myWebHookHistoryItemFactory);
@@ -376,14 +376,13 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 
 		private WebHookTemplateConfig myWebHookTemplateConfig;
 
-		public NonDiscrimatoryTemplateResolver(WebHookTemplateManager webHookTemplateManager, WebHookTemplateConfig webHookTemplateConfig) {
-			super(webHookTemplateManager);
+		public NonDiscrimatoryTemplateResolver(WebHookTemplateManager webHookTemplateManager, WebHookTemplateConfig webHookTemplateConfig, WebHookPayloadManager payloadManager) {
+			super(webHookTemplateManager, payloadManager);
 			myWebHookTemplateConfig = webHookTemplateConfig;
 		}
 		
 		@Override
-		public WebHookTemplateContent findWebHookBranchTemplate(BuildStateEnum state, SBuildType buildType,
-				String webhookFormat, String templateName) {
+		public WebHookTemplateContent findWebHookBranchTemplate(BuildStateEnum state, SBuildType buildType,	String templateName) {
 			if (myWebHookTemplateConfig.getDefaultTemplate().isUseTemplateTextForBranch()) {
 				return WebHookTemplateContent.create(
 						state.getShortName(), 
@@ -401,8 +400,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		}
 		
 		@Override
-		public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SBuildType buildType,
-				String webhookFormat, String templateName) {
+		public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SBuildType buildType, String templateName) {
 			return WebHookTemplateContent.create(
 					state.getShortName(), 
 					myWebHookTemplateConfig.getDefaultTemplate().getTemplateContent(), 
@@ -410,6 +408,11 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					myWebHookTemplateConfig.getPreferredDateTimeFormat()
 				);
 			}
+		
+		@Override
+		public WebHookPayload getTemplatePayloadFormat(String templateId) {
+			return this.payloadManager.getFormat(myWebHookTemplateConfig.getFormat());
+		}
 		
 	}
 

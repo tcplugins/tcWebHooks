@@ -27,7 +27,7 @@ import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
@@ -46,13 +46,13 @@ public class WebHookListener extends BuildServerAdapter {
 	private final SBuildServer myBuildServer;
     private final ProjectSettingsManager mySettings;
     private final WebHookMainSettings myMainSettings;
-    private final WebHookPayloadManager myManager;
+    private final WebHookTemplateManager myManager;
     private final WebHookFactory webHookFactory;
     private final WebHookExecutor webHookExecutor;
     
     
     public WebHookListener(SBuildServer sBuildServer, ProjectSettingsManager settings, 
-    						WebHookMainSettings configSettings, WebHookPayloadManager manager,
+    						WebHookMainSettings configSettings, WebHookTemplateManager manager,
     						WebHookFactory factory, WebHookTemplateResolver resolver,
     						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
     						WebHookHistoryItemFactory historyItemFactory,
@@ -132,16 +132,16 @@ public class WebHookListener extends BuildServerAdapter {
 		    		}
 		    		
 		    		if (whc.getEnabled()){
-						if (myManager.isRegisteredFormat(whc.getPayloadFormat())){
+						if (myManager.isRegisteredTemplate(whc.getPayloadTemplate())){
 							whc.setProjectExternalId(project.getExternalId());
 							whc.setProjectInternalId(project.getProjectId());
 							configs.add(whc);
 						} else {
-							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Payload Handler for " + whc.getPayloadFormat());
+							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate());
 						}
 		    		} else {
 		    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
-		    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadFormat() + ")");
+		    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")");
 		    		}
 				}
 	    	} else {

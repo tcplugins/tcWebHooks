@@ -18,13 +18,11 @@ import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookConfig;
 
 public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	
 	private static final String CLASS_NAME = "AbstractWebHookExecutor :: ";
-	protected final WebHookPayloadManager webhookPayloadManager;
 	protected final WebHookContentBuilder webHookContentBuilder;
 	protected final WebHookHistoryRepository webHookHistoryRepository;
 	protected final WebHookHistoryItemFactory webHookHistoryItemFactory;
@@ -39,7 +37,6 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	protected boolean isTest;
 	
 	public AbstractWebHookExecutor(
-			WebHookPayloadManager webhookPayloadManager,
 			WebHookContentBuilder webHookContentBuilder,
 			WebHookHistoryRepository webHookHistoryRepository,
 			WebHookHistoryItemFactory webHookHistoryItemFactory,
@@ -49,7 +46,6 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 			WebHook webhook,
 			boolean isTest
 			) {
-		this.webhookPayloadManager = webhookPayloadManager;
 		this.webHookContentBuilder = webHookContentBuilder;
 		this.webHookHistoryRepository = webHookHistoryRepository;
 		this.webHookHistoryItemFactory = webHookHistoryItemFactory;
@@ -68,8 +64,8 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 		try {
 			this.webhook = getWebHookContent();
 			
-			doPost(webhook, whc.getPayloadFormat());
-			Loggers.ACTIVITIES.debug(CLASS_NAME + webhookPayloadManager.getFormat(whc.getPayloadFormat()).getFormatDescription());
+			doPost(webhook, whc.getPayloadTemplate());
+			Loggers.ACTIVITIES.debug(CLASS_NAME + whc.getPayloadTemplate());
 			this.webHookHistoryItem = buildWebHookHistoryItem(null);
 			webHookHistoryRepository.addHistoryItem(this.webHookHistoryItem);
 
@@ -101,14 +97,14 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	/** doPost
 	 * 
 	 * @param wh
-	 * @param payloadFormat
+	 * @param payloadTemplate
 	 */
-	public static void doPost(WebHook wh, String payloadFormat) {
+	public static void doPost(WebHook wh, String payloadTemplate) {
 		try {
 			if (wh.isEnabled()){
 				wh.post();
 				Loggers.SERVER.info(CLASS_NAME + " :: WebHook triggered : " 
-						+ wh.getUrl() + " using format " + payloadFormat 
+						+ wh.getUrl() + " using template " + payloadTemplate 
 						+ " returned " + wh.getStatus() 
 						+ " " + wh.getErrorReason());	
 				Loggers.SERVER.debug(CLASS_NAME + ":doPost :: content dump: " + wh.getPayload());

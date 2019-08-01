@@ -150,23 +150,23 @@ public class WebHookTemplateManager {
 		}
 	}
 	
-	public WebHookTemplateConfig getTemplateConfig(String formatShortname, TemplateState templateState){
+	public WebHookTemplateConfig getTemplateConfig(String templateId, TemplateState templateState){
 		synchronized (orderedTemplateCollection) {
-			if (springTemplates.containsKey(formatShortname) 
-					&& xmlConfigTemplates.containsKey(formatShortname)
+			if (springTemplates.containsKey(templateId) 
+					&& xmlConfigTemplates.containsKey(templateId)
 					&& TemplateState.PROVIDED.equals(templateState))
 			{
-				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(formatShortname).getAsEntity());
+				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(templateId).getAsEntity());
 			}
-			if (xmlConfigTemplates.containsKey(formatShortname) 
-				&& ( TemplateState.BEST.equals(templateState) || getTemplateState(formatShortname, templateState).equals(templateState)))
+			if (xmlConfigTemplates.containsKey(templateId) 
+				&& ( TemplateState.BEST.equals(templateState) || getTemplateState(templateId, templateState).equals(templateState)))
 			{
-				return WebHookTemplateConfigBuilder.buildConfig(xmlConfigTemplates.get(formatShortname).getAsEntity());
+				return WebHookTemplateConfigBuilder.buildConfig(xmlConfigTemplates.get(templateId).getAsEntity());
 			}
-			if (springTemplates.containsKey(formatShortname)
-				&& ( TemplateState.BEST.equals(templateState) || TemplateState.PROVIDED.equals(templateState) || getTemplateState(formatShortname, templateState).equals(templateState)))
+			if (springTemplates.containsKey(templateId)
+				&& ( TemplateState.BEST.equals(templateState) || TemplateState.PROVIDED.equals(templateState) || getTemplateState(templateId, templateState).equals(templateState)))
 			{
-				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(formatShortname).getAsEntity());
+				return WebHookTemplateConfigBuilder.buildConfig(springTemplates.get(templateId).getAsEntity());
 			}
 			return null;
 		}
@@ -190,16 +190,6 @@ public class WebHookTemplateManager {
 		return orderedEntities;
 	}
 
-	public List<WebHookPayloadTemplate> findAllTemplatesForFormat(String formatShortName){
-		List<WebHookPayloadTemplate> matchingTemplates = new ArrayList<>();
-		for (WebHookPayloadTemplate template : orderedTemplateCollection){
-			if (template.supportsPayloadFormat(formatShortName)){
-				matchingTemplates.add(template);
-			}
-		}
-		return matchingTemplates;
-	}
-	
 	public TemplateState getTemplateState(String template, TemplateState templateState){
 		if ((TemplateState.BEST.equals(templateState) || TemplateState.USER_OVERRIDDEN.equals(templateState)) && springTemplates.containsKey(template) && xmlConfigTemplates.containsKey(template)){
 			return TemplateState.USER_OVERRIDDEN;

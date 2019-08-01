@@ -20,7 +20,7 @@ public class EnabledBuildStateResolver {
     public void checkAndAddBuildState(HttpServletRequest r, BuildState state, BuildStateEnum myBuildState, String varName){
     	if ((r.getParameter(varName) != null)
     		&& (r.getParameter(varName).equalsIgnoreCase("on"))
-    		&& (templateResolver.templateSupportsFormatAndState(myBuildState, project, r.getParameter("payloadFormat"), r.getParameter("payloadTemplate")))){
+    		&& (templateResolver.templateSupportsFormatAndState(myBuildState, project, r.getParameter("payloadTemplate")))){
     		state.enable(myBuildState);
     	} else {
     		state.disable(myBuildState);;

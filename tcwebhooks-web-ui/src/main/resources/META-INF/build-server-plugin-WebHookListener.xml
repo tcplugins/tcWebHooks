@@ -299,8 +299,40 @@
 		class="webhook.teamcity.testing.WebHookUserRequestedExecutorImpl"
 		/>
 
-	<bean id="legacyDepricatedFormatWebHookTemplate"
-		class="webhook.teamcity.payload.template.LegacyDeprecatedFormatWebHookTemplate"
+	<bean id="legacyEmptyWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyEmptyWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>500</value>
+		</property>
+	</bean>
+
+	<bean id="legacyJsonWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyJsonWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>500</value>
+		</property>
+	</bean>
+
+	<bean id="legacyNameValuePairsWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyNameValuePairsWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>500</value>
+		</property>
+	</bean>
+
+	<bean id="legacyTailoredJsonWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyTailoredJsonWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>500</value>
+		</property>
+	</bean>
+
+	<bean id="legacyXmlWebHookTemplate"
+		class="webhook.teamcity.payload.template.LegacyXmlWebHookTemplate"
 		init-method="register">
 		<property name="rank">
 			<value>500</value>

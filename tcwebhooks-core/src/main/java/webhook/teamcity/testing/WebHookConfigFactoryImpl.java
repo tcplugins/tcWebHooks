@@ -12,7 +12,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookListener;
-import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
@@ -25,17 +25,17 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 	
 	private final SBuildServer myServer;
 	private final ProjectSettingsManager myProjectSettingsManager;
-	private final WebHookPayloadManager myWebHookPayloadManager;
+	private final WebHookTemplateManager myWebHookTemplateManager;
 	
 	public WebHookConfigFactoryImpl(
 			SBuildServer sBuildServer,
 			ProjectSettingsManager projectSettingsManager,
-			WebHookPayloadManager webHookPayloadManager
+			WebHookTemplateManager webHookTemplateManager
 			
 			) {
 		myServer = sBuildServer;
 		myProjectSettingsManager = projectSettingsManager;
-		myWebHookPayloadManager = webHookPayloadManager;
+		myWebHookTemplateManager = webHookTemplateManager;
 	}
 	
 	@Override
@@ -50,7 +50,6 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 				// This means that customTemplate, Parameters and filters will be copied over.
 				WebHookConfig webHookConfig = findWebHookWithId(webHookExecutionRequest.getProjectExternalId(), webHookExecutionRequest.getUniqueKey());
 				webHookConfig.setUrl(webHookExecutionRequest.getUrl());
-				webHookConfig.setPayloadFormat(webHookExecutionRequest.getPayloadFormat());
 				webHookConfig.setAuthEnabled(webHookExecutionRequest.isAuthEnabled());
 				webHookConfig.setAuthType(webHookExecutionRequest.getAuthType());
 				webHookConfig.setAuthPreemptive(webHookExecutionRequest.isAuthPreemptive());
@@ -77,7 +76,6 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 	private WebHookConfig buildNewConfig(WebHookExecutionRequest webHookExecutionRequest) {
 		return WebHookConfig.builder()
 					 .url(webHookExecutionRequest.getUrl())
-					 .payloadFormat(webHookExecutionRequest.getPayloadFormat())
 					 .payloadTemplate(webHookExecutionRequest.getTemplateId())
 					 .templates(new TreeMap<String,CustomMessageTemplate>())
 					 .authEnabled(webHookExecutionRequest.isAuthEnabled())
@@ -119,10 +117,10 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 			    		}
 			    		
 			    		if (whc.getUniqueKey().equals(webHookConfigUniqueId)) {
-							if (myWebHookPayloadManager.isRegisteredFormat(whc.getPayloadFormat())){
+							if (myWebHookTemplateManager.isRegisteredTemplate(whc.getPayloadTemplate())){
 								return whc.copy();
 							} else {
-								throw new WebHookConfigNotFoundException("No registered Payload Handler for " + whc.getPayloadFormat());
+								throw new WebHookConfigNotFoundException("No registered Template " + whc.getPayloadTemplate());
 							}
 						}
 			    	}

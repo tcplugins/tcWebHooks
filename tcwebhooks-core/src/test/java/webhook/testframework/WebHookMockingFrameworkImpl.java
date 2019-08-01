@@ -62,6 +62,7 @@ import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.format.WebHookPayloadXml;
+import webhook.teamcity.payload.template.LegacyJsonWebHookTemplate;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
@@ -89,12 +90,15 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
 	VariableResolverFactory legacyVariableResolverFactory = new WebHooksBeanUtilsLegacyVariableResolverFactory();
 	 
-	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(manager, resolver, webHookVariableResolverManager);
+	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(sBuildServer, resolver, webHookVariableResolverManager);
 	WebHookPayloadTemplate template;
 	WebHookPayload payloadJson = new WebHookPayloadJson(manager, webHookVariableResolverManager);
 	WebHookPayload payloadXml = new WebHookPayloadXml(manager, webHookVariableResolverManager);
 	WebHookPayload payloadNvpairs = new WebHookPayloadNameValuePairs(manager, webHookVariableResolverManager);
 	WebHookPayload payloadJsonTemplate = new WebHookPayloadJsonTemplate(manager, webHookVariableResolverManager);
+	
+	WebHookPayloadTemplate templateJson = new LegacyJsonWebHookTemplate(templateManager);
+	
 	WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 	WebHookPayload payload = new WebHookPayloadJson(manager, webHookVariableResolverManager);
 	WebHookProjectSettings projSettings;
@@ -133,14 +137,14 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookHistoryRepository historyRepository  = new WebHookHistoryRepositoryImpl();
 	private WebAddressTransformer webAddressTransformer = new WebAddressTransformerImpl();
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
-	private WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(manager, contentBuilder, historyRepository, historyItemFactory);
+	private WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(contentBuilder, historyRepository, historyItemFactory);
 	private WebHookExecutor webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, manager, factory, resolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, resolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
@@ -156,6 +160,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
 		when(manager.getFormat("JSON")).thenReturn(payloadJson);
 		when(manager.getServer()).thenReturn(sBuildServer);
+		
+		when(templateManager.isRegisteredTemplate("legacy-json")).thenReturn(true);
+		when(templateManager.getTemplate("legacy-json")).thenReturn(templateJson);
+		when(resolver.getTemplatePayloadFormat("legacy-json")).thenReturn(payloadJson);
+		
 		formatList.add(payloadJson);
 		formatList.add(payloadXml);
 		formatList.add(payloadNvpairs);

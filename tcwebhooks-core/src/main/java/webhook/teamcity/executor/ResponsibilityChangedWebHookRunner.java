@@ -7,7 +7,6 @@ import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class ResponsibilityChangedWebHookRunner extends AbstractWebHookExecutor implements WebHookRunner {
@@ -15,7 +14,6 @@ public class ResponsibilityChangedWebHookRunner extends AbstractWebHookExecutor 
 	private WebHookResponsibilityHolder responsibilityHolder;
 
 	public ResponsibilityChangedWebHookRunner(
-			WebHookPayloadManager webhookPayloadManager,
 			WebHookContentBuilder webHookContentBuilder,
 			WebHookHistoryRepository webHookHistoryRepository,
 			WebHookHistoryItemFactory webHookHistoryItemFactory,
@@ -26,7 +24,7 @@ public class ResponsibilityChangedWebHookRunner extends AbstractWebHookExecutor 
 			WebHookResponsibilityHolder responsibilityHolder,
 			boolean isTest) 
 	{
-		super (webhookPayloadManager,
+		super (
 			 webHookContentBuilder,
 			 webHookHistoryRepository,
 			 webHookHistoryItemFactory,

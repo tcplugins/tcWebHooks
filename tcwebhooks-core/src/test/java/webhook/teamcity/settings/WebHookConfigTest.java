@@ -181,19 +181,6 @@ public class WebHookConfigTest {
 		assertFalse(webhookAllEnabled.getStateBuildBrokenAsChecked().equals(CHECKED));
 		assertFalse(webhookAllDisabled.getStateBuildBrokenAsChecked().equals(CHECKED));
 	}
-
-	@Test
-	public void testGetPayloadFormat() {
-		assertTrue(webhookAllEnabled.getPayloadFormat().equals("nvpairs"));
-	}
-
-	@Test
-	public void testSetPayloadFormatString() {
-		assertTrue(webhookAllEnabled.getPayloadFormat().equals("nvpairs"));
-		webhookAllEnabled.setPayloadFormat("XML");
-		assertTrue(webhookAllEnabled.getPayloadFormat().equals("XML"));
-		assertFalse(webhookAllEnabled.getAuthEnabled());
-	}
 	
 	@Test
 	public void testAuthParametersAreLoaded(){

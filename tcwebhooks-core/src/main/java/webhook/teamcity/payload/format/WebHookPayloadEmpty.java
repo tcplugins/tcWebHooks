@@ -17,10 +17,10 @@ import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObjectSerialiser {
 
+	public static final String FORMAT_SHORT_NAME = "empty";
 	private final String charset = "UTF-8";
 	private final String contentType = "text/plain";
 	private final String description = "None";
-	private final String shortName = "empty";
 	private Integer rank;
 	private WebHookPayloadManager myManager;
 	
@@ -112,7 +112,7 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 
 	@Override
 	public String getFormatShortName() {
-		return this.shortName;
+		return FORMAT_SHORT_NAME;
 	}
 
 	@Override

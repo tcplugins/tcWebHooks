@@ -113,8 +113,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 				    				&& (request.getParameter("submitAction").equals("updateWebHook") || request.getParameter("submitAction").equals("addWebHook"))){
 			    				if((request.getParameter("URL") != null ) 
 				    				&& (request.getParameter("URL").length() > 0 )
-				    				&& (request.getParameter("payloadFormat") != null)
-				    				&& (request.getParameter("payloadFormat").length() > 0)
 				    				&& (request.getParameter("payloadTemplate") != null)
 				    				&& (request.getParameter("payloadTemplate").length() > 0))
 				    				{
@@ -204,7 +202,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						} else if (noErrors) {
 			    							WebHookUpdateResult result = projSettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
-			    														states, request.getParameter("payloadFormat"), request.getParameter("payloadTemplate"), 
+			    														states, request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(result.isUpdated()){
 			    								myProject.persist();

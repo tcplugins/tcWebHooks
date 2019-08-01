@@ -61,7 +61,7 @@ public class WebHookAjaxEditPageControllerTest {
 		// We tell Mockito that any BuildStateEnum is OK for "when-ing".
 		// That way it doesn't matter what state is passed in, our mocked object will return true. 
 		for (BuildStateEnum state : BuildStateEnum.values()){
-			when(templateResolver.templateSupportsFormatAndState(state, project, paramFormat, paramTemplate)).thenReturn(true);
+			when(templateResolver.templateSupportsFormatAndState(state, project, paramTemplate)).thenReturn(true);
 		}
 		
 		resolver = new EnabledBuildStateResolver(templateResolver, project);

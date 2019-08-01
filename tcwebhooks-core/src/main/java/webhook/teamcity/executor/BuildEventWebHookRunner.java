@@ -8,7 +8,6 @@ import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.settings.WebHookConfig;
 
 public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements WebHookRunner {
@@ -18,7 +17,6 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 	private String comment;
 	
 	public BuildEventWebHookRunner(
-			WebHookPayloadManager webhookPayloadManager,
 			WebHookContentBuilder webHookContentBuilder, 
 			WebHookHistoryRepository webHookHistoryRepository,
 			WebHookHistoryItemFactory webHookHistoryItemFactory, 
@@ -31,7 +29,7 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 			SBuild sBuild,
 			boolean isTest) 
 	{
-		super(webhookPayloadManager, 
+		super(
 			  webHookContentBuilder, 
 			  webHookHistoryRepository, 
 			  webHookHistoryItemFactory, 

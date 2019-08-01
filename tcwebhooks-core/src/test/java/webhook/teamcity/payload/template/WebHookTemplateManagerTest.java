@@ -113,23 +113,6 @@ public class WebHookTemplateManagerTest {
 		System.out.println("###########################");
 	}
 	
-	@Test
-	public void TestFindMatchingTemplates(){
-		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(null, webHookTemplateJaxHelper);
-		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper);
-		wht.register();
-		TestWebHookTemplate wht2 = new TestWebHookTemplate(wtm);
-		wht2.register();
-		AaaTestWebHookTemplate wht3 = new AaaTestWebHookTemplate(wtm);
-		wht3.register();
-		BbbTestWebHookTemplate wht4 = new BbbTestWebHookTemplate(wtm);
-		wht4.register();
-		assertTrue(wtm.findAllTemplatesForFormat(WebHookPayloadJsonTemplate.FORMAT_SHORT_NAME).contains(wht2));
-		System.out.println(wht.getTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText());
-	}
-	
-	
 	class TestWebHookTemplate extends AbstractWebHookTemplate {
 		
 		public TestWebHookTemplate(WebHookTemplateManager webhookTemplateManager) {

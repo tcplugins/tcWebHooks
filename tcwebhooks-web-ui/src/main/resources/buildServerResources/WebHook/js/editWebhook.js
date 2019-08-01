@@ -532,7 +532,7 @@ function populateWebHookDialog(id){
 		    	$j('#' + value.buildStateName).prop('checked', value.enabled);
 		    });
 		    
-			$j('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate + "_" + webhook.payloadFormat).change();
+			$j('#webHookFormContents select#payloadFormatHolder').val(webhook.payloadTemplate).change();
 			
 			$j('#buildTypeSubProjects').prop('checked', webhook.subProjectsEnabled);
 			$j.each(webhook.builds, function() {
@@ -565,10 +565,10 @@ function populateWebHookDialog(id){
 	
 }
 
-function lookupTemplateName(templateFormatCombinationKey){
+function lookupTemplateName(templateId){
 	var name;
 	$j.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
-		if (templateFormatCombinationKey === templateKey){
+		if (templateId === templateKey){
 			name = template.templateDescription;
 			return false;
 		}
@@ -576,10 +576,10 @@ function lookupTemplateName(templateFormatCombinationKey){
 	return name;
 }
 
-function lookupTemplate(templateFormatCombinationKey){
+function lookupTemplate(templateId){
 	var name;
 	$j.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
-		if (templateFormatCombinationKey === templateKey){
+		if (templateId === templateKey){
 			name = template.templateId;
 			return false;
 		}
@@ -587,10 +587,10 @@ function lookupTemplate(templateFormatCombinationKey){
 	return name;
 }
 
-function lookupFormat(templateFormatCombinationKey){
+function lookupFormat(templateId){
 	var name;
 	$j.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
-		if (templateFormatCombinationKey === templateKey){
+		if (templateId === templateKey){
 			name = template.formatShortName;
 			return false;
 		}

@@ -20,7 +20,6 @@ public class WebHookExecutionRequest {
 	private String uniqueKey;
 	private String url;
 	private String templateId;
-	private String payloadFormat;
 	private String authType;
 	private boolean authEnabled;
 	private boolean authPreemptive;

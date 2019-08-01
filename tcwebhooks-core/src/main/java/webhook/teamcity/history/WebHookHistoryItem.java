@@ -21,7 +21,7 @@ public class WebHookHistoryItem {
 	@Nullable private String buildTypeName;
 	@Nullable private String buildTypeExternalId;
 	@Nullable private Long buildId;
-	@NotNull  private final WebHookConfig webHookConfig;
+	@Nullable  private final WebHookConfig webHookConfig;
 	@NotNull  private final WebHookExecutionStats webHookExecutionStats;
 	@Nullable private final WebHookErrorStatus webhookErrorStatus;
 	@NotNull  private final LocalDateTime timestamp;

@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
 
 public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHookPayload {
 	
+	public static final String FORMAT_SHORT_NAME = "json";
 	Integer rank = 100;
 	String charset = "UTF-8";
 	
@@ -35,7 +36,7 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 	}
 
 	public String getFormatShortName() {
-		return "json";
+		return FORMAT_SHORT_NAME;
 	}
 
 	public String getFormatToolTipText() {
