@@ -16,6 +16,7 @@ import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.vcs.SVcsModification;
@@ -83,6 +84,10 @@ public class WebHookPayloadContent {
 		private List<WebHooksChanges> changes = new ArrayList<>();
 		private WebHookResponsibility responsibilityInfo;
 		private String pinEventUsername;
+
+		@Getter @Setter private SBuild build;
+		@Getter @Setter private SProject project;
+		@Getter @Setter private SBuildType buildType;
 		
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -185,7 +190,8 @@ public class WebHookPayloadContent {
 		 * @param state
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum state, Map<String,String> templates) {
-			
+
+			setAdditionalContext(null, responsibilityHolder.getSBuildType(), responsibilityHolder.getSProject());
 			setResponsibilityInfo(responsibilityHolder);
 			setNotifyType(state.getShortName());
 			setBuildEventType(state);
@@ -240,8 +246,14 @@ public class WebHookPayloadContent {
 			setResponsibilityUserNew(newUser);
 
 		}
-		
-		public void setResponsibilityInfo(WebHookResponsibilityHolder responsibilityHolder) {
+
+	private void setAdditionalContext(SBuild sBuild, SBuildType sBuildType, SProject sProject) {
+			this.setBuild(sBuild);
+			this.setBuildType(sBuildType);
+			this.setProject(sProject);
+	}
+
+	public void setResponsibilityInfo(WebHookResponsibilityHolder responsibilityHolder) {
 			this.responsibilityInfo = WebHookResponsibility.build(responsibilityHolder);
 		}
 		
@@ -257,7 +269,8 @@ public class WebHookPayloadContent {
 		 * @param state
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
-			
+
+			setAdditionalContext(null, buildType, buildType.getProject());
 			setNotifyType(state.getShortName());
 			setBuildEventType(state);
 			setDerivedBuildEventType(state);
@@ -323,6 +336,7 @@ public class WebHookPayloadContent {
 			
 			setCurrentTime(format.format(new Date()));
 
+			setAdditionalContext(sBuild, sBuild.getBuildType(), sBuild.getBuildType().getProject());
 			setBuildEventType(buildState);
 			setBuildResult(sBuild, previousBuild, buildState);
 			setBuildStatus(sBuild.getStatusDescriptor().getText(), buildState);

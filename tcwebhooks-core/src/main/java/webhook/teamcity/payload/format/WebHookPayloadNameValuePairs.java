@@ -57,7 +57,9 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 	@SuppressWarnings("unchecked")
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		String returnString = ""; 
+		String returnString = "";
+
+		cleanContextContent(content);
 		
 		Map<String, String> contentMap = null;
 		try {

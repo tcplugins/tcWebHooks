@@ -54,6 +54,9 @@ public class WebHookPayloadXml extends WebHookPayloadGeneric {
 
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent) {
+
+		cleanContextContent(content);
+
 		XStream xstream = new XStream();
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToXmlConvertor());

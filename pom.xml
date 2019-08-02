@@ -4,7 +4,7 @@
 	<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
 	<artifactId>tcwebhooks</artifactId>
 	<properties>
-    	<majorVersion>1.2.0-alpha.2</majorVersion>
+    	<majorVersion>1.2.0-alpha.3</majorVersion>
     	<buildNumber>snapshot</buildNumber>
     	<gitHash>${GIT_HASH}</gitHash>
     	<gitBranch>${GIT_BRANCH}</gitBranch>    	
@@ -89,9 +89,8 @@
 	
 	<packaging>pom</packaging>
 	<modules>
+		<module>tcwebhooks-core</module>
 		<module>tcwebhooks-rest-api</module>
 		<module>tcwebhooks-web-ui</module>
-		
-		<module>tcwebhooks-core</module>
 	</modules>
 </project>

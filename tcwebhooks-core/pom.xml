@@ -152,7 +152,7 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.3.1</version>
+			<version>[1.4.6,)</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -167,14 +167,14 @@
      	<dependency>
 	         <groupId>org.eclipse.jetty</groupId>
 	         <artifactId>jetty-server</artifactId>
-	         <version>9.2.11.v20150529</version>
+			<version>9.3.24.v20180605</version>
 			<scope>test</scope>
      	</dependency>
 
      	<dependency>
 	         <groupId>org.eclipse.jetty</groupId>
 	         <artifactId>jetty-webapp</artifactId>
-	         <version>9.2.11.v20150529</version>
+			<version>9.3.24.v20180605</version>
 			<scope>test</scope>
 	     </dependency>
     	 <!--Jetty dependencies end here -->

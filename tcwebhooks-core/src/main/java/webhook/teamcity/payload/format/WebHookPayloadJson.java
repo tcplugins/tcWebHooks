@@ -45,6 +45,8 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content,WebHookTemplateContent webHookTemplate){
 
+		cleanContextContent(content);
+
 		XStream xstream = new XStream(new JsonHierarchicalStreamDriver());
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToJsonConvertor());

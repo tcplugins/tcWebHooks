@@ -131,4 +131,10 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		return object;
 	}
 
+	protected void cleanContextContent(WebHookPayloadContent content) {
+		content.setBuild(null);
+		content.setBuildType(null);
+		content.setProject(null);
+	}
+
 }

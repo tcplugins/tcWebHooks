@@ -2,7 +2,9 @@ package webhook.teamcity.payload.variableresolver.standard;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -28,7 +30,7 @@ import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 	
-	
+	private static final List<String> HIDDEN_FIELDS = Arrays.asList("build", "project", "buildType");
 	private static final String CAPITALISE = "capitalise(";
 	private static final String CAPITALIZE = "capitalize(";
 	private static final String ESCAPEJSON = "escapejson(";
@@ -176,7 +178,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 	}
 	
 	private String getProperty(Object bean, String propertyName) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		if (PropertyUtils.getProperty(bean, propertyName) == null) {
+		if (PropertyUtils.getProperty(bean, propertyName) == null || HIDDEN_FIELDS.contains(propertyName)) {
 			return null;
 		}
 		return this.webhookPayload.serialiseObject(PropertyUtils.getProperty(bean, propertyName)).toString();
