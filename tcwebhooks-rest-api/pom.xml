@@ -199,27 +199,6 @@
 			<version>7.0.3</version>
 			<scope>provided</scope>
 		</dependency>
-
-<!-- 		<dependency>
-		    <groupId>io.springfox</groupId>
-		    <artifactId>springfox-swagger2</artifactId>
-		    <version>2.5.0</version>
-		</dependency> -->
-		
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- http://mvnrepository.com/artifact/org.springframework/spring-core -->
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-core</artifactId>
-		    <version>${springframework.version}</version>
-		    <scope>provided</scope>
-		</dependency>
 		
 		<!-- http://mvnrepository.com/artifact/org.springframework/spring-test -->
 		<dependency>
@@ -228,18 +207,6 @@
 		    <version>${springframework.version}</version>
 		    <scope>test</scope>
 		</dependency>
-
-<!-- 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-context</artifactId>
-		    <version>${springframework.version}</version>
-		</dependency>
-
-		<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-		    <version>${springframework.version}</version>
-        </dependency> -->
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -283,56 +250,39 @@
 			<version>9.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.16.16</version>
-			<scope>compile</scope>
-		</dependency>		
-		
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.1</version>
-			<scope>provided</scope>
-		</dependency>
-		
+			
 		<dependency>
 		    <groupId>io.github.java-diff-utils</groupId>
 		    <artifactId>java-diff-utils</artifactId>
 		    <version>4.0</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.3</version>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>com.sun.jersey.jersey-test-framework</groupId>
 			<artifactId>jersey-test-framework-grizzly</artifactId>
 			<version>1.16</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 		    <groupId>com.sun.jersey.contribs</groupId>
 		    <artifactId>jersey-apache-client</artifactId>
 		    <version>1.16</version>
 		    <scope>test</scope>
 		</dependency>
-<!--  		<dependency>
-			<groupId>com.sun.jersey.jersey-test-framework</groupId>
-			<artifactId>jersey-test-framework-inmemory</artifactId>
-			<version>1.16</version>
-			<scope>test</scope>
-		</dependency> -->
+
 	    <dependency>
 		    <groupId>com.riffpie.common.testing</groupId>
 		    <artifactId>jersey-test-support</artifactId>
 		    <version>1.0</version>
 		    <scope>test</scope>
-	    </dependency>		
+	    </dependency>
+	    
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.28.2</version>
+			<scope>test</scope>
+		</dependency>	    
 	</dependencies>
 </project>

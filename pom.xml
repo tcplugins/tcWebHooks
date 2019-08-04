@@ -11,7 +11,7 @@
     	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>9.1</teamcityVersion>
-    	<springframework.version>4.0.9.RELEASE</springframework.version>
+    	<springframework.version>4.3.17.RELEASE</springframework.version>
     </properties>
 	<version>${currentVersion}</version>
 	<name>tcWebHooks - A WebHooks plugin for TeamCity</name>
