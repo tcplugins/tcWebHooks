@@ -8,8 +8,8 @@ import org.jdom.Element;
 public class WebHookHeaderConfig {
 	
 	public static final String XML_ELEMENT_NAME = "header";
-	public static final String NAME = "name";
-	public static final String VALUE = "value";
+	public static final String XML_ATTR_NAME = "name";
+	public static final String XML_ATTR_VALUE = "value";
 	
 	
 	String name;
@@ -32,8 +32,8 @@ public class WebHookHeaderConfig {
 
 	public Element getAsElement() {
 		Element e = new Element(XML_ELEMENT_NAME);
-			e.setAttribute(NAME, this.name);
-			e.setAttribute(VALUE, this.value);
+			e.setAttribute(XML_ATTR_NAME, this.name);
+			e.setAttribute(XML_ATTR_VALUE, this.value);
 		return e;
 	}
 

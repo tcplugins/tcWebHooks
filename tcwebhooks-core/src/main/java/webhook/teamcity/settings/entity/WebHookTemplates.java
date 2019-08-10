@@ -9,8 +9,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jetbrains.annotations.NotNull;
 
-import webhook.teamcity.settings.entity.WebHookTemplateEntity;
-
 @XmlRootElement(name = "webhook-templates")
 public class WebHookTemplates {
 	@NotNull
@@ -30,10 +28,10 @@ public class WebHookTemplates {
 	public void addWebHookTemplate(WebHookTemplateEntity template) {
 		this.templateList.add(template);
 	}
-	
+
 	public void addAllWebHookTemplates(Collection<WebHookTemplateEntity> templates) {
 		this.templateList.addAll(templates);
 	}
-	
+
 
 }

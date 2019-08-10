@@ -6,13 +6,13 @@ import static webhook.teamcity.BuildStateEnum.BUILD_FINISHED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
 public class BuildState {
 
-	Map<BuildStateEnum, BuildStateInterface> states = new HashMap<>();
+	Map<BuildStateEnum, BuildStateInterface> states = new EnumMap<>(BuildStateEnum.class);
 	
 	public BuildState() {
 		states.clear();
@@ -158,47 +158,44 @@ public class BuildState {
 
 	public boolean allEnabled() {
 		boolean areAllEnbled = true;
-		for (BuildStateEnum state : states.keySet()){
-			if (state.equals(BUILD_BROKEN)){
-				if (states.get(BUILD_BROKEN).isEnabled()){
+		for (Map.Entry<BuildStateEnum,BuildStateInterface> state : states.entrySet()){
+			if (state.getKey().equals(BUILD_BROKEN)){
+				if (state.getValue().isEnabled()){
 					return false;
 				}
 				continue;
 			}
-			if (state.equals(BUILD_FIXED)){
-				if (states.get(BUILD_FIXED).isEnabled()){
+			if (state.getKey().equals(BUILD_FIXED)){
+				if (state.getValue().isEnabled()){
 					return false;
 				}
 				continue;
 			}
-			areAllEnbled = areAllEnbled && states.get(state).isEnabled();  
+			areAllEnbled = areAllEnbled && state.getValue().isEnabled();  
 		}
 		return areAllEnbled;
 	}
 
 	public boolean noneEnabled() {
 		int enabled = 0;
-		for (BuildStateEnum state : states.keySet()){
-			if (state.equals(BUILD_BROKEN)){
-				continue;
-			}
-			if (state.equals(BUILD_FIXED)){
-				continue;
-			}
-			if (state.equals(BUILD_SUCCESSFUL)){
-				continue;
-			}
-			if (state.equals(BUILD_FAILED)){
+		for (Map.Entry<BuildStateEnum,BuildStateInterface> state : states.entrySet()){
+			if (
+				   state.getKey().equals(BUILD_BROKEN)
+				|| state.getKey().equals(BUILD_FIXED)
+				|| state.getKey().equals(BUILD_SUCCESSFUL)
+				|| state.getKey().equals(BUILD_FAILED)
+			)
+			{
 				continue;
 			}
 			
-			if (state.equals(BUILD_FINISHED)){
+			if (state.getKey().equals(BUILD_FINISHED)){
 				if (finishEnabled()){
 					enabled++;
 				}
 				continue;
 			}
-			if (states.get(state).isEnabled())  
+			if (state.getValue().isEnabled())  
 				enabled++;
 		}
 		return enabled == 0;

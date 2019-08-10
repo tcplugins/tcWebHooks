@@ -20,7 +20,7 @@
     /css/userRoles.css
     
     ${jspHome}WebHook/css/styles.css
-    ${jspHome}WebHook/highlight/styles/tomorrow.css
+    ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
         
       </bs:linkCSS>
       <bs:linkScript>

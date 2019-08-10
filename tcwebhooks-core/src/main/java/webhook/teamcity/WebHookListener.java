@@ -122,7 +122,7 @@ public class WebHookListener extends BuildServerAdapter {
 			WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(project.getProjectId(), WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
 	    	if (projSettings.isEnabled()){
 		    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
-		    		if (whc.isEnabledForSubProjects() == false && !myProject.getProjectId().equals(project.getProjectId())){
+		    		if ( !whc.isEnabledForSubProjects() && !myProject.getProjectId().equals(project.getProjectId())){
 		    			// Sub-projects are disabled and we are a subproject.
 		    			if (Loggers.ACTIVITIES.isDebugEnabled()){
 			    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "

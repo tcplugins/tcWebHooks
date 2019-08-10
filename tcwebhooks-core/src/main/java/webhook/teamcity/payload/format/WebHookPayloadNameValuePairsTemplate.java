@@ -1,6 +1,5 @@
 package webhook.teamcity.payload.format;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +21,13 @@ import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric implements WebHookPayload, WebHookContentObjectSerialiser {
-	
+
 	public static final String FORMAT_SHORT_NAME = "nvpairsTemplate";
 	public static final String FORMAT_CONTENT_TYPE = "application/x-www-form-urlencoded";
-	
+
 	Integer rank = 101;
 	String charset = "UTF-8";
-	
+
 	public WebHookPayloadNameValuePairsTemplate(WebHookPayloadManager manager, WebHookVariableResolverManager variableResolverManager){
 		super(manager, variableResolverManager);
 	}
@@ -37,7 +36,7 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 	public void register(){
 		myManager.registerPayloadFormat(this);
 	}
-	
+
 	@Override
 	public String getFormatDescription() {
 		return "Name Value Pairs - urlencoded (standard template)";
@@ -52,13 +51,13 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 	public String getFormatToolTipText() {
 		return "Send a x-www-form-urlencoded payload with content from a standard template";
 	}
-	
+
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(webHookTemplateContent.getTemplateText(), this.myVariableResolverFactory.buildVariableResolver(this, content, content.getAllParameters()));
 		try {
 			return URLEncodedUtils.format(parseToNvPairs(builder.build()), Charset.forName(getCharset()));
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			throw new WebHookPayloadContentAssemblyException("Failed to parse template input. Check the input is correct");
 		}
 	}
@@ -92,13 +91,13 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 	public Object serialiseObject(Object object) {
 		return object;
 	}
-	
+
 	@Override
 	public PayloadTemplateEngineType getTemplateEngineType() {
 		return PayloadTemplateEngineType.STANDARD;
-	}	
-	
-	public List<NameValuePair> parseToNvPairs(String s) throws IOException {
+	}
+
+	public List<NameValuePair> parseToNvPairs(String s) {
 		List<NameValuePair> nvPairs = new ArrayList<>();
 		for (String line : s.split("\n")) {
 			if (! line.trim().isEmpty()) {

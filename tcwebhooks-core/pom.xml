@@ -72,7 +72,7 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- http://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
@@ -84,8 +84,8 @@
 			<groupId>org.apache.commons</groupId>
   			<artifactId>commons-lang3</artifactId>
   			<version>3.4</version>
-		</dependency> 
-		
+		</dependency>
+
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
@@ -106,7 +106,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
@@ -172,19 +172,19 @@
 			<version>1.16.16</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 			<version>1.7</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
 		    <groupId>com.google.code.gson</groupId>
@@ -205,7 +205,14 @@
 			<version>3.8.0</version>
 			<scope>test</scope>
 		</dependency>
-		
+
+		<dependency>
+		  <groupId>org.awaitility</groupId>
+		  <artifactId>awaitility-proxy</artifactId>
+		  <version>3.1.6</version>
+		    <scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>

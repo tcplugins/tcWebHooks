@@ -12,10 +12,12 @@ import webhook.WebHookProxyConfig;
 
 
 public class WebHookMainConfig {
-	
-	final static int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
-	final static int HTTP_RESPONSE_TIMEOUT_DEFAULT = 120;
-	
+
+	public static final String SINGLE_HOST_REGEX = "^[^./~`'\"]+(?:/.*)?$";
+	public static final String HOSTNAME_ONLY_REGEX = "^([^/]+)(?:/.*)?$";
+	private static final int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
+	private static final int HTTP_RESPONSE_TIMEOUT_DEFAULT = 120;
+
 	private String webhookInfoUrl = null;
 	private String webhookInfoText = null;
 	private Boolean webhookShowFurtherReading = true;
@@ -29,22 +31,21 @@ public class WebHookMainConfig {
 	private Integer httpConnectionTimeout;
 	private Integer httpResponseTimeout;
 	private boolean useThreadedExecutor = true;
-	
-	public final String SINGLE_HOST_REGEX = "^[^./~`'\"]+(?:/.*)?$";
-	public final String HOSTNAME_ONLY_REGEX = "^([^/]+)(?:/.*)?$";
-	private Pattern singleHostPattern, hostnameOnlyPattern ;
+
+	private Pattern singleHostPattern;
+	private Pattern hostnameOnlyPattern;
 
 	public WebHookMainConfig() {
 		noProxyUrls = new ArrayList<>();
 		noProxyPatterns = new ArrayList<>();
-		singleHostPattern = Pattern.compile(SINGLE_HOST_REGEX); 
+		singleHostPattern = Pattern.compile(SINGLE_HOST_REGEX);
 		hostnameOnlyPattern = Pattern.compile(HOSTNAME_ONLY_REGEX);
 	}
 
 	public String getProxyListasString(){
     	return " host:" + this.proxyHost + " port: " + this.proxyPort;
 	}
-	
+
 	private Pattern generatePatternFromURL(String noProxyUrl){
 		if(this.stripProtocolFromUrl(noProxyUrl).startsWith(".")){
 			return Pattern.compile("^.+" + Pattern.quote(noProxyUrl), Pattern.UNICODE_CASE);
@@ -54,7 +55,7 @@ public class WebHookMainConfig {
 			return Pattern.compile("^" + Pattern.quote(noProxyUrl), Pattern.UNICODE_CASE);
 		}
 	}
-	
+
 	public void addNoProxyUrl(String noProxyUrl) {
 		noProxyUrls.add(noProxyUrl);
 		noProxyPatterns.add(generatePatternFromURL(noProxyUrl));
@@ -62,7 +63,7 @@ public class WebHookMainConfig {
 
 	public WebHookProxyConfig getProxyConfigForUrl(String url) {
 		if(this.matchProxyForURL(url)){
-			if (   this.proxyPassword != null && this.proxyPassword.length() > 0 
+			if (   this.proxyPassword != null && this.proxyPassword.length() > 0
 				&& this.proxyUsername != null && this.proxyUsername.length() > 0 ){
 				return new WebHookProxyConfig(this.proxyHost,this.proxyPort, this.proxyUsername, this.proxyPassword);
 			} else {
@@ -75,18 +76,18 @@ public class WebHookMainConfig {
 
 	public String stripProtocolFromUrl(String url){
 		String tmpURL = url;
-		if(tmpURL.length() > "https://".length() 
+		if(tmpURL.length() > "https://".length()
 			&& tmpURL.substring(0,"https://".length()).equalsIgnoreCase("https://"))
 		{
 				tmpURL = tmpURL.substring("https://".length());
-		} else if (tmpURL.length() > "http://".length() 
+		} else if (tmpURL.length() > "http://".length()
 			&& tmpURL.substring(0,"http://".length()).equalsIgnoreCase("http://"))
 		{
 				tmpURL = tmpURL.substring("http://".length());
 		}
 		return tmpURL;
 	}
-	
+
 	public String getHostNameFromUrl(String url){
 		Matcher m = hostnameOnlyPattern.matcher(this.stripProtocolFromUrl(url));
 		while (m.find()) {
@@ -95,31 +96,31 @@ public class WebHookMainConfig {
 		}
 		return "";
 	}
-	
+
 	public boolean isUrlShortName(String url){
 		return singleHostPattern.matcher(stripProtocolFromUrl(url)).find();
 	}
-	
+
 	public boolean matchProxyForURL(String url) {
-		if ((this.proxyHost == null) 
-				|| (this.proxyHost.length() == 0) 
-				|| (this.proxyPort == null) 
+		if ((this.proxyHost == null)
+				|| (this.proxyHost.length() == 0)
+				|| (this.proxyPort == null)
 				|| (!(this.proxyPort > 0))){
-			/* If we don't have all the components of a proxy 
-			 * configured, don't proxy the URL. 
+			/* If we don't have all the components of a proxy
+			 * configured, don't proxy the URL.
 			 */
 			return false;
 		} else if (this.proxyShortNames == false && this.isUrlShortName(url)){
 			/* If the hostname part of the URL does not contain a dot, and we have proxyShortNames unset
-			 * then don't proxy the URL. 
+			 * then don't proxy the URL.
 			 */
 			return false;
 		} else {
-			/* Else loop around the patterns matching the URL and don't 
+			/* Else loop around the patterns matching the URL and don't
 			 * proxy the URL if we have a match.
 			 */
 	    	for(Iterator<Pattern> noProxyPattern = noProxyPatterns.iterator(); noProxyPattern.hasNext();)
-	    	{	
+	    	{
 	    		Pattern tempPat = noProxyPattern.next();
 	    		if (tempPat.matcher(this.getHostNameFromUrl(url)).find()){
 	    			return false;
@@ -128,32 +129,32 @@ public class WebHookMainConfig {
 		}
 		return true;
 	}
-	
+
 	public Element getInfoUrlAsElement(){
 		/*
 			<info url="http://acme.com/" text="Using WebHooks in Acme Inc." />
 		 */
 		if (this.webhookInfoUrl != null && this.webhookInfoUrl.length() > 0){
 			Element e = new Element("info");
-			e.setAttribute("url", webhookInfoUrl);	
+			e.setAttribute("url", webhookInfoUrl);
 			if (this.webhookInfoText != null && this.webhookInfoText.length() > 0){
 				e.setAttribute("text", webhookInfoText);
 			} else {
 				e.setAttribute("text", webhookInfoUrl);
 			}
 			e.setAttribute("show-reading", webhookShowFurtherReading.toString());
-			
+
 			return e;
 		}
 		return null;
 	}
-	
+
 	private Element getNoProxyAsElement(String noProxyUurl){
 		Element e = new Element("noproxy");
 		e.setAttribute("url", noProxyUurl);
 		return e;
 	}
-	
+
 	public Element getProxyAsElement(){
 		/*
     		  <proxy host="myproxy.mycompany.com" port="8080" >
@@ -167,12 +168,12 @@ public class WebHookMainConfig {
 		Element el = new Element("proxy");
 		el.setAttribute("host", this.getProxyHost());
 		el.setAttribute("port", String.valueOf(this.getProxyPort()));
-		if (   this.proxyPassword != null && this.proxyPassword.length() > 0 
+		if (   this.proxyPassword != null && this.proxyPassword.length() > 0
 			&& this.proxyUsername != null && this.proxyUsername.length() > 0 )
 		{
 			el.setAttribute("username", this.getProxyUsername());
 			el.setAttribute("password", this.getProxyPassword());
-			
+
 		}
 
 		if (this.noProxyUrls.size() > 0){
@@ -182,7 +183,7 @@ public class WebHookMainConfig {
 		}
 		return el;
 	}
-	
+
 	public Element getTimeoutsAsElement () {
 		if (this.httpConnectionTimeout == null && this.httpResponseTimeout == null) {
 			return null;
@@ -192,7 +193,7 @@ public class WebHookMainConfig {
 				.setAttribute("response", String.valueOf(this.getHttpResponseTimeout()));
 		return el;
 	}
-	
+
 	public Integer getProxyPort() {
 		return proxyPort;
 	}
@@ -264,33 +265,33 @@ public class WebHookMainConfig {
 	public Boolean getWebhookShowFurtherReading() {
 		return webhookShowFurtherReading;
 	}
-	
+
 	public Integer getHttpConnectionTimeout() {
 		if (this.httpConnectionTimeout != null) {
 			return httpConnectionTimeout;
 		}
 		return HTTP_CONNECT_TIMEOUT_DEFAULT;
 	}
-	
+
 	public void setHttpConnectionTimeout(Integer httpConnectionTimeout) {
 		this.httpConnectionTimeout = httpConnectionTimeout;
 	}
-	
+
 	public Integer getHttpResponseTimeout() {
 		if (this.httpResponseTimeout != null) {
 			return httpResponseTimeout;
 		}
 		return HTTP_RESPONSE_TIMEOUT_DEFAULT;
 	}
-	
+
 	public void setHttpResponseTimeout(Integer httpResponseimeout) {
 		this.httpResponseTimeout = httpResponseimeout;
 	}
-	
+
 	public boolean useThreadedExecutor() {
 		return useThreadedExecutor;
 	}
-	
+
 	public void setThreadPoolExecutor(boolean threadPoolSender) {
 		this.useThreadedExecutor = threadPoolSender;
 	}

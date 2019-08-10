@@ -32,7 +32,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.setEnabled(true);
 		webHook.addFilter(WebHookFilterConfig.create("teamcity", "^.+eam.+$", true));
 		assertTrue(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "");
+		assertEquals("", webHook.getDisabledReason());
 		assertTrue(webHook.isEnabled());
 	}
 	
@@ -45,7 +45,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.setEnabled(true);
 		webHook.addFilter(WebHookFilterConfig.create("something", "^.+eam.+$", true));
 		assertFalse(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "Filter mismatch: something (something) does not match using regex ^.+eam.+$");
+		assertEquals( "Filter mismatch: something (something) does not match using regex ^.+eam.+$", webHook.getDisabledReason());
 		assertFalse(webHook.isEnabled());
 	}
 
@@ -58,7 +58,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.setEnabled(true);
 		webHook.addFilter(WebHookFilterConfig.create("${buildNumber}", "^12.+$", true));
 		assertTrue(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "");
+		assertEquals("", webHook.getDisabledReason());
 		assertTrue(webHook.isEnabled());
 	}
 	
@@ -71,7 +71,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.setEnabled(true);
 		webHook.addFilter(WebHookFilterConfig.create("${buildNumber}", "^.+1234.+$", true));
 		assertFalse(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "Filter mismatch: ${buildNumber} (123) does not match using regex ^.+1234.+$");
+		assertEquals("Filter mismatch: ${buildNumber} (123) does not match using regex ^.+1234.+$", webHook.getDisabledReason());
 		assertFalse(webHook.isEnabled());
 	}
 	
@@ -85,7 +85,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.addFilter(WebHookFilterConfig.create("${projectName}", "^Test\\s+Project$", true));
 		webHook.addFilter(WebHookFilterConfig.create("${buildNumber}", "^.+1234.+$", true));
 		assertFalse(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "Filter mismatch: ${buildNumber} (123) does not match using regex ^.+1234.+$");
+		assertEquals("Filter mismatch: ${buildNumber} (123) does not match using regex ^.+1234.+$", webHook.getDisabledReason());
 		assertFalse(webHook.isEnabled());
 	}
 	
@@ -99,7 +99,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.addFilter(WebHookFilterConfig.create("${projectName}", "^Incorrect Project Name$", true));
 		webHook.addFilter(WebHookFilterConfig.create("${buildNumber}", "^.+1234.+$", true));
 		assertFalse(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "Filter mismatch: ${projectName} (Test Project) does not match using regex ^Incorrect Project Name$");
+		assertEquals("Filter mismatch: ${projectName} (Test Project) does not match using regex ^Incorrect Project Name$", webHook.getDisabledReason());
 		assertFalse(webHook.isEnabled());
 	}
 	
@@ -114,7 +114,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.addFilter(WebHookFilterConfig.create("${buildNumber}", "^\\d+$", true));
 		System.out.println(webHook.getDisabledReason());
 		assertTrue(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "");
+		assertEquals("", webHook.getDisabledReason());
 		assertTrue(webHook.isEnabled());
 	}
 	
@@ -129,7 +129,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.addFilter(WebHookFilterConfig.create("${buildNumber}", "^1234567890$", false));
 		System.out.println(webHook.getDisabledReason());
 		assertTrue(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "");
+		assertEquals("", webHook.getDisabledReason());
 		assertTrue(webHook.isEnabled());
 	}
 	
@@ -143,7 +143,7 @@ public class WebHookImplFiltersTest extends VariableMessageBuilderTestBase {
 		webHook.addFilter(WebHookFilterConfig.create("Some big long string", ".+ong.+", true));
 		System.out.println(webHook.getDisabledReason());
 		assertTrue(webHook.checkFilters(resolver));
-		assertEquals(webHook.getDisabledReason(), "");
+		assertEquals("", webHook.getDisabledReason());
 		assertTrue(webHook.isEnabled());
 	}
 

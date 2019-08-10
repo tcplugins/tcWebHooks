@@ -22,12 +22,12 @@
     <bs:linkCSS>
       /css/admin/adminMain.css
       ${teamcityPluginResourcesPath}WebHook/css/styles.css
-      ${teamcityPluginResourcesPath}WebHook/highlight/styles/tomorrow.css
+      ${teamcityPluginResourcesPath}WebHook/3rd-party/highlight/styles/tomorrow.css
     </bs:linkCSS>
     <bs:linkScript>
-      ${teamcityPluginResourcesPath}WebHook/js/moment-2.22.2.min.js
+      ${teamcityPluginResourcesPath}WebHook/3rd-party/moment-2.22.2.min.js
       ${teamcityPluginResourcesPath}WebHook/js/editWebhookTemplate.js
-      ${teamcityPluginResourcesPath}WebHook/highlight/highlight.pack.js
+      ${teamcityPluginResourcesPath}WebHook/3rd-party/highlight/highlight.pack.js
     </bs:linkScript>
     <script type="text/javascript">
       BS.Navigation.items = [
@@ -82,10 +82,10 @@
   		We load the ACE editor here because it loads extra resources, and if they were bundled in with the
   		TeamCity scripts in the linkscript tag, the base URL changes and ACE can't load its dependencies.  
   	 -->
-    <script type=text/javascript src="..${jspHome}WebHook/js/ace-editor/src-min-noconflict/ace.js"></script>
-    <script type=text/javascript src="..${jspHome}WebHook/js/ace-editor/src-min-noconflict/ext-language_tools.js"></script>
-    <script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
-	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
+    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/ace-editor/src-min-noconflict/ace.js"></script>
+    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/ace-editor/src-min-noconflict/ext-language_tools.js"></script>
+    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.easytabs.min.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.color.js"></script>
 	    <script type=text/javascript>
 		var webhookDialogWidth = -1;
 		var webhookDialogHeight = -1;

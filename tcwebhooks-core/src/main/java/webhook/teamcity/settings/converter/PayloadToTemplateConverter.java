@@ -4,26 +4,30 @@ import java.util.Objects;
 
 import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
+import webhook.teamcity.payload.template.LegacyJsonWebHookTemplate;
+import webhook.teamcity.payload.template.LegacyNameValuePairsWebHookTemplate;
+import webhook.teamcity.payload.template.LegacyTailoredJsonWebHookTemplate;
 
 public class PayloadToTemplateConverter {
-	
-	
+
+	private PayloadToTemplateConverter() {}
+
 	public static String transformPayloadToTemplate(String formatId, String templateId) {
-		
+
 		if (Objects.isNull(templateId) || "none".equalsIgnoreCase(templateId)) {
-		
+
 			if (WebHookPayloadJson.FORMAT_SHORT_NAME.equalsIgnoreCase(formatId)) {
-				return "legacy-json"; // TODO: Use constant from Template
+				return LegacyJsonWebHookTemplate.TEMPLATE_ID;
 			}
 			if (WebHookPayloadTailoredJson.FORMAT_SHORT_NAME.equalsIgnoreCase(formatId)) {
-				return "legacy-tailored-json"; // TODO: Use constant from Template
+				return LegacyTailoredJsonWebHookTemplate.TEMPLATE_ID;
 			}
-			
-			return "legacy-nvpairs"; // TODO: Use constant from Template
+
+			return LegacyNameValuePairsWebHookTemplate.TEMPLATE_ID;
 		}
-		
+
 		return templateId;
-		
+
 	}
 
 }

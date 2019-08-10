@@ -8,21 +8,21 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public class WebHookTemplateConfigBuilder {
-	
+
 	private WebHookTemplateConfigBuilder() {}
-	
+
 	public static WebHookTemplateEntity buildEntity(WebHookTemplateConfig config) {
 		return WebHookTemplateEntity.build(config);
 	}
-	
+
 	public static WebHookTemplateConfig buildConfig(WebHookTemplateEntity entity) {
 		return build(entity);
 	}
-	
+
 	private static WebHookTemplateConfig build (WebHookTemplateEntity entity) {
 		WebHookTemplateConfig config = new WebHookTemplateConfig(entity.getId(), entity.isEnabled());
 		config.setRank(entity.getRank());
-		
+
 		if (entity.getDefaultTemplate() != null) {
 			config.setDefaultTemplate(new WebHookTemplateConfig.WebHookTemplateText(
 					entity.getDefaultTemplate().isUseTemplateTextForBranch(),
@@ -32,23 +32,21 @@ public class WebHookTemplateConfigBuilder {
 		if (entity.getDefaultBranchTemplate() != null) {
 			config.setDefaultBranchTemplate(new WebHookTemplateConfig.WebHookTemplateBranchText(entity.getDefaultBranchTemplate().getTemplateContent()));
 		}
-		
-		if (entity.getTemplateDescription() != null) {
-			config.setTemplateDescription(entity.getTemplateDescription());
-		}
-		
+
+		config.setTemplateDescription(entity.getTemplateDescription());
+
 		if (entity.getTemplateToolTip() != null) {
 			config.setTemplateToolTip(entity.getTemplateToolTip());
 		}
-		
+
 		if (entity.getPreferredDateTimeFormat() != null) {
 			config.setPreferredDateTimeFormat(entity.getPreferredDateTimeFormat());
 		}
-		
+
 		if (entity.getFormat() != null) {
 			config.setFormat(entity.getFormat());
 		}
-		
+
 		WebHookTemplateConfig.WebHookTemplateItems templates = new WebHookTemplateConfig.WebHookTemplateItems();
 		List<WebHookTemplateConfig.WebHookTemplateItem> templateItems = new ArrayList<>();
 		if (entity.getTemplates() == null) {
@@ -61,7 +59,7 @@ public class WebHookTemplateConfigBuilder {
 		config.setTemplates(templates);
 		return config;
 	}
-	
+
 	private static Collection<WebHookTemplateConfig.WebHookTemplateItem> buildAll(
 			Collection<WebHookTemplateEntity.WebHookTemplateItem> templateItems) {
 		List<WebHookTemplateConfig.WebHookTemplateItem> items = new ArrayList<>();
@@ -75,7 +73,7 @@ public class WebHookTemplateConfigBuilder {
 										item.getBranchTemplateText().getTemplateContent()
 									));
 			i.setId(item.getId());
-			
+
 			List<WebHookTemplateConfig.WebHookTemplateState> states = new ArrayList<>();
 			for (WebHookTemplateEntity.WebHookTemplateState state : item.getStates()) {
 				states.add(new WebHookTemplateConfig.WebHookTemplateState(state.getType(), state.isEnabled()));

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package webhook.teamcity.payload.format;
 
@@ -20,16 +20,16 @@ import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 public abstract class WebHookPayloadGeneric implements WebHookPayload {
-	
+
 	WebHookPayloadManager myManager;
 	WebHookVariableResolverManager webHookVariableResolverManager;
 	VariableResolverFactory myVariableResolverFactory;
-	
+
 	public WebHookPayloadGeneric(WebHookPayloadManager manager, WebHookVariableResolverManager webHookVariableResolverManager){
 		this.setPayloadManager(manager);
 		this.webHookVariableResolverManager = webHookVariableResolverManager;
 	}
-	
+
 	protected VariableResolverFactory getVariableResolverFactory() {
 		if (myVariableResolverFactory == null) {
 			this.myVariableResolverFactory = this.webHookVariableResolverManager.getVariableResolverFactory(getTemplateEngineType());
@@ -55,7 +55,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sQueuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, extraParameters, templates, user, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
-	
+
 	@Override
 	public String buildPinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates,
 			WebHookTemplateContent webHookTemplate, String username, String comment) {
@@ -69,7 +69,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_UNPINNED, extraParameters, sBuild.getParametersProvider().getAll(), templates, username, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
-	
+
 	@Override
 	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
@@ -78,11 +78,11 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	}
 
 	/**
-	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect. 
+	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
 	 * It will no longer be called by the WebHookListener
+	 * @deprecated ("Since 0.8, because it alluded to build history status, which was incorrect. Don't implement. It will never be called.")
 	 */
 	@Deprecated
-	@Override
 	public String buildChangedStatus(SBuild runningBuild, SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
@@ -104,14 +104,14 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	}
 
 	@Override
-	public String changesLoaded(SBuild runningBuild, SFinishedBuild previousBuild, 
+	public String changesLoaded(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.CHANGES_LOADED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
-	
+
 	@Override
-	public String buildStarted(SBuild runningBuild, SFinishedBuild previousBuild, 
+	public String buildStarted(SBuild runningBuild, SFinishedBuild previousBuild,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
 		return getStatusAsString(content, webHookTemplate);
@@ -126,7 +126,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 
 	}
 	protected abstract String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate);
-	
+
 	public Object serialiseObject(Object object) {
 		return object;
 	}

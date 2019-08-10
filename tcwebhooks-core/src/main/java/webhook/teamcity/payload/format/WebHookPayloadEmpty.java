@@ -18,16 +18,16 @@ import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObjectSerialiser {
 
 	public static final String FORMAT_SHORT_NAME = "empty";
-	private final String charset = "UTF-8";
-	private final String contentType = "text/plain";
-	private final String description = "None";
+	private static final String CHARSET = "UTF-8";
+	private static final String CONTENT_TYPE = "text/plain";
+	private static final String DESCRIPTION = "None";
 	private Integer rank;
 	private WebHookPayloadManager myManager;
-	
+
 	public WebHookPayloadEmpty(WebHookPayloadManager manager){
 		this.setPayloadManager(manager);
 	}
-	
+
 	@Override
 	public String buildAddedToQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
 			Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
@@ -87,7 +87,7 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";
 	}
-	
+
 	@Override
 	public String buildStarted(SBuild runningBuild,
 			SFinishedBuild previousBuild,
@@ -97,17 +97,17 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 
 	@Override
 	public String getCharset() {
-		return this.charset;
+		return CHARSET;
 	}
 
 	@Override
 	public String getContentType() {
-		return this.contentType; 
+		return CONTENT_TYPE;
 	}
 
 	@Override
 	public String getFormatDescription() {
-		return this.description;
+		return DESCRIPTION;
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	public Integer getRank() {
 		return this.rank;
 	}
-	
+
 	@Override
 	public String responsibilityChanged(WebHookResponsibilityHolder responsibilityHolder,
 			SortedMap<String, String> mergeParameters, Map<String, String> enabledTemplates,
@@ -136,12 +136,12 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	public void setRank(Integer rank) {
 		this.rank = rank;
 	}
-	
+
 	@Override
 	public void register(){
 		myManager.registerPayloadFormat(this);
 	}
-	
+
 	@Override
 	public void setPayloadManager(WebHookPayloadManager webhookPayloadManager) {
 		myManager = webhookPayloadManager;
@@ -150,7 +150,7 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	@Override
 	public WebHookStringRenderer getWebHookStringRenderer() {
 		return new WebHookStringRenderer() {
-			
+
 			@Override
 			public String render(String input) {
 				return "<i>This payload returns an empty payload</i>";
@@ -160,10 +160,10 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 			public String render(Map<String, String[]> input) throws WebHookHtmlRendererException {
 				return "<i>This payload returns an empty payload</i>";
 			}
-			
+
 		};
-	}	
-	
+	}
+
 	@Override
 	public Object serialiseObject(Object object) {
 		return "";

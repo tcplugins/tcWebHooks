@@ -2,6 +2,7 @@ package webhook.teamcity.endpoint;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +19,13 @@ public class WebHookEndPointPayload {
 	@Builder.Default boolean parseFailure = false;
 	Map<String, String> headers;
 	Map<String, String[]> parameters;
+	@Builder.Default Random random = new Random();
 	
 	public WebHookEndPointPayload generateHash(){
-		int Min = 1000000, Max = 1000000000;
-		Integer Rand = Min + (int)(Math.random() * ((Max - Min) + 1));
-		hash = Rand.toString();
+		int min = 1000000;
+		int max = 1000000000;
+		Integer rand = min + (random.nextInt() * ((max - min) + 1));
+		hash = rand.toString();
 		return this;
 	}
 	

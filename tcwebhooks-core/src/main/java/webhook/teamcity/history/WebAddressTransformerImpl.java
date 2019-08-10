@@ -12,13 +12,10 @@ import com.google.common.net.InternetDomainName;
 
 
 public class WebAddressTransformerImpl implements WebAddressTransformer {
-	
+
 	@Override
 	public GeneralisedWebAddress getGeneralisedHostName(URL url) {
 		String host = url.getHost();
-//		if (! url.getHost().contains(".")) {
-//			return GeneralisedWebAddress.build(host, GeneralisedWebAddressType.HOST_ADDRESS);
-//		} else 
 		InetAddress ip = extractInetAddress(host);
 		if (ip != null) {
 			if (ip instanceof Inet4Address ) {
@@ -26,7 +23,7 @@ public class WebAddressTransformerImpl implements WebAddressTransformer {
 			} else if (ip instanceof Inet6Address) {
 				return GeneralisedWebAddress.build(ip.getHostAddress(), GeneralisedWebAddressType.IPV6_ADDRESS);
 			}
-		} else if (InternetDomainName.isValid(host)) { 
+		} else if (InternetDomainName.isValid(host)) {
 			InternetDomainName domainName = InternetDomainName.from(host);
 			if (domainName.isUnderPublicSuffix()) {
 				return GeneralisedWebAddress.build(domainName.topPrivateDomain().toString(), GeneralisedWebAddressType.DOMAIN_NAME);
@@ -35,10 +32,10 @@ public class WebAddressTransformerImpl implements WebAddressTransformer {
 			}
 			return GeneralisedWebAddress.build(host, GeneralisedWebAddressType.HOST_ADDRESS);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Nullable
 	private InetAddress extractInetAddress(String host) {
 		if (InetAddresses.isInetAddress(host)) {

@@ -36,7 +36,7 @@ public class NameValuePairsTemplateRenderingTest {
 	WebHookTemplateManager wtm;
 	WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 	WebHookTemplateJaxHelperImpl webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
-	
+
 	@Test
 	public void TestNvPairsTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException, WebHookPayloadContentAssemblyException {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
@@ -56,31 +56,31 @@ public class NameValuePairsTemplateRenderingTest {
 
 		WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
 		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
-		
-		
+
+
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairsTemplate whp = new WebHookPayloadNameValuePairsTemplate(wpm, variableResolverManager);
 		whp.register();
 		SortedMap<String, String> extraParameters = new TreeMap<>();
-		
+
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");
 		extraParameters.put("item3", "content3");
 		extraParameters.put("item4", "content4");
 		extraParameters.put("item5", "content5");
 		extraParameters.put("item6", "This is a $weird string with % and ' and # and stuff");
-		
-		
-		
+
+
+
 		//WebHookPayloadContent content = new WebHookPayloadContent(mockServer, sRunningBuild, previousBuild, BuildStateEnum.BUILD_SUCCESSFUL, extraParameters, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		String result = whp.buildFinished(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), wht.getBranchTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL));
 		System.out.println("Template instance: " + wht.getBranchTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL));
 		System.out.println("Template content: " + whp.getWebHookStringRenderer().render(wht.getBranchTemplateForState(BuildStateEnum.BUILD_SUCCESSFUL).getTemplateText()));
 		System.out.println("Result: " + result);
 		System.out.println("Rendered result: " + whp.getWebHookStringRenderer().render(result));
-		
-		assertEquals(result, "content3=content4&bar=foo&content5=This+is+a+%24weird+string+with+%25+and+%27+and+%23+and+stuff");
-		
+
+		assertEquals("content3=content4&bar=foo&content5=This+is+a+%24weird+string+with+%25+and+%27+and+%23+and+stuff", result);
+
 	}
 
 }
