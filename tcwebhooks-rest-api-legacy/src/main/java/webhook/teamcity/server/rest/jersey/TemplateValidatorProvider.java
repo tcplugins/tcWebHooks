@@ -13,11 +13,12 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 import webhook.teamcity.server.rest.data.TemplateValidator;
 
 @Provider
+@SuppressWarnings("squid:S1191")
 public class TemplateValidatorProvider implements InjectableProvider<Context, Type>, Injectable<TemplateValidator> {
   private final TemplateValidator templateValidator;
-  
+
   public TemplateValidatorProvider() {
-	  
+
 	  this.templateValidator = new TemplateValidator();
   }
 
@@ -35,5 +36,5 @@ public class TemplateValidatorProvider implements InjectableProvider<Context, Ty
   public TemplateValidator getValue() {
     return templateValidator;
   }
- 
+
 }

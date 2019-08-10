@@ -40,12 +40,13 @@ import jetbrains.buildServer.server.rest.util.BeanFactory;
  *         Date: 15.11.2009
  */
 @Provider
+@SuppressWarnings("squid:S1191")
 public class BeanContextProvider implements InjectableProvider<Context, Type>, Injectable<BeanContext> {
   private final RequestPathTransformInfo myRequestPathTransformInfo;
 
-  //TODO: using request-specific field in singleton provider
-  //TODO: may lead to concurrency issue as this instance is
-  //TODO: created by spring not by Jersey!
+  // using request-specific field in singleton provider
+  // may lead to concurrency issue as this instance is
+  // created by spring not by Jersey!
   @Context private HttpHeaders headers;
   @Context private HttpServletRequest request;
 

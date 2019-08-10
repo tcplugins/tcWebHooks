@@ -1,7 +1,6 @@
 package webhook.teamcity.server.rest.util;
 
 import jetbrains.buildServer.ServiceLocator;
-import jetbrains.buildServer.ServiceNotFoundException;
 import jetbrains.buildServer.server.rest.ApiUrlBuilder;
 import jetbrains.buildServer.server.rest.util.BeanFactory;
 
@@ -25,7 +24,7 @@ public class BeanContext {
   }
 
   @NotNull
-  public <T> T getSingletonService(@NotNull Class<T> serviceClass) throws ServiceNotFoundException {
+  public <T> T getSingletonService(@NotNull Class<T> serviceClass) {
     return myServiceLocator.getSingletonService(serviceClass);
   }
 
@@ -40,7 +39,7 @@ public class BeanContext {
   }
 
   @NotNull
-  public WebHookApiUrlBuilder getContextService(@NotNull Class<ApiUrlBuilder> serviceClass) throws ServiceNotFoundException {
+  public WebHookApiUrlBuilder getContextService(@NotNull Class<ApiUrlBuilder> serviceClass) {
         return myApiUrlBuilder;
   }
 }

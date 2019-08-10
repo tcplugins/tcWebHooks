@@ -10,15 +10,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "format", propOrder = {"name", "enabled"})
 public class Format {
 
-	public Format() {
-	}
-	
 	@XmlAttribute
 	public String name;
-	
+
 
 	@XmlAttribute
 	public Boolean enabled;
-	
-	
+
+
 }

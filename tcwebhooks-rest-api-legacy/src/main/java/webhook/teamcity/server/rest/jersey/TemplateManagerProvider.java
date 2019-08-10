@@ -15,9 +15,10 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
 @Provider
+@SuppressWarnings("squid:S1191")
 public class TemplateManagerProvider implements InjectableProvider<Context, Type>, Injectable<WebHookTemplateManager> {
   private final WebHookTemplateManager templateManager;
-  
+
   public TemplateManagerProvider(
 			@NotNull final WebHookTemplateManager templateManager
 		  ) {
@@ -38,5 +39,5 @@ public class TemplateManagerProvider implements InjectableProvider<Context, Type
   public WebHookTemplateManager getValue() {
     return templateManager;
   }
- 
+
 }
