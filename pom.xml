@@ -7,9 +7,9 @@
     	<majorVersion>1.2.0-alpha.3</majorVersion>
     	<buildNumber>snapshot</buildNumber>
     	<!--suppress UnresolvedMavenProperty -->
-		<gitHash>${GIT_HASH}</gitHash>
+		<gitHash>${git.commit.id.describe-short}</gitHash>
     	<!--suppress UnresolvedMavenProperty -->
-		<gitBranch>${GIT_BRANCH}</gitBranch>
+		<gitBranch>${git.branch}</gitBranch>
     	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>10.0</teamcityVersion>
@@ -42,6 +42,30 @@
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>cobertura-maven-plugin</artifactId>
 	        </plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.4</version>
+				<executions>
+					<execution>
+						<id>get-the-git-infos</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+					<prefix>git</prefix>
+					<verbose>false</verbose>
+					<generateGitPropertiesFile>false</generateGitPropertiesFile>
+					<gitDescribe>
+						<skip>false</skip>
+						<always>false</always>
+						<dirty>-dirty</dirty>
+					</gitDescribe>
+				</configuration>
+			</plugin>
 	    </plugins>
 	</build>
 	<reporting>
@@ -67,10 +91,10 @@
 	</reporting>
 	
 	<repositories>
- 	  <repository>
-	    <id>jetbrains-all</id>
-	    <url>http://repository.jetbrains.com/all</url>
-	  </repository>
+	    <repository>
+	        <id>JetBrains</id>
+	        <url>https://download.jetbrains.com/teamcity-repository/</url>
+	    </repository>
 	</repositories>
 
 	<developers>

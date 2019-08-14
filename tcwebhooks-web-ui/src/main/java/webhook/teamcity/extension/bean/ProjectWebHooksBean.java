@@ -72,7 +72,7 @@ public class ProjectWebHooksBean {
 		List<SBuildType> projectBuildTypes = TeamCityIdResolver.getOwnBuildTypes(project);
 
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig(project.getProjectId(), project.getExternalId(), "", true, new BuildState().setAllEnabled(), null, null, true, true, null, null);
+		WebHookConfig newBlankConfig = new WebHookConfig(project.getProjectId(), project.getExternalId(), "", true, new BuildState().setAllEnabled(), null, true, true, null, null);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads, templateList);
@@ -93,7 +93,7 @@ public class ProjectWebHooksBean {
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
 		
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig(project.getProjectId(), project.getExternalId(), "", true, new BuildState().setAllEnabled(), null, null, false, false, enabledBuildTypes, null);
+		WebHookConfig newBlankConfig = new WebHookConfig(project.getProjectId(), project.getExternalId(), "", true, new BuildState().setAllEnabled(), null, false, false, enabledBuildTypes, null);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads, templateList);

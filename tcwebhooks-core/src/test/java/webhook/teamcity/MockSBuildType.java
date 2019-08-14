@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.jdom.Element;
+
 import jetbrains.buildServer.Build;
 import jetbrains.buildServer.BuildAgent;
 import jetbrains.buildServer.BuildTypeDescriptor;
@@ -50,11 +52,13 @@ import jetbrains.buildServer.serverSide.dependency.CyclicDependencyFoundExceptio
 import jetbrains.buildServer.serverSide.dependency.Dependency;
 import jetbrains.buildServer.serverSide.dependency.Dependent;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
+import jetbrains.buildServer.serverSide.parameters.types.TypedValue;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.util.Option;
 import jetbrains.buildServer.vcs.CheckoutRules;
 import jetbrains.buildServer.vcs.FilteredVcsChange;
+import jetbrains.buildServer.vcs.OperationRequestor;
 import jetbrains.buildServer.vcs.PathMapping;
 import jetbrains.buildServer.vcs.SVcsModification;
 import jetbrains.buildServer.vcs.SVcsRoot;
@@ -64,9 +68,6 @@ import jetbrains.buildServer.vcs.VcsRootEntry;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 import jetbrains.buildServer.vcs.VcsRootNotFoundException;
-
-import org.jdom.Element;
-
 import webhook.testframework.WebHookMockingFramework;
 
 @SuppressWarnings("rawtypes")
@@ -1167,72 +1168,62 @@ public class MockSBuildType implements SBuildType {
 		// TODO Auto-generated method stub
 		
 	}
-/*
+
+	// Since TeamCity 10.0
+	
 	@Override
 	public void addArtifactDependency(SArtifactDependency dependency) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void removeArtifactDependency(SArtifactDependency dependency) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void removeRequirement(Requirement requirement) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public <T> TypedValue<T> getTypedOption(Option<T> option) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public <T> T getDeclaredOption(Option<T> option) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Parameter getOwnParameter(String paramName) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Parameter getParameter(String paramName) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getParameterValue(String paramName) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void forceCheckingForChanges(OperationRequestor requestor) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public VcsRootInstanceEntry getVcsRootInstanceEntryForParent(SVcsRoot parentRoot) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isReadOnly() {
-		// TODO Auto-generated method stub
 		return false;
 	}
-*/
 	
 }

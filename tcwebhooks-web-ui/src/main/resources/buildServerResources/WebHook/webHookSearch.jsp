@@ -54,12 +54,12 @@
 	    <table id="webHookSearchTable" class="settings">
 			<c:forEach items="${searchResults}" var="projectList">
 	   		<thead>
-	   			<tr class="projectTitle"><th colspan="4">${projectList.sensibleProjectFullName}</th></tr>
+			<tr class="projectTitle"><th colspan="6">${projectList.sensibleProjectFullName} <span class="webhookCreate">Create new WebHook for this project</span></th></tr>
 		   		<tr style="background-color: rgb(245, 245, 245);">
 					<th class="name">URL</th>
 					<th class="name">Format</th>
 					<th class="name">Build Events</th>
-					<th class="value" style="width:20%;" colspan="1">Enabled Builds</th>
+					<th class="value" style="width:20%;" colspan="3">Enabled Builds</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -80,11 +80,9 @@
 						
 						<td class="value highlight" style="width:15%;" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
 						<td class="value highlight" style="width:15%;" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.enabledBuildsListForWeb}" /></td>
-<!--
 						<td class="edit highlight"><a onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
 						<td class="edit highlight"><a onclick="WebHooksPlugin.showDeleteDialog('${hook.uniqueKey}');" href="javascript://">delete</a></td>
-  -->						
-					</tr> 
+					</tr>
 				</c:forEach>
 				<tr class="blankRow"><td colspan="4">&nbsp;</td></tr>
 			</tbody>
@@ -92,6 +90,18 @@
 		</table>
 		</c:if>
 
-    	
+		<script type="application/javascript">
+			function populateBuildHistory() {
+
+				<c:if test="${not haveBuild && haveProject}">
+				populateBuildHistoryAjax("project:${projectExternalId},");
+				</c:if>
+				<c:if test="${haveBuild}">
+				populateBuildHistoryAjax("buildType:${buildExternalId},");
+				</c:if>
+			}
+		</script>
+
+    	<%@ include file="webHookInclude.jsp" %>
     </jsp:attribute>
 </bs:page>

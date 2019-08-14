@@ -15,6 +15,13 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class WebHookFinder {
 
 	@NotNull private final ProjectManager projectManager;
@@ -71,9 +78,18 @@ public class WebHookFinder {
 		for (WebHookConfig webHookConfig : getWebHookProjectSettings(projectExternalId).getWebHooksConfigs()) {
 			
 			if (singleValue.equals(webHookConfig.getUniqueKey())) {
-				return new ProjectWebhook(webHookConfig, projectExternalId, fields, beanContext);
+				return new ProjectWebhook(webHookConfig, projectExternalId, fields, beanContext, webHookConfig.getEnabledBuildTypesSet());
 			}
 		}
 		throw new NotFoundException("Could not find a webhook with that id");
+	}
+
+	public Collection<String> getBuildTypeExternalIds(Collection<String> internalIds) {
+		return internalIds.stream()
+				.filter(id ->
+						Objects.nonNull(this.projectManager.findBuildTypeById(id))
+					 && Objects.nonNull(this.projectManager.findBuildTypeById(id).getExternalId()))
+				.map(id -> this.projectManager.findBuildTypeById(id).getExternalId())
+				.collect(Collectors.toList());
 	}
 }

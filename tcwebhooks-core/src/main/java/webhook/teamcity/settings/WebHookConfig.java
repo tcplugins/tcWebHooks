@@ -300,17 +300,16 @@ public class WebHookConfig {
 
 	/**
 	 * WebHooksConfig constructor. Unchecked version. Use with caution!!
-	 * This constructor does not check if the payloadFormat is valid.
-	 * It will still allow you to add the format, but the webhook might not
-	 * fire at runtime if the payloadFormat configured is not available.
+	 * This constructor does not check if the template is valid.
+	 * It will still allow you to add the template, but the webhook might not
+	 * fire at runtime if the template configured is not available.
 	 *
 	 * @param url
 	 * @param enabled
 	 * @param stateMask
-	 * @param payloadFormat (unvalidated)
 	 * @param webHookAuthConfig
 	 */
-	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadFormat, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
+	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
 		this.uniqueKey = "id_" + getRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
@@ -325,7 +324,6 @@ public class WebHookConfig {
 		this.setUrl(url);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
-		this.setPayloadFormat(payloadFormat);
 		this.setPayloadTemplate(payloadTemplate);
 		this.subProjectsEnabled = buildTypeSubProjects;
 		this.allBuildTypesEnabled = buildTypeAllEnabled;
@@ -442,6 +440,10 @@ public class WebHookConfig {
 	public boolean isSpecificBuildTypeEnabled(SBuildType sBuildType){
 		// Just check if this build type is only enabled for a specific build.
 		return enabledBuildTypesSet.contains(TeamCityIdResolver.getInternalBuildId(sBuildType));
+	}
+
+	public Set<String> getEnabledBuildTypesSet() {
+		return enabledBuildTypesSet;
 	}
 
 	public String getBuildTypeCountAsFriendlyString(){

@@ -16,8 +16,11 @@ import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
@@ -69,11 +72,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 
 	@Override
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
-			Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll,
+			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
 			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
 												projectInternalId, projectExternalId, url,
-												enabled, buildState, format, template, buildTypeAll,
+												enabled, buildState, template, buildTypeAll,
 												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig
 											);
 		if (result.updated) {
@@ -95,11 +98,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 
 	@Override
 	public WebHookUpdateResult updateWebHook(String projectInternalId, String webHookId, String url, Boolean enabled,
-			BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects,
+			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
 		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(
 													projectInternalId, webHookId, url, enabled,
-													buildState, format, template, buildTypeAll, buildSubProjects,
+													buildState, template, buildTypeAll, buildSubProjects,
 													buildTypesEnabled,  webHookAuthConfig
 												);
 		if (result.updated) {
@@ -169,7 +172,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			searchField(result, filter.getUrlSubString(), Match.URL, e.getWebHookConfig().getUrl());
 		}
 		if (filter.getProjectExternalId() != null) {
-			searchField(result, filter.getProjectExternalId(), Match.PROJECT, e.getProjectExternalId());
+			matchField(result, filter.getProjectExternalId(), Match.PROJECT, e.getProjectExternalId());
 		}
 		if (filter.getWebhookId() != null) {
 			matchField(result, filter.getWebhookId(), Match.ID, e.getWebHookConfig().getUniqueKey());
@@ -213,9 +216,15 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		if (Objects.nonNull(sProject)) {
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
 			for (WebHookConfig c : getWebHooksConfigs(projectInternalId)) {
-				String templateName = "missing template";
+				String templateName = "Missing template";
+				String templateFormat = "";
+				String templateFormatDescription = "Unknown payload format";
 				try {
-					templateName = this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate()).getTemplateDescription();
+					WebHookPayloadTemplate template = this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate());
+					WebHookPayload format = this.myWebHookPayloadManager.getFormat(this.myWebHookTemplateManager.getTemplateConfig(template.getTemplateId(), TemplateState.BEST).getFormat());
+					templateName = template.getTemplateDescription();
+					templateFormat = format.getFormatShortName();
+					templateFormatDescription = format.getFormatDescription();
 				} catch (NullPointerException ex) {
 					Loggers.SERVER.warn(String.format(
 							"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s",
@@ -226,14 +235,14 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 				}
 
 				WebHookConfigEnhanced configEnhanced = WebHookConfigEnhanced.builder()
-						.payloadFormat(c.getPayloadFormat())
-						.payloadFormatDescription(this.myWebHookPayloadManager.getFormat(c.getPayloadFormat()).getFormatDescription())
+						.payloadFormat(templateFormat)
+						.payloadFormatDescription(templateFormatDescription)
 						.projectExternalId(sProject.getExternalId())
 						.templateId(c.getPayloadTemplate())
 						.templateDescription(templateName)
 						.webHookConfig(c)
 						.build();
-				configEnhanced.addTag(c.getPayloadFormat())
+				configEnhanced.addTag(templateFormat)
 						.addTag(sProject.getExternalId())
 						.addTag(c.getPayloadTemplate());
 

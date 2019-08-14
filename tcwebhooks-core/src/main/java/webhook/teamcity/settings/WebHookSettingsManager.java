@@ -15,13 +15,13 @@ public interface WebHookSettingsManager {
 	public List<WebHookConfig> getWebHooksConfigs(String projectInternalId);
 
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
-			Boolean enabled, BuildState buildState, String format, String template, boolean buildTypeAll,
+			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
 			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig);
 
 	public WebHookUpdateResult deleteWebHook(String webHookId, String projectId);
 
 	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled,
-			BuildState buildState, String format, String template, boolean buildTypeAll, boolean buildSubProjects,
+			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig);
 	
 

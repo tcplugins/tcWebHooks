@@ -81,6 +81,7 @@ public class WebHookSearchController extends BaseController {
         params.put("jspHome", myPluginDescriptor.getPluginResourcesPath());
         params.put("searchResults", searchResults);
         params.put("resultCount", resultCount);
+		params.put("payloadFormats", myWebHookPayloadManager.getTemplatedFormats());
 
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/webHookSearch.jsp", params);
     }
@@ -100,7 +101,7 @@ public class WebHookSearchController extends BaseController {
     			.textSearch(request.getParameter("search"))
     			.urlSubString(request.getParameter("url"))
     			.webhookId(request.getParameter("webhookId"))
-				.projectExternalId(request.getParameter("project"))
+				.projectExternalId(request.getParameter("projectId"))
     		.build();
     	
     	for (String tag: getTags(request)) {

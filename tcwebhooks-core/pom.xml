@@ -115,51 +115,13 @@
 			<scope>provided</scope>
 		</dependency>
 
-<<<<<<< HEAD
-=======
+		<!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
 		<dependency>
-			<groupId>com.intellij</groupId>
-			<artifactId>openapi</artifactId>
-			<version>7.0.3</version>
-			<scope>provided</scope>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>1.9.3</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>13.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${springframework.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.3.1</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.codehaus.jettison</groupId>
-			<artifactId>jettison</artifactId>
-			<version>1.1</version>
-			<scope>provided</scope>
-		</dependency>
-
->>>>>>> Update to Java8 and new versions of spring-core and teamcity (10.0)
      	<!--Jetty dependencies start here -->
      	<dependency>
 	         <groupId>org.eclipse.jetty</groupId>
