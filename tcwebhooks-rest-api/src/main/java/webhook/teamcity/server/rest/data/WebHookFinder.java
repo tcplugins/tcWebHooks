@@ -1,5 +1,9 @@
 package webhook.teamcity.server.rest.data;
 
+import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.data.Locator;
@@ -14,13 +18,6 @@ import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class WebHookFinder {
 
@@ -69,7 +66,7 @@ public class WebHookFinder {
 		throw new BadRequestException("Sorry: Searching for multiple template is not supported.");		
 	}
 	
-	public int getTemplateUsageCount(String templateId, String formatShortName) {
+	public int getTemplateUsageCount(String templateId) {
 		return this.webhookSettingsManager.getTemplateUsageCount(templateId);
 	}
 

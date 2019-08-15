@@ -27,10 +27,6 @@ import webhook.teamcity.settings.WebHookConfig;
 @Path(WebHooksRequest.API_WEBHOOKS_URL)
 public class WebHooksRequest {
 
-	private static final Permission webhookEditPermission = Permission.EDIT_PROJECT;
-	private static final Permission[] webhookReadPermissions = { Permission.VIEW_PROJECT,
-			Permission.VIEW_BUILD_CONFIGURATION_SETTINGS, Permission.EDIT_PROJECT };
-
 	@Context
 	@NotNull
 	private DataProvider myDataProvider;
