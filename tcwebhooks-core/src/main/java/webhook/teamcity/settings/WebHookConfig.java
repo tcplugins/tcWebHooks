@@ -194,11 +194,11 @@ public class WebHookConfig {
 				for(Element eParam : templateList)
 				{
 					this.templates.put(
-							eParam.getAttributeValue(CustomMessageTemplate.TYPE),
+							eParam.getAttributeValue(CustomMessageTemplate.XML_ATTR_TYPE),
 							CustomMessageTemplate.create(
-									eParam.getAttributeValue(CustomMessageTemplate.TYPE),
-									eParam.getAttributeValue(CustomMessageTemplate.TEMPLATE),
-									Boolean.parseBoolean(eParam.getAttributeValue(CustomMessageTemplate.ENABLED))
+									eParam.getAttributeValue(CustomMessageTemplate.XML_ATTR_TYPE),
+									eParam.getAttributeValue(CustomMessageTemplate.XML_ATTR_TEMPLATE),
+									Boolean.parseBoolean(eParam.getAttributeValue(CustomMessageTemplate.XML_ATTR_ENABLED))
 									)
 							);
 				}
@@ -258,9 +258,9 @@ public class WebHookConfig {
 					this.filters.add(
 							
 							WebHookFilterConfig.create(
-									eParam.getAttributeValue(WebHookFilterConfig.VALUE),
-									eParam.getAttributeValue(WebHookFilterConfig.REGEX),
-									Boolean.parseBoolean(eParam.getAttributeValue(WebHookFilterConfig.ENABLED))
+									eParam.getAttributeValue(WebHookFilterConfig.XML_ATTR_VALUE),
+									eParam.getAttributeValue(WebHookFilterConfig.XML_ATTR_REGEX),
+									Boolean.parseBoolean(eParam.getAttributeValue(WebHookFilterConfig.XML_ATTR_ENABLED))
 									)
 							);
 				}
@@ -281,8 +281,8 @@ public class WebHookConfig {
 					this.headers.add(
 							
 							WebHookHeaderConfig.create(
-									eParam.getAttributeValue(WebHookHeaderConfig.NAME),
-									eParam.getAttributeValue(WebHookHeaderConfig.VALUE)
+									eParam.getAttributeValue(WebHookHeaderConfig.XML_ATTR_NAME),
+									eParam.getAttributeValue(WebHookHeaderConfig.XML_ATTR_VALUE)
 									)
 							);
 				}

@@ -10,9 +10,9 @@ import org.jdom.Element;
 public class WebHookFilterConfig {
 	
 	public static final String XML_ELEMENT_NAME = "filter";
-	public static final String VALUE = "value";
-	public static final String REGEX = "regex";
-	public static final String ENABLED = "enabled";
+	public static final String XML_ATTR_VALUE = "value";
+	public static final String XML_ATTR_REGEX = "regex";
+	public static final String XML_ATTR_ENABLED = "enabled";
 	
 	
 	String value;
@@ -41,9 +41,9 @@ public class WebHookFilterConfig {
 
 	public Element getAsElement() {
 		Element e = new Element(XML_ELEMENT_NAME);
-			e.setAttribute(VALUE, this.value);
-			e.setAttribute(REGEX, this.regex);
-			e.setAttribute(ENABLED, String.valueOf(this.enabled));
+			e.setAttribute(XML_ATTR_VALUE, this.value);
+			e.setAttribute(XML_ATTR_REGEX, this.regex);
+			e.setAttribute(XML_ATTR_ENABLED, String.valueOf(this.enabled));
 		return e;
 	}
 

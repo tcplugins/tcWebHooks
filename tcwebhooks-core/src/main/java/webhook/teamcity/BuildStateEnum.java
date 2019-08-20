@@ -68,9 +68,9 @@ public enum BuildStateEnum {
 	 * @return BuildStateEnum or null.
 	 */
 	public static BuildStateEnum findBuildState(String stateString){
-		for (BuildStateEnum b : BuildStateEnum.values()) {
-			if (b.shortName.equalsIgnoreCase(stateString)){
-				return b;
+		for (BuildStateEnum buildState : BuildStateEnum.values()) {
+			if (buildState.shortName.equalsIgnoreCase(stateString)){
+				return buildState;
 			}
 		}
 		return null;
@@ -81,7 +81,10 @@ public enum BuildStateEnum {
 	 * @return an array of just the build states that are notifiable
 	 */
 	public static BuildStateEnum[] getNotifyStates(){
-		final BuildStateEnum[] notifyStates = {BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED, BUILD_PINNED, BUILD_UNPINNED };
-		return notifyStates;
+		return new BuildStateEnum[] {
+				BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, 
+				CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, 
+				BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED, 
+				BUILD_PINNED, BUILD_UNPINNED };
 	}
 }
