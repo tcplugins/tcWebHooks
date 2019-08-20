@@ -16,6 +16,10 @@ import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 
+/**
+ *
+ *
+ */
 public class ProjectAndBuildWebhooksBean {
 	SProject project;
 	boolean isAdmin;

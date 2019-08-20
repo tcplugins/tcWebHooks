@@ -20,6 +20,7 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -38,7 +39,7 @@ import webhook.teamcity.settings.WebHookSearchResult;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class WebHookSearchController extends BaseController {
-	
+
 	private PluginDescriptor myPluginDescriptor;
 	private WebHookSettingsManager myWebHookSettingsManager;
 	private ProjectManager myProjectManager;
@@ -46,7 +47,7 @@ public class WebHookSearchController extends BaseController {
 	private WebHookPayloadManager myWebHookPayloadManager;
 	private WebHookTemplateResolver myWebHookTemplateResolver;
 
-	public WebHookSearchController(SBuildServer server, WebControllerManager webControllerManager, 
+	public WebHookSearchController(SBuildServer server, WebControllerManager webControllerManager,
     		PluginDescriptor pluginDescriptor, WebHookSettingsManager webHookSettingsManager,
     		ProjectManager projectManager, WebAddressTransformer webAddressTransformer,
     		@NotNull WebHookPayloadManager payloadManager,
@@ -63,33 +64,39 @@ public class WebHookSearchController extends BaseController {
 
     @Nullable
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
+
         HashMap<String,Object> params = new HashMap<>();
         List<ProjectWebHooksBean> searchResults = new ArrayList<>();
         int resultCount = 0;
-        
+        boolean resultsRestricted = false;
+
         for (Map.Entry<String, List<WebHookSearchResult>> entry : myWebHookSettingsManager.findWebHooksByProject(buildFilter(request)).entrySet()) {
-        	SProject project = myProjectManager.findProjectById(entry.getKey());
-        	ProjectWebHooksBean result = 
-        			ProjectWebHooksBean.buildWithoutNew(getListOfWebHookConfigs(entry.getValue()), project, 
-        					myWebHookPayloadManager.getRegisteredFormatsAsCollection(),
-        					myWebHookTemplateResolver.findWebHookTemplatesForProject(project),
-        					myWebHookSettingsManager.iswebHooksEnabledForProject(project.getProjectId()));
-        	searchResults.add(result);
-        	resultCount += result.getWebHookList().size();
+        	try {
+	        	SProject project = myProjectManager.findProjectById(entry.getKey());
+	        	ProjectWebHooksBean result =
+	        			ProjectWebHooksBean.buildWithoutNew(getListOfWebHookConfigs(entry.getValue()), project,
+	        					myWebHookPayloadManager.getRegisteredFormatsAsCollection(),
+	        					myWebHookTemplateResolver.findWebHookTemplatesForProject(project),
+	        					myWebHookSettingsManager.iswebHooksEnabledForProject(project.getProjectId()));
+	        	searchResults.add(result);
+	        	resultCount += result.getWebHookList().size();
+        	} catch (AccessDeniedException ex) {
+        		resultsRestricted = true;
+        	}
         }
         params.put("jspHome", myPluginDescriptor.getPluginResourcesPath());
         params.put("searchResults", searchResults);
         params.put("resultCount", resultCount);
 		params.put("payloadFormats", myWebHookPayloadManager.getTemplatedFormats());
+		params.put("resultsRestricted", resultsRestricted);
 
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/webHookSearch.jsp", params);
     }
-    
+
     private List<WebHookConfig> getListOfWebHookConfigs(List<WebHookSearchResult> searchResults) {
     	List<WebHookConfig> configs = new ArrayList<>();
     	for (WebHookSearchResult result : searchResults) {
-    		configs.add(result.getWebHookConfigEnhanced().getWebHookConfig());
+    		configs.add(result.getWebHookConfig());
     	}
 		return configs;
 	}
@@ -103,19 +110,19 @@ public class WebHookSearchController extends BaseController {
     			.webhookId(request.getParameter("webhookId"))
 				.projectExternalId(request.getParameter("projectId"))
     		.build();
-    	
+
     	for (String tag: getTags(request)) {
     		filter.addTag(tag);
     	}
-    	
+
     	return filter;
     }
 
 	private Set<String> getTags(HttpServletRequest request) {
 		if (request.getParameterValues("tag") != null) {
-			return new HashSet<String>(Arrays.asList(request.getParameterValues("tag")));
+			return new HashSet<>(Arrays.asList(request.getParameterValues("tag")));
 		}
-		return new HashSet<String>();
+		return new HashSet<>();
 	}
 
 }

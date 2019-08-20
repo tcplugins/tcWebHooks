@@ -17,17 +17,17 @@ public class WebHookSearchFilter {
 	@Builder.Default String formatShortName = null;
 	@Builder.Default String urlSubString = null;
 	@Builder.Default String projectExternalId = null;
-	@Builder.Default Set<String> tags = new HashSet<String>();
-	
+	@Builder.Default Set<String> tags = new HashSet<>();
+
 	public void addTag(String tag) {
 		if (! tag.isEmpty() ) {
 			this.tags.add(tag.toLowerCase());
 		}
 	}
-	
+
 	public WebHookSearchFilter templateId(String templateId) {
 		this.templateId = templateId;
 		return this;
 	}
-	
+
 }

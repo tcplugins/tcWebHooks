@@ -26,7 +26,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 	private final WebHookPayloadManager myManager;
 	private final WebHookTemplateResolver myTemplateResolver;
 	String myPluginPath;
-	
+
 	public WebHookProjectSettingsTab(@NotNull PagePlaces pagePlaces,
 									@NotNull WebHookSettingsManager settings,
 									@NotNull PluginDescriptor pluginDescriptor,
@@ -46,8 +46,8 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
             return TAB_TITLE;
         }
 		ProjectWebHooksBean config = ProjectWebHooksBean.buildWithoutNew(
-				(WebHookProjectSettings) this.webhookSettingsManager.getSettings(currentProject.getProjectId()), 
-				currentProject, 
+				this.webhookSettingsManager.getSettings(currentProject.getProjectId()),
+				currentProject,
 				myManager.getRegisteredFormatsAsCollection(),
 				myTemplateResolver.findWebHookTemplatesForProject(currentProject)
 			);
@@ -64,22 +64,22 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
         if (currentProject == null) {
             return;
         }
-        
-		List<ProjectWebHooksBean> parentProjectBeans = new ArrayList<>();  
-		ProjectWebHooksBean projectBean = null;  
+
+		List<ProjectWebHooksBean> parentProjectBeans = new ArrayList<>();
+		ProjectWebHooksBean projectBean = null;
 		List<SProject> parentProjects = currentProject.getProjectPath();
-		
+
 		for (SProject projectParent : parentProjects){
 			Loggers.SERVER.info("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
 			if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
-				
+
 				projectBean = ProjectWebHooksBean.buildWithoutNew(
-						(WebHookProjectSettings) this.webhookSettingsManager.getSettings(projectParent.getProjectId()), 
-						currentProject, 
+						(WebHookProjectSettings) this.webhookSettingsManager.getSettings(projectParent.getProjectId()),
+						currentProject,
 						myManager.getRegisteredFormatsAsCollection(),
 						myTemplateResolver.findWebHookTemplatesForProject(currentProject)
 					);
-				
+
 			} else {
 				parentProjectBeans.add(
 						ProjectWebHooksBean.buildWithoutNew(
@@ -91,11 +91,11 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 					);
 			}
 		}
-		
+
 		model.put("parentProjectBeans", parentProjectBeans);
 		model.put("projectBean", projectBean);
 		model.put("project", currentProject);
-   	
+
     	model.put("projectId", currentProject.getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(currentProject));
     	model.put("externalId", TeamCityIdResolver.getExternalProjectId(currentProject));

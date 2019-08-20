@@ -8,6 +8,13 @@ import lombok.Getter;
 import lombok.ToString;
 import webhook.teamcity.BuildStateEnum;
 
+/**
+ * A class used internally by the {@link WebHookSettingsManager}
+ * to store a cache of webhooks with some extra data added.<br>
+ *
+ * Is used so that searches and groupings by projectId and other data are quick.
+ */
+
 @Getter @Builder @ToString
 public class WebHookConfigEnhanced {
 	private WebHookConfig webHookConfig;
@@ -19,14 +26,14 @@ public class WebHookConfigEnhanced {
 	private String projectExternalId;
 	private Set<String> buildTypeExternalIds;
 	private Set<BuildStateEnum> buildStates;
-	
+
 	public WebHookConfigEnhanced addTag(String tag) {
 		if (! tag.isEmpty() ) {
 			this.tags.add(tag);
 		}
 		return this;
 	}
-	
+
 	public WebHookConfigEnhanced copy() {
 		WebHookConfigEnhanced w = WebHookConfigEnhanced
 							 .builder()
@@ -38,10 +45,10 @@ public class WebHookConfigEnhanced {
 							 .projectExternalId(this.projectExternalId)
 							 .build();
 		if (this.tags != null && ! this.tags.isEmpty()) {
-			w.tags = new TreeSet<String>(this.tags);
+			w.tags = new TreeSet<>(this.tags);
 		}
-							 
+
 		return w;
 	}
-	
+
 }

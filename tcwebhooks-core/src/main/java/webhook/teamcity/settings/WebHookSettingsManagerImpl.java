@@ -25,15 +25,19 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
 public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
-	
+
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ProjectSettingsManager myProjectSettingsManager;
 	@NotNull private final WebHookTemplateManager myWebHookTemplateManager;
 	@NotNull private final WebHookPayloadManager myWebHookPayloadManager;
+
+	/** A Map of <code>projectInternId</code> to {@link WebHookProjectSettings} */
 	private Map<String, WebHookProjectSettings> projectSettingsMap;
+
+	/** A Map of webhook uniqueKey to {@link WebHookConfigEnhanced} */
 	private Map<String, WebHookConfigEnhanced> webhooksEnhanced = new LinkedHashMap<>();
 
-	
+
 	public WebHookSettingsManagerImpl(
 			@NotNull final ProjectManager projectManager,
 			@NotNull final ProjectSettingsManager projectSettingsManager,
@@ -45,7 +49,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookPayloadManager = webHookPayloadManager;
 	}
-	
+
 	@Override
 	public void initialise() {
 		if (this.projectSettingsMap == null) {
@@ -63,7 +67,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		}
 		return projectSettingsMap;
 	}
-	
+
 	@Override
 	public WebHookProjectSettings getSettings(String projectInternalId) {
 		return (WebHookProjectSettings) myProjectSettingsManager.getSettings(projectInternalId, WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
@@ -83,7 +87,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			rebuildWebHooksEnhanced(projectInternalId);
 		}
 		return result;
-		
+
 	}
 
 	@Override
@@ -148,7 +152,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		}
 		return projectGroupedResults;
 	}
-	
+
 	private void addMatchingWebHook(WebHookSearchFilter filter, List<WebHookSearchResult> webhookResultList, WebHookConfigEnhanced e) {
 		WebHookSearchResult result = new WebHookSearchResult();
 		if (filter.getTextSearch() != null) {
@@ -157,11 +161,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			searchField(result, filter.getTextSearch(), Match.URL, e.getWebHookConfig().getUrl());
 			searchField(result, filter.getTextSearch(), Match.PROJECT, e.getProjectExternalId());
 		}
-		
+
 		if (filter.textSearch != null && e.getTags().contains(filter.textSearch.toLowerCase())) {
 			result.addMatch(Match.TAG);
 		}
-		
+
 		if (filter.getFormatShortName() != null) {
 			matchField(result, filter.getFormatShortName(), Match.PAYLOAD_FORMAT, e.getPayloadFormat());
 		}
@@ -184,23 +188,23 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 				}
 			}
 		}
-		
+
 		if ( ! result.getMatches().isEmpty() ) {
 			result.setWebHookConfigEnhanced(e);
 			webhookResultList.add(result);
 		}
 	}
-	
+
 	private void matchField(WebHookSearchResult result, String searchString, Match matchType, String...fields) {
 		if (searchString != null) {
 			for (String field : fields) {
-				if (field.toLowerCase().equals(searchString.toLowerCase())) {
+				if (field.equalsIgnoreCase(searchString)) {
 					result.addMatch(matchType);
 				}
 			}
 		}
 	}
-	
+
 	private void searchField(WebHookSearchResult result, String searchString, Match matchType, String...fields) {
 		if (searchString != null) {
 			for (String field : fields) {
@@ -210,7 +214,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			}
 		}
 	}
-	
+
 	private void rebuildWebHooksEnhanced(String projectInternalId) {
 		SProject sProject = myProjectManager.findProjectById(projectInternalId);
 		if (Objects.nonNull(sProject)) {

@@ -20,22 +20,20 @@ import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebHookHistoryRepository;
-import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
 
-
 public class WebHookProjectTabExtension extends ProjectTab {
-	
+
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final String myPluginPath;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
 
 	protected WebHookProjectTabExtension(
-			@NotNull PagePlaces pagePlaces, 
-			@NotNull ProjectManager projectManager, 
-			@NotNull WebHookSettingsManager webHookSettingsManager, 
+			@NotNull PagePlaces pagePlaces,
+			@NotNull ProjectManager projectManager,
+			@NotNull WebHookSettingsManager webHookSettingsManager,
 			@NotNull PluginDescriptor pluginDescriptor,
 			@NotNull WebHookHistoryRepository webHookHistoryRepository,
 			@NotNull WebAddressTransformer webAddressTransformer) {
@@ -54,25 +52,25 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	@Override
 	protected void fillModel(Map<String,Object> model, HttpServletRequest request,
 			 @NotNull SProject project, SUser user) {
-		
-		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
+
+		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();
 		List<SProject> parentProjects = project.getProjectPath();
-		
+
 		model.put("permissionError", "");
 		for (SProject projectParent : parentProjects){
 			projectAndParents.add(
 					ProjectAndBuildWebhooksBean.newInstance(
 							projectParent,
-							(WebHookProjectSettings) this.myWebHookSettingsManager.getSettings(projectParent.getProjectId()),
-							null, 
-							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT), 
+							this.myWebHookSettingsManager.getSettings(projectParent.getProjectId()),
+							null,
+							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT),
 							myWebAddressTransformer
 						)
 					);
 		}
-		
+
 		model.put("projectAndParents", projectAndParents);
-		
+
     	model.put("projectId", project.getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
     	model.put("projectName", project.getName());

@@ -13,13 +13,19 @@ import webhook.teamcity.history.GeneralisedWebAddressType;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.settings.WebHookConfig;
 
+/**
+ * Class to hold an instance of a webhook in a context of a build.
+ * e.g. When showing the webhooks configured against a specific build like on the buildType tab.
+ *
+ * Used internally by {@link ProjectAndBuildWebhooksBean} only. Don't instantiate manually.
+ */
 public class BuildWebhooksBean{
-	
+
 	private SBuildType sBuildType;
 	private List<WebHookConfigWithGeneralisedAddressWrapper> buildConfigs;
 	private WebAddressTransformer webAddressTransformer;
-	
-	public BuildWebhooksBean(SBuildType b, List<WebHookConfig> c, WebAddressTransformer w) {
+
+	protected BuildWebhooksBean(SBuildType b, List<WebHookConfig> c, WebAddressTransformer w) {
 		this.webAddressTransformer = w;
 		this.setsBuildType(b);
 		this.setBuildConfigs(c);
@@ -44,10 +50,10 @@ public class BuildWebhooksBean{
 					c, getGeneralisedWebAddress(c.getUrl())
 				));
 		}
-		
+
 		this.buildConfigs = buildConfigWithAddresses;
 	}
-	
+
 	private GeneralisedWebAddress getGeneralisedWebAddress(String uri) {
 		if (this.webAddressTransformer != null) {
 			URL url = null;
@@ -59,7 +65,7 @@ public class BuildWebhooksBean{
 					url = new URL("http://unknown");
 				} catch (MalformedURLException e1) {}
 			}
-			
+
 			return this.webAddressTransformer.getGeneralisedHostName(url);
 		}
 		return GeneralisedWebAddress.build(uri, GeneralisedWebAddressType.DOMAIN_NAME);
@@ -68,43 +74,43 @@ public class BuildWebhooksBean{
 	public boolean hasBuilds(){
 		return ! this.buildConfigs.isEmpty();
 	}
-	
+
 	public boolean isHasBuilds(){
 		return hasBuilds();
 	}
-	
+
 	public boolean hasNoBuildWebHooks(){
 		return this.buildConfigs.isEmpty();
 	}
-	
+
 	public boolean isHasNoBuildWebHooks(){
 		return hasNoBuildWebHooks();
 	}
-	
+
 	public boolean hasBuildWebHooks(){
 		return ! this.buildConfigs.isEmpty();
 	}
-	
+
 	public boolean isHasBuildWebHooks(){
 		return hasBuildWebHooks();
 	}
-	
+
 	public int getBuildCount(){
 		return this.buildConfigs.size();
 	}
-	
+
 	public String getBuildExternalId(){
 		return TeamCityIdResolver.getExternalBuildId(sBuildType);
 	}
 	public String getBuildName(){
 		return sBuildType.getName();
 	}
-	
-	
+
+
 	public static class WebHookConfigWithGeneralisedAddressWrapper {
 		private WebHookConfig webHookConfig;
 		private GeneralisedWebAddress generalisedWebAddress;
-		
+
 		public WebHookConfigWithGeneralisedAddressWrapper(
 				WebHookConfig webHookConfig,
 				GeneralisedWebAddress generalisedWebAddress
@@ -112,15 +118,15 @@ public class BuildWebhooksBean{
 			this.webHookConfig = webHookConfig;
 			this.generalisedWebAddress = generalisedWebAddress;
 		}
-		
+
 		public String getGeneralisedUrl() {
 			return generalisedWebAddress.getGeneralisedAddress();
 		}
-		
+
 		public String getUrl() {
 			return webHookConfig.getUrl();
 		}
-		
+
 		public String getEnabledListAsString() {
 			return webHookConfig.getEnabledListAsString();
 		}

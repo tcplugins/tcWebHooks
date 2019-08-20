@@ -11,12 +11,16 @@ public class WebHookSearchResult {
 	private List<Match> matches = new ArrayList<>();
 	@Setter
 	private WebHookConfigEnhanced webHookConfigEnhanced;
-	
+
 	public void addMatch(Match match) {
 		this.matches.add(match);
 	}
 
 	public enum Match {
 		TAG, URL, ID, TEMPLATE, PAYLOAD_FORMAT, PROJECT
+	}
+
+	public WebHookConfig getWebHookConfig() {
+		return this.webHookConfigEnhanced.getWebHookConfig();
 	}
 }

@@ -555,93 +555,65 @@ public class WebHookConfig {
 	}
 
 	public String getWebHookEnabledAsChecked() {
-		if (this.enabled){
-			return CHECKED;
-		}
-		return "";
+		return this.enabled ? CHECKED : "";
 	}
 
 	public String getStateAllAsChecked() {
-		if (states.allEnabled()){
-			return CHECKED;
+		return states.allEnabled() ? CHECKED : "";
 		}
-		return "";
+
+	private String getAsChecked(BuildStateEnum buildState) {
+		return states.enabled(buildState) ? CHECKED : "";
 	}
 
 	public String getStateBuildStartedAsChecked() {
-		if (states.enabled(BUILD_STARTED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_STARTED);
 	}
 
 	public String getStateChangesLoadedAsChecked() {
-		if (states.enabled(CHANGES_LOADED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(CHANGES_LOADED);
 	}
 
 	public String getStateBuildFinishedAsChecked() {
-		if (states.enabled(BUILD_FINISHED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_FINISHED);
 	}
 
 	public String getStateBeforeFinishedAsChecked() {
-		if (states.enabled(BEFORE_BUILD_FINISHED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BEFORE_BUILD_FINISHED);
 	}
 
 	public String getStateResponsibilityChangedAsChecked() {
-		if (states.enabled(RESPONSIBILITY_CHANGED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(RESPONSIBILITY_CHANGED);
 	}
 
 	public String getStateBuildInterruptedAsChecked() {
-		if (states.enabled(BUILD_INTERRUPTED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_INTERRUPTED);
 	}
 
 	public String getStateBuildSuccessfulAsChecked() {
-		if (states.enabled(BUILD_SUCCESSFUL)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_SUCCESSFUL);
 	}
 
 	public String getStateBuildFixedAsChecked() {
-		if (states.enabled(BUILD_FIXED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_FIXED);
 	}
 
 	public String getStateBuildFailedAsChecked() {
-		if (states.enabled(BUILD_FAILED)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_FAILED);
 	}
 
 	public String getStateBuildBrokenAsChecked() {
-		if (states.enabled(BUILD_BROKEN)){
-			return CHECKED;
-		}
-		return "";
+		return getAsChecked(BUILD_BROKEN);
 	}
 
 	private String getPayloadFormat() {
 		return payloadFormat;
 	}
 
+	/** Get the PayloadTemplateId as a string.
+	 *
+	 * @return templateId
+	 */
 	public String getPayloadTemplate() {
 		return payloadTemplate;
 	}
