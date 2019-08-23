@@ -83,6 +83,10 @@ public class ProjectAndBuildWebhooksBean {
 		return webHookProjectSettings;
 	}
 
+	public boolean isWebHooksEnabledForProject() {
+		return webHookProjectSettings.isEnabled();
+	}
+
 	public List<WebHookConfigWithGeneralisedAddressWrapper> getProjectWebhooks() {
 		return projectWebhooksWithAddress;
 	}
