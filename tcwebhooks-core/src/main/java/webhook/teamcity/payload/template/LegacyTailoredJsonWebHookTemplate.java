@@ -5,7 +5,6 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.format.WebHookPayloadTailoredJson;
 
 import java.util.Arrays;
-import java.util.Set;
 
 public class LegacyTailoredJsonWebHookTemplate extends LegacyDeprecatedFormatWebHookTemplate {
 
@@ -21,7 +20,7 @@ public class LegacyTailoredJsonWebHookTemplate extends LegacyDeprecatedFormatWeb
 													BuildStateEnum.RESPONSIBILITY_CHANGED)
 											);
 	}
-	
+
 	@Override
 	public String getTemplateId() {
 		return TEMPLATE_ID;
@@ -37,7 +36,7 @@ public class LegacyTailoredJsonWebHookTemplate extends LegacyDeprecatedFormatWeb
 	public String getTemplateToolTip() {
 		return "Send a JSON payload with content specified by parameter named 'body'";
 	}
-	
+
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
 		return WebHookPayloadTailoredJson.FORMAT_SHORT_NAME.equalsIgnoreCase(payloadFormat);

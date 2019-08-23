@@ -83,7 +83,6 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	 * @deprecated ("Since 0.8, because it alluded to build history status, which was incorrect. Don't implement. It will never be called.")
 	 */
 	@Deprecated
-	@Override
 	public String buildChangedStatus(SBuild runningBuild, SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
 			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {

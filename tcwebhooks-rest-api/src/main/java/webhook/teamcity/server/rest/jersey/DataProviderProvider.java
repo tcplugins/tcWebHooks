@@ -24,9 +24,10 @@ import webhook.teamcity.server.rest.data.WebHookFinder;
 import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 
 @Provider
+@SuppressWarnings("squid:S1191")
 public class DataProviderProvider implements InjectableProvider<Context, Type>, Injectable<DataProvider> {
   private final DataProvider dataProvider;
-  
+
   public DataProviderProvider(
 		  	@NotNull final SBuildServer sBuildServer,
 			@NotNull final RootUrlHolder rootUrlHolder,
@@ -37,9 +38,9 @@ public class DataProviderProvider implements InjectableProvider<Context, Type>, 
 			@NotNull final ProjectManager projectManager,
 			@NotNull final WebHookManager webHookManager,
 			@NotNull final WebHookFinder webHookFinder
-			
+
 		  ) {
-	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder); 
+	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder);
   }
 
   public ComponentScope getScope() {
@@ -56,5 +57,5 @@ public class DataProviderProvider implements InjectableProvider<Context, Type>, 
   public DataProvider getValue() {
     return dataProvider;
   }
- 
+
 }

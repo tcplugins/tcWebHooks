@@ -8,7 +8,6 @@ import java.lang.reflect.Type;
 import java.util.Map.Entry;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -37,14 +36,14 @@ public class HtmlErrorMessageBodyWriter implements MessageBodyWriter<ErrorResult
     @Override
     public void writeTo(ErrorResult errorResult, Class<?> type, Type genericType, Annotation[] annotations,
                         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream out) throws IOException, WebApplicationException {
+                        OutputStream out) throws IOException {
 
         Writer writer = new PrintWriter(out);
         writer.write(buildOutput(errorResult));
         writer.flush();
         writer.close();
     }
-    
+
     private String buildOutput(ErrorResult errorResult) {
     	StringBuilder stringBuilder = new StringBuilder("<html>\n").append("<body><h2>Errors</h2><ul>");
         for (Entry<String,String> entry : errorResult.getErrors().entrySet()) {

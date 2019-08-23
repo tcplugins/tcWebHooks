@@ -15,9 +15,10 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 
 @Provider
+@SuppressWarnings("squid:S1191")
 public class WebHookUserRequestedExecutorProvider implements InjectableProvider<Context, Type>, Injectable<WebHookUserRequestedExecutor> {
   private final WebHookUserRequestedExecutor webHookUserRequestedExecutor;
-  
+
   /**
    * Injected by Spring
    * @param webHookUserRequestedExecutor
@@ -42,5 +43,5 @@ public class WebHookUserRequestedExecutorProvider implements InjectableProvider<
   public WebHookUserRequestedExecutor getValue() {
     return webHookUserRequestedExecutor;
   }
- 
+
 }

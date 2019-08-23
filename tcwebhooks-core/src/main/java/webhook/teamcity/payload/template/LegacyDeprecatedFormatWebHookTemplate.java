@@ -8,13 +8,12 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
-import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebHookTemplate implements WebHookPayloadTemplate {
-	
+
 	Set<BuildStateEnum> states = new HashSet<>();
-	
+
 	public LegacyDeprecatedFormatWebHookTemplate(WebHookTemplateManager manager) {
 		super();
 		this.manager = manager;
@@ -22,7 +21,7 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 			states.add(b);
 		}
 	}
-	
+
 	@Override
 	public WebHookTemplateContent getTemplateForState(BuildStateEnum buildState) {
 		return null;

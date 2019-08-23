@@ -16,7 +16,7 @@ WebHooksPlugin = {
     		WebHooksPlugin.NoRestApiDialog.showDialog();
     	} else {
     		WebHooksPlugin.AddTemplateDialog.showDialog("Add New Template", 'addTemplate');
-    	}    	
+    	}
     },
     importTemplate: function(templateId) {
     	if (!restApiDetected) {
@@ -29,11 +29,11 @@ WebHooksPlugin = {
     	getContainer: function () {
     		return $('addTemplateDialog');
     	},
-    	
+
     	formElement: function () {
     		return $('addTemplateForm');
     	},
-    	
+
     	showDialog: function (title, action, data) {
     		$j("input[id='WebhookTemplateaction']").val(action);
     		$j(".dialogTitle").text(title);
@@ -45,7 +45,7 @@ WebHooksPlugin = {
     		this.cleanErrors();
     		this.showCentered();
     	},
-    	
+
     	expandDialog: function (title, action, data) {
     		$j("#addTemplateForm #addTemplateDialogExpand").hide();
     		$j("#addTemplateForm #addTemplateDialogSubmit").show();
@@ -53,15 +53,15 @@ WebHooksPlugin = {
     		$j("#addTemplateForm .templateDetails").show();
     		this.showCentered();
     	},
-    	
+
     	cleanFields: function (data) {
     		this.cleanErrors();
     	},
-    	
+
     	cleanErrors: function () {
     		$j("#addTemplateForm .error").remove();
     	},
-    	
+
     	error: function($element, message) {
     		var next = $element.next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -70,7 +70,7 @@ WebHooksPlugin = {
     			$element.after("<p class='error'>" + message + "</p>");
     		}
     	},
-    	
+
     	ajaxError: function(message) {
     		var next = $j("#ajaxTemplateAddResult").next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -79,10 +79,10 @@ WebHooksPlugin = {
     			$j("#ajaxTemplateAddResult").after("<p class='error'>" + message + "</p>");
     		}
     	},
-    	
+
     	doPost: function() {
     		this.cleanErrors();
-    		
+
     		var dialog = this;
     		var myJsonContent = {
     				id : $j("#addTemplateForm input[id='template.id']").val(),
@@ -92,7 +92,7 @@ WebHooksPlugin = {
 					preferredDateFormat : $j("#addTemplateForm input[id='template.dateFormat']").val(),
 					format : $j("#addTemplateForm select#payloadFormat").val()
     		};
-			
+
     		$j.ajax ({
     			url: window['base_uri'] + '/app/rest/webhooks/templates',
     			type: "POST",
@@ -111,7 +111,7 @@ WebHooksPlugin = {
     				WebHooksPlugin.handleAjaxError(dialog, response);
     			}
     		});
-    		
+
     		return false;
     	}
     })),
@@ -119,14 +119,14 @@ WebHooksPlugin = {
     	getContainer: function () {
     		return $('importTemplateDialog');
     	},
-    	
+
     	formElement: function () {
     		return $('importTemplateForm');
     	},
-    	
+
     	showDialog: function (title, action, data) {
-    		var dialog = this;
-    		
+    		dialog = this;
+
     		$j(".dialogTitle").html(title);
     		$j(".fs-upload-target").removeClass("fs-upload-dragover")
     							   .addClass("fs-upload-dragexit")
@@ -135,13 +135,13 @@ WebHooksPlugin = {
     		$j("#template-parse-error").css("visibility", "hidden");
     		this.showCentered();
     	},
-    	
+
     	handleFiles: function (files) {
 			// let's just work with one file
 			var file = files[0];
 			var reader = new FileReader();
 
-			if (!file.type.startsWith('application/json')){ 
+			if (!file.type.startsWith('application/json')){
 				console.log("Refusing to parse file of mime type:" + file.type);
 				$j("#template-parse-error").css("visibility", "visible");
 				return;
@@ -160,9 +160,9 @@ WebHooksPlugin = {
 				}
 			}
 
-			reader.readAsText(file);	
+			reader.readAsText(file);
     	},
-    	
+
     	printTemplateStatus: function (template) {
 			$j.ajax ({
 				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + template.id,
@@ -173,7 +173,7 @@ WebHooksPlugin = {
 				success: function (response) {
 					$j("#fs-uploaded .template-status")
 						.html("A template with the same ID already exists.");
-					
+
 					if (response.status === "USER_OVERRIDDEN") {
 						$j("#fs-uploaded .template-status")
 							.append("<p>The existing template has status 'USER_OVERRIDDEN'. " +
@@ -206,13 +206,13 @@ WebHooksPlugin = {
 				}
 			});
     	},
-    	
+
     	validateTemplate: function (template) {
     		return (
     				template.id && template.format && template.rank
     				);
     	},
-    	
+
     	printTemplateData: function (template) {
     		$j("#fs-uploaded .template-id").html(template.id);
     		$j("#fs-uploaded .template-description").html(template.description);
@@ -224,10 +224,10 @@ WebHooksPlugin = {
 
     	doPost: function() {
     		this.cleanErrors();
-    		
+
     		var dialog = this;
-    		templateId = templateJson.id;
-    		
+    		var templateId = templateJson.id;
+
 			$j.ajax ({
 				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId,
 				type: "GET",
@@ -247,18 +247,18 @@ WebHooksPlugin = {
 					}
 				}
 			});
-			
+
     		return false;
     	},
-    	
+
     	cleanFields: function (data) {
     		this.cleanErrors();
     	},
-    	
+
     	cleanErrors: function () {
     		$j("#importTemplateForm .error").remove();
     	},
-    	
+
     	error: function($element, message) {
     		var next = $element.next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -267,7 +267,7 @@ WebHooksPlugin = {
     			$element.after("<p class='error'>" + message + "</p>");
     		}
     	},
-    	
+
     	ajaxError: function(message) {
     		var next = $j("#ajaxTemplateImportResult").next();
     		if (next != null && next.prop("class") != null && next.prop("class").indexOf('error') > 0) {
@@ -276,7 +276,7 @@ WebHooksPlugin = {
     			$j("#ajaxTemplateImportResult").after("<p class='error'>" + message + "</p>");
     		}
     	},
-    	
+
     	sendTemplate: function(dialog, template, method, url) {
     		$j.ajax ({
     			url: url,
@@ -296,9 +296,9 @@ WebHooksPlugin = {
     				WebHooksPlugin.handleAjaxError(dialog, response);
     			}
     		});
-    		
+
     	}
-    })) 
+    }))
 };
 
 
@@ -332,7 +332,7 @@ $j(function() {
 		const files = dt.files;
 
 		WebHooksPlugin.ImportTemplateDialog.handleFiles(files);
-		
+
 	}, false);
 
 	const fileElem = document.getElementById("fs-upload-input");
@@ -342,6 +342,6 @@ $j(function() {
 	        fileElem.click();
 	    }
 	}, false);
-	
+
 });
 

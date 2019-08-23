@@ -1,5 +1,8 @@
 package webhook.teamcity.server.rest.request;
 public class Constants {
+
+  private Constants() {}
+
   public static final String DEFAULT_PAGE_ITEMS_COUNT = "100";
   public static final int DEFAULT_PAGE_ITEMS_COUNT_INT = 100;
 

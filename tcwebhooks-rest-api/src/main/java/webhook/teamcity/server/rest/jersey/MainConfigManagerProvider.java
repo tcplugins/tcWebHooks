@@ -13,6 +13,7 @@ import javax.ws.rs.ext.Provider;
 import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
 
 @Provider
+@SuppressWarnings("squid:S1191")
 public class MainConfigManagerProvider implements InjectableProvider<Context, Type>, Injectable<MainConfigManager> {
   private final MainConfigManager mainConfigManager;
 
