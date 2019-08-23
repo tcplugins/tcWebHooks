@@ -15,7 +15,7 @@
     /css/userRoles.css
     
     ${jspHome}WebHook/css/styles.css
-    ${jspHome}WebHook/highlight/styles/tomorrow.css
+    ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -45,10 +45,10 @@
     </jsp:attribute> 
       
     <jsp:attribute name="body_include">
-	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.easytabs.min.js"></script>
-	<script type=text/javascript src="..${jspHome}WebHook/js/jquery.color.js"></script>
-	<script type=text/javascript src="..${jspHome}WebHook/js/moment-2.22.2.min.js"></script>
-	<script type=text/javascript src="..${jspHome}WebHook/highlight/highlight.pack.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.easytabs.min.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.color.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/moment-2.22.2.min.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
 
 	<script type="text/javascript">
 	var webhookDialogWidth = -1;

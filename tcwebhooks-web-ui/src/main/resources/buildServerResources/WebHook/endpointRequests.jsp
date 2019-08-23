@@ -16,7 +16,7 @@
     /css/userRoles.css
     
     ${jspHome}WebHook/css/styles.css
-    ${jspHome}WebHook/highlight/styles/tomorrow.css
+    ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -79,7 +79,7 @@
 			</div>
 		    </c:forEach>
     
-    	<script type=text/javascript src="..${jspHome}WebHook/highlight/highlight.pack.js"></script>
+    	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
     	<script>hljs.initHighlightingOnLoad();</script>
     	<script type=text/javascript>
     		var jQueryWebhook = jQuery.noConflict();
