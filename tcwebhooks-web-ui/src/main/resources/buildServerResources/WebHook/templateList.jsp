@@ -1,5 +1,5 @@
 <%@ include file="/include.jsp" %>
-<c:set var="title" value="WebHook Templates" scope="request"/>
+<c:set var="pageTitle" value="WebHook Templates" scope="request"/>
 <bs:page>
 
     <jsp:attribute name="head_include">
@@ -34,7 +34,7 @@
     <script type="text/javascript">
       BS.Navigation.items = [
         {title: "Administration", url: '<c:url value="/admin/admin.html"/>'},
-        {title: '${title}', selected: true}
+        {title: '${pageTitle}', selected: true}
       ];
     </script>
     </jsp:attribute>
@@ -98,7 +98,7 @@
 		<tbody>
 		    <c:forEach items="${webHookTemplates}" var="template">
 			  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
-				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)">${template.templateDescription}</td>
+				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)"><c:out value="${template.templateDescription}" /></td>
 				<td class="nowrap">${template.formatDescription}</td>
 				<td>
 					<ul class="commalist">
@@ -112,7 +112,7 @@
 				<td><a href="search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
 
 		<c:choose>  
-    		<c:when test="${template.templateId == 'none'}"> 		
+    		<c:when test="${template.templateDescription == 'Legacy Webhook'}"> 		
 				<td>No template available</td>
 			</c:when>
 			<c:otherwise>  		

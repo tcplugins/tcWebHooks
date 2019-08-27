@@ -1,5 +1,5 @@
 <%@ include file="/include.jsp" %>
-<c:set var="title" value="WebHooks" scope="request"/>
+<c:set var="pageTitle" value="Edit WebHooks" scope="request"/>
 <bs:page>
 
     <jsp:attribute name="head_include">
@@ -38,7 +38,7 @@
 		  <c:if test="${haveBuild}"> 
 		  	{title: "<c:out value="${buildName}"/>", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
 		  </c:if>
-          {title: "${title}", selected:true}
+          {title: "${pageTitle}", selected:true}
         ];
     
       </script>
