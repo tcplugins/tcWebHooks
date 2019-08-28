@@ -517,8 +517,13 @@ public class WebHookPayloadContent {
 
 					}
 				}
+			} else if (buildState == BuildStateEnum.BUILD_INTERRUPTED ) {
+				this.buildResult = WebHookPayload.BUILD_STATUS_INTERRUPTED;
+				this.buildResultDelta = WebHookPayload.BUILD_STATUS_UNKNOWN;
+				this.derivedBuildEventType = BuildStateEnum.BUILD_INTERRUPTED;
+
 			} else if (buildState == BuildStateEnum.BUILD_PINNED || buildState == BuildStateEnum.BUILD_UNPINNED) {
-				return;
+				this.derivedBuildEventType = buildState;			
 			} else {
 				this.buildResult = WebHookPayload.BUILD_STATUS_RUNNING;
 				this.buildResultDelta = WebHookPayload.BUILD_STATUS_UNKNOWN;

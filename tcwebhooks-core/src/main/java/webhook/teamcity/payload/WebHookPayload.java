@@ -18,6 +18,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	public static final String BUILD_STATUS_NO_CHANGE = "unchanged";
 	public static final String BUILD_STATUS_FIXED     = "fixed";
 	public static final String BUILD_STATUS_BROKEN    = "broken";
+	public static final String BUILD_STATUS_INTERRUPTED  = "interrupted";
 	public static final String BUILD_STATUS_UNKNOWN   = "unknown";
 
 	/**
