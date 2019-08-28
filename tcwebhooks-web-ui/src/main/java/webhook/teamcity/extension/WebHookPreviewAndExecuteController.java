@@ -15,7 +15,6 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import webhook.teamcity.extension.bean.WebHookTestHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem;
-import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookExecutionRequestGsonBuilder;
@@ -91,7 +90,6 @@ public class WebHookPreviewAndExecuteController extends BaseController {
 	
 	private String getUrl(WebHookHistoryItem webHookConfig) {
 		if (webHookConfig != null &&
-				webHookConfig.getWebHookExecutionStats() != null &&
 				webHookConfig.getWebHookExecutionStats().getUrl() != null &&
 				!webHookConfig.getWebHookExecutionStats().getUrl().trim().isEmpty() )
 		{

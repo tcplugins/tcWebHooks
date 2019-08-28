@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.joda.time.LocalDateTime;
 
+import jetbrains.buildServer.responsibility.ResponsibilityEntry.State;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -15,6 +16,7 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.WebHookFactory;
+import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.executor.WebHookRunner;
 import webhook.teamcity.executor.WebHookRunnerFactory;
 import webhook.teamcity.history.GeneralisedWebAddress;
@@ -42,6 +44,9 @@ import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
 public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExecutor {
 
+	private static final String A_TESTING_USER = "a testing user";
+	private static final String A_TEST_EXECUTION_COMMENT = "A test execution comment";
+	private static final String A_PREVIOUS_TESTING_USER = "a previous testing user";
 	private final SBuildServer myServer;
 	private final WebHookMainSettings myMainSettings;
 	private final WebHookConfigFactory myWebHookConfigFactory;
@@ -99,8 +104,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookConfig,
 					new TestingSQueuedBuild(myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId())),
 					webHookExecutionRequest.getTestBuildState(),
-					"a testing user",
-					"A test execution comment",
+					A_TESTING_USER,
+					A_TEST_EXECUTION_COMMENT,
 					true
 				);
 
@@ -112,8 +117,24 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookConfig,
 					myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()),
 					webHookExecutionRequest.getTestBuildState(),
-					"a testing user",
-					"A test execution comment",
+					A_TESTING_USER,
+					A_TEST_EXECUTION_COMMENT,
+					true
+					);
+		} else if (webHookExecutionRequest.getTestBuildState().equals(BuildStateEnum.RESPONSIBILITY_CHANGED)) {
+			SBuildType sBuildType = myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()).getBuildType();
+			WebHookResponsibilityHolder responsibilityHolder = WebHookResponsibilityHolder
+																	.builder()
+																	.sBuildType(sBuildType)
+																	.sProject(sBuildType.getProject())
+																	.responsibilityEntryOld(new TestingResponsibilityEntry(A_PREVIOUS_TESTING_USER, State.NONE))
+																	.responsibilityEntryNew(new TestingResponsibilityEntry(A_TESTING_USER, State.TAKEN))
+																	.build();
+			wh = myWebHookContentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig, 
+					responsibilityHolder, 
+					webHookExecutionRequest.getTestBuildState(),
 					true
 					);
 		} else {
@@ -160,8 +181,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookConfig,
 					new TestingSQueuedBuild(myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId())),
 					webHookTemplateExecutionRequest.getTestBuildState(),
-					"a testing user",
-					"A test execution comment",
+					A_TESTING_USER,
+					A_TEST_EXECUTION_COMMENT,
 					true
 				);
 		} else if (webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.BUILD_PINNED)
@@ -172,10 +193,26 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 						webHookConfig,
 						myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()),
 						webHookTemplateExecutionRequest.getTestBuildState(),
-						"a testing user",
-						"A test execution comment",
+						A_TESTING_USER,
+						A_TEST_EXECUTION_COMMENT,
 						true
 						);
+		} else if (webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.RESPONSIBILITY_CHANGED)) {
+			SBuildType sBuildType = myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()).getBuildType();
+			WebHookResponsibilityHolder responsibilityHolder = WebHookResponsibilityHolder
+																	.builder()
+																	.sBuildType(sBuildType)
+																	.sProject(sBuildType.getProject())
+																	.responsibilityEntryOld(new TestingResponsibilityEntry(A_PREVIOUS_TESTING_USER, State.NONE))
+																	.responsibilityEntryNew(new TestingResponsibilityEntry(A_TESTING_USER, State.TAKEN))
+																	.build();
+			wh = myWebHookContentBuilder.buildWebHookContent(
+					wh, 
+					webHookConfig, 
+					responsibilityHolder, 
+					webHookTemplateExecutionRequest.getTestBuildState(),
+					true
+					);
 		} else {
 
 			wh = contentBuilder.buildWebHookContent(
@@ -233,11 +270,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 														webHookConfig.getUrl()
 														)
 												);
-		WebHookHistoryItem webHookHistoryItem = executeWebHook(webHookExecutionRequest.getBuildId(), webHookExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh);
-		//myWebHookHistoryRepository.addHistoryItem(webHookHistoryItem);
-		return webHookHistoryItem;
-
-
+		return executeWebHook(webHookExecutionRequest.getBuildId(), webHookExecutionRequest.getTestBuildState(), webHookConfig, contentBuilder, wh);
 	}
 
 	public WebHookHistoryItem requestWebHookExecution(WebHookTemplateExecutionRequest webHookTemplateExecutionRequest) {
@@ -340,8 +373,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 												webHookConfig,
 												new TestingSQueuedBuild(sRunningBuild),
 												testBuildState,
-												"a testing user",
-												"A test execution comment",
+												A_TESTING_USER,
+												A_TEST_EXECUTION_COMMENT,
 												true
 											);
 
@@ -353,11 +386,26 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 												webHookConfig,
 												sRunningBuild,
 												testBuildState,
-												"a testing user",
-												"A test execution comment",
+												A_TESTING_USER,
+												A_TEST_EXECUTION_COMMENT,
 												true
 											);
-		} else {
+	} else if (testBuildState.equals(BuildStateEnum.RESPONSIBILITY_CHANGED)) {
+		WebHookResponsibilityHolder responsibilityHolder = WebHookResponsibilityHolder
+																.builder()
+																.sBuildType(sRunningBuild.getBuildType())
+																.sProject(sRunningBuild.getBuildType().getProject())
+																.responsibilityEntryOld(new TestingResponsibilityEntry(A_PREVIOUS_TESTING_USER, State.NONE))
+																.responsibilityEntryNew(new TestingResponsibilityEntry(A_TESTING_USER, State.TAKEN))
+																.build();
+		webHookRunner = myWebHookRunnerFactory.getRunner(
+				wh, 
+				webHookConfig, 
+				testBuildState,
+				responsibilityHolder, 
+				true
+				);		
+	} else {
 			webHookRunner = myWebHookRunnerFactory.getRunner(
 												wh,
 												webHookConfig,
