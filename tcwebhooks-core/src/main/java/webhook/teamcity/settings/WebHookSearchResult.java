@@ -11,6 +11,8 @@ public class WebHookSearchResult {
 	private List<Match> matches = new ArrayList<>();
 	@Setter
 	private WebHookConfigEnhanced webHookConfigEnhanced;
+	@Setter
+	private boolean filteredResult = false;
 
 	public void addMatch(Match match) {
 		this.matches.add(match);

@@ -14,6 +14,7 @@ import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.WebHookListener;
@@ -210,21 +211,25 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	 */
 	private void doBuildTypeIdSearch(WebHookSearchFilter filter, WebHookConfigEnhanced e, WebHookSearchResult result) {
 		if (filter.getBuildTypeExternalId() != null && !filter.getBuildTypeExternalId().isEmpty()) {
-			SBuildType myBuildType = myProjectManager.findBuildTypeByExternalId(filter.getBuildTypeExternalId());
-			if (myBuildType != null &&
-				(	
-					(
-						myBuildType.getProjectExternalId().equalsIgnoreCase(e.getProjectExternalId())
-					  && e.getWebHookConfig().isEnabledForBuildType(myBuildType)
-					)
-				|| 	(
-						e.getWebHookConfig().isEnabledForSubProjects() 
-					  && myProjectManager.findProjectByExternalId(e.getProjectExternalId()).getProjects().contains(myBuildType.getProject())
+			try {
+				SBuildType myBuildType = myProjectManager.findBuildTypeByExternalId(filter.getBuildTypeExternalId());
+				if (myBuildType != null &&
+					(	
+						(
+							myBuildType.getProjectExternalId().equalsIgnoreCase(e.getProjectExternalId())
+						  && e.getWebHookConfig().isEnabledForBuildType(myBuildType)
+						)
+					|| 	(
+							e.getWebHookConfig().isEnabledForSubProjects() 
+						  && myProjectManager.findProjectByExternalId(e.getProjectExternalId()).getProjects().contains(myBuildType.getProject())
+						)
 					)
 				)
-			)
-			{
-				result.addMatch(Match.BUILD_TYPE);
+				{
+					result.addMatch(Match.BUILD_TYPE);
+				}
+			} catch (AccessDeniedException ex) {
+				result.setFilteredResult(true);
 			}
 		}
 	}
