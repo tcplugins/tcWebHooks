@@ -384,7 +384,7 @@ public class WebHookPayloadContent {
 		public void setBuildStatus(String buildStatus, BuildStateEnum buildState) {
 			this.buildStatus = "Running".equalsIgnoreCase(buildStatus) 
 					&& BuildStateEnum.BUILD_FINISHED.equals(buildState)
-					&& Objects.nonNull(derivedBuildEventType)
+					&& derivedBuildEventType != null
 					
 				? this.derivedBuildEventType.getBuildStatusDescription()
 				: buildStatus;
