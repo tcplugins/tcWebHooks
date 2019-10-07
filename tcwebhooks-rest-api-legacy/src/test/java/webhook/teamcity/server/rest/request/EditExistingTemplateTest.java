@@ -51,7 +51,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testUpdateJsonTemplatesRequestUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
@@ -85,7 +85,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test(expected=UniformInterfaceException.class)
     public void testUpdateJsonTemplateTemplateItemByEnablingInvalidBuildStateRequestUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
@@ -105,7 +105,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testCreateDefaultTemplateUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
@@ -124,7 +124,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testEditTemplateUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -136,6 +136,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	responseMsg.rank = 999;
     	responseMsg.preferredDateFormat="YYYY-MM";
     	responseMsg.toolTip = "Woot, a tooltip";
+    	responseMsg.projectId = "TestProject";
     	
     	webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).put(Template.class, responseMsg);
     	
@@ -152,7 +153,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testEditTemplateWithMinimalChangesUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -179,7 +180,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testEditTemplateWithMinimalChangesCanRequestOriginalUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -206,7 +207,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testEditTemplateWithMinimalChangesCanRequestOverridenUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -233,7 +234,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testDefaultTemplateDiff() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/templateItems/id:1").queryParam("fields","id,content,parentTemplateDescription,parentTemplate,editable").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
@@ -257,7 +258,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testEditTemplateFromEmptyTemplateUsingSlackCompactTemplateAndRequestAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = new Template();
@@ -275,7 +276,7 @@ public class EditExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test(expected=UniformInterfaceException.class)
     public void testChangeExistingTemplateIdCausesExceptionAsJson() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);

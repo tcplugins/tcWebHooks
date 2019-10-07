@@ -14,7 +14,11 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
 
+import webhook.teamcity.ProjectIdResolver;
+
 public class WebHookAbstractSpringAwareJerseyTest extends AbstractSpringAwareJerseyTest {
+	
+	ProjectIdResolver projectIdResolver;
 	
 	public WebHookAbstractSpringAwareJerseyTest() {
 		super(new WebAppDescriptor.Builder("webhook.teamcity.test.jerseyprovider",  "webhook.teamcity.server.rest.errors", "webhook.teamcity.server.rest.request", "webhook.teamcity.server.rest.model", "webhook.teamcity.settings")
@@ -37,6 +41,18 @@ public class WebHookAbstractSpringAwareJerseyTest extends AbstractSpringAwareJer
     @Override
     public final void setUp() throws Exception {
         super.setUp();
+    	projectIdResolver = new ProjectIdResolver() {
+			
+			@Override
+			public String getInternalProjectId(String externalProjectId) {
+				return "_Root";
+			}
+			
+			@Override
+			public String getExternalProjectId(String internalProjectId) {
+				return "project0";
+			}
+		};        
     }
     
     /**

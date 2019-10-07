@@ -54,7 +54,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     	newTemplate.format = "jsontemplate";
     	newTemplate.rank = 500;
 
-    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplate);
+    	webResource.path(API_TEMPLATES_URL + "/_Root").accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplate);
     	Templates updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
     	assertEquals(1, (int)updatedResponse.count);
     	
@@ -69,7 +69,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     @Test
     public void testDeleteTemplateItemUsingJson() {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseTemplate = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -98,7 +98,7 @@ public class DeleteTemplateTest extends WebHookAbstractSpringAwareJerseyTest {
     
     @Test
     public void testDeleteDefaultTemplateItemUsingJson() {
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();

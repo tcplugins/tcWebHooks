@@ -5,11 +5,16 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
+import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateValidator;
 
 @Provider
@@ -17,9 +22,13 @@ import webhook.teamcity.server.rest.data.TemplateValidator;
 public class TemplateValidatorProvider implements InjectableProvider<Context, Type>, Injectable<TemplateValidator> {
   private final TemplateValidator templateValidator;
 
-  public TemplateValidatorProvider() {
-
-	  this.templateValidator = new TemplateValidator();
+  public TemplateValidatorProvider(
+		  @NotNull final WebHookTemplateManager templateManager,
+		  @NotNull final PermissionChecker permissionChecker,
+		  @NotNull final ProjectManager projectManager
+		)
+  {
+	  this.templateValidator = new TemplateValidator(templateManager, permissionChecker, projectManager);
   }
 
   public ComponentScope getScope() {

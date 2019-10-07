@@ -102,5 +102,9 @@
 	<bean id="webHookVariableResolverManager" 
 		class="webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl"
 		/>
+
+	<bean id="projectIdResolver" 
+     	class="webhook.teamcity.test.jerseyprovider.ProjectIdResolverMock"
+     	/>		
 		
 </beans>

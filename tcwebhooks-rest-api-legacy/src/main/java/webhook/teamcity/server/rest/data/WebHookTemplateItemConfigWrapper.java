@@ -13,6 +13,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 @Getter @AllArgsConstructor
 public class WebHookTemplateItemConfigWrapper {
 	
+	private String externalProjectId;
 	private WebHookTemplateItemRest templateItem;
 	private WebHookTemplateStates buildStatesWithTemplate;
 	
