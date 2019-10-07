@@ -4,9 +4,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -14,7 +16,10 @@ import org.mockito.MockitoAnnotations;
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -34,6 +39,12 @@ public class SlackComCompactXmlWebHookTemplateTest {
 	
 	@Mock
 	private SBuild sRunningBuild;
+	
+	@Mock
+	private SBuildType sBuildType;
+	
+	@Mock 
+	private SProject sProject;
 
 	@Mock
 	private SBuildServer server;
@@ -46,12 +57,28 @@ public class SlackComCompactXmlWebHookTemplateTest {
 
 	private WebHookPayload payloadFormat;
 	
+	@Mock
+	private ProjectIdResolver projectIdResolver;
+	
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		
+		when(projectIdResolver.getInternalProjectId("_Root")).thenReturn("_Root");
+		setupPayloadManagerAndRegisterJsonTemplate();
+		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
+		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver);
+		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
+		webHookVariableResolverManager  = new WebHookVariableResolverManagerImpl();
+		webHookVariableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		setupSbuildMock();
+		
+	}
+	
 	@Test
 	public void testLoadDefaultCompactSlackTemplateAndVerifyThatThereIsATemplateForChangesLoaded() {
 		
-		setup();
-		
-		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 		slackCompact.register();
 		webHookTemplateManager.registerTemplateFormatFromSpring(slackCompact);
 		
@@ -67,9 +94,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
 	@Test(expected=UnSupportedBuildStateException.class)
 	public void testLoadDefaultCompactSlackTemplateAndThenOverideItAndVerifyThatThereIsNoTemplateForChangesLoaded() throws FileNotFoundException, JAXBException {
 		
-		setup();
-		
-		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 		slackCompact.register();
 		webHookTemplateManager.registerTemplateFormatFromSpring(slackCompact);
 		
@@ -85,20 +110,11 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		assertNotNull(webHookTemplateContentSuccessful);
 	}
 	
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		
-		setupPayloadManagerAndRegisterJsonTemplate();
-		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
-		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
-		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
-		webHookVariableResolverManager  = new WebHookVariableResolverManagerImpl();
-		webHookVariableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
-		setupSbuildMock();
-		
-	}
-
 	private void setupSbuildMock() {
+		when(sProject.getProjectId()).thenReturn("_Root");
+		when(sProject.getProjectPath()).thenReturn(Arrays.asList(sProject));
+		when(sBuildType.getProject()).thenReturn(sProject);
+		when(sRunningBuild.getBuildType()).thenReturn(sBuildType);
 		when(sRunningBuild.getBranch()).thenReturn(new Branch() {
 			
 			@Override

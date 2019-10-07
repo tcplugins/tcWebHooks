@@ -9,7 +9,6 @@ import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES
 import java.io.FileNotFoundException;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;
@@ -145,7 +144,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -158,7 +157,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestTemplateContentUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
@@ -173,7 +172,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestDefaultTemplateContentUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	String responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/defaultTemplate/templateContent").accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
@@ -188,7 +187,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestTemplateItemUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1").queryParam("fields","id,content").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
@@ -204,7 +203,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestTemplateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").queryParam("fields","$long").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -216,7 +215,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestTemplateUsingElasticTemplateShort() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch").queryParam("fields","$short,templateItem").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -228,7 +227,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestTemplateItemForDefaultTemplateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/defaultTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class); //.queryParam("fields","id,content,parentTemplateDescription,parentTemplateName")
@@ -240,7 +239,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestTemplateItemWithParentNameAndDescriptionUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	Template.TemplateItem responseMsg = webResource.path(API_TEMPLATES_URL + "/id:elasticsearch/templateItems/id:1").queryParam("fields","id,content,parentTemplate,parentTemplate").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.TemplateItem.class);
@@ -261,7 +260,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestBuildStateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	
@@ -288,7 +287,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestDefaultBuildStateUsingElasticTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	
@@ -316,7 +315,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
 	@Test
 	public void testJsonTemplatesRequestBuildStateUsingFlowdockTemplate() throws FileNotFoundException, JAXBException {
 		
-		WebHookPayloadTemplate flowdock = new FlowdockXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+		WebHookPayloadTemplate flowdock = new FlowdockXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 		flowdock.register();
 		
 		
@@ -344,7 +343,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestUsingSlackCompactTemplate() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
@@ -357,7 +356,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testJsonTemplatesRequestUsingSlackCompactTemplateAndRequestAsXml() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	Template responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact").accept(MediaType.APPLICATION_XML_TYPE).get(Template.class);
@@ -370,7 +369,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     @Test
     public void testFullJsonTemplatesRequestUsingSlackCompactTemplateAndRequestAsXml() throws FileNotFoundException, JAXBException {
     	
-    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	slackCompact.register();
     	
     	WebHookTemplateConfig responseMsg = webResource.path(API_TEMPLATES_URL + "/id:slack.com-compact/fullConfig").accept(MediaType.APPLICATION_XML_TYPE).get(WebHookTemplateConfig.class);

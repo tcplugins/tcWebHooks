@@ -1,6 +1,7 @@
 package webhook.teamcity.extension;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,11 +10,15 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.ProjectIdResolver;
+import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
@@ -22,11 +27,12 @@ public class WebHookTemplateListPageController extends WebHookTemplateBasePageCo
 
 	    private final WebHookPayloadManager myPayloadManager;
 
-		public WebHookTemplateListPageController(SBuildServer server, WebControllerManager webManager, 
+		@SuppressWarnings("squid:S00107")
+	    public WebHookTemplateListPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
 	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
-	    		WebHookSettingsManager webHookSettingsManager) {
-	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager);
+	    		WebHookSettingsManager webHookSettingsManager, ProjectIdResolver projectIdResolver) {
+	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager, projectIdResolver);
 	    	this.myPayloadManager = payloadManager;
 	    }
 
@@ -41,10 +47,19 @@ public class WebHookTemplateListPageController extends WebHookTemplateBasePageCo
 	        HashMap<String,Object> params = new HashMap<>();
 	        addBaseParams(params);
 	        
+	        
+	        List<WebHookPayloadTemplate> templates; 
+	        
+	        if(request.getParameter("projectId") != null){
+	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
+	        	templates = myTemplateManager.getRegisteredPermissionedTemplatesForProject(project);
+	        } else {
+	        	templates = myTemplateManager.getRegisteredPermissionedTemplates();
+	        }
+	        
 	        params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
-        	params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, myTemplateManager.getRegisteredTemplates(),
-        			myPayloadManager.getRegisteredFormats(), myWebHookSettingsManager).getTemplateList());
-
+	        params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, templates,
+	        		myPayloadManager.getRegisteredFormats(), myWebHookSettingsManager, myServer.getProjectManager()).getTemplateList());
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateList.jsp", params);
 	    }
 

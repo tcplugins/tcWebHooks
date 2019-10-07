@@ -37,12 +37,15 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateSta
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 
 @XmlRootElement(name = "template")
-@XmlType(name = "template", propOrder = { "id", "description", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "preferredDateFormat", "toolTip", "templates" })
+@XmlType(name = "template", propOrder = { "id", "description", "projectId", "status", "format", "rank", "href", "webUrl", "defaultTemplate", "preferredDateFormat", "toolTip", "templates" })
 
 public class Template {
 	@XmlAttribute
 	@Getter
 	public String id;
+	
+	@XmlAttribute
+	public String projectId;
 
 	@XmlAttribute
 	public String status;
@@ -302,14 +305,18 @@ public class Template {
 				fields.isIncluded("description"),
 				template.getTemplateDescription());
 		
+		projectId = ValueWithDefault.decideDefault(
+				fields.isIncluded("projectId", false, false),
+				templateWrapper.getExternalProjectId());
+		
 		status = ValueWithDefault.decideDefault(fields.isIncluded("status"),
 				templateWrapper.getStatus().toString());
 		
 		format = ValueWithDefault.decideDefault(fields.isIncluded("format"),
 				template.getFormat());
 		
-		rank = ValueWithDefault.decideDefault(fields.isIncluded("rank"),
-				Integer.valueOf(template.getRank()));
+		rank = ValueWithDefault.decideDefault(fields.isIncluded("rank", false, true),
+				template.getRank());
 		
 		preferredDateFormat = ValueWithDefault.decideDefault(fields.isIncluded("preferredDateFormat"),
 				template.getPreferredDateTimeFormat());

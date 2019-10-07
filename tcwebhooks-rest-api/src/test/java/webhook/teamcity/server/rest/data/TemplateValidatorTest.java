@@ -8,9 +8,15 @@ import java.io.FileNotFoundException;
 
 import javax.xml.bind.JAXBException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
+import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.settings.entity.JaxHelper;
 
@@ -19,9 +25,23 @@ public class TemplateValidatorTest {
 	private static final String ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML = "src/test/resources/REST-examples/elasticsearch-templateItem-defaultTemplate.xml";
 	private static final String ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML = "src/test/resources/REST-examples/elasticsearch-templateItem-template1.xml";
 
+	@Mock
+	ProjectManager projectManager;
+	
+	@Mock
+	WebHookTemplateManager webHookTemplateManager;
+	
+	@Mock
+	PermissionChecker permissionChecker;
+	
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
+	
 	@Test
 	public void testValidateTemplateItemThatFindsNoDifferences() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
@@ -31,7 +51,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItemWhereTemplateIdIsUpdated() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.setId("someOtherId");
@@ -43,7 +63,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItemWhereReadOnlyBuildStartedIsUpdated() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setEnabled(false);
@@ -55,7 +75,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItemWhereBuildStartedIsRenamedToInvaliateBuildStateShortName() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_DEFAULT_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setType("invalidname");
@@ -67,7 +87,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItem1ThatFindsNoDifferences() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		ErrorResult result = tv.validateTemplateItem(templateItem, templateItem2, new ErrorResult());
@@ -77,7 +97,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItem1WhereTemplateIdIsUpdated() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.setId("someOtherId");
@@ -89,7 +109,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItem1WhereBuildStartedIsUpdated() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setEnabled(false);
@@ -100,7 +120,7 @@ public class TemplateValidatorTest {
 	
 	@Test
 	public void testValidateTemplateItem1WhereBuildStartedIsRenamedToInvaliateBuildStateShortName() throws FileNotFoundException, JAXBException {
-		TemplateValidator tv = new TemplateValidator();
+		TemplateValidator tv = new TemplateValidator(webHookTemplateManager, permissionChecker, projectManager);
 		TemplateItem templateItem = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		TemplateItem templateItem2 = new JaxHelper<TemplateItem>().read(ELASTICSEARCH_TEMPLATE_ITEM_ONE_TEMPLATE_XML, TemplateItem.class);
 		templateItem2.findConfigForBuildState("buildStarted").setType("invalidname");

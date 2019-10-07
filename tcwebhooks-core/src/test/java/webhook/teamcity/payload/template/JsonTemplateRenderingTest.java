@@ -12,11 +12,13 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -35,12 +37,21 @@ public class JsonTemplateRenderingTest {
 	WebHookTemplateManager wtm;
 	WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 	WebHookTemplateJaxHelperImpl webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
+	ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
+
 	
 	@Test
 	public void TestJsonTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException, WebHookPayloadContentAssemblyException {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(null, null);
-		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper);
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project1"))).thenReturn("ATestProject");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project1");
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project0"))).thenReturn("_Root");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("project0");
+		
+		wtm = new WebHookTemplateManager(null, null, null);
+		AbstractXmlBasedWebHookTemplate wht = new SlackComXmlWebHookTemplate(wtm, wpm, webHookTemplateJaxHelper, projectIdResolver, null);
 		wht.register();
 
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");

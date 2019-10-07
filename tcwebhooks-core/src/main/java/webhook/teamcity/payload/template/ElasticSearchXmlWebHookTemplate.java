@@ -1,5 +1,7 @@
 package webhook.teamcity.payload.template;
 
+import webhook.teamcity.DeferrableServiceManager;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -12,8 +14,10 @@ public class ElasticSearchXmlWebHookTemplate extends AbstractXmlBasedWebHookTemp
 	public ElasticSearchXmlWebHookTemplate(
 			WebHookTemplateManager templateManager,
 			WebHookPayloadManager payloadManager,
-			WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
-		super(templateManager, payloadManager, webHookTemplateJaxHelper);
+			WebHookTemplateJaxHelper webHookTemplateJaxHelper,
+			ProjectIdResolver projectIdResolver,
+			DeferrableServiceManager deferrableServiceManager) {
+		super(templateManager, payloadManager, webHookTemplateJaxHelper, projectIdResolver, deferrableServiceManager);
 	}
 
 	@Override

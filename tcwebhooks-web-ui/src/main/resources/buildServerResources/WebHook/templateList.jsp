@@ -42,7 +42,6 @@
   <jsp:attribute name="quickLinks_include">
     <div class="toolbarItem">
 	    <c:set var="menuItems">
-		    <authz:authorize allPermissions="CHANGE_SERVER_SETTINGS">
 		      <jsp:body>
 		        <l:li>
 			      <a href="#" title="Add New Template" onclick="WebHooksPlugin.addTemplate(); return false">Add New Template...</a>
@@ -51,7 +50,6 @@
 			      <a href="#" title="Import Template" onclick="WebHooksPlugin.importTemplate(); return false">Import Template...</a>
 		        </l:li>
 		      </jsp:body>
-		    </authz:authorize>
 		</c:set>
 		<c:if test="${not empty fn:trim(menuItems)}">
 		  <bs:actionsPopup controlId="prjActions${projectExternalId}"
@@ -89,6 +87,7 @@
 		<thead>
 		<tr style="background-color: rgb(245, 245, 245);">
 		<th class="">Description</th>
+		<th class="">Project</th>
 		<th class="">Payload Format</th>
 		<th class="">Supported Build Events</th>
 		<th class="">Type</th>
@@ -99,6 +98,7 @@
 		    <c:forEach items="${webHookTemplates}" var="template">
 			  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
 				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)"><c:out value="${template.templateDescription}" /></td>
+				<td class="nowrap"><a href="../project.html?projectId=${template.projectExternalId}"><c:out value="${template.projectName}" /></a></td>
 				<td class="nowrap">${template.formatDescription}</td>
 				<td>
 					<ul class="commalist">
@@ -186,6 +186,15 @@
                     </td>
                 </tr>
                 <tr class="templateDetails">
+                    <th>Associated Project<l:star/></th>
+                    <td>
+                        <div>
+                        <select id="templateDialogProjectSelect" name="template.projectId">
+                        </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="templateDetails">
                     <th>Tooltip</th>
                     <td>
                         <div><input type="text" id="template.tooltip" name="template.tooltip"/></div>
@@ -245,6 +254,7 @@
 	            	</div>
 	            	<div id="fs-uploaded">
 	            		<table>
+	            		<tr><td><b>Associated Project</b></td><td><div><select id="templateImportDialogProjectSelect" name="template-project-id"></select></div></td></tr>
 	            		<tr><td><b>Description:</b></td><td class="template-description"></td></tr>
 	            		<tr><td><b>ID:</b></td><td class="template-id"></td></tr>
 	            		<tr><td><b>Payload Format:</b></td><td class="template-payload-format"></td></tr>

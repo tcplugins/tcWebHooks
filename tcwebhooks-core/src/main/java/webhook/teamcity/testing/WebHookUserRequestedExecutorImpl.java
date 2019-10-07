@@ -13,6 +13,7 @@ import webhook.WebHook;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.WebHookFactory;
@@ -58,6 +59,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	private final WebHookContentBuilder myWebHookContentBuilder;
 	private final WebHookVariableResolverManager myWebHookVariableResolverManager;
 	private final WebHookPayloadManager myWebHookPayloadManager;
+	private final ProjectIdResolver myProjectIdResolver;
 
 	public WebHookUserRequestedExecutorImpl(
 			SBuildServer server,
@@ -70,7 +72,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 			WebHookHistoryRepository webHookHistoryRepository,
 			WebAddressTransformer webAddressTransformer,
 			WebHookContentBuilder webHookContentBuilder,
-			WebHookVariableResolverManager webHookVariableResolverManager
+			WebHookVariableResolverManager webHookVariableResolverManager,
+			ProjectIdResolver projectIdResolver
 		) {
 		myServer = server;
 		myMainSettings = mainSettings;
@@ -83,6 +86,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		myWebHookContentBuilder = webHookContentBuilder;
 		myWebHookVariableResolverManager = webHookVariableResolverManager;
 		myWebHookPayloadManager = webHookPayloadManager;
+		myProjectIdResolver = projectIdResolver;
 	}
 
 
@@ -251,7 +255,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 
 		// We need an alternative WebHookTemplateManager. We'll use the injected payload manager, but create our
 		// own jaxHelper. The jaxHelper is only used to persist the template, which we won't do in this class.
-		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(myWebHookPayloadManager, new NoOpJaxHelper());
+		WebHookTemplateManager webHookTemplateManager = new WebHookTemplateManager(myWebHookPayloadManager, new NoOpJaxHelper(), myProjectIdResolver);
 
 		WebHookTemplateConfig webHookTemplateConfig = webHookTemplateExecutionRequest.toConfig();
 		WebHookTemplateResolver webHookTemplateResolver = new NonDiscrimatoryTemplateResolver(webHookTemplateManager, webHookTemplateConfig, payloadManager);

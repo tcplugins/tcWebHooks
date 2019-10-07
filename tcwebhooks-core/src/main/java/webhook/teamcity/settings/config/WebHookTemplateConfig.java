@@ -25,6 +25,7 @@ public class WebHookTemplateConfig {
 	String templateToolTip;
 	String preferredDateTimeFormat;
 	String format;
+	String projectInternalId;
 	WebHookTemplateItems templates = new WebHookTemplateItems();
 	
 
@@ -100,4 +101,5 @@ public class WebHookTemplateConfig {
 		String type;
 		boolean enabled;
 	}
+
 }

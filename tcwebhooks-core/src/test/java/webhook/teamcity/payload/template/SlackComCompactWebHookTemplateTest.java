@@ -34,7 +34,7 @@ public class SlackComCompactWebHookTemplateTest extends AbstractSpringTemplateTe
 
 	@Override
 	public WebHookPayloadTemplate getTemplateInstance() {
-		return new SlackComXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
+		return new SlackComXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 	}
 
 }

@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.jdom.JDOMException;
+import org.mockito.Mockito;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
@@ -30,6 +31,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
@@ -140,7 +142,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	private WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(contentBuilder, historyRepository, historyItemFactory);
 	private WebHookExecutor webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
-
+	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
@@ -167,6 +169,12 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(templateManager.getTemplate("legacy-json")).thenReturn(templateJson);
 		when(resolver.getTemplatePayloadFormat("legacy-json")).thenReturn(payloadJson);
 		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project01"))).thenReturn("ATestProject");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project01");
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("_Root"))).thenReturn("_Root");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("_Root");
+		
 		formatList.add(payloadJson);
 		formatList.add(payloadXml);
 		formatList.add(payloadNvpairs);
@@ -187,6 +195,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		finishedFailedBuilds.add(previousFailedBuild);
 		((MockSBuildType) sBuildType).setProject(sProject);
 		when(settings.getSettings(sRunningBuild.getProjectId())).thenReturn(projSettings);
+		when(settings.getSettings(Mockito.eq("_Root"))).thenReturn(new WebHookProjectSettings());
 		
 		when(build2.getBuildTypeId()).thenReturn("bt2");
 		when(build2.getInternalId()).thenReturn("bt2");
@@ -311,6 +320,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 				return null;
 			}
 			
+			@Override
+			public String getProjectId() {
+				return "_Root";
+			}
+			
 		};
 	}
 
@@ -420,4 +434,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return this.settings;
 	}
 
+	@Override
+	public ProjectIdResolver getProjectIdResolver() {
+		return this.projectIdResolver;
+	}
 }

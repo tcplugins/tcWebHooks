@@ -8,6 +8,7 @@ import java.util.List;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import webhook.Constants;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.BuildWebhooksBean.WebHookConfigWithGeneralisedAddressWrapper;
 import webhook.teamcity.history.GeneralisedWebAddress;
@@ -104,7 +105,7 @@ public class ProjectAndBuildWebhooksBean {
 	}
 
 	public String getSensibleProjectName(){
-		if (project.getProjectId().equals("_Root")) {
+		if (project.getProjectId().equals(Constants.ROOT_PROJECT_ID)) {
 			return project.getProjectId();
 		}
 		return project.getName();

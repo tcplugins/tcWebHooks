@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -24,11 +25,13 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
 
 		private final WebHookPayloadManager myPayloadManager;
 	
+		@SuppressWarnings("squid:S00107")
 	    public WebHookTemplateEditPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
 	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
-	    		WebHookSettingsManager webHookSettingsManager) {
-	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager);
+	    		WebHookSettingsManager webHookSettingsManager,
+	    		ProjectIdResolver projectIdResolver) {
+	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager, projectIdResolver);
 	        this.myPayloadManager = payloadManager;
 	    }
 
@@ -52,7 +55,11 @@ public class WebHookTemplateEditPageController extends WebHookTemplateBasePageCo
     				
     				if (templateConfig != null) {
     					params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
-    					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST)));
+    					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(
+    																		templateConfig, 
+    																		myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST), 
+    																		myProjectIdResolver.getExternalProjectId(templateConfig.getProjectInternalId())));
+    					params.put("sProject", myServer.getProjectManager().findProjectById(templateConfig.getProjectInternalId()));
     					params.put("webHookCount", this.myWebHookSettingsManager.getTemplateUsageCount(templateConfig.getId()));
     					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateEdit.jsp", params);
     				}

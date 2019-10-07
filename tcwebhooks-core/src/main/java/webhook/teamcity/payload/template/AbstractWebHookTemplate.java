@@ -26,5 +26,5 @@ public abstract class AbstractWebHookTemplate implements WebHookPayloadTemplate 
 	public void register(WebHookPayloadTemplate template){
 		this.manager.registerTemplateFormatFromSpring(template);
 	}
-
+	
 }

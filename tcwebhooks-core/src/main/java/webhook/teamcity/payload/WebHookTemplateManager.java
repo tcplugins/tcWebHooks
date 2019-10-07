@@ -4,14 +4,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.bind.JAXBException;
 
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
+import webhook.Constants;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
-import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
@@ -29,14 +35,17 @@ public class WebHookTemplateManager {
 	private List<WebHookPayloadTemplate> orderedTemplateCollection = new ArrayList<>();
 	private final WebHookPayloadManager webHookPayloadManager;
 	private final WebHookTemplateJaxHelper webHookTemplateJaxHelper;
+	private final ProjectIdResolver projectIdResolver;
 	private String configFilePath;
 	
 	public WebHookTemplateManager(
 			WebHookPayloadManager webHookPayloadManager, 
-			WebHookTemplateJaxHelper webHookTemplateJaxHelper)
+			WebHookTemplateJaxHelper webHookTemplateJaxHelper,
+			ProjectIdResolver projectIdResolver)
 	{
 		this.webHookPayloadManager = webHookPayloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
+		this.projectIdResolver = projectIdResolver;
 		Loggers.SERVER.debug("WebHookTemplateManager :: Starting (" + toString() + ")");
 	}
 	
@@ -58,6 +67,10 @@ public class WebHookTemplateManager {
 		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
 				+ payloadTemplate.getId() 
 				+ " with rank of " + payloadTemplate.getRank());
+		// Set template as belonging to _Root if no associated project id found for this template.
+		if (Objects.isNull(payloadTemplate.getAssociatedProjectId()) || payloadTemplate.getAssociatedProjectId().isEmpty()) {
+			payloadTemplate.setAssociatedProjectId(projectIdResolver.getInternalProjectId(Constants.ROOT_PROJECT_ID));
+		}
 		payloadTemplate.fixTemplateIds();
 		xmlConfigTemplates.put(payloadTemplate.getId(),WebHookTemplateFromXml.build(payloadTemplate, webHookPayloadManager));
 	}
@@ -142,13 +155,13 @@ public class WebHookTemplateManager {
 		Collections.sort(this.orderedTemplateCollection, rankComparator);
 	}
 
-	public WebHookPayloadTemplate getTemplate(String formatShortname){
+	public WebHookPayloadTemplate getTemplate(String templateId){
 		synchronized (orderedTemplateCollection) {
-			if (xmlConfigTemplates.containsKey(formatShortname)){
-				return xmlConfigTemplates.get(formatShortname);
+			if (xmlConfigTemplates.containsKey(templateId)){
+				return xmlConfigTemplates.get(templateId);
 			}
-			if (springTemplates.containsKey(formatShortname)){
-				return springTemplates.get(formatShortname);
+			if (springTemplates.containsKey(templateId)){
+				return springTemplates.get(templateId);
 			}
 			return null;
 		}
@@ -176,7 +189,7 @@ public class WebHookTemplateManager {
 		}
 	}
 	
-	public Boolean isRegisteredTemplate(String template){
+	public boolean isRegisteredTemplate(String template){
 		return xmlConfigTemplates.containsKey(template) || springTemplates.containsKey(template);
 	}
 	
@@ -184,14 +197,53 @@ public class WebHookTemplateManager {
 		return orderedTemplateCollection;
 	}
 	
-	public List<WebHookTemplateConfig> getRegisteredTemplateConfigs(){
-		List<WebHookTemplateConfig> orderedEntities = new ArrayList<>();
-		for (WebHookPayloadTemplate xmlConfig : orderedTemplateCollection){
-			if (xmlConfig.getAsEntity()!=null){
-				orderedEntities.add(WebHookTemplateConfigBuilder.buildConfig(xmlConfig.getAsEntity()));
+	public List<WebHookPayloadTemplate> getRegisteredPermissionedTemplates(){
+		List<WebHookPayloadTemplate> orderedTemplates = new ArrayList<>();
+		for (WebHookPayloadTemplate template : orderedTemplateCollection) {
+			try {
+				projectIdResolver.getExternalProjectId(template.getProjectId()); // Throws AccessDeniedException if user is not permissioned on Project
+				orderedTemplates.add(template);
+			} catch (AccessDeniedException ex) {
+				// Don't add the template if user is not permissioned for the project.
 			}
 		}
-		return orderedEntities;
+		return orderedTemplates;
+	}
+	
+	public List<WebHookPayloadTemplate> getRegisteredPermissionedTemplatesForProject(SProject project){
+		List<WebHookPayloadTemplate> orderedTemplates = new ArrayList<>();
+		for (WebHookPayloadTemplate template : orderedTemplateCollection) {
+			if (project.getProjectId().equals(template.getProjectId())) {
+				try {
+					projectIdResolver.getExternalProjectId(template.getProjectId()); // Throws AccessDeniedException if user is not permissioned on Project
+					orderedTemplates.add(template);
+				} catch (AccessDeniedException ex) {
+					// Don't add the template if user is not permissioned for the project.
+				}
+			}
+		}
+		return orderedTemplates;
+	}
+	
+	public Map<String,List<WebHookPayloadTemplate>> getRegisteredTemplatesForProjects(List<String> projectExternalIds) {
+		Map<String, List<WebHookPayloadTemplate>> projectTemplates = new LinkedHashMap<>();
+		getRegisteredTemplates().forEach(template -> {
+			if (projectExternalIds.contains(template.getProjectId())) {
+				projectTemplates.putIfAbsent(template.getProjectId(), new ArrayList<WebHookPayloadTemplate>());
+				projectTemplates.get(template.getProjectId()).add(template);
+			}
+		});
+		return projectTemplates;
+	}
+	
+	public List<WebHookTemplateConfig> getRegisteredPermissionedTemplateConfigs(){
+		List<WebHookTemplateConfig> orderedTemplateConfigs = new ArrayList<>();
+		for (WebHookPayloadTemplate xmlConfig : getRegisteredPermissionedTemplates()){
+			if (xmlConfig.getAsEntity()!=null){
+				orderedTemplateConfigs.add(WebHookTemplateConfigBuilder.buildConfig(xmlConfig.getAsEntity()));
+			}
+		}
+		return orderedTemplateConfigs;
 	}
 
 	public TemplateState getTemplateState(String template, TemplateState templateState){
@@ -205,10 +257,11 @@ public class WebHookTemplateManager {
 		return TemplateState.UNKNOWN;
 	}
 	
-	public static enum TemplateState {
+	public enum TemplateState {
 		PROVIDED 		("Template bundled with tcWebhooks"), 
 		USER_DEFINED 	("User defined template"), 
 		USER_OVERRIDDEN ("Overridden by user defined template"), 
+		PROJECT_DEFINED ("Template associated with project"),
 		BEST			("Template in its most specific state"), // Only used for finding. Template will never actually be in this state. 
 		UNKNOWN			("Unknown origin");
 		

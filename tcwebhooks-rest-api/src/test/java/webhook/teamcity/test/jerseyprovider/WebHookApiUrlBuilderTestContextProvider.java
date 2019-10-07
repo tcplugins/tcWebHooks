@@ -6,6 +6,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import jetbrains.buildServer.server.rest.PathTransformer;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.request.Constants;
 

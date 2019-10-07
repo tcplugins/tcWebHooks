@@ -42,6 +42,10 @@ public class WebHookTemplateConfigBuilder {
 		if (entity.getPreferredDateTimeFormat() != null) {
 			config.setPreferredDateTimeFormat(entity.getPreferredDateTimeFormat());
 		}
+		
+		if (entity.getAssociatedProjectId() != null) {
+			config.setProjectInternalId(entity.getAssociatedProjectId());
+		}
 
 		if (entity.getFormat() != null) {
 			config.setFormat(entity.getFormat());

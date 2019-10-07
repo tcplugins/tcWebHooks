@@ -21,6 +21,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 public class EditTemplateRenderingBean {
 	
 	String templateId;
+	String projectExternalId;
 	int rank;
 	String dateFormat;
 	String templateDescription;
@@ -39,9 +40,10 @@ public class EditTemplateRenderingBean {
 		}
 	}
 
-	public static EditTemplateRenderingBean build(WebHookTemplateConfig config, TemplateState templateState) {
+	public static EditTemplateRenderingBean build(WebHookTemplateConfig config, TemplateState templateState, String projectExternalId) {
 		EditTemplateRenderingBean bean = builder()
 										 .templateId(config.getId())
+										 .projectExternalId(projectExternalId)
 										 .rank(config.getRank())
 										 .dateFormat(config.getPreferredDateTimeFormat())
 										 .templateDescription(config.getTemplateDescription())

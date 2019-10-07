@@ -30,7 +30,7 @@ public class DiscordComWebHookTemplateTest extends AbstractSpringTemplateTest {
 	
 	@Override
 	public WebHookPayloadTemplate getTemplateInstance() {
-		return new DiscordComXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
+		return new DiscordComXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 	}
 	
 

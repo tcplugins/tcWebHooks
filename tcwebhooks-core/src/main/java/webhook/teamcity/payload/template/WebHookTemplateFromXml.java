@@ -26,6 +26,7 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	protected WebHookTemplateManager templateManager;
 	private int rank = 10; // Default to 10.
 	private String id = "";
+	private String projectId = "";
 	private String toolTipText = "";
 	private String description = "";
 	private String preferredDateTimeFormat = "";
@@ -85,6 +86,14 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 		this.id = id;
 	}
 
+	public String getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
+	}
+
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {
 		for (String format : supportedFormats){
@@ -127,6 +136,7 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 		template.entity = entityTemplate;
 		template.setRank(entityTemplate.getRank());
 		template.setTemplateId(entityTemplate.getId());
+		template.setProjectId(entityTemplate.getAssociatedProjectId());
 		template.setPreferredDateTimeFormat(entityTemplate.getPreferredDateTimeFormat());
 		
 		if (entityTemplate.getTemplateDescription() != null){

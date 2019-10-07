@@ -947,6 +947,31 @@ WebHooksPlugin = {
     	formElement: function () {
     		return $('editTemplateForm');
     	},
+    	
+    	loadProjectList: function () {
+    		$j("#templateDialogProjectSelect").append($j('<option></option>').val(null).text("Loading project list..."))
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/projects',
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					var myselect = $j('#templateDialogProjectSelect');
+					myselect.empty().append( $j('<option></option>').val(null).text("Choose a Project...") );
+					$j(response.project).each(function(index, project) {
+						if (project.id === '_Root') {
+							myselect.append( $j('<option></option>').val(project.id).text(project.id) );
+						} else {
+							myselect.append( $j('<option></option>').val(project.id).text(project.name) );
+						}
+					});
+				},
+				error: function (response) {
+					WebHooksPlugin.handleAjaxError(dialog, response);
+				}
+			});
+    	},
 
     	showDialog: function (title, action, templateId) {
 
@@ -978,6 +1003,7 @@ WebHooksPlugin = {
 			$j("#editTemplateForm input[id='template.rank']").val(myJson.rank);
 			$j("#editTemplateForm input[id='template.dateFormat']").val(myJson.preferredDateFormat);
 			$j("#editTemplateForm select#payloadFormat").val(myJson.format);
+			$j("#editTemplateForm select#templateDialogProjectSelect").val(myJson.projectId);
 		},
 
     	cleanFields: function () {
@@ -1011,7 +1037,7 @@ WebHooksPlugin = {
 			var URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=**';
 
 			if (action == "editTemplate") {
-				URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$short'
+				URL = window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId  + '?fields=$short,projectId,rank'
 			}
 
     		$j.ajax ({
@@ -1049,6 +1075,7 @@ WebHooksPlugin = {
 			myJson.rank = $j("#editTemplateForm input[id='template.rank']").val();
 			myJson.preferredDateFormat = $j("#editTemplateForm input[id='template.dateFormat']").val();
 			myJson.format = $j("#editTemplateForm select#payloadFormat").val()
+			myJson.projectId = $j("#editTemplateForm select#templateDialogProjectSelect").val()
 
     		$j.ajax ({
     			url: URL,
@@ -1078,3 +1105,8 @@ WebHooksPlugin = {
     	}
     }))
 };
+
+$j(function() {
+	// Load the project list on page load.
+	WebHooksPlugin.EditTemplateDialog.loadProjectList();
+});

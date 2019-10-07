@@ -29,7 +29,7 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
-		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager());
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager(), framework.getServer().getProjectManager());
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
 		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(TemplatesAndProjectWebHooksBean.build(template, webhooksConfig, authBean)));
 	}
@@ -39,7 +39,7 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
-		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager());
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager(), framework.getServer().getProjectManager());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
 		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
@@ -51,7 +51,7 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-specific-builds.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
-		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager());
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager(), framework.getServer().getProjectManager());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
 		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
@@ -64,7 +64,7 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
-		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager());
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager(), framework.getServer().getProjectManager());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
 		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));
@@ -77,7 +77,7 @@ public class ProjectWebHooksBeanTest {
 		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
 		ProjectWebHooksBean webhooksConfig = ProjectWebHooksBean.build(framework.getWebHookProjectSettings() ,framework.getServer().getProjectManager().findProjectById("project01"), framework.getWebHookPayloadManager().getRegisteredFormatsAsCollection(), framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")));
-		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager());
+		RegisteredWebHookTemplateBean template = RegisteredWebHookTemplateBean.build(framework.getWebHookTemplateResolver().findWebHookTemplatesForProject(framework.getServer().getProjectManager().findProjectById("project01")), framework.getWebHookPayloadManager().getRegisteredFormats(), framework.getWebHookSettingsManager(), framework.getServer().getProjectManager());
 		ProjectHistoryBean history = ProjectHistoryResolver.getProjectHistory(framework.getServer().getProjectManager().findProjectById("project01"));
 		RegisteredWebhookAuthenticationTypesBean authBean = RegisteredWebhookAuthenticationTypesBean.build(framework.getWebHookAuthenticatorProvider());
 		System.out.println(ProjectWebHooksBeanGsonSerialiser.serialise(history));

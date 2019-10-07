@@ -69,7 +69,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	newTemplate.format = "jsontemplate";
     	newTemplate.rank = 500;
 
-    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplate);
+    	webResource.path(API_TEMPLATES_URL + "/_Root").accept(MediaType.APPLICATION_JSON_TYPE).post(newTemplate);
     	Templates updatedResponse = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
     	assertTrue(updatedResponse.count == 1);
 
@@ -97,7 +97,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     @Test
     public void testCreateTemplateItemOnExistingTempalteUsingJson() {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();
@@ -122,7 +122,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     @Test(expected=UniformInterfaceException.class)
     public void testCreateDefaultTemplateItemFailsUsingJsonWhenDefaultTemplateAlreadyExists() {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();
@@ -143,7 +143,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     @Test
     public void testCreateTemplateByRequestingAnExistingTemplateAndThenSubmittingItWithANewTemplateName() {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();
@@ -153,7 +153,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     	
     	templateResponse.id  ="newElastic";
     	
-    	webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).post(templateResponse);
+    	webResource.path(API_TEMPLATES_URL + "/_Root").accept(MediaType.APPLICATION_JSON_TYPE).post(templateResponse);
     	
     	Template createdTemplateResponse = webResource.path(API_TEMPLATES_URL + "/id:newElastic").queryParam("fields","**").accept(MediaType.APPLICATION_JSON_TYPE).get(Template.class);
     	prettyPrint(createdTemplateResponse);

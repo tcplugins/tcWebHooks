@@ -7,8 +7,13 @@ WebHooksPlugin = {
 					dialog.ajaxError(errorMsg)
 				});
 			}
+		} else if (response.status === 403) {
+			alert("You are not permissioned to perform this operation. Message is: " + response.responseText);
 		} else {
-		  alert(response);
+			console.log("----- begin webhooks AJAX error response -----")
+			console.log(response);
+			console.log("----- end webhooks AJAX error response -----")
+			alert("An unexpected error occured. Please see your browser's javascript console.");
 		}
 	},
     addTemplate: function(data) {
@@ -52,7 +57,38 @@ WebHooksPlugin = {
     		$j("#addTemplateForm .templateShort").hide();
     		$j("#addTemplateForm .templateDetails").show();
     		this.showCentered();
+    		this.loadProjectList();
     	},
+    	
+    	loadProjectList: function () {
+    		$j("#templateDialogProjectSelect").append($j('<option></option>').val(null).text("Loading project list..."))
+			$j.ajax ({
+				url: window['base_uri'] + '/app/rest/projects',
+				type: "GET",
+				headers : {
+					'Accept' : 'application/json'
+				},
+				success: function (response) {
+					var myselect = $j('#templateDialogProjectSelect');
+					var myselect2 = $j('#templateImportDialogProjectSelect');
+					
+					myselect.empty().append( $j('<option></option>').val(null).text("Choose a Project...") );
+					myselect2.empty().append( $j('<option></option>').val(null).text("Choose a Project...") );
+					$j(response.project).each(function(index, project) {
+						if (project.id === '_Root') {
+							myselect.append( $j('<option></option>').val(project.id).text(project.id) );
+							myselect2.append( $j('<option></option>').val(project.id).text(project.id) );
+						} else {
+							myselect.append( $j('<option></option>').val(project.id).text(project.name) );
+							myselect2.append( $j('<option></option>').val(project.id).text(project.name) );
+						}
+					});
+				},
+				error: function (response) {
+					WebHooksPlugin.handleAjaxError(dialog, response);
+				}
+			});
+    	},    	
 
     	cleanFields: function (data) {
     		this.cleanErrors();
@@ -94,7 +130,7 @@ WebHooksPlugin = {
     		};
 
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/templates',
+    			url: window['base_uri'] + '/app/rest/webhooks/templates/' + $j("#addTemplateForm select#templateDialogProjectSelect").val(),
     			type: "POST",
 				data: JSON.stringify(myJsonContent),
 				dataType: 'json',
@@ -107,8 +143,8 @@ WebHooksPlugin = {
     				window.location = window['base_uri'] + '/webhooks/template.html?template=' + myJsonContent.id;
     			},
     			error: function (response) {
-    				console.log(response);
-    				WebHooksPlugin.handleAjaxError(dialog, response);
+					console.log(response);
+					WebHooksPlugin.handleAjaxError(dialog, response);
     			}
     		});
 
@@ -196,8 +232,10 @@ WebHooksPlugin = {
 								"using this template will use the new template.");
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
-					if (xhr.status == 404) {
-						$j("#fs-uploaded .template-status").html("No template with this ID exists. Importing this template will create a new template.");
+					if (xhr.status == 403) {
+						$j("#fs-uploaded .template-status").html("A template with this ID already exists in a project you are not permissioned to see.");
+					}  else if (xhr.status == 404) {
+							$j("#fs-uploaded .template-status").html("No template with this ID exists. Importing this template will create a new template.");
 					} else {
 						console.log(xhr);
 						console.log(ajaxOptions);
@@ -209,7 +247,9 @@ WebHooksPlugin = {
 
     	validateTemplate: function (template) {
     		return (
-    				template.id && template.format && template.rank
+    				typeof template.id !== 'undefined'
+    			&&  typeof template.format !== 'undefined' 
+    			&&  typeof template.rank !== 'undefined'
     				);
     	},
 
@@ -227,6 +267,7 @@ WebHooksPlugin = {
 
     		var dialog = this;
     		var templateId = templateJson.id;
+    		templateJson.projectId = $j("#importTemplateForm select#templateImportDialogProjectSelect").val();
 
 			$j.ajax ({
 				url: window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId,
@@ -238,8 +279,10 @@ WebHooksPlugin = {
 					dialog.sendTemplate(dialog, templateJson, "PUT", window['base_uri'] + '/app/rest/webhooks/templates/id:' + templateId);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
-					if (xhr.status == 404) {
-						dialog.sendTemplate(dialog, templateJson, "POST", window['base_uri'] + '/app/rest/webhooks/templates');
+					if (xhr.status == 403) {
+						dialog.ajaxError(xhr.responseText);
+					} else if (xhr.status == 404) {
+						dialog.sendTemplate(dialog, templateJson, "POST", window['base_uri'] + '/app/rest/webhooks/templates/' + $j("#importTemplateForm select#templateImportDialogProjectSelect").val());
 					} else {
 						console.log(xhr);
 						console.log(ajaxOptions);
@@ -291,9 +334,15 @@ WebHooksPlugin = {
     				dialog.close();
     				window.location = window['base_uri'] + '/webhooks/template.html?template=' + template.id;
     			},
-    			error: function (response) {
-    				console.log(response);
-    				WebHooksPlugin.handleAjaxError(dialog, response);
+    			error: function (xhr, ajaxOptions, thrownError) {
+    				if (xhr.status == 403)  {
+    					dialog.ajaxError("You are not permissioned to perform this operation. <br> " + xhr.responseText);
+    				} else if (xhr.status == 405)  {
+    					dialog.ajaxError("Please choose a valid Project.");
+    				} else {
+	    				console.log(xhr);
+	    				WebHooksPlugin.handleAjaxError(dialog, xhr);
+    				}
     			}
     		});
 
@@ -343,5 +392,7 @@ $j(function() {
 	    }
 	}, false);
 
+	//Load the project list on page load.
+	WebHooksPlugin.AddTemplateDialog.loadProjectList();
 });
 

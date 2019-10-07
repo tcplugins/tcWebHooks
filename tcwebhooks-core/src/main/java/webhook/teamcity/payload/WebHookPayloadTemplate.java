@@ -7,7 +7,7 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public interface WebHookPayloadTemplate {
-
+	
 	/** 
 	 * Sets the TemplateManager so that register() can register this template with that webHookTemplateManager.
 	 * 
@@ -55,6 +55,15 @@ public interface WebHookPayloadTemplate {
 	 * @return	Text for uniquely referring to the template type. eg, "elasticsearch".
 	 */
 	String getTemplateId();
+	
+	/**
+	 * Returns the externalProjectId of the project this template is associated to.
+	 * Most templates will be "_Root" but some may be associated with a specific project
+	 * and hence only available to webhooks from that project or sub-projects;
+	 * 
+	 * @return The externalProjectId of the associated TeamCity Project.
+	 */
+	String getProjectId();
 	
 	/**
 	 * Asks if this template can provide a set of templates for this format.
@@ -113,8 +122,8 @@ public interface WebHookPayloadTemplate {
 	
 	/**
 	 * Get the list of BuildStates for which we have {@link WebHookTemplateContent} content.<br>
-	 * This method expected to be called to resolve templates for builds that are running
-	 * from a VCS is that not branch aware.<br> 
+	 * This method is expected to be called to resolve templates for builds that are running
+	 * from a VCS that is not branch aware.<br> 
 	 * A "branch aware VCS" is one which TeamCity has knowledge about regarding branches. Eg. Git and Mecurial. 
 	 * 
 	 * @return A set of templates that don't contain branch information.
@@ -124,11 +133,11 @@ public interface WebHookPayloadTemplate {
 	
 	/**
 	 * Get the list of BuildStates for which we have {@link WebHookTemplateContent} content.<br>
-	 * This method expected to be called to resolve templates for builds that are running
-	 * from a VCS is that is branch aware.<br> 
+	 * This method id expected to be called to resolve templates for builds that are running
+	 * from a VCS that is branch aware.<br> 
 	 * A "branch aware VCS" is one which TeamCity has knowledge about regarding branches. Eg. Git and Mecurial.
 	 * 
-	 * @return A set of templates that contain branch information.
+	 * @return A set of templates that do contain branch information.
 	 * 
 	 */
 	Set<BuildStateEnum> getSupportedBranchBuildStates();
@@ -141,7 +150,19 @@ public interface WebHookPayloadTemplate {
 	 */
 	String getPreferredDateTimeFormat();
 	
+	/**
+	 * Get the template as a {@link WebHookTemplateEntity} so that it can be persisted in the 
+	 * <code>webhook-templates.xml</code> file.
+	 *  
+	 * @return The template as an XML friendly entity. 
+	 */
 	WebHookTemplateEntity getAsEntity();
 	
+	/**
+	 * Get the template as a {@link WebHookTemplateConfig} object. Typically this will be a
+	 * copy of the object, not a reference. 
+	 * 
+	 * @return The template as a standard config object. 
+	 */
 	WebHookTemplateConfig getAsConfig();
 }

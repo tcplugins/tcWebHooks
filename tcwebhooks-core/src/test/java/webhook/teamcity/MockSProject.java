@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jdom.Element;
+import org.mockito.Mockito;
 
 import jetbrains.buildServer.BuildProject;
 import jetbrains.buildServer.BuildTypeDescriptor.CheckoutType;
@@ -63,6 +64,11 @@ public class MockSProject implements SProject {
 		this.projectId = projectId;
 		this.projectExternalId = projectExternalId;
 		this.buildType = buildType;
+		
+		SProject root = Mockito.mock(SProject.class);
+		Mockito.when(root.getProjectId()).thenReturn("_Root");
+		Mockito.when(root.getExternalId()).thenReturn("_Root");
+		this.parentPath.add(root);
 		this.parentPath.add(this);
 		addANewBuildTypeToTheMock(buildType);
 	}

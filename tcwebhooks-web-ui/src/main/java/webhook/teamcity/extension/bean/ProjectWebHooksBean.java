@@ -10,6 +10,7 @@ import java.util.Set;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import lombok.Getter;
+import webhook.Constants;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
@@ -176,14 +177,14 @@ public class ProjectWebHooksBean {
 	}
 
 	private String getSensibleProjectName(SProject project){
-		if (project.getProjectId().equals("_Root")) {
+		if (project.getProjectId().equals(Constants.ROOT_PROJECT_ID)) {
 			return project.getProjectId();
 		}
 		return project.getName();
 	}
 
 	private String getSensibleProjectFullName(SProject project){
-		if (project.getProjectId().equals("_Root")) {
+		if (project.getProjectId().equals(Constants.ROOT_PROJECT_ID)) {
 			return project.getProjectId();
 		}
 		return project.getFullName();

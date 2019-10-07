@@ -33,7 +33,9 @@ public class SlackComCompactTest {
 		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(
 														framework.getWebHookTemplateManager(), 
 														framework.getWebHookPayloadManager(), 
-														framework.getWebHookTemplateJaxHelper());
+														framework.getWebHookTemplateJaxHelper(),
+														framework.getProjectIdResolver(),
+														null);
 		slackCompact.register();
 		framework.getWebHookTemplateManager().registerTemplateFormatFromSpring(slackCompact);
 		
@@ -54,7 +56,9 @@ public class SlackComCompactTest {
 		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(
 				framework.getWebHookTemplateManager(), 
 				framework.getWebHookPayloadManager(), 
-				framework.getWebHookTemplateJaxHelper());
+				framework.getWebHookTemplateJaxHelper(),
+				framework.getProjectIdResolver(),
+				null);
 		slackCompact.register();
 		framework.getWebHookTemplateManager().registerTemplateFormatFromSpring(slackCompact);
 		

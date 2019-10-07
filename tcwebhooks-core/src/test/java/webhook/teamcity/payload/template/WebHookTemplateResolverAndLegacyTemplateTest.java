@@ -26,7 +26,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		SBuildType build = new MockSBuildType("test", "something else", "build01");
 		SProject project = new MockSProject("test", "something", "project01", "MyProject", build);
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl(), null);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager, payloadManager);
 		
 		WebHookPayloadTemplate template = new LegacyEmptyWebHookTemplate(templateManager);
@@ -48,7 +48,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		SBuildType build = new MockSBuildType("test", "something else", "build01");
 		SProject project = new MockSProject("test", "something", "project01", "MyProject", build);
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl(), null);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager, payloadManager);
 		
 		WebHookPayloadTemplate template = new LegacyJsonWebHookTemplate(templateManager);
@@ -70,7 +70,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		SBuildType build = new MockSBuildType("test", "something else", "build01");
 		SProject project = new MockSProject("test", "something", "project01", "MyProject", build);
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl(), null);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager, payloadManager);
 		
 		WebHookPayloadTemplate template = new LegacyNameValuePairsWebHookTemplate(templateManager);
@@ -92,7 +92,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		SBuildType build = new MockSBuildType("test", "something else", "build01");
 		SProject project = new MockSProject("test", "something", "project01", "MyProject", build);
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl(), null);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager, payloadManager);
 		
 		WebHookPayloadTemplate template = new LegacyTailoredJsonWebHookTemplate(templateManager);
@@ -114,7 +114,7 @@ public class WebHookTemplateResolverAndLegacyTemplateTest {
 		SBuildType build = new MockSBuildType("test", "something else", "build01");
 		SProject project = new MockSProject("test", "something", "project01", "MyProject", build);
 		WebHookPayloadManager payloadManager = new WebHookPayloadManager(server);
-		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateManager templateManager = new WebHookTemplateManager(payloadManager, new WebHookTemplateJaxHelperImpl(), null);
 		WebHookTemplateResolver resolver = new WebHookTemplateResolver(templateManager, payloadManager);
 		
 		WebHookPayloadTemplate template = new LegacyXmlWebHookTemplate(templateManager);

@@ -7,8 +7,12 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import webhook.Constants;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.DeferrableService;
+import webhook.teamcity.DeferrableServiceManager;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -18,18 +22,40 @@ import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
-public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
+/**
+ * Abstract class to handle loading a template from an XML file.
+ * This is intended to be used by Bundled templates that want
+ * to store their template configuration as an XML Entity
+ * in the same format as is represented by the 
+ * <code>webhook-templates.xml</code> file. 
+ * <p>
+ * Note: This is NOT for templates that are instantiated from
+ * the <code>webhook-templates.xml</code> file. 
+ */
+public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate, DeferrableService {
 
 	protected WebHookPayloadManager payloadManager;
 	protected WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 	private WebHookTemplateFromXml template;
 	protected WebHookTemplateManager templateManager;
 	private Integer rank;
+	private ProjectIdResolver projectIdResolver;
+	private DeferrableServiceManager deferrableServiceManager;
 
-	public AbstractXmlBasedWebHookTemplate(WebHookTemplateManager templateManager, WebHookPayloadManager payloadManager, WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
+	public AbstractXmlBasedWebHookTemplate(
+			WebHookTemplateManager templateManager, WebHookPayloadManager payloadManager, 
+			WebHookTemplateJaxHelper webHookTemplateJaxHelper, ProjectIdResolver projectIdResolver, 
+			DeferrableServiceManager deferrableServiceManager) {
 		this.templateManager = templateManager;
 		this.payloadManager = payloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
+		this.projectIdResolver = projectIdResolver;
+		this.deferrableServiceManager = deferrableServiceManager;
+	}
+	
+	@Override
+	public void requestDeferredRegistration() {
+		this.deferrableServiceManager.registerService(this);
 	}
 
 	/**
@@ -41,7 +67,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 		
 		template = (WebHookTemplateFromXml) WebHookTemplateFromXml.build(loadTemplateFromXmlFile(), payloadManager);
 		
-		// Is rank is set by spring initialisation then use that value
+		// If rank is set by spring initialisation then use that value
 		// rather than the one in the XML file.
 		
 		if (this.rank != null){
@@ -50,7 +76,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 			this.setRank(template.getRank());
 		}
 		
-		
+		template.setProjectId(this.projectIdResolver.getInternalProjectId(Constants.ROOT_PROJECT_ID));
 		
 		if (!template.templateContent.isEmpty() && !template.branchTemplateContent.isEmpty()){
 			this.templateManager.registerTemplateFormatFromSpring(template);
@@ -130,6 +156,11 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	@Override
 	public String getTemplateId() {
 		return template.getTemplateId();
+	}
+	
+	@Override
+	public String getProjectId() {
+		return Constants.ROOT_PROJECT_ID;
 	}
 
 	@Override

@@ -17,6 +17,7 @@ import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
+import webhook.Constants;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
@@ -107,7 +108,7 @@ public class WebHookIndexPageController extends BaseController {
 			    	
 			    	params.put("webHookCount", projSettings.getWebHooksCount());
 			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-							myManager.getRegisteredFormats(), mySettings).getTemplateList());
+							myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()).getTemplateList());
 			    	
 			    	if (projSettings.getWebHooksCount() == 0){
 			    		params.put("noWebHooks", "true");
@@ -115,7 +116,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats(), mySettings), 
+																			myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
@@ -142,7 +143,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats(), mySettings), 
+																			myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()), 
 										ProjectWebHooksBean.build(projSettings, 
 																	project, 
 																	myManager.getRegisteredFormatsAsCollection(),
@@ -179,7 +180,7 @@ public class WebHookIndexPageController extends BaseController {
 				    	
 			    		params.put("webHookList", bean);
 				    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-								myManager.getRegisteredFormats(), mySettings).getTemplateList());
+								myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()).getTemplateList());
 				    	params.put("webHooksDisabled", !projSettings.isEnabled());
 				    	params.put("projectId", project.getProjectId());
 				    	params.put("haveProject", "true");
@@ -195,7 +196,7 @@ public class WebHookIndexPageController extends BaseController {
 			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 								TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats(), mySettings), 
+																			myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()), 
 										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
 																	myTemplateResolver.findWebHookTemplatesForProject(project)
 																	),
@@ -218,7 +219,7 @@ public class WebHookIndexPageController extends BaseController {
 	    }
 
 		private String getProjectName(String externalProjectId, String name) {
-			if (externalProjectId.equalsIgnoreCase("_Root")){
+			if (externalProjectId.equalsIgnoreCase(Constants.ROOT_PROJECT_ID)){
 				return externalProjectId;
 			}
 			return name;

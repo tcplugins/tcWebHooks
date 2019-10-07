@@ -10,6 +10,8 @@ public class WebHookTemplateConfigWrapper {
 	
 	private WebHookTemplateConfig templateConfig;
 	
+	private String externalProjectId;
+	
 	private WebHookTemplateManager.TemplateState status;
 	
 	private WebHookTemplateStates buildStatesWithTemplate; 

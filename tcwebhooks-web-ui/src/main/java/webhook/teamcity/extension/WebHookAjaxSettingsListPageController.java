@@ -69,7 +69,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
 		    													TemplatesAndProjectWebHooksBean.build(
 		    															RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-		    																								myManager.getRegisteredFormats(), mySettings), 
+		    																								myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()), 
 		    															ProjectWebHooksBean.build(projSettings, 
 		    																						project, 
 		    																						myManager.getRegisteredFormatsAsCollection(),
@@ -92,7 +92,7 @@ public class WebHookAjaxSettingsListPageController extends BaseController {
 		        				TemplatesAndProjectWebHooksBean.build(
 										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
 																			myManager.getRegisteredFormats(),
-																			mySettings
+																			mySettings, myServer.getProjectManager()
 																			),
 										ProjectWebHooksBean.build(projSettings, sBuildType, project, 
 																			myManager.getRegisteredFormatsAsCollection(), 

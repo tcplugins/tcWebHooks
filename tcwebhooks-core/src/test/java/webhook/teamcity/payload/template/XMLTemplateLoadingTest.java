@@ -13,6 +13,7 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateFileChangeHandler;
@@ -24,16 +25,17 @@ public class XMLTemplateLoadingTest {
 	SBuildServer mockServer = mock(SBuildServer.class);
 	WebHookTemplateManager wtm;
 	WebHookPayloadManager wpm;
+	ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	
 	@Test
 	public void TestXmlBranchAndNonBranchTemplatesViaChangeListener(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wpm = new WebHookPayloadManager(mockServer);
-		wtm = new WebHookTemplateManager(wpm, new WebHookTemplateJaxHelperImpl());
+		wtm = new WebHookTemplateManager(wpm, new WebHookTemplateJaxHelperImpl(), projectIdResolver);
 		
 		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
 		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplate"));
-		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl());
+		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl(), null);
 		changeListener.register();
 		changeListener.handleConfigFileChange();
 		

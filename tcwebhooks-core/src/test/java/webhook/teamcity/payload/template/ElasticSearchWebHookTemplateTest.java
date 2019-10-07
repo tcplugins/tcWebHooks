@@ -35,7 +35,7 @@ public class ElasticSearchWebHookTemplateTest extends AbstractSpringTemplateTest
 
 	@Override
 	public WebHookPayloadTemplate getTemplateInstance() {
-		return new ElasticSearchXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
+		return new ElasticSearchXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 	}
 	
 	

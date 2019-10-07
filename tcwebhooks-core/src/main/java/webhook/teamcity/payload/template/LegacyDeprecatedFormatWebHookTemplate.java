@@ -3,6 +3,7 @@ package webhook.teamcity.payload.template;
 import java.util.HashSet;
 import java.util.Set;
 
+import webhook.Constants;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
@@ -75,6 +76,15 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 		config.setRank(getRank());
 		config.setId(getTemplateId());
 		return config;
+	}
+
+	/** 
+	 * Legacy Formats will always return "_Root", since they are global 
+	 * and not able to be overridden.
+	 */
+	@Override
+	public String getProjectId() {
+		return Constants.ROOT_PROJECT_ID;
 	}
 
 }

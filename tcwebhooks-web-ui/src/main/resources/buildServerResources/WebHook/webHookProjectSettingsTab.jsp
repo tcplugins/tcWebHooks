@@ -2,16 +2,42 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
 <%@ include file="/include-internal.jsp" %>
+
+<style>
+ul.commalist {
+  display: inline;
+  list-style: none;
+  padding:0;
+
+}
+
+ul.commalist li {
+  display: inline;
+  white-space:nowrap;
+}
+
+ul.commalist li:after {
+  content: ", ";
+}
+
+ul.commalist li:last-child:after {
+    content: "";
+}
+</style>
 	<div>
-		<h2>WebHooks</h2>
+		<h2>WebHooks and Templates</h2>
 		${permissionError}
-		<c:if test="${fn:length(parentProjectBeans) > 0}" >
-			<h3>WebHooks in parent Projects</h3>
-			WebHooks from parent projects may also be executed for builds in this project. Parent projects have the following webhooks:
+		<c:if test="${fn:length(projectWebHooksAndTemplates) > 0}" >
+			<h3>WebHooks and Templates in parent Projects</h3>
+			WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.
+			Parent projects have the following webhooks and templates:
 			<table class="highlightable parametersTable">
-				<tr><th class="name" style="width:75%">Project Name</th><th>WebHook Count</th></tr>
-			<c:forEach items="${parentProjectBeans}" var="parent">
-				<tr><td><a href="../webhooks/index.html?projectId=${parent.externalProjectId}"><c:out value="${parent.sensibleProjectName}"/></a></td><td>${fn:length(parent.webHookList)} webhooks configured</td></tr>
+				<tr><th class="name" style="width:60%">Project Name</th><th style="width:20%">WebHook Count</th><th style="width:20%">Template Count</th></tr>
+			<c:forEach items="${projectWebHooksAndTemplates}" var="parent">
+				<tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
+					<td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
+					<td>${fn:length(parent.templates.templateList)} templates available</td>
+				</tr>
 			</c:forEach>
 			</table>
 			<p><p>
@@ -64,4 +90,60 @@
 					</tbody>
 				</table>
 		</c:if>
+		
+		<p>
+		
+		<c:choose>
+			<c:when test="${projectExternalId == '_Root'}">
+				<h3>WebHook Templates available for every TeamCity build (_Root project)</h3>
+			</c:when>
+			<c:otherwise>
+				<h3>WebHook Templates available for <c:out value="${project.fullName}"/> and sub-projects</h3>
+			</c:otherwise>
+		</c:choose>
+
+		<c:if test="${fn:length(webHookTemplates) > 0}" >
+				<p>There are <strong>${fn:length(webHookTemplates)}</strong> Templates associated with this project.
+					<a href="../webhooks/templates.html?projectId=${projectExternalId}">View project Templates</a>.</p>
+			    <table id="webHookTemplateTable" class="settings">
+					<thead>
+					<tr style="background-color: rgb(245, 245, 245);">
+					<th class="">Description</th>
+					<th class="">Payload Format</th>
+					<th class="">Supported Build Events</th>
+					<th class="">Type</th>
+					<th class="value" colspan="3" style="width:20%;">Usage</th>
+					</tr>
+					</thead>
+					<tbody>
+					    <c:forEach items="${webHookTemplates}" var="template">
+						  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
+							<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)"><c:out value="${template.templateDescription}" /></td>
+							<td class="nowrap">${template.formatDescription}</td>
+							<td>
+								<ul class="commalist">
+								<c:forEach items="${template.supportedBuildEnumStates}" var="state">	
+									<li>${state.shortDescription}</li>
+								</c:forEach>
+								</ul>
+							</td>
+							<td class="nowrap">${template.templateState.description}</td>
+							
+							<td><a href="../webhooks/search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
+			
+					<c:choose>  
+			    		<c:when test="${template.templateDescription == 'Legacy Webhook'}"> 		
+							<td>No template available</td>
+						</c:when>
+						<c:otherwise>  		
+							<td><a href="../webhooks/template.html?template=${template.templateId}">View</a></td>
+						</c:otherwise>  
+					</c:choose>
+					
+						  </tr>	
+					    </c:forEach>
+					</tbody>
+				</table>
+		</c:if>		
+		
 	</div>

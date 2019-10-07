@@ -41,7 +41,6 @@
   <jsp:attribute name="quickLinks_include">
     <div class="toolbarItem">
 	    <c:set var="menuItems">
-		    <authz:authorize allPermissions="CHANGE_SERVER_SETTINGS">
 		      <jsp:body>
 		        <l:li>
 			      <a href="#" title="Edit Template Details" onclick="return WebHooksPlugin.editTemplateDetails('${webhookTemplateBean.templateId}'); return false">Edit template details...</a>
@@ -59,7 +58,6 @@
 			      <a href="#" title="Delete Template" onclick="WebHooksPlugin.deleteTemplate({ templateId: '${webhookTemplateBean.templateId}', templateState: '${webhookTemplateBean.templateState}', webHookCount: ${webHookCount} }); return false">Delete template...</a>
 		        </l:li>
 		      </jsp:body>
-		    </authz:authorize>
 		</c:set>
 		<c:if test="${not empty fn:trim(menuItems)}">
 		  <bs:actionsPopup controlId="prjActions${projectExternalId}"
@@ -110,24 +108,17 @@
     <bs:refreshable containerId="templateInfoContainer" pageUrl="${pageUrl}">
 
 	<bs:messages key="templateUpdateResult"/>
-		${webhookTemplateBean.templateState.description}
 	  <input type="hidden" name="action" id="WebhookTemplateaction" value=""/>
       <table class="settings parameterTable" id="webhookTemplateHeader">
         
         <tr>
-          <th style="width:15%;" title="Used to map WebHooks to their Template">Template Id:</th><td style="width:35%;">${webhookTemplateBean.templateId}</td>
+          <th style="width:15%;" title="Shown in the WebHook UI when choosing a Payload">Template Description:</th><td style="width:35%;"><c:out value="${webhookTemplateBean.templateDescription}"/></td>
+          <th style="width:15%;" title="Used to map WebHooks to their Template">Template Id:</th><td style="width:15%;">${webhookTemplateBean.templateId}</td>
           <th style="width:10%;" title="Determines Template ordering in the WebHook UI (smallest number first)">Rank:</th><td style="width:10%; border:none;">${webhookTemplateBean.rank}</td>
-          <c:choose>
-		  	<c:when test="${not empty webhookTemplateBean.dateFormat}">
-          	<th style="width:15%;" title="Used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none; white-space: pre;"><c:out value="${webhookTemplateBean.dateFormat}"/></td>
-          	</c:when>
-          	<c:otherwise>
-          	<th style="width:15%;">Date Format:</th><td style="border:none; white-space: pre;"><i>none</i></td>
-          	</c:otherwise>
-          </c:choose>
         </tr>
         <tr>
-          <th style="width:15%;" title="Shown in the WebHook UI when choosing a Payload">Template Description:</th><td style="width:35%;"><c:out value="${webhookTemplateBean.templateDescription}"/></td>
+          <th style="width:15%;" title="Project to which this Template belongs">Associatd Project:</th><td style="width:35%;">
+          	<a href="../project.html?projectId=<c:out value="${webhookTemplateBean.projectExternalId}"/>"><c:out value="${sProject.name}"/></a></td>
           <th style="width:15%;">Payload Format:</th><td style="width:15%;" colspan=1>${webhookTemplateBean.payloadFormat}</td>
           <th style="width:15%;" title="The number of webhooks using this template">Associated Webhooks:</th>
           <td style="width:15%;" colspan=1><a href="search.html?templateId=${webhookTemplateBean.templateId}">${webHookCount}&nbsp;webhook(s)</a></td>
@@ -147,13 +138,21 @@
            
           <c:choose>
 		  	<c:when test="${webhookTemplateBean.templateState.isStateUserOverridden()}">
-	          <td style="width:35%;" colspan=3><c:out value="${webhookTemplateBean.templateState.description}"/>. 
+	          <td style="width:15%;"><c:out value="${webhookTemplateBean.templateState.description}"/>. 
 	          <a href="./template-diff.html?template=${webhookTemplateBean.templateId}">Show differences</a></td>
           	</c:when>
           	<c:otherwise>
-	          <td style="width:35%;" colspan=3><c:out value="${webhookTemplateBean.templateState.description}"/></td>
+	          <td style="width:15%;"><c:out value="${webhookTemplateBean.templateState.description}"/></td>
           	</c:otherwise>
-          </c:choose>          
+          </c:choose>
+          <c:choose>
+		  	<c:when test="${not empty webhookTemplateBean.dateFormat}">
+          	<th style="width:15%;" title="Used as the default date format when now,currentTime,buildStartTime,buildFinishTime, is used in a template. Use a SimpleDateFormat compatible string.">Date Format:</th><td style="border:none; white-space: pre;"><c:out value="${webhookTemplateBean.dateFormat}"/></td>
+          	</c:when>
+          	<c:otherwise>
+          	<th style="width:15%;">Date Format:</th><td style="border:none; white-space: pre;"><i>none</i></td>
+          	</c:otherwise>
+          </c:choose>                    
         </tr>
       </table>
 
@@ -510,6 +509,15 @@
                         <div><input type="text" id="template.description" name="template.description"/></div>
                     </td>
                 </tr>
+                <tr class="templateDetails">
+                    <th>Associated Project<l:star/></th>
+                    <td>
+                        <div>
+                        <select id="templateDialogProjectSelect" name="template.projectId">
+                        </select>
+                        </div>
+                    </td>
+                </tr>                
                 <tr class="templateDetails">
                     <th>Tooltip</th>
                     <td>

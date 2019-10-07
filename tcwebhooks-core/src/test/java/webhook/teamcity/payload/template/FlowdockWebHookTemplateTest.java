@@ -29,7 +29,7 @@ public class FlowdockWebHookTemplateTest extends AbstractSpringTemplateTest {
 
 	@Override
 	public WebHookPayloadTemplate getTemplateInstance() {
-		return new FlowdockXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper);
+		return new FlowdockXmlWebHookTemplate(templateManager, payloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 	}
 
 	@Override
