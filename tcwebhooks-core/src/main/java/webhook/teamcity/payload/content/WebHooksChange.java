@@ -3,6 +3,8 @@ package webhook.teamcity.payload.content;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.vcs.SVcsModification;
 import jetbrains.buildServer.vcs.VcsFileModification;
 import jetbrains.buildServer.vcs.VcsRootInstance;
@@ -33,8 +35,10 @@ public class WebHooksChange {
 		change.setComment(modification.getDescription());
 		change.setUsername(modification.getUserName());
 		change.setVcsRoot(tryGetVcsRootName(modification));
-		for (VcsFileModification fileModification: modification.getChanges()){
-			change.files.add(fileModification.getRelativeFileName());
+		if (TeamCityProperties.getBooleanOrTrue("webhook.includeVcsFileModification")) {
+			for (VcsFileModification fileModification : modification.getChanges()) {
+				change.files.add(fileModification.getRelativeFileName());
+			}
 		}
 		return change;
 	}
