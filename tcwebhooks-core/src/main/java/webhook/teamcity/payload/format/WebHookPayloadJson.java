@@ -52,6 +52,7 @@ public class WebHookPayloadJson extends WebHookPayloadGeneric implements WebHook
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToJsonConvertor());
         xstream.registerConverter(new UserSingleValueConverter());
+        xstream.autodetectAnnotations(true);
         xstream.alias("build", WebHookPayloadContent.class);
         /* For some reason, the items are coming back as "@name" and "@value"
          * so strip those out with a regex.

@@ -61,6 +61,7 @@ public class WebHookPayloadXml extends WebHookPayloadGeneric {
 		XStream xstream = new XStream();
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.registerConverter(new ExtraParametersMapToXmlConvertor());
+        xstream.autodetectAnnotations(true);
         xstream.alias("build", WebHookPayloadContent.class);
 		return xstream.toXML(content);
 	}

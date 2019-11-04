@@ -19,6 +19,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.vcs.SVcsModification;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,9 @@ import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVaria
 import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHookPayloadContent {
+		private static final String MAX_CHANGE_FILE_LIST_SIZE = "maxChangeFileListSize";
+		private static final String WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE = "webhook." + MAX_CHANGE_FILE_LIST_SIZE;
+		
 		String buildStatus,
 		buildResult, buildResultPrevious, buildResultDelta,
 		notifyType,
@@ -81,6 +85,9 @@ public class WebHookPayloadContent {
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
+		@Getter private int maxChangeFileListSize = 100;
+		@Getter private boolean maxChangeFileListCountExceeded = false;
+		@Getter private int changeFileListCount = 0;
 		private List<WebHooksChanges> changes = new ArrayList<>();
 		private WebHookResponsibility responsibilityInfo;
 		private String pinEventUsername;
@@ -142,7 +149,7 @@ public class WebHookPayloadContent {
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
     		populateCommonContent(variableResolverFactory, server, sBuild, null, buildState, customTemplates);
-    		populateMessageAndText(sBuild, buildState, customTemplates);
+    		populateMessageAndText(sBuild, buildState);
     		populateArtifacts(sBuild);
     		if (username != null) {
     			this.pinEventUsername = username; 
@@ -172,7 +179,7 @@ public class WebHookPayloadContent {
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
     		populateCommonContent(variableResolverFactory, server, sRunningBuild, previousBuild, buildState, customTemplates);
-    		populateMessageAndText(sRunningBuild, buildState, customTemplates);
+    		populateMessageAndText(sRunningBuild, buildState);
     		populateArtifacts(sRunningBuild);
 		}
 
@@ -216,15 +223,15 @@ public class WebHookPayloadContent {
 			} catch (Exception e) {}
 			
 			if (responsibilityHolder.getSBuildType() != null) {
-				SBuildType buildType = responsibilityHolder.getSBuildType();
-				setBuildRunners(buildType.getBuildRunners());
-				setBuildFullName(buildType.getFullName());
-				setBuildName(buildType.getName());
-				setBuildTypeId(TeamCityIdResolver.getBuildTypeId(buildType));
-	    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(buildType));
-	    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(buildType));
-	    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
-	    		setMessage("Build " + buildType.getFullName()
+				SBuildType sBuildType = responsibilityHolder.getSBuildType();
+				setBuildRunners(sBuildType.getBuildRunners());
+				setBuildFullName(sBuildType.getFullName());
+				setBuildName(sBuildType.getName());
+				setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sBuildType));
+	    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(sBuildType));
+	    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(sBuildType));
+	    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + sBuildType.getBuildTypeId() + "&buildId=lastFinished");
+	    		setMessage("Build " + sBuildType.getFullName()
 	    		+ " has changed responsibility from " 
 	    		+ oldUser
 	    		+ " to "
@@ -233,7 +240,7 @@ public class WebHookPayloadContent {
 	    		+ getComment().trim()
 	    		+ "'"
 	    				);
-	    		setText(buildType.getFullName()
+	    		setText(sBuildType.getFullName()
 	    				+ " changed responsibility from " 
 	    				+ oldUser
 	    				+ " to "
@@ -292,14 +299,14 @@ public class WebHookPayloadContent {
 		}
 		
 		private void populateMessageAndText(SBuild sRunningBuild,
-				BuildStateEnum state, Map<String,String> templates) {
+				BuildStateEnum state) {
 			// Message is a long form message, for on webpages or in email.
     		setMessage("Build " + sRunningBuild.getBuildType().getFullName() 
     				+ " has " + state.getDescriptionSuffix() + ". This is build number " + sRunningBuild.getBuildNumber() 
     				+ ", has a status of \"" + this.buildResult + "\" and was triggered by " + sRunningBuild.getTriggeredBy().getAsString());
     		
 			// Text is designed to be shorter, for use in Text messages and the like.    		
-    		setText(sRunningBuild.getBuildType().getFullName().toString() 
+    		setText(sRunningBuild.getBuildType().getFullName() 
     				+ " has " + state.getDescriptionSuffix() + ". Status: " + this.buildResult);
 		}
 
@@ -361,7 +368,12 @@ public class WebHookPayloadContent {
     		setTriggeredBy(sBuild.getTriggeredBy().getAsString());
     		setComment(WebHooksComment.build(sBuild.getBuildComment()));
     		setTags(sBuild.getTags());
-    		setChanges(sBuild.getContainingChanges());
+    		int fileChangeCount = 0;
+    		for (SVcsModification mod : sBuild.getContainingChanges()) {
+    			fileChangeCount += mod.getChangeCount();
+    		}
+    		this.changeFileListCount = fileChangeCount;
+			setChanges(sBuild.getContainingChanges(), includeVcsFileList());
     		try {
     			if (sBuild.getBranch() != null){
 	    			setBranch(sBuild.getBranch());
@@ -378,10 +390,46 @@ public class WebHookPayloadContent {
     		setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
     		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
-			setBuildStatusHtml(variableResolverFactory, buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
+			setBuildStatusHtml(variableResolverFactory, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 			setBuildIsPersonal(sBuild.isPersonal());
 		}
 		
+		private boolean includeVcsFileList() {
+			// Firstly update the "maxChangeFileListSize" value from webhook config or build parameters.
+			if (extraParameters.containsKey(MAX_CHANGE_FILE_LIST_SIZE)) {
+				try {
+					this.maxChangeFileListSize = Integer.parseInt(extraParameters.get(MAX_CHANGE_FILE_LIST_SIZE));
+				} catch (NumberFormatException ex) {
+					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert 'maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+				}
+			} else if (teamcityProperties.containsKey(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE)) {
+				try {
+					this.maxChangeFileListSize = Integer.parseInt(teamcityProperties.get(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE));
+				} catch (NumberFormatException ex) {
+					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+				}
+			} else if (Objects.nonNull(TeamCityProperties.getPropertyOrNull(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE))){
+				try {
+					this.maxChangeFileListSize = Integer.parseInt(TeamCityProperties.getProperty(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE));
+				} catch (NumberFormatException ex) {
+					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert TeamCity global property 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+				}
+			}
+			
+			// If the value is negative, checking is disabled and maxChangeFileListSize is effectively unlimited.
+			if (this.maxChangeFileListSize < 0) {
+				this.maxChangeFileListCountExceeded = false;
+				return true;
+				
+			// Or calculate that the count we found is less then the preferred one.				
+			} else if (this.changeFileListCount > this.maxChangeFileListSize) { 
+				this.maxChangeFileListCountExceeded = true;
+				return false;
+			}
+			
+			return true;
+		}
+
 		public List<String> getBuildTags() {
 			return buildTags;
 		}
@@ -402,8 +450,8 @@ public class WebHookPayloadContent {
 			}
 		}
 		
-		private void setChanges(List<SVcsModification> modifications){
-			this.changes = WebHooksChangeBuilder.build(modifications);
+		private void setChanges(List<SVcsModification> modifications, boolean includeVcsFileModifications){
+			this.changes = WebHooksChangeBuilder.build(modifications, includeVcsFileModifications);
 		}
 		
 		public List<WebHooksChanges> getChanges(){
@@ -721,7 +769,7 @@ public class WebHookPayloadContent {
 		}
 
 		
-		private void setBuildStatusHtml(VariableResolverFactory variableResolverFactory, BuildStateEnum buildState, final String htmlStatusTemplate) {
+		private void setBuildStatusHtml(VariableResolverFactory variableResolverFactory, final String htmlStatusTemplate) {
 			
 			VariableMessageBuilder builder = variableResolverFactory.createVariableMessageBuilder(
 						htmlStatusTemplate, 
@@ -804,7 +852,7 @@ public class WebHookPayloadContent {
 		}
 		
 		public Map<String, ExtraParametersMap> getAllParameters(){
-			Map<String, ExtraParametersMap> allParameters = new LinkedHashMap<String, ExtraParametersMap>();
+			Map<String, ExtraParametersMap> allParameters = new LinkedHashMap<>();
 			
 			allParameters.put("teamcity", this.teamcityProperties);
 			allParameters.put("webhook", this.extraParameters);
@@ -818,9 +866,6 @@ public class WebHookPayloadContent {
 				VariableMessageBuilder builder;
 				VariableResolver resolver = variableResolverFactory.buildVariableResolver(new SimpleSerialiser(), this, getAllParameters());
 				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
-
-//				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(this.teamcityProperties);
-//				resolvedParametersMap.putAll(extraParameters);
 
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
 					builder = variableResolverFactory.createVariableMessageBuilder(entry.getValue(), resolver);
