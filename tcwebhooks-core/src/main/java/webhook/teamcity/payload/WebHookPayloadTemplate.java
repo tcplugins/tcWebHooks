@@ -57,6 +57,15 @@ public interface WebHookPayloadTemplate {
 	String getTemplateId();
 	
 	/**
+	 * Returns the externalProjectId of the project this template is associated to.
+	 * Most templates will be "_Root" but some may be associated with a specific project
+	 * and hence only available to webhooks from that project or sub-projects;
+	 * 
+	 * @return The externalProjectId of the associated TeamCity Project.
+	 */
+	String getProjectId();
+	
+	/**
 	 * Asks if this template can provide a set of templates for this format.
 	 * 
 	 * @return Whether this template is designed to return templates for this format;

@@ -11,7 +11,6 @@ import javax.xml.bind.JAXBException;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
-import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
@@ -205,10 +204,11 @@ public class WebHookTemplateManager {
 		return TemplateState.UNKNOWN;
 	}
 	
-	public static enum TemplateState {
+	public enum TemplateState {
 		PROVIDED 		("Template bundled with tcWebhooks"), 
 		USER_DEFINED 	("User defined template"), 
 		USER_OVERRIDDEN ("Overridden by user defined template"), 
+		PROJECT_DEFINED ("Template associated with project"),
 		BEST			("Template in its most specific state"), // Only used for finding. Template will never actually be in this state. 
 		UNKNOWN			("Unknown origin");
 		

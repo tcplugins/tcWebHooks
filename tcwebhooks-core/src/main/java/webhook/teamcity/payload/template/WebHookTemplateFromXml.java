@@ -26,6 +26,7 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	protected WebHookTemplateManager templateManager;
 	private int rank = 10; // Default to 10.
 	private String id = "";
+	private String projectId = "";
 	private String toolTipText = "";
 	private String description = "";
 	private String preferredDateTimeFormat = "";
@@ -83,6 +84,14 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 	
 	public void setTemplateId(String id){
 		this.id = id;
+	}
+
+	public String getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
 
 	@Override
