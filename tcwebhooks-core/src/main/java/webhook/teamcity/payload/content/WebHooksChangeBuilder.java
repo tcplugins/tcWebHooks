@@ -8,11 +8,11 @@ import jetbrains.buildServer.vcs.SVcsModification;
 public class WebHooksChangeBuilder{
 	private WebHooksChangeBuilder(){}
 	
-	public static List<WebHooksChanges> build (List<SVcsModification> mods){
+	public static List<WebHooksChanges> build (List<SVcsModification> mods, boolean includeVcsFileModifications){
 		List<WebHooksChanges> changes = new ArrayList<>();
 		
 		for (SVcsModification modification: mods){
-			changes.add(new WebHooksChanges(modification.getDisplayVersion(), WebHooksChange.build(modification)));
+			changes.add(new WebHooksChanges(modification.getDisplayVersion(), WebHooksChange.build(modification, includeVcsFileModifications)));
 		}
 		return changes;
 	}

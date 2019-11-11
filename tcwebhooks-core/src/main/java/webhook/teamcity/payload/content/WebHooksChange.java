@@ -28,19 +28,22 @@ public class WebHooksChange {
 		return vcsRoot.getName();
 	}
 
-	public static WebHooksChange build(SVcsModification modification) {
+	public static WebHooksChange build(SVcsModification modification, boolean includeVcsFileModifications) {
 		WebHooksChange change = new WebHooksChange();
 		change.setComment(modification.getDescription());
 		change.setUsername(modification.getUserName());
 		change.setVcsRoot(tryGetVcsRootName(modification));
-		for (VcsFileModification fileModification: modification.getChanges()){
-			change.files.add(fileModification.getRelativeFileName());
+		if (includeVcsFileModifications) {
+			change.files = new ArrayList<>();
+			for (VcsFileModification fileModification: modification.getChanges()){
+				change.files.add(fileModification.getRelativeFileName());
+			}
 		}
 		return change;
 	}
 
 
-	private List<String> files = new ArrayList<>();
+	private List<String> files;
 	private String comment;
 	private String username;
 	private String vcsRoot;

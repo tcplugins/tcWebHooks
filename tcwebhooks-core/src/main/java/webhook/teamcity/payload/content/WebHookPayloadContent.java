@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.SortedMap;
 
 import jetbrains.buildServer.serverSide.Branch;
@@ -17,6 +16,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.vcs.SVcsModification;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +30,8 @@ import webhook.teamcity.payload.util.VariableMessageBuilder;
 import webhook.teamcity.payload.util.WebHooksBeanUtilsVariableResolver;
 
 public class WebHookPayloadContent {
+		private static final String MAX_CHANGE_FILE_LIST_SIZE = "maxChangeFileListSize";
+		private static final String WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE = "webhook." + MAX_CHANGE_FILE_LIST_SIZE;
 		String buildStatus,
 		buildResult, buildResultPrevious, buildResultDelta,
 		notifyType,
@@ -74,6 +76,9 @@ public class WebHookPayloadContent {
 		List<String> buildTags;
 		ExtraParametersMap extraParameters;
 		private ExtraParametersMap teamcityProperties;
+		@Getter private int maxChangeFileListSize = 100;
+		@Getter private boolean maxChangeFileListCountExceeded = false;
+		@Getter private int changeFileListCount = 0;
 		private List<WebHooksChanges> changes = new ArrayList<>();
 		
 		/**
@@ -211,7 +216,12 @@ public class WebHookPayloadContent {
     		setTriggeredBy(sRunningBuild.getTriggeredBy().getAsString());
     		setComment(WebHooksComment.build(sRunningBuild.getBuildComment()));
     		setTags(sRunningBuild.getTags());
-    		setChanges(sRunningBuild.getContainingChanges());
+    		int fileChangeCount = 0;
+    		for (SVcsModification mod : sRunningBuild.getContainingChanges()) {
+    			fileChangeCount += mod.getChangeCount();
+    		}
+    		this.changeFileListCount = fileChangeCount;
+			setChanges(sRunningBuild.getContainingChanges(), includeVcsFileList());
     		try {
     			if (sRunningBuild.getBranch() != null){
 	    			setBranch(sRunningBuild.getBranch());
@@ -231,6 +241,41 @@ public class WebHookPayloadContent {
 			setBuildStatusHtml(buildState, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 			setBuildIsPersonal(sRunningBuild.isPersonal());
 		}
+		
+		private boolean includeVcsFileList() {
+			// Firstly update the "maxChangeFileListSize" value from webhook config or build parameters.
+			if (extraParameters.containsKey(MAX_CHANGE_FILE_LIST_SIZE)) {
+				try {
+					this.maxChangeFileListSize = Integer.parseInt(extraParameters.get(MAX_CHANGE_FILE_LIST_SIZE));
+				} catch (NumberFormatException ex) {
+					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert 'maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+				}
+			} else if (teamcityProperties.containsKey(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE)) {
+				try {
+					this.maxChangeFileListSize = Integer.parseInt(teamcityProperties.get(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE));
+				} catch (NumberFormatException ex) {
+					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+				}
+			} else if (TeamCityProperties.getPropertyOrNull(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE) != null){
+				try {
+					this.maxChangeFileListSize = Integer.parseInt(TeamCityProperties.getProperty(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE));
+				} catch (NumberFormatException ex) {
+					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert TeamCity global property 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+				}
+			}
+			
+			// If the value is negative, checking is disabled and maxChangeFileListSize is effectively unlimited.
+			if (this.maxChangeFileListSize < 0) {
+				this.maxChangeFileListCountExceeded = false;
+				return true;
+			
+			// Or calculate that the count we found is less then the preferred one.                         
+			} else if (this.changeFileListCount > this.maxChangeFileListSize) { 
+				this.maxChangeFileListCountExceeded = true;
+				return false;
+			}
+			return true;
+		}		
 		
 		public List<String> getBuildTags() {
 			return buildTags;
@@ -252,8 +297,8 @@ public class WebHookPayloadContent {
 			}
 		}
 		
-		private void setChanges(List<SVcsModification> modifications){
-			this.changes = WebHooksChangeBuilder.build(modifications);
+		private void setChanges(List<SVcsModification> modifications, boolean includeVcsFileModifications){
+			this.changes = WebHooksChangeBuilder.build(modifications, includeVcsFileModifications);
 		}
 		
 		public List<WebHooksChanges> getChanges(){
