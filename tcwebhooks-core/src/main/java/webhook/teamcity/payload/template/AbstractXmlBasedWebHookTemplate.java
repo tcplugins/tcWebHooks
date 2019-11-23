@@ -131,6 +131,11 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	public String getTemplateId() {
 		return template.getTemplateId();
 	}
+	
+	@Override
+	public String getProjectId() {
+		return template.getProjectId();
+	}
 
 	@Override
 	public boolean supportsPayloadFormat(String payloadFormat) {

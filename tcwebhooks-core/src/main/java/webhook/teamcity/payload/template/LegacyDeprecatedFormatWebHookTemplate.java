@@ -77,4 +77,13 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 		return config;
 	}
 
+	/** 
+	 * Legacy Formats will always return "_Root", since they are global 
+	 * and not able to be overridden.
+	 */
+	@Override
+	public String getProjectId() {
+		return ROOT_PROJECT_ID;
+	}
+
 }

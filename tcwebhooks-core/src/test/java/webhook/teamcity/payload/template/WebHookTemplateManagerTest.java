@@ -184,6 +184,11 @@ public class WebHookTemplateManagerTest {
 			return null;
 		}
 
+		@Override
+		public String getProjectId() {
+			return ROOT_PROJECT_ID;
+		}
+
 		
 	}
 	
