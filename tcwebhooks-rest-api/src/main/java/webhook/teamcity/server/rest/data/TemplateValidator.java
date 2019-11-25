@@ -3,6 +3,8 @@ package webhook.teamcity.server.rest.data;
 import java.util.regex.Pattern;
 
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.WebHookTemplateValidationHelper;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
@@ -10,6 +12,12 @@ import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 public class TemplateValidator {
+	
+	private WebHookTemplateValidationHelper myTemplateManagerValidationHelper;
+
+	public TemplateValidator(WebHookTemplateValidationHelper templateManagerValidationHelper) {
+		myTemplateManagerValidationHelper = templateManagerValidationHelper;
+	}
 	
 	public ErrorResult validateNewTemplate(Template requestTemplate, ErrorResult result) {
 		
@@ -76,7 +84,7 @@ public class TemplateValidator {
 		for (WebHookTemplateStateRest itemState : templateItem.getBuildStates()) {
 			WebHookTemplateStateRest requestItemState = requestTemplateItem.findConfigForBuildState(itemState.getType());
 				
-			if (requestItemState != null && itemState.isEnabled() != requestItemState.isEnabled() && !itemState.getEditable()) { 
+			if (requestItemState != null && itemState.isEnabled() != requestItemState.isEnabled() && !Boolean.TRUE.equals(itemState.getEditable())) { 
 				result.addError(itemState.getType(), itemState.getType() + " is not editable for this templateItem");						
 			}
 		}
