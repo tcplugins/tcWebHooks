@@ -141,13 +141,13 @@ public class WebHookTemplateManager {
 		Collections.sort(this.orderedTemplateCollection, rankComparator);
 	}
 
-	public WebHookPayloadTemplate getTemplate(String formatShortname){
+	public WebHookPayloadTemplate getTemplate(String templateId){
 		synchronized (orderedTemplateCollection) {
-			if (xmlConfigTemplates.containsKey(formatShortname)){
-				return xmlConfigTemplates.get(formatShortname);
+			if (xmlConfigTemplates.containsKey(templateId)){
+				return xmlConfigTemplates.get(templateId);
 			}
-			if (springTemplates.containsKey(formatShortname)){
-				return springTemplates.get(formatShortname);
+			if (springTemplates.containsKey(templateId)){
+				return springTemplates.get(templateId);
 			}
 			return null;
 		}

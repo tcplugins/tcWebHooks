@@ -212,9 +212,9 @@ public class TemplateRequest {
 		String updateMode = "create Template";
 		checkTemplateWritePermission();
 		ErrorResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new ErrorResult());
-		  if (validationResult.isErrored()) {
-			  throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
-		  }
+		if (validationResult.isErrored()) {
+			throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
+		}
 	    WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
 
 	    if (myTemplateManager.getTemplate(template.getId()) != null){

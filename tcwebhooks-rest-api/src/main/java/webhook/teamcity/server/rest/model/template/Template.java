@@ -48,7 +48,7 @@ public class Template {
 	public String status;
 	
 	@XmlAttribute 
-	String projectId;
+	public String projectId;
 	
 	@XmlAttribute
 	public Integer rank;
