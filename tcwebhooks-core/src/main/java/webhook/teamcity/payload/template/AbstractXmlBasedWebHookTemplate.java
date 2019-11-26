@@ -134,7 +134,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	
 	@Override
 	public String getProjectId() {
-		return template.getProjectId();
+		return DEFAULT_TEMPLATE_PROJECT_ID;
 	}
 
 	@Override

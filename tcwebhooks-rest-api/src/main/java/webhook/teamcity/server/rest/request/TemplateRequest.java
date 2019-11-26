@@ -250,8 +250,41 @@ public class TemplateRequest {
 
 		  return buildAndPersistTemplate(newTemplate, updateMode, template);
 	  }
+	  
+	  @PUT
+	  @Path("/{projectId}/{templateLocator}")
+	  @Consumes({"application/xml", "application/json"})
+	  @Produces({"application/xml", "application/json"})
+	  public Template replaceTemplate(@PathParam("projectId") String projectId, @PathParam("templateLocator") String templateLocator, Template newTemplate) {
+		  final String updateMode = "replace Template";
+		  checkTemplateWritePermission(projectId);
+		  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+		  if (templateConfigWrapper.getTemplateConfig() == null){
+			  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
+		  }
+		  ErrorResult validationResult = myTemplateValidator.validateNewTemplate(projectId, newTemplate, new ErrorResult());
+		  
+		  if ( ! templateConfigWrapper.getTemplateConfig().getId().equals(newTemplate.id)) {
+			  validationResult.addError("id", "The templateId in the template does not match the templateId in the URL.");
+		  }
+		  if ( ! templateConfigWrapper.getTemplateConfig().getProjectId().equals(projectId)) {
+			  validationResult.addError("id", "The projectId in the template does not match the projectId in the URL.");
+		  }
+		  
+		  if (validationResult.isErrored()) {
+			  throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
+		  }
+		  WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
+		  
+		  return buildAndPersistTemplate(newTemplate, updateMode, template);
+	  }
 
-	  @POST
+	  private void checkTemplateWritePermission(String projectId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@POST
 	  @Path("/{templateLocator}/patch")
 	  @Consumes({"application/xml", "application/json"})
 	  @Produces({"application/xml", "application/json"})

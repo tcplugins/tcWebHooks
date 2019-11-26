@@ -29,7 +29,7 @@ public class TemplateValidator {
 		this.myProjectManager = projectManager;
 	}
 
-	public ErrorResult validateNewTemplate(Template requestTemplate, ErrorResult result) {
+	public ErrorResult validateNewTemplate(String projectId, Template requestTemplate, ErrorResult result) {
 		
 		if (requestTemplate.id == null || requestTemplate.id.trim().isEmpty()) {
 			result.addError("id-empty", "The template id cannot be empty. It is used to identify the template and is referenced by webhook configuration");
@@ -47,8 +47,8 @@ public class TemplateValidator {
 			result.addError("rank", "The template rank cannot be empty and must be between 0 and 1000.");
 		}
 		
-		validateProjectId(requestTemplate, result);
-		validateTemplateIdAndProjectId(requestTemplate, result);
+		validateProjectId(projectId, result);
+		validateTemplateIdAndProjectId(projectId, requestTemplate, result);
 		
 		if (requestTemplate.defaultTemplate != null) {
 			validateDefaultTemplateItem(requestTemplate.defaultTemplate, result);
@@ -63,11 +63,11 @@ public class TemplateValidator {
 		
 	}
 	
-	private ErrorResult validateProjectId(Template requestTemplate, ErrorResult result) {
-		if (requestTemplate.projectId != null && !requestTemplate.projectId.isEmpty()) {
+	private ErrorResult validateProjectId(String projectId, ErrorResult result) {
+		if (projectId != null && !projectId.isEmpty()) {
 			SProject sProject = null;
 			try {
-				sProject = myProjectManager.findProjectByExternalId(requestTemplate.projectId);
+				sProject = myProjectManager.findProjectByExternalId(projectId);
 				
 			} catch (AccessDeniedException ex) {
 				result.addError(PROJECT_ID_KEY, "The TeamCity project is not visible to your user");
@@ -85,14 +85,14 @@ public class TemplateValidator {
 		return result;
 	}
 	
-	private ErrorResult validateTemplateIdAndProjectId(Template requestTemplate, ErrorResult result) {
+	private ErrorResult validateTemplateIdAndProjectId(String projectId, Template requestTemplate, ErrorResult result) {
 		if (!result.isErrored()) { // Skip if we already have errors.
 			WebHookPayloadTemplate template = myTemplateManager.getTemplate(requestTemplate.id);
 			if (template != null) {
 				SProject sProject = null;
 				try {
-					if (template.getProjectId() != null ) {
-						sProject = myProjectManager.findProjectById(template.getProjectId()); 
+					if (projectId != null ) {
+						sProject = myProjectManager.findProjectById(projectId); 
 					} else {
 						sProject = myProjectManager.findProjectById("_Root");
 					}
@@ -165,5 +165,9 @@ public class TemplateValidator {
 			result.addError("branchTemplateText", "The branch template text content must not be null or empty if 'useTemplateTextForBranch' is false.");
 		}
 		return result;
+	}
+
+	public ErrorResult validateNewTemplate(Template newTemplate, ErrorResult errorResult) {
+		return validateNewTemplate(WebHookPayloadTemplate.DEFAULT_TEMPLATE_PROJECT_ID, newTemplate, errorResult);
 	}
 }

@@ -5,7 +5,6 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 
 public abstract class AbstractWebHookTemplate implements WebHookPayloadTemplate {
 	
-	protected static final String ROOT_PROJECT_ID = "_Root";
 	protected WebHookTemplateManager manager;
 	int rank = 10; // Default to 10.
 

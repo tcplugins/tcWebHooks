@@ -83,7 +83,7 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 	 */
 	@Override
 	public String getProjectId() {
-		return ROOT_PROJECT_ID;
+		return DEFAULT_TEMPLATE_PROJECT_ID;
 	}
 
 }

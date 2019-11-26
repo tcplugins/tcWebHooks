@@ -47,9 +47,6 @@ public class Template {
 	@XmlAttribute
 	public String status;
 	
-	@XmlAttribute 
-	public String projectId;
-	
 	@XmlAttribute
 	public Integer rank;
 	
@@ -304,8 +301,6 @@ public class Template {
 		description = ValueWithDefault.decideDefault(
 				fields.isIncluded("description"),
 				template.getTemplateDescription());
-		
-		projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, false), template.getProjectId());
 		
 		status = ValueWithDefault.decideDefault(fields.isIncluded("status"),
 				templateWrapper.getStatus().toString());

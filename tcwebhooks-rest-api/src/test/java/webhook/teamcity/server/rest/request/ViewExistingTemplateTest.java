@@ -9,7 +9,6 @@ import static webhook.teamcity.server.rest.request.TemplateRequest.API_TEMPLATES
 import java.io.FileNotFoundException;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;

@@ -7,6 +7,8 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 public interface WebHookPayloadTemplate {
+	
+	public static final String DEFAULT_TEMPLATE_PROJECT_ID = "_Root";
 
 	/** 
 	 * Sets the TemplateManager so that register() can register this template with that webHookTemplateManager.
