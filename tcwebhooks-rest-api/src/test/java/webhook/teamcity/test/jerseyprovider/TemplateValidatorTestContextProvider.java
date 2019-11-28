@@ -14,22 +14,28 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateValidator;
 import webhook.teamcity.server.rest.jersey.TemplateValidatorProvider;
 
 @Provider
-public class TemplateValidatorTestContextProvider extends TemplateValidatorProvider
-		implements InjectableProvider<Context, Type>, Injectable<TemplateValidator> {
+public class TemplateValidatorTestContextProvider implements InjectableProvider<Context, Type>, Injectable<TemplateValidator> {
 	
 	private final TemplateValidator templateValidator;
 	
 	public TemplateValidatorTestContextProvider() {
 		
 		System.out.println("We are here: Trying to provide a testable TemplateValidator instance");
+		SProject sProject = Mockito.mock(SProject.class);
+		Mockito.when(sProject.getProjectId()).thenReturn("project01");
 		WebHookTemplateManager templateManager = Mockito.mock(WebHookTemplateManager.class);
 		PermissionChecker permissionChecker = Mockito.mock(PermissionChecker.class);
 		ProjectManager projectManager = Mockito.mock(ProjectManager.class);
+		Mockito.when(projectManager.findProjectByExternalId(Mockito.eq("_Root"))).thenReturn(sProject);
+		Mockito.when(projectManager.findProjectById("project01")).thenReturn(sProject);
+		Mockito.when(permissionChecker.isPermissionGranted(Permission.EDIT_PROJECT, "project01")).thenReturn(true);
 		this.templateValidator = new TemplateValidator(templateManager, permissionChecker, projectManager);
 	}
 	

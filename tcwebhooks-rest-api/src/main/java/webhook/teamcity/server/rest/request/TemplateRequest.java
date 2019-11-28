@@ -33,6 +33,8 @@ import jetbrains.buildServer.server.rest.errors.OperationException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
@@ -74,12 +76,13 @@ public class TemplateRequest {
   private static final String TEMPLATE_CONTAINED_INVALID_DATA = "Template contained invalid data";
   private static final String ERROR_SAVING_TEMPLATE = "There was an error saving your template. Sorry.";
   private static final String IT_WAS_NOT_POSSIBLE_TO_PROCESS_YOUR_REQUEST_FOR_TEMPLATE_CONTENT = "Sorry. It was not possible to process your request for template content.";
-  private static final Permission templateEditPermission = Permission.CHANGE_SERVER_SETTINGS;
-  private static final Permission[] templateReadPermissions = {
+  private static final Permission TEMPLATE_EDIT_PERMISSION = Permission.CHANGE_SERVER_SETTINGS;
+  private static final Permission[] TEMPLATE_READ_PERMISSIONS = {
 		  													   Permission.VIEW_PROJECT,
 		  													   Permission.VIEW_BUILD_CONFIGURATION_SETTINGS,
 		  													   Permission.EDIT_PROJECT
 		  													  };
+  private static final Permission PROJECT_TEMPLATE_EDIT_PERMISSION = Permission.EDIT_PROJECT;
 
   @Context @NotNull private DataProvider myDataProvider;
   @Context @NotNull private WebHookTemplateManager myTemplateManager;
@@ -251,40 +254,37 @@ public class TemplateRequest {
 		  return buildAndPersistTemplate(newTemplate, updateMode, template);
 	  }
 	  
-	  @PUT
-	  @Path("/{projectId}/{templateLocator}")
-	  @Consumes({"application/xml", "application/json"})
-	  @Produces({"application/xml", "application/json"})
-	  public Template replaceTemplate(@PathParam("projectId") String projectId, @PathParam("templateLocator") String templateLocator, Template newTemplate) {
-		  final String updateMode = "replace Template";
-		  checkTemplateWritePermission(projectId);
-		  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-		  if (templateConfigWrapper.getTemplateConfig() == null){
-			  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
-		  }
-		  ErrorResult validationResult = myTemplateValidator.validateNewTemplate(projectId, newTemplate, new ErrorResult());
-		  
-		  if ( ! templateConfigWrapper.getTemplateConfig().getId().equals(newTemplate.id)) {
-			  validationResult.addError("id", "The templateId in the template does not match the templateId in the URL.");
-		  }
-		  if ( ! templateConfigWrapper.getTemplateConfig().getProjectId().equals(projectId)) {
-			  validationResult.addError("id", "The projectId in the template does not match the projectId in the URL.");
-		  }
-		  
-		  if (validationResult.isErrored()) {
-			  throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
-		  }
-		  WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
-		  
-		  return buildAndPersistTemplate(newTemplate, updateMode, template);
-	  }
+	@PUT
+	@Path("/{projectId}/{templateLocator}")
+	@Consumes({ "application/xml", "application/json" })
+	@Produces({ "application/xml", "application/json" })
+	public Template replaceTemplate(@PathParam("projectId") String externalProjectId,
+			@PathParam("templateLocator") String templateLocator, Template newTemplate) {
+		final String updateMode = "replace Template";
+		SProject sProject = checkTemplateWritePermission(externalProjectId);
+		WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+		if (templateConfigWrapper.getTemplateConfig() == null) {
+			throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
+		}
+		ErrorResult validationResult = myTemplateValidator.validateNewTemplate(externalProjectId, newTemplate,
+				new ErrorResult());
 
-	  private void checkTemplateWritePermission(String projectId) {
-		// TODO Auto-generated method stub
-		
+		if (!templateConfigWrapper.getTemplateConfig().getId().equals(newTemplate.id)) {
+			validationResult.addError("id", "The templateId in the template does not match the templateId in the URL.");
+		}
+		if (!templateConfigWrapper.getTemplateConfig().getProjectInternalId().equals(sProject.getProjectId())) {
+			validationResult.addError("id", "The projectId in the template does not match the projectId in the URL.");
+		}
+
+		if (validationResult.isErrored()) {
+			throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
+		}
+		WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
+
+		return buildAndPersistTemplate(newTemplate, updateMode, template);
 	}
 
-	@POST
+	  @POST
 	  @Path("/{templateLocator}/patch")
 	  @Consumes({"application/xml", "application/json"})
 	  @Produces({"application/xml", "application/json"})
@@ -1050,7 +1050,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 
 	private void checkTemplateReadPermission() {
 		try {
-			myPermissionChecker.checkGlobalPermissionAnyOf(templateReadPermissions);
+			myPermissionChecker.checkGlobalPermissionAnyOf(TEMPLATE_READ_PERMISSIONS);
 		} catch (AuthorizationFailedException e) {
 			throw new TemplatePermissionException("Reading templates requires at least one of the following permissions: 'VIEW_PROJECT, VIEW_BUILD_CONFIGURATION_SETTINGS, EDIT_PROJECT'");
 		}
@@ -1058,11 +1058,24 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 
 	private void checkTemplateWritePermission() {
 		try {
-			myPermissionChecker.checkGlobalPermission(templateEditPermission);
+			myPermissionChecker.checkGlobalPermission(TEMPLATE_EDIT_PERMISSION);
 		} catch (AuthorizationFailedException e) {
 			throw new TemplatePermissionException("Writing templates requires permission 'CHANGE_SERVER_SETTINGS'");
 		}
 	}
-
+	
+	private SProject checkTemplateWritePermission(String externalProjectId) {
+		try {
+			SProject sProject = myDataProvider.getProjectManager().findProjectByExternalId(externalProjectId);
+			if (sProject == null) {
+				throw new NotFoundException("No project found with supplied projectId");
+			}
+			myPermissionChecker.checkProjectPermission(PROJECT_TEMPLATE_EDIT_PERMISSION, sProject.getProjectId());
+			return sProject;
+		} catch (AccessDeniedException | AuthorizationFailedException e) {
+			throw new TemplatePermissionException("Writing Project templates requires permission 'EDIT_PROJECT' on the relevant project");
+		}
+	}
+	
 }
 
