@@ -20,6 +20,13 @@ public interface WebHookHistoryRepository {
 	public PagedList<WebHookHistoryItem> findHistoryItemsForProject(String projectId, int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuildType(String buildTypeId, int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuild(Long buildId, int pageNumber, int pageSize);
+	public PagedList<WebHookHistoryItem> findHistoryItemsForWebHookConfigId(String webhookId, int pageNumber, int pageSize);
+	/**
+	 * Find the history items for the supplied webhookId, and return a Map of the types and count of each type.
+	 * @param webHookId
+	 * @return Map of history item counts grouped by item type (eg, errored, disabled, ok, total)
+	 */
+	public Map<String, Integer> findHistoryItemCountsForWebHookConfigId(String webhookId);
 	public PagedList<WebHookHistoryItem> findHistoryErroredItems(int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryDisabledItems(int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryOkItems(int pageNumber, int pageSize);

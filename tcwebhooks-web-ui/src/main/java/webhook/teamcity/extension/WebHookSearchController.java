@@ -26,6 +26,7 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.history.WebAddressTransformer;
+import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
@@ -43,12 +44,14 @@ public class WebHookSearchController extends BaseController {
 	private WebAddressTransformer myWebAddressTransformer;
 	private WebHookPayloadManager myWebHookPayloadManager;
 	private WebHookTemplateResolver myWebHookTemplateResolver;
+	private WebHookHistoryRepository myWebHookHistoryRepository;
 
 	public WebHookSearchController(SBuildServer server, WebControllerManager webControllerManager,
     		PluginDescriptor pluginDescriptor, WebHookSettingsManager webHookSettingsManager,
     		ProjectManager projectManager, WebAddressTransformer webAddressTransformer,
     		@NotNull WebHookPayloadManager payloadManager,
-			@NotNull WebHookTemplateResolver templateResolver) {
+			@NotNull WebHookTemplateResolver templateResolver,
+			@NotNull WebHookHistoryRepository webHookHistoryRepository) {
 		super(server);
 		myPluginDescriptor = pluginDescriptor;
 		myWebHookSettingsManager = webHookSettingsManager;
@@ -56,6 +59,7 @@ public class WebHookSearchController extends BaseController {
 		myWebAddressTransformer = webAddressTransformer;
 		myWebHookPayloadManager = payloadManager;
 		myWebHookTemplateResolver = templateResolver;
+		myWebHookHistoryRepository = webHookHistoryRepository;
 		webControllerManager.registerController("/webhooks/search.html", this);
     }
 

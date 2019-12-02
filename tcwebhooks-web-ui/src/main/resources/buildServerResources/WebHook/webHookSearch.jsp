@@ -66,8 +66,8 @@
 					<th class="name">URL</th>
 					<th class="name">Format</th>
 					<th class="name">Build Events</th>
-					<th class="value" style="width:20%;" <%--colspan="3"--%>>Enabled Builds</th>
-					<th class="value" style="width:20%;" <%--colspan="3"--%>>Tags</th>
+					<th class="value" style="width:20%;">Enabled Builds</th>
+					<th class="value" style="width:20%;" colspan="2">Tags</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -105,6 +105,7 @@
 								</c:forEach>
 							</ul>	
 					</td>
+					<td><a href="./history.html?webhookId=${hook.uniqueKey}"><i title="Search History for Recent Events for this WebHook" class="icon-tasks"></i></a></td>
 					</tr>
 				</c:forEach>
 				<tr class="blankRow"><td colspan="5">&nbsp;</td></tr>

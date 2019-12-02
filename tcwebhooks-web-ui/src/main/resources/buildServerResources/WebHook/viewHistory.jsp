@@ -83,11 +83,11 @@
 	        </div>
 	        <hr>
 	        <p>
-	        <h2 class="noBorder"><span class="sentenceCase">${countContext}</span> Recent WebHook Events - Page ${items.pageNumber} of ${items.totalPages} </h2>
-	        The following table shows the ${items.itemsOnThisPage} most recent <span class="lowercase">${countContext} webhook events</span>.
+	        <h2 class="noBorder"><span class="sentenceCase">${countContext}</span> - Page ${items.pageNumber} of ${items.totalPages} </h2>
+	        The following table shows the ${items.itemsOnThisPage} most <span class="lowercase">${countContext}</span>.
 	        <bs:pager place="top" urlPattern="${pagerUrlPattern}" pager="${historyPager}"/>
 	        <table class="settings">
-	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>Build</th><th>URL (some URLs may be partially hidden)</th><th>Build Event</th><th>Event Response</th></tr>
+	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>Build</th><th>URL (some URLs may be partially hidden)</th><th>Build Event</th><th colspan="2">Event Response</th></tr>
 
 	        <c:forEach items="${items.items}" var="historyItem">
 	        		<tr>
@@ -109,8 +109,8 @@
 					
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}${historyItem.test}">undefined</c:out></td>
 					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: <c:out value="${historyItem.webHookExecutionStats.statusReason}"/></td>
+	        	    <td><a href="./search.html?webhookId=${historyItem.webHookConfig.uniqueKey}"><i title="Search for WebHook Configuration" class="icon-gears"></i></a></td>
 	   				</tr>
-	        	
 	        </c:forEach>
 	        
 		    </table>

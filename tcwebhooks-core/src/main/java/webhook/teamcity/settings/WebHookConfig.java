@@ -432,8 +432,12 @@ public class WebHookConfig {
 		return extraParameters;
 	}
 
+	/**
+	 * If allBuildTypes enabled, return true, otherwise  return whether the build is in the list of enabled buildTypes.
+	 * @param sBuildType
+	 * @return whether webhook is enabled for this specific {@link SBuildType} 
+	 */
 	public boolean isEnabledForBuildType(SBuildType sBuildType){
-		// If allBuildTypes enabled, return true, otherwise  return whether the build is in the list of enabled buildTypes.
 		return isEnabledForAllBuildsInProject() || enabledBuildTypesSet.contains(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	}
 

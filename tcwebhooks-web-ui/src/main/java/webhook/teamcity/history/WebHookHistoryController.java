@@ -21,6 +21,7 @@ public class WebHookHistoryController extends BaseController {
 	private static final String PARAM_NAME_COUNT_CONTEXT = "countContext";
 	private static final String PARAM_NAME_ITEMS = "items";
 	private static final String PARAM_NAME_VIEW = "view";
+	private static final String PARAM_NAME_WEBHOOK_ID = "webhookId";
 	private static final String MY_URL = "/webhooks/history.html";
 	private String myPluginPath;
 	private WebHookHistoryRepository myWebHookHistoryRepository;
@@ -53,38 +54,48 @@ public class WebHookHistoryController extends BaseController {
     	params.put("skippedCount", myWebHookHistoryRepository.getDisabledCount());
     	params.put("totalCount", myWebHookHistoryRepository.getTotalCount());
 		
-		if (isGet(request) && request.getParameter(PARAM_NAME_VIEW) != null) {
+    	if (isGet(request)) {
 			int pageNumber = getPageNumber(request);
 			int pageSize = getPageSize(request);
 			params.put("page", pageNumber);
 			PagedList<WebHookHistoryItem> pagedList;
-			switch ( request.getParameter(PARAM_NAME_VIEW)) {
-				case "errors":
-				case "Errors":
-					pagedList = myWebHookHistoryRepository.findHistoryErroredItems(pageNumber, pageSize);
-					params.put(PARAM_NAME_COUNT_CONTEXT, "Errored");
-					break;
-				case "skipped":
-				case "Skipped":
-					pagedList = myWebHookHistoryRepository.findHistoryDisabledItems(pageNumber, pageSize);
-					params.put(PARAM_NAME_COUNT_CONTEXT, "Skipped");
-					break;
-				case "ok":
-				case "Ok":
-					pagedList = myWebHookHistoryRepository.findHistoryOkItems(pageNumber, pageSize);
-					params.put(PARAM_NAME_COUNT_CONTEXT, "OK");
-					break;
-				case "all":
-				case "All":
-				default:
-					pagedList = myWebHookHistoryRepository.findHistoryAllItems(pageNumber, pageSize);
-					params.put(PARAM_NAME_COUNT_CONTEXT, "All");
-					break;
-			}
-			
+    		if (request.getParameter(PARAM_NAME_WEBHOOK_ID) != null) {
+				pagedList = myWebHookHistoryRepository.findHistoryItemsForWebHookConfigId(request.getParameter(PARAM_NAME_WEBHOOK_ID), pageNumber, pageSize);
+				if (! pagedList.isEmpty()) {
+					params.put(PARAM_NAME_COUNT_CONTEXT, "Recent WebHook Events for " + pagedList.getItems().get(0).getWebHookConfig().getUniqueKey());
+				} else {
+					params.put(PARAM_NAME_COUNT_CONTEXT, "No Recent matching WebHook Events found for that webhook id");
+				}
+    		} else  {
+    			String view = request.getParameter(PARAM_NAME_VIEW) != null ? request.getParameter(PARAM_NAME_VIEW) : "All";
+
+				switch ( view ) {
+					case "errors":
+					case "Errors":
+						pagedList = myWebHookHistoryRepository.findHistoryErroredItems(pageNumber, pageSize);
+						params.put(PARAM_NAME_COUNT_CONTEXT, "Recent Errored WebHook Events");
+						break;
+					case "skipped":
+					case "Skipped":
+						pagedList = myWebHookHistoryRepository.findHistoryDisabledItems(pageNumber, pageSize);
+						params.put(PARAM_NAME_COUNT_CONTEXT, "Recent Skipped WebHook Events");
+						break;
+					case "ok":
+					case "Ok":
+						pagedList = myWebHookHistoryRepository.findHistoryOkItems(pageNumber, pageSize);
+						params.put(PARAM_NAME_COUNT_CONTEXT, "Recent OK WebHook Events");
+						break;
+					case "all":
+					case "All":
+					default:
+						pagedList = myWebHookHistoryRepository.findHistoryAllItems(pageNumber, pageSize);
+						params.put(PARAM_NAME_COUNT_CONTEXT, "All Recent WebHook Events");
+						break;
+				}
+    		}
 			params.put(PARAM_NAME_ITEMS, pagedList);
 			
-			Pager pager = new Pager(50);
+			Pager pager = new Pager(pageSize);
 			pager.setNumberOfRecords(pagedList.getTotalItems());
 			pager.setRecordsPerPage(pageSize);
 			pager.setCurrentPage(pageNumber);

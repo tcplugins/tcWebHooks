@@ -47,5 +47,9 @@ public class PagedList<T> {
 			this.totalPages = Math.round((float)this.totalItems / this.pageSize);
 		}
 	}
+	
+	public boolean isEmpty() {
+		return items.isEmpty();
+	}
 }
 
