@@ -28,6 +28,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
 
+import org.jetbrains.annotations.NotNull;
+
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.util.BeanContext;
 import jetbrains.buildServer.ServiceLocator;
@@ -52,11 +55,13 @@ public class BeanContextProvider implements InjectableProvider<Context, Type>, I
 
   private final BeanFactory myFactory;
   private final ServiceLocator myServiceLocator;
+  private ProjectIdResolver myProjectIdProvider;
 
-  public BeanContextProvider(final RequestPathTransformInfo requestPathTransformInfo, final BeanFactory factory, final ServiceLocator serviceLocator) {
+  public BeanContextProvider(final RequestPathTransformInfo requestPathTransformInfo, final BeanFactory factory, final ServiceLocator serviceLocator, @NotNull final ProjectIdResolver projectIdResolver) {
 	myRequestPathTransformInfo = requestPathTransformInfo;
     myFactory = factory;
     myServiceLocator = serviceLocator;
+    myProjectIdProvider = projectIdResolver; 
   }
 
   public ComponentScope getScope() {
@@ -71,6 +76,6 @@ public class BeanContextProvider implements InjectableProvider<Context, Type>, I
   }
 
   public BeanContext getValue() {
-    return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
+    return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo), myProjectIdProvider));
   }
 }

@@ -6,6 +6,7 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.WebHookSettingsManager;
@@ -19,16 +20,19 @@ public abstract class WebHookTemplateBasePageController extends BaseController {
 		final WebHookTemplateManager myTemplateManager;
 		final WebHookPluginDataResolver myWebHookPluginDataResolver;
 		final WebHookSettingsManager myWebHookSettingsManager;
+		final ProjectIdResolver myProjectIdResolver;
 
 	    public WebHookTemplateBasePageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
-	    		WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager) {
+	    		WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager,
+	    		ProjectIdResolver projectIdResolver) {
 	        super(server);
 	        myWebManager = webManager;
 	        myPluginDescriptor = pluginDescriptor;
 	        myWebHookPluginDataResolver = webHookPluginDataResolver;
 	        myTemplateManager = webHookTemplateManager;
 	        myWebHookSettingsManager = webHookSettingsManager;
+	        myProjectIdResolver = projectIdResolver;
 	    }
 	    
 	    protected abstract String getUrl();

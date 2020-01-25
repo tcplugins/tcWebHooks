@@ -24,6 +24,17 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents the XML entity which is read from and written to the <code>webhook-templates.xml</code> 
+ * configuration file. 
+ * <p>
+ * Most code should not need to deal with this class. Once a template is loaded, it is passed around
+ * as a {@link WebHookTemplateConfig} item. 
+ * <p>
+ * The one exception is the special <code>app/rest/webhooks/id:template/rawConfig</code> end-point 
+ * which returns this object.
+ * It is a convenience method for exporting a template for converting to a bundled template.
+ */
 /*
  * 
 	<?xml version="1.0" encoding="UTF-8"?>
@@ -34,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 			<template-description>"Test XML Template"</template-description>
 			<template-tool-tip value="This is some tooltip text for the Test XML Template"/>
 			<preferred-date-format value="yyyy-MM-dd'T'HH:mm:ss.SSSXXX"/>
+			<associated-project-id>project0</associated-project-id>
 			<templates max-id="10">
 				<template id="10">
 					<template-text>{ "buildStatus" : "${buildStatus}" }</template-text>
@@ -93,6 +105,9 @@ public class WebHookTemplateEntity {
 	@XmlElement (name="preferred-date-format")
 	String preferredDateTimeFormat = "";
 	
+	@XmlElement (name="associated-project-id")
+	String associatedProjectId = "";
+	
 	@XmlElement(name="format") @XmlElementWrapper(name="formats")
 	private List<WebHookTemplateFormat> formats = new ArrayList<>();
 	
@@ -149,6 +164,8 @@ public class WebHookTemplateEntity {
 		if (config.getFormat() != null) {
 			entity.setFormat(config.getFormat());
 		}
+		
+		entity.setAssociatedProjectId(config.getProjectInternalId());
 		
 		entity.templates = new WebHookTemplateItems();
 		entity.templates.maxId = config.getTemplates().getMaxId();

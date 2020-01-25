@@ -31,6 +31,8 @@ import javax.ws.rs.ext.Provider;
 import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
+
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.BeanContext;
@@ -82,6 +84,17 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
 		@Override
 		public String transform(String path) {
 			return path;
+		}
+	}, new  ProjectIdResolver() {
+		
+		@Override
+		public String getInternalProjectId(String externalProjectId) {
+			return "project0";
+		}
+		
+		@Override
+		public String getExternalProjectId(String internalProjectId) {
+			return "_Root";
 		}
 	}));
   }

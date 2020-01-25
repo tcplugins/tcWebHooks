@@ -9,6 +9,7 @@ import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
@@ -26,6 +27,7 @@ public class DataProvider {
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final WebHookManager myWebHookManager;
 	@NotNull private final WebHookFinder myWebHookFinder;
+	@NotNull private final ProjectIdResolver myProjectIdResolver;
 
 	public DataProvider(@NotNull final SBuildServer server,
 						@NotNull final RootUrlHolder rootUrlHolder,
@@ -35,7 +37,8 @@ public class DataProvider {
 						@NotNull final TemplateFinder templateFinder,
 						@NotNull final ProjectManager projectManager, 
 						@NotNull final WebHookManager webHookManager,
-						@NotNull final WebHookFinder webHookFinder){
+						@NotNull final WebHookFinder webHookFinder,
+						@NotNull final ProjectIdResolver projectIdResolver){
 
 		this.myServer = server;
 		this.myRootUrlHolder = rootUrlHolder;
@@ -46,13 +49,15 @@ public class DataProvider {
 		this.myProjectManager = projectManager;
 		this.myWebHookManager = webHookManager;
 		this.myWebHookFinder = webHookFinder;
+		this.myProjectIdResolver = projectIdResolver;
 
 	}
 	
 	public List<WebHookTemplateConfigWrapper> getWebHookTemplates(){
 		List<WebHookTemplateConfigWrapper> templates = new ArrayList<>();
 		for (WebHookTemplateConfig template : this.myTemplateManager.getRegisteredTemplateConfigs()){
-			templates.add(new WebHookTemplateConfigWrapper(template, 
+			templates.add(new WebHookTemplateConfigWrapper(template,
+														   myProjectIdResolver.getExternalProjectId(template.getProjectInternalId()),
 														   this.myTemplateManager.getTemplateState(template.getId(), TemplateState.BEST),
 														   WebHookTemplateStates.build(template)
 														  )
@@ -87,5 +92,9 @@ public class DataProvider {
 	
 	public WebHookFinder getWebHookFinder() {
 		return myWebHookFinder;
+	}
+	
+	public ProjectIdResolver getProjectIdResolver() {
+		return myProjectIdResolver;
 	}
 }

@@ -65,6 +65,7 @@ public class RegisteredWebHookTemplateBean {
 	public static class SimpleTemplate{
 		private String description;
 		private String templateId;
+		private String projectId;
 		private String templateDescription;
 		private String templateToolTip;
 		private String formatShortName;
@@ -83,6 +84,7 @@ public class RegisteredWebHookTemplateBean {
 			temp.templateToolTip = webHookTemplate.getTemplateToolTip();
 			temp.formatDescription = format.getFormatDescription();
 			temp.templateId = webHookTemplate.getTemplateId();
+			temp.projectId = webHookTemplate.getProjectId();
 			temp.formatShortName = format.getFormatShortName().toLowerCase();
 			for (BuildStateEnum s : webHookTemplate.getSupportedBuildStates()){
 				temp.supportedStates.add(s.getShortName());
@@ -103,6 +105,10 @@ public class RegisteredWebHookTemplateBean {
 		
 		public String getTemplateId() {
 			return templateId;
+		}
+		
+		public String getProjectId() {
+			return projectId;
 		}
 		
 		public String getDescription() {

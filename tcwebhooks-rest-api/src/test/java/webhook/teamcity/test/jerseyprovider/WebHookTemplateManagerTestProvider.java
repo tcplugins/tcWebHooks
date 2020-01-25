@@ -14,6 +14,7 @@ import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
@@ -23,6 +24,7 @@ public class WebHookTemplateManagerTestProvider implements InjectableProvider<Co
   WebHookTemplateManager webHookTemplateManager;
   WebHookPayloadManager webHookPayloadManager;
   WebHookTemplateJaxHelper webHookTemplateJaxHelper;
+private ProjectIdResolver projectIdResolver;
   
   public WebHookTemplateManagerTestProvider() throws IOException {
 	  System.out.println("We are here: Trying to provide a testable WebHookTemplateManager instance");
@@ -47,6 +49,7 @@ public class WebHookTemplateManagerTestProvider implements InjectableProvider<Co
 	  webHookPayloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	  webHookTemplateManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookTemplateManager.class);
 	  webHookTemplateJaxHelper = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookTemplateJaxHelper.class);
+	  projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
 	  if (webHookTemplateManager != null){
 		  System.out.println("WebHookTemplateManagerTestProvider: Providing (existing) value " + webHookTemplateManager.toString());
@@ -56,7 +59,7 @@ public class WebHookTemplateManagerTestProvider implements InjectableProvider<Co
 		try {
 			tempDir = File.createTempFile("tempWebHooksDir", "", new File("target/"));
 			tempDir.mkdir();
-			webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
+			webHookTemplateManager = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver);
 			webHookTemplateManager.setConfigFilePath(tempDir.getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

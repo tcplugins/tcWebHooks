@@ -96,6 +96,10 @@
      	class="webhook.teamcity.history.WebAddressTransformerImpl"
      	/>
      	
+    <bean id="projectIdResolver" 
+     	class="webhook.teamcity.ProjectIdResolverImpl"
+     	/>
+     	
     <bean id="webHookTemplateEditPageController" 
      	class="webhook.teamcity.extension.WebHookTemplateEditPageController" 
      	init-method="register" 
@@ -270,7 +274,7 @@
 		
 	<bean id="webHookTemplateFileChangeHandler"
 		class="webhook.teamcity.payload.WebHookTemplateFileChangeHandler"
-		init-method="register"
+		init-method="requestDeferredRegistration"
 		/>
 		
 	<bean id="webHookTemplateResolver"
@@ -279,6 +283,10 @@
 		
 	<bean id="webHookConfigFactory"
 		class="webhook.teamcity.testing.WebHookConfigFactoryImpl"
+		/>
+		
+	<bean id="deferrableServiceManager"
+		class="webhook.teamcity.DeferrableServiceManagerImpl"
 		/>
 		
 	<bean id="webHookVariableResolverManager"		
@@ -349,7 +357,7 @@
 	
 	<bean id="elasticSearchXmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>
@@ -357,7 +365,7 @@
 	
 	<bean id="discordComXmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.DiscordComXmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>
@@ -365,7 +373,7 @@
 	
 	<bean id="slackComXmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.SlackComXmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>
@@ -373,7 +381,7 @@
 	
 	<bean id="slackComCompactXmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>
@@ -381,7 +389,7 @@
 	
 	<bean id="flowdockXmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.FlowdockXmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>
@@ -389,7 +397,7 @@
 	
 	<bean id="microsftTeams01XmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.MicrosftTeams01XmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>
@@ -397,7 +405,7 @@
 	
 	<bean id="microsftTeams02XmlWebHookTemplate"
 		class="webhook.teamcity.payload.template.MicrosftTeams02XmlWebHookTemplate"
-		init-method="register">
+		init-method="requestDeferredRegistration">
 		<property name="rank">
 			<value>100</value>
 		</property>

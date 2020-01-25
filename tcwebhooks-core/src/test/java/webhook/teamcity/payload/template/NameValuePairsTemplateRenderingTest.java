@@ -18,6 +18,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -40,8 +41,19 @@ public class NameValuePairsTemplateRenderingTest {
 	@Test
 	public void TestNvPairsTemplatesWithHtmlRenderer() throws WebHookHtmlRendererException, WebHookPayloadContentAssemblyException {
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
-		wtm = new WebHookTemplateManager(null, null);
-		AbstractXmlBasedWebHookTemplate wht = new TestNvPairsXmlTemplate(wtm, wpm, webHookTemplateJaxHelper);
+		wtm = new WebHookTemplateManager(null, null, null);
+		AbstractXmlBasedWebHookTemplate wht = new TestNvPairsXmlTemplate(wtm, wpm, webHookTemplateJaxHelper, new ProjectIdResolver() {
+			
+			@Override
+			public String getInternalProjectId(String externalProjectId) {
+				return "_Root";
+			}
+			
+			@Override
+			public String getExternalProjectId(String internalProjectId) {
+				return "project0";
+			}
+		});
 		wht.register();
 
 		MockSBuildType sBuildType = new MockSBuildType("Test Build", "A Test Build", "bt1");

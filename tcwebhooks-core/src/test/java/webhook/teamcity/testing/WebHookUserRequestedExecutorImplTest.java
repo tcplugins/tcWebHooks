@@ -43,6 +43,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.TestingWebHookHttpClientFactoryImpl;
 import webhook.teamcity.TestingWebHookHttpClientFactoryImpl.TestableHttpClient;
 import webhook.teamcity.WebHookContentBuilder;
@@ -87,11 +88,12 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	
 	private SBuildServer server = mock(SBuildServer.class);
+	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	private WebHookSettingsManager projectSettingsManager = mock(WebHookSettingsManager.class);
 	
 	private WebHookPayloadManager webHookPayloadManager = new WebHookPayloadManager(server);
 	private WebHookTemplateJaxTestHelper webHookTemplateJaxTestHelper = new WebHookTemplateJaxTestHelper();
-	private WebHookTemplateManager webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxTestHelper);
+	private WebHookTemplateManager webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxTestHelper, projectIdResolver);
 	private WebHookTemplateResolver webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
 	private WebHookConfigFactory webHookConfigFactory = new WebHookConfigFactoryImpl(server, projectSettingsManager, webHookTemplateManager);
 	
@@ -175,7 +177,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				webHookContentBuilder, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 			);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -211,7 +214,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				null, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -246,7 +250,9 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
 				webAddressTransformer,
-				webHookContentBuilder, variableResolverManager
+				webHookContentBuilder, 
+				variableResolverManager,
+				projectIdResolver
 			);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -279,7 +285,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				webHookContentBuilder, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 				);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -317,10 +324,11 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				webHookContentBuilder, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 				);
 		
-		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxTestHelper);
+		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxTestHelper, framework.getProjectIdResolver(), null);
 		slackCompact.register();
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -358,7 +366,9 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryItemFactory,
 				webHookHistoryRepository,
 				webAddressTransformer,
-				webHookContentBuilder, variableResolverManager
+				webHookContentBuilder, 
+				variableResolverManager,
+				projectIdResolver
 				);
 		
 		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
@@ -399,7 +409,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				webHookContentBuilder, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 				);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -445,7 +456,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				null, 
-				variableResolverManager
+				variableResolverManager, 
+				projectIdResolver
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -483,7 +495,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				null, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 				);
 		
 		BuildState addedToQueueBuildState = new BuildState();
@@ -526,7 +539,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				webHookContentBuilder, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 				);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -569,7 +583,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookHistoryRepository,
 				webAddressTransformer,
 				null, 
-				variableResolverManager
+				variableResolverManager,
+				projectIdResolver
 				);
 		
 		BuildState finishedBuildState = new BuildState();

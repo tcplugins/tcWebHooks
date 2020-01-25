@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -25,8 +26,8 @@ public class WebHookTemplateListPageController extends WebHookTemplateBasePageCo
 		public WebHookTemplateListPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
 	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
-	    		WebHookSettingsManager webHookSettingsManager) {
-	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager);
+	    		WebHookSettingsManager webHookSettingsManager, ProjectIdResolver projectIdResolver) {
+	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager, projectIdResolver);
 	    	this.myPayloadManager = payloadManager;
 	    }
 

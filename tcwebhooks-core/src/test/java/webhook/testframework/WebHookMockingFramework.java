@@ -11,6 +11,7 @@ import jetbrains.buildServer.serverSide.SRunningBuild;
 
 import org.jdom.JDOMException;
 
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -44,5 +45,5 @@ public interface WebHookMockingFramework {
 	public List<SFinishedBuild> getMockedBuildHistory();
 	public SFinishedBuild getPreviousFailedBuild();
 	public SFinishedBuild getPreviousSuccessfulBuild();
-
+	public ProjectIdResolver getProjectIdResolver();
 }

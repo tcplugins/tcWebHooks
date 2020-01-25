@@ -38,6 +38,7 @@ import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.server.rest.data.DataProvider;
@@ -82,6 +83,7 @@ public class TemplateRequest {
 		  													   Permission.VIEW_BUILD_CONFIGURATION_SETTINGS,
 		  													   Permission.EDIT_PROJECT
 		  													  };
+  private static final Permission PROJECT_TEMPLATE_READ_PERMISSION = Permission.VIEW_PROJECT;
   private static final Permission PROJECT_TEMPLATE_EDIT_PERMISSION = Permission.EDIT_PROJECT;
 
   @Context @NotNull private DataProvider myDataProvider;
@@ -101,48 +103,53 @@ public class TemplateRequest {
   }
 
   @NotNull
-  public static String getTemplateHref(WebHookTemplateConfig template) {
-    return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template);
+  public static String getTemplateHref(String projectExternalId, WebHookTemplateConfig template) {
+    return API_TEMPLATES_URL + "/" + TemplateFinder.getProjectLocator(projectExternalId)+ "/" + TemplateFinder.getLocator(template);
+  }
+  
+  @NotNull
+  public static String getTemplateItemsBaseHref(String projectExternalId, WebHookTemplateConfig template) {
+	  return getTemplateHref(projectExternalId, template) + "/" + TEMPLATE_ITEMS;
   }
 
   @NotNull
-  public static String getDefaultTemplateTextHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + DEFAULT_TEMPLATE + "/templateContent" ;
+  public static String getDefaultTemplateTextHref(String projectExternalId, WebHookTemplateConfig template) {
+	  return getTemplateItemsBaseHref(projectExternalId, template) + "/" + DEFAULT_TEMPLATE + "/templateContent" ;
   }
 
   @NotNull
-  public static String getDefaultBranchTemplateTextHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + DEFAULT_TEMPLATE + "/branchTemplateContent" ;
+  public static String getDefaultBranchTemplateTextHref(String projectExternalId, WebHookTemplateConfig template) {
+	  return getTemplateItemsBaseHref(projectExternalId, template) + "/" + DEFAULT_TEMPLATE + "/branchTemplateContent" ;
   }
 
   @NotNull
-  public static String getTemplateDefaultItemHref(WebHookTemplateConfig template) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + DEFAULT_TEMPLATE;
+  public static String getTemplateDefaultItemHref(String projectExternalId, WebHookTemplateConfig template) {
+	  return getTemplateItemsBaseHref(projectExternalId, template) + "/" + DEFAULT_TEMPLATE;
   }
 
   @NotNull
-  public static String getTemplateItemHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId());
+  public static String getTemplateItemHref(String projectExternalId, WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
+	  return getTemplateItemsBaseHref(projectExternalId, template) + "/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId());
   }
 
   @NotNull
-  public static String getTemplateItemTextHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) + "/templateContent" ;
+  public static String getTemplateItemTextHref(String projectExternalId, WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
+	  return getTemplateItemsBaseHref(projectExternalId, template) + "/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) + "/templateContent" ;
   }
 
   @NotNull
-  public static String getTemplateItemBranchTextHref(WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
-	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) +  "/branchTemplateContent" ;
+  public static String getTemplateItemBranchTextHref(String projectExternalId, WebHookTemplateConfig template, WebHookTemplateItemRest webHookTemplateItem) {
+	  return getTemplateItemsBaseHref(projectExternalId, template) + "/" + TemplateFinder.getTemplateTextLocator(webHookTemplateItem.getId()) +  "/branchTemplateContent" ;
   }
 
   @NotNull
-  public static String getTemplateStateHref(WebHookTemplateConfig template,	String state) {
-		return getTemplateDefaultItemHref(template) + "/buildStates/" + state;
+  public static String getTemplateStateHref(String projectExternalId, WebHookTemplateConfig template,	String state) {
+		return getTemplateDefaultItemHref(projectExternalId, template) + "/buildStates/" + state;
   }
 
   @NotNull
-  public static String getTemplateItemStateHref(WebHookTemplateConfig template,	WebHookTemplateItemRest templateItem, String state) {
-	  return getTemplateItemHref(template, templateItem) + "/buildStates/" + state;
+  public static String getTemplateItemStateHref(String projectExternalId, WebHookTemplateConfig template,	WebHookTemplateItemRest templateItem, String state) {
+	  return getTemplateItemHref(projectExternalId, template, templateItem) + "/buildStates/" + state;
   }
 
   @GET
@@ -153,15 +160,15 @@ public class TemplateRequest {
   }
 
   @GET
-  @Path("/{templateLocator}")
+  @Path("/{projectLocator}/{templateLocator}")
   @Produces({"application/xml", "application/json"})
-  public Template serveTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
-	  checkTemplateReadPermission();
+  public Template serveTemplate(@PathParam("projectLocator") String projectLocator, @PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
+	  checkTemplateReadPermission(TemplateFinder.getProjectLocator(projectLocator));
 	  return new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator), new Fields(fields), myBeanContext);
   }
 
   @GET
-  @Path("/{templateLocator}/export")
+  @Path("/{projectId}/{templateLocator}/export")
   @Produces({"application/json"})
   public Response exportTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
 	  checkTemplateReadPermission();
@@ -202,18 +209,19 @@ public class TemplateRequest {
 	    myTemplateManager.registerTemplateFormatFromXmlConfig(template);
 
 		if (persistAllXmlConfigTemplates(updateMode)){
-	    	return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+	    	return new Template(new WebHookTemplateConfigWrapper(template, myDataProvider.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()), myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
 	    } else {
 	    	throw new OperationException(ERROR_SAVING_TEMPLATE);
 	    }
 	}
 
 	  @POST
+	  @Path("/{projectId}")
 	  @Consumes({"application/xml", "application/json"})
 	  @Produces({"application/xml", "application/json"})
-	  public Template createNewTemplate(Template newTemplate) {
+	  public Template createNewTemplate(@PathParam("projectId") String externalProjectId, Template newTemplate) {
 		String updateMode = "create Template";
-		checkTemplateWritePermission();
+		SProject sProject = checkTemplateWritePermission(externalProjectId);
 		ErrorResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new ErrorResult());
 		if (validationResult.isErrored()) {
 			throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
@@ -229,31 +237,6 @@ public class TemplateRequest {
 	  }
 
 
-	  @PUT
-	  @Path("/{templateLocator}")
-	  @Consumes({"application/xml", "application/json"})
-	  @Produces({"application/xml", "application/json"})
-	  public Template replaceTemplate(@PathParam("templateLocator") String templateLocator, Template newTemplate) {
-		  final String updateMode = "replace Template";
-		  checkTemplateWritePermission();
-		  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-		  if (templateConfigWrapper.getTemplateConfig() == null){
-			  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
-		  }
-		  ErrorResult validationResult = myTemplateValidator.validateNewTemplate(newTemplate, new ErrorResult());
-
-		  if ( ! templateConfigWrapper.getTemplateConfig().getId().equals(newTemplate.id)) {
-			  validationResult.addError("id", "The templateId in the template does not match the templateId in the URL.");
-		  }
-
-		  if (validationResult.isErrored()) {
-			  throw new UnprocessableEntityException(TEMPLATE_CONTAINED_INVALID_DATA, validationResult);
-		  }
-		  WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
-
-		  return buildAndPersistTemplate(newTemplate, updateMode, template);
-	  }
-	  
 	@PUT
 	@Path("/{projectId}/{templateLocator}")
 	@Consumes({ "application/xml", "application/json" })
@@ -285,12 +268,12 @@ public class TemplateRequest {
 	}
 
 	  @POST
-	  @Path("/{templateLocator}/patch")
+	  @Path("/{projectLocator}/{templateLocator}/patch")
 	  @Consumes({"application/xml", "application/json"})
 	  @Produces({"application/xml", "application/json"})
-	  public Template updateTemplate(@PathParam("templateLocator") String templateLocator, Template newTemplate) {
+	  public Template updateTemplate(@PathParam("projectLocator") String projectLocator, @PathParam("templateLocator") String templateLocator, Template newTemplate) {
 		  final String updateMode = "update Template";
-		  checkTemplateWritePermission();
+		  SProject sProject = checkTemplateReadPermission(TemplateFinder.getProjectLocator(projectLocator));
 		  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  if (templateConfigWrapper.getTemplateConfig() == null){
 			  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
@@ -327,7 +310,7 @@ public class TemplateRequest {
 
 		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
 		  if (persistAllXmlConfigTemplates(updateMode)){
-			  return new Template(new WebHookTemplateConfigWrapper(template, myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+			  return new Template(new WebHookTemplateConfigWrapper(template, myDataProvider.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()), myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
 		  } else {
 			  throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
@@ -360,7 +343,7 @@ public class TemplateRequest {
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
 
-	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(webHookTemplateConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(webHookTemplateConfig, myDataProvider.getProjectIdResolver().getExternalProjectId(webHookTemplateConfig.getProjectInternalId()), myTemplateManager.getTemplateState(webHookTemplateConfig.getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
 
 	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfig, newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
@@ -391,7 +374,7 @@ public class TemplateRequest {
 	  }
 
 	  WebHookTemplateConfig newConfig = WebHookTemplateConfigBuilder.buildConfig(rawConfig);
-	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, myTemplateManager.getTemplateState(webHookTemplateConfig.getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, myDataProvider.getProjectIdResolver().getExternalProjectId(webHookTemplateConfig.getProjectInternalId()), myTemplateManager.getTemplateState(webHookTemplateConfig.getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfig)), Fields.LONG, myBeanContext);
 
 	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfig, newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
@@ -1054,6 +1037,19 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 		} catch (AuthorizationFailedException e) {
 			throw new TemplatePermissionException("Reading templates requires at least one of the following permissions: 'VIEW_PROJECT, VIEW_BUILD_CONFIGURATION_SETTINGS, EDIT_PROJECT'");
 		}
+	}
+	
+	private SProject checkTemplateReadPermission(String externalProjectId) {
+		try {
+			SProject sProject = myDataProvider.getProjectManager().findProjectByExternalId(externalProjectId);
+			if (sProject == null) {
+				throw new NotFoundException("No project found with supplied projectId");
+			}
+			myPermissionChecker.checkProjectPermission(PROJECT_TEMPLATE_READ_PERMISSION, sProject.getProjectId());
+			return sProject;
+		} catch (AccessDeniedException | AuthorizationFailedException e) {
+			throw new TemplatePermissionException("Reading Project templates requires permission 'VIEW_PROJECT' on the relevant project");
+		}		
 	}
 
 	private void checkTemplateWritePermission() {

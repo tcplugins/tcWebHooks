@@ -15,6 +15,7 @@ import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -46,12 +47,15 @@ public class SlackComCompactXmlWebHookTemplateTest {
 
 	private WebHookPayload payloadFormat;
 	
+	@Mock
+	private ProjectIdResolver projectIdResolver;
+	
 	@Test
 	public void testLoadDefaultCompactSlackTemplateAndVerifyThatThereIsATemplateForChangesLoaded() {
 		
 		setup();
 		
-		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 		slackCompact.register();
 		webHookTemplateManager.registerTemplateFormatFromSpring(slackCompact);
 		
@@ -69,7 +73,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		
 		setup();
 		
-		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 		slackCompact.register();
 		webHookTemplateManager.registerTemplateFormatFromSpring(slackCompact);
 		
@@ -90,7 +94,7 @@ public class SlackComCompactXmlWebHookTemplateTest {
 		
 		setupPayloadManagerAndRegisterJsonTemplate();
 		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
-		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
+		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver);
 		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
 		webHookVariableResolverManager  = new WebHookVariableResolverManagerImpl();
 		webHookVariableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());

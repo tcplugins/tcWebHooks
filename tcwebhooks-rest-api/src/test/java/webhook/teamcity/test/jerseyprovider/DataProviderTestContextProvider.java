@@ -18,6 +18,7 @@ import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.DataProvider;
@@ -38,6 +39,7 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
   @Context WebHookTemplateManager templateManager;
   private WebHookManager webHookManager;
   private WebHookFinder webHookFinder;
+  private final ProjectIdResolver projectIdResolver;
   
   
   public DataProviderTestContextProvider() {
@@ -45,6 +47,7 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
 	  sBuildServer = mock(SBuildServer.class);
 	  permissionChecker = mock(PermissionChecker.class);
 	  projectManager = new MockProjectManager();
+	  projectIdResolver = mock(ProjectIdResolver.class);
 	  //templateFinder = mock(TemplateFinder.class);
   }
 
@@ -67,8 +70,9 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
 	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
 	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
 	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
+	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
-	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder);
+	  dataProvider = new DataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder, projectIdResolver);
 	  return dataProvider;
   }
   

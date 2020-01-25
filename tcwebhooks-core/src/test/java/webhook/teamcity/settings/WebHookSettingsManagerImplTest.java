@@ -61,7 +61,9 @@ public class WebHookSettingsManagerImplTest {
 		ElasticSearchXmlWebHookTemplate elasticTemplate = new ElasticSearchXmlWebHookTemplate(
 														framework.getWebHookTemplateManager(),
 														framework.getWebHookPayloadManager(),
-														new WebHookTemplateJaxHelperImpl()
+														new WebHookTemplateJaxHelperImpl(),
+														framework.getProjectIdResolver(),
+														null
 												);
 		elasticTemplate.register();
 		

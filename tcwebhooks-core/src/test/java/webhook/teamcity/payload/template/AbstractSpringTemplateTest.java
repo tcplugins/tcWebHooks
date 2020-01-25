@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
+import org.mockito.Mockito;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
@@ -16,6 +17,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
@@ -42,19 +44,26 @@ public abstract class AbstractSpringTemplateTest {
 	protected WebHookTemplateJaxHelper webHookTemplateJaxHelper;
 	protected WebHookFactory webHookFactory;
 	protected MockSRunningBuild sRunningBuild;
-
+	protected ProjectIdResolver projectIdResolver;
 
 
 	
 	@Before
 	public void setup() {
 		
+		projectIdResolver = mock(ProjectIdResolver.class);
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project1"))).thenReturn("ATestProject");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project1");
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project0"))).thenReturn("_Root");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("project0");
+		
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
 		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
 		payloadManager = new WebHookPayloadManager(sBuildServer);
-		templateManager = new WebHookTemplateManager(payloadManager, webHookTemplateJaxHelper);
+		templateManager = new WebHookTemplateManager(payloadManager, webHookTemplateJaxHelper, projectIdResolver);
 		WebHookHttpClientFactory clientFactory = new WebHookHttpClientFactoryImpl();
 		
 		WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();

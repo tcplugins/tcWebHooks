@@ -1,5 +1,6 @@
 package webhook.teamcity.payload.template;
 
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
@@ -10,8 +11,8 @@ public class TestNvPairsXmlTemplate extends AbstractXmlBasedWebHookTemplate {
 
 
 	public TestNvPairsXmlTemplate(WebHookTemplateManager templateManager, WebHookPayloadManager payloadManager,
-			WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
-		super(templateManager, payloadManager, webHookTemplateJaxHelper);
+			WebHookTemplateJaxHelper webHookTemplateJaxHelper, ProjectIdResolver projectIdResolver) {
+		super(templateManager, payloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
 	}
 
 	@Override

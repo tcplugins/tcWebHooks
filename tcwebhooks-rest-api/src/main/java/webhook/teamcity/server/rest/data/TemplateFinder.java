@@ -6,6 +6,7 @@ import jetbrains.buildServer.server.rest.data.Locator;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.util.StringUtil;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
@@ -17,13 +18,20 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateTex
 public class TemplateFinder {
 
 	@NotNull private final WebHookTemplateManager myTemplateManager;
+	@NotNull private final ProjectIdResolver myProjectIdResolver;
 	
-	public TemplateFinder(@NotNull final WebHookTemplateManager templateManager){
+	
+	public TemplateFinder(@NotNull final WebHookTemplateManager templateManager, @NotNull final ProjectIdResolver projectIdResolver){
 		myTemplateManager = templateManager;
+		myProjectIdResolver = projectIdResolver;
 	}
 	
 	public static String getLocator(final WebHookTemplateConfig template) {
 	    return Locator.createEmptyLocator().setDimension("id", template.getId()).getStringRepresentation();
+	}
+	
+	public static String getProjectLocator(final String projectId) {
+		return Locator.createEmptyLocator().setDimension("project", projectId).getStringRepresentation();
 	}
 
 	public static String getTemplateTextLocator(final String id){
@@ -47,9 +55,12 @@ public class TemplateFinder {
 			final String singleValue = locator.getSingleValue();
 			template = myTemplateManager.getTemplateConfig(singleValue, TemplateState.BEST);
 			if (template != null) {
-				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getId(), TemplateState.BEST), 
-														WebHookTemplateStates.build(template));
+				return new WebHookTemplateConfigWrapper(
+						template, 
+						myProjectIdResolver.getExternalProjectId(template.getProjectInternalId()),
+						myTemplateManager.getTemplateState(template.getId(), TemplateState.BEST), 
+						WebHookTemplateStates.build(template)
+					);
 			}
 			throw new NotFoundException(
 					"No template found by id '"
@@ -61,10 +72,12 @@ public class TemplateFinder {
 			@NotNull final TemplateState templateState = getTemplateStateDimension(locator);
 			template = myTemplateManager.getTemplateConfig(templateId, templateState);
 			if (template != null) {
-				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getId(), templateState),
-														WebHookTemplateStates.build(template)
-														);
+				return new WebHookTemplateConfigWrapper(
+						template, 
+						myProjectIdResolver.getExternalProjectId(template.getProjectInternalId()),
+						myTemplateManager.getTemplateState(template.getId(), templateState),
+						WebHookTemplateStates.build(template)
+					);
 			}
 			throw new NotFoundException(
 					"No template found by id '"
@@ -77,10 +90,12 @@ public class TemplateFinder {
 
 			template = myTemplateManager.getTemplateConfig(templateName, templateState);
 			if (template != null) {
-				return new WebHookTemplateConfigWrapper(template, 
-														myTemplateManager.getTemplateState(template.getId(), templateState),
-														WebHookTemplateStates.build(template)
-														);
+				return new WebHookTemplateConfigWrapper(
+						template, 
+						myProjectIdResolver.getExternalProjectId(template.getProjectInternalId()),
+						myTemplateManager.getTemplateState(template.getId(), templateState),
+						WebHookTemplateStates.build(template)
+					);
 			}
 			throw new NotFoundException(
 					"No template found by name '"

@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.jdom.JDOMException;
+import org.mockito.Mockito;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.BuildHistory;
@@ -30,6 +31,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookFactoryImpl;
@@ -140,7 +142,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	private WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(contentBuilder, historyRepository, historyItemFactory);
 	private WebHookExecutor webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
-
+	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
@@ -166,6 +168,12 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(templateManager.isRegisteredTemplate("legacy-json")).thenReturn(true);
 		when(templateManager.getTemplate("legacy-json")).thenReturn(templateJson);
 		when(resolver.getTemplatePayloadFormat("legacy-json")).thenReturn(payloadJson);
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project1"))).thenReturn("ATestProject");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project1");
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project0"))).thenReturn("_Root");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("project0");
 		
 		formatList.add(payloadJson);
 		formatList.add(payloadXml);
@@ -425,4 +433,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		return this.settings;
 	}
 
+	@Override
+	public ProjectIdResolver getProjectIdResolver() {
+		return this.projectIdResolver;
+	}
 }

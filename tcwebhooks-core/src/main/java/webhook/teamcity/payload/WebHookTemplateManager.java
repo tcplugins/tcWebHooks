@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.JAXBException;
 
 import webhook.teamcity.Loggers;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
@@ -28,14 +30,17 @@ public class WebHookTemplateManager {
 	private List<WebHookPayloadTemplate> orderedTemplateCollection = new ArrayList<>();
 	private final WebHookPayloadManager webHookPayloadManager;
 	private final WebHookTemplateJaxHelper webHookTemplateJaxHelper;
+	private final ProjectIdResolver projectIdResolver;
 	private String configFilePath;
 	
 	public WebHookTemplateManager(
 			WebHookPayloadManager webHookPayloadManager, 
-			WebHookTemplateJaxHelper webHookTemplateJaxHelper)
+			WebHookTemplateJaxHelper webHookTemplateJaxHelper,
+			ProjectIdResolver projectIdResolver)
 	{
 		this.webHookPayloadManager = webHookPayloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
+		this.projectIdResolver = projectIdResolver;
 		Loggers.SERVER.info("WebHookTemplateManager :: Starting (" + toString() + ")");
 	}
 	
@@ -57,6 +62,10 @@ public class WebHookTemplateManager {
 		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
 				+ payloadTemplate.getId() 
 				+ " with rank of " + payloadTemplate.getRank());
+		// Set template as belonging to _Root if no associated project id found for this template.
+		if (Objects.isNull(payloadTemplate.getAssociatedProjectId()) || payloadTemplate.getAssociatedProjectId().isEmpty()) {
+			payloadTemplate.setAssociatedProjectId(projectIdResolver.getInternalProjectId("_Root"));
+		}
 		payloadTemplate.fixTemplateIds();
 		xmlConfigTemplates.put(payloadTemplate.getId(),WebHookTemplateFromXml.build(payloadTemplate, webHookPayloadManager));
 	}

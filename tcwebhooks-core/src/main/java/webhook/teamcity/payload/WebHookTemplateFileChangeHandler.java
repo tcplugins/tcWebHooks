@@ -9,27 +9,36 @@ import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FileWatcher;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ServerPaths;
+import webhook.teamcity.DeferrableService;
+import webhook.teamcity.DeferrableServiceManager;
 import webhook.teamcity.settings.WebHookConfigChangeHandler;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
-public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHookConfigChangeHandler {
+public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHookConfigChangeHandler, DeferrableService {
 
 	final WebHookTemplateManager webHookTemplateManager;
 	final WebHookPayloadManager webHookPayloadManager;
 	final WebHookTemplateJaxHelper webHookTemplateJaxHelper;
+	final DeferrableServiceManager deferrableServiceManager;
 	File configFile;
 	FileWatcher fw;
 	final ServerPaths serverPaths;
 	
 	public WebHookTemplateFileChangeHandler(
 			ServerPaths serverPaths, 
-			WebHookTemplateManager webHookTemplateManager, WebHookPayloadManager webHookPayloadManager, WebHookTemplateJaxHelper webHookTemplateJaxHelper) {
+			WebHookTemplateManager webHookTemplateManager, WebHookPayloadManager webHookPayloadManager, WebHookTemplateJaxHelper webHookTemplateJaxHelper, DeferrableServiceManager deferrableServiceManager) {
 		this.webHookTemplateManager = webHookTemplateManager;
 		this.webHookPayloadManager = webHookPayloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
 		this.serverPaths = serverPaths;
+		this.deferrableServiceManager = deferrableServiceManager;
 		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Starting");
+	}
+	
+	public void requestDeferredRegistration() {
+		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Registering as a deferrable service");
+		deferrableServiceManager.registerService(this);
 	}
 	
 	public void register(){

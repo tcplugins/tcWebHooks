@@ -6,6 +6,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import jetbrains.buildServer.server.rest.PathTransformer;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.request.Constants;
 
@@ -25,6 +26,17 @@ public class WebHookApiUrlBuilderTestContextProvider implements InjectableProvid
 			@Override
 			public String transform(String path) {
 				return Constants.API_URL + "/" + path;
+			}
+		}, new ProjectIdResolver() {
+			
+			@Override
+			public String getInternalProjectId(String externalProjectId) {
+				return "rpojectr0";
+			}
+			
+			@Override
+			public String getExternalProjectId(String internalProjectId) {
+				return "Toot";
 			}
 		});
 

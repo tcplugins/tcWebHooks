@@ -97,7 +97,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     @Test
     public void testCreateTemplateItemOnExistingTempalteUsingJson() {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();
@@ -122,7 +122,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     @Test(expected=UniformInterfaceException.class)
     public void testCreateDefaultTemplateItemFailsUsingJsonWhenDefaultTemplateAlreadyExists() {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();
@@ -143,7 +143,7 @@ public class CreateNewTemplateTest extends WebHookAbstractSpringAwareJerseyTest 
     @Test
     public void testCreateTemplateByRequestingAnExistingTemplateAndThenSubmittingItWithANewTemplateName() {
     	
-    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper);
+    	WebHookPayloadTemplate elastic = new ElasticSearchXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver, null);
     	elastic.register();
     	
     	WebResource webResource = resource();

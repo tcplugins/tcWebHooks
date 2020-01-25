@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.template.EditTemplateRenderingBean;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -27,8 +28,9 @@ public class WebHookTemplateDiffPageController extends WebHookTemplateBasePageCo
 	    public WebHookTemplateDiffPageController(SBuildServer server, WebControllerManager webManager, 
 	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
 	    		WebHookPluginDataResolver webHookPluginDataResolver, 
-	    		WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager) {
-	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager);
+	    		WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager,
+	    		ProjectIdResolver projectIdResolver) {
+	        super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager, projectIdResolver);
 	        this.myPayloadManager = payloadManager;
 	    }
 
@@ -52,7 +54,7 @@ public class WebHookTemplateDiffPageController extends WebHookTemplateBasePageCo
     				
     				if (templateConfig != null) {
     					params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
-    					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST)));
+    					params.put("webhookTemplateBean", EditTemplateRenderingBean.build(templateConfig, myTemplateManager.getTemplateState(templateConfig.getId(), TemplateState.BEST), myProjectIdResolver.getExternalProjectId(templateConfig.getProjectInternalId())));
     					return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateDiff.jsp", params);
     				}
     			}

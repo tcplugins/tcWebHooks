@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.SortedMap;
 
 import org.jdom.JDOMException;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import jetbrains.buildServer.messages.Status;
@@ -26,6 +27,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.MockSRunningBuild;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookListener;
@@ -110,6 +112,8 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private WebHookVariableResolverManager webHookVariableResolverManager;
 	private WebHookRunnerFactory webHookRunnerFactory;
 	private WebHookExecutor webHookExecutor;
+	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
+
 	
 	public static WebHookSemiMockingFrameworkImpl create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
 		WebHookSemiMockingFrameworkImpl framework = new WebHookSemiMockingFrameworkImpl();
@@ -124,6 +128,12 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project1"))).thenReturn("ATestProject");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project1");
+		
+		when(projectIdResolver.getExternalProjectId(Mockito.eq("project0"))).thenReturn("_Root");
+		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("project0");
+		
 		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		webHookVariableResolverManager = new WebHookVariableResolverManagerImpl();
 		VariableResolverFactory variableResolverFactory =  new WebHooksBeanUtilsVariableResolverFactory();
@@ -131,7 +141,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		variableResolverFactory.setWebHookVariableResolverManager(webHookVariableResolverManager);
 		webHookPayloadManager = setupPayloadManagerAndRegisterPayloadFormats();
 		
-		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper);
+		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver);
 		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
 		webHookContentBuilder =  new WebHookContentBuilder(sBuildServer, webHookTemplateResolver, webHookVariableResolverManager);
 		
@@ -305,6 +315,10 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	@Override
 	public WebHookSettingsManager getWebHookSettingsManager() {
 		return this.projectSettingsManager;
+	}
+
+	public ProjectIdResolver getProjectIdResolver() {
+		return this.projectIdResolver;
 	}
 
 }
