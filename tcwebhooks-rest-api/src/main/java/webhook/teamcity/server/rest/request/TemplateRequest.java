@@ -160,11 +160,12 @@ public class TemplateRequest {
   }
 
   @GET
-  @Path("/{projectLocator}/{templateLocator}")
+  @Path("/{templateLocator}")
   @Produces({"application/xml", "application/json"})
-  public Template serveTemplate(@PathParam("projectLocator") String projectLocator, @PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
-	  checkTemplateReadPermission(TemplateFinder.getProjectLocator(projectLocator));
-	  return new Template(myDataProvider.getTemplateFinder().findTemplateById(templateLocator), new Fields(fields), myBeanContext);
+  public Template serveTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
+	  WebHookTemplateConfigWrapper templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
+	  checkTemplateReadPermission(templateConfigWrapper.getExternalProjectId());
+	  return new Template(templateConfigWrapper, new Fields(fields), myBeanContext);
   }
 
   @GET
