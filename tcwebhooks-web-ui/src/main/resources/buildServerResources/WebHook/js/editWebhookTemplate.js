@@ -325,7 +325,7 @@ WebHooksPlugin = {
 		putTemplateData: function () {
 			var dialog = this;
 			$j.ajax ({
-				url: myJson.href,
+				url: window['base_uri'] + myJson.href,
 				type: "PUT",
 				data: JSON.stringify(myJson),
 				dataType: 'json',
@@ -350,7 +350,7 @@ WebHooksPlugin = {
 				templateSubUri = "/defaultTemplate";
 			}
 			$j.ajax ({
-				url: myJson.parentTemplate.href + templateSubUri,
+				url: window['base_uri'] + myJson.parentTemplate.href + templateSubUri,
 				type: "POST",
 				data: JSON.stringify(myJson),
 				dataType: 'json',
