@@ -50,6 +50,12 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 			Loggers.SERVER.debug(e);
 		} 
 		
+		if (!velocityContext.containsKey("jsonTool")) {
+			velocityContext.put("jsonTool", new VelocityJsonTool());
+		} else {
+			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'jsonTool' to Velocity context. An item of that name already exists");
+		}
+		
 	}
 	
 	@Override
