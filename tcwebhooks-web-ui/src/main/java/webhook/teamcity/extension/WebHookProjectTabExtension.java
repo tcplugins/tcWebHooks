@@ -30,7 +30,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebAddressTransformer myWebAddressTransformer;
 
-	protected WebHookProjectTabExtension(
+	public WebHookProjectTabExtension(
 			@NotNull PagePlaces pagePlaces,
 			@NotNull ProjectManager projectManager,
 			@NotNull WebHookSettingsManager webHookSettingsManager,

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +31,6 @@ public class WebHookEndPointController extends BaseController {
 	
 	public WebHookEndPointController(	SBuildServer server,
 								WebHookEndPointContentStore endPointContentStore, 
-								PluginDescriptor pluginDescriptor, 
 								WebControllerManager webControllerManager,
 								AuthorizationInterceptor authorizationInterceptor) {
 		super(server);
@@ -40,7 +38,7 @@ public class WebHookEndPointController extends BaseController {
 		this.myWebManager = webControllerManager;
 		this.myWebManager.registerController(MY_URL, this);
 		authorizationInterceptor.addPathNotRequiringAuth(MY_URL);
-		Loggers.SERVER.info("EndPointController:: Registering");
+		Loggers.SERVER.debug("WebHookEndPointController:: Registering");
 	}
 
     @Nullable

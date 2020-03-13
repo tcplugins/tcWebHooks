@@ -70,7 +70,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		List<SProject> parentProjects = currentProject.getProjectPath();
 
 		for (SProject projectParent : parentProjects){
-			Loggers.SERVER.info("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
+			Loggers.SERVER.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
 			if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
 
 				projectBean = ProjectWebHooksBean.buildWithoutNew(

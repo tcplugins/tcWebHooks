@@ -29,11 +29,11 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 		this.webHookPayloadManager = webHookPayloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
 		this.serverPaths = serverPaths;
-		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Starting");
+		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: Starting");
 	}
 	
 	public void register(){
-		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Registering");
+		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: Registering");
 		this.configFile = new File(this.serverPaths.getConfigDir() + File.separator + "webhook-templates.xml");
 		
 		this.fw = new FileWatcher(configFile);

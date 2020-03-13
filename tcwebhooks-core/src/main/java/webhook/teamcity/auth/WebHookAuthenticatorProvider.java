@@ -12,7 +12,7 @@ public class WebHookAuthenticatorProvider {
 	HashMap<String, WebHookAuthenticatorFactory> types = new HashMap<>();
 
 	public WebHookAuthenticatorProvider(){
-		Loggers.SERVER.info("WebHookAuthenticatorProvider :: Starting");
+		Loggers.SERVER.debug("WebHookAuthenticatorProvider :: Starting");
 	}
 
 	public void registerAuthType(WebHookAuthenticatorFactory authType){
