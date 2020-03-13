@@ -69,12 +69,12 @@ public class WebHookListener extends BuildServerAdapter {
         webHookHistoryRepository = historyRepository;
         webHookHistoryItemFactory = historyItemFactory;
         
-        Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Starting");
+        Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
     }
     
     public void register(){
         myBuildServer.addListener(this);
-        Loggers.SERVER.info(WEB_HOOK_LISTENER + " :: Registering");
+        Loggers.SERVER.debug(WEB_HOOK_LISTENER + "Registering");
     }
 
 	private void processBuildEvent(SRunningBuild sRunningBuild, BuildStateEnum state) {

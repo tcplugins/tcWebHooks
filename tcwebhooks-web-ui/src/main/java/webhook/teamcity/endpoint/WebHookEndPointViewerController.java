@@ -35,7 +35,7 @@ public class WebHookEndPointViewerController extends BaseController {
 		this.myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		this.myWebManager = webControllerManager;
 		this.myWebManager.registerController(MY_URL, this);
-		Loggers.SERVER.info("EndPointController:: Registering");
+		Loggers.SERVER.debug("WebHookEndPointViewerController:: Registering");
 	}
 
     @Nullable

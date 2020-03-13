@@ -19,7 +19,7 @@ public class WebHookPayloadManager {
 	
 	public WebHookPayloadManager(SBuildServer server){
 		this.server = server;
-		Loggers.SERVER.info("WebHookPayloadManager :: Starting");
+		Loggers.SERVER.debug("WebHookPayloadManager :: Starting");
 	}
 	
 	public void registerPayloadFormat(WebHookPayload payloadFormat){

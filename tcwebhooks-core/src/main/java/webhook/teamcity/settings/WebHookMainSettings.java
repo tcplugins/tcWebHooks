@@ -17,7 +17,6 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	private SBuildServer server;
 	
 	public WebHookMainSettings(SBuildServer server){
-		Loggers.SERVER.debug(NAME + " :: Constructor called");
 		this.server = server;
 		webHookMainConfig = new WebHookMainConfig();
 	}

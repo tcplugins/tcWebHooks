@@ -8,7 +8,7 @@ import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 public class WebHookProjectSettingsFactory implements ProjectSettingsFactory {
 	
 	public WebHookProjectSettingsFactory(ProjectSettingsManager projectSettingsManager){
-		Loggers.SERVER.info("WebHookProjectSettingsFactory :: Registering");
+		Loggers.SERVER.debug("WebHookProjectSettingsFactory :: Registering");
 		projectSettingsManager.registerSettingsFactory("webhooks", this);
 	}
 
