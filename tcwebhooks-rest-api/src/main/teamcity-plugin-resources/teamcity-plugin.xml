@@ -18,7 +18,7 @@
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
-  <deployment use-separate-classloader="true" allow-runtime-reload="true"/>
+  <deployment use-separate-classloader="true"/>
   <dependencies>
     <plugin name="tcWebHooks"/>
     <plugin name="rest-api"/>
