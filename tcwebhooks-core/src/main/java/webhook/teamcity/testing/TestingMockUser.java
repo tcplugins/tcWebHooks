@@ -38,7 +38,6 @@ public class TestingMockUser implements User {
 		return false;
 	}
 
-	@Override
 	public boolean isPermissionGrantedForAllProjects(Collection<String> projectIds, Permission permission) {
 		return false;
 	}
@@ -53,7 +52,6 @@ public class TestingMockUser implements User {
 		return null;
 	}
 
-	@Override
 	public Permissions getPermissionsGrantedForAllProjects(Collection<String> projectIds) {
 		return null;
 	}

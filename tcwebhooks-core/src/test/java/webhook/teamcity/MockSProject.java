@@ -33,7 +33,6 @@ import jetbrains.buildServer.serverSide.PersistFailedException;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SPersistentEntity;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.TemplateCannotBeRemovedException;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
 import jetbrains.buildServer.users.User;
@@ -630,7 +629,7 @@ public class MockSProject implements SProject {
 	}
 	
 	// Since TeamCity 10.0
-	
+	/*
 	@Override
 	public Parameter getOwnParameter(String paramName) {
 		return null;
@@ -695,5 +694,5 @@ public class MockSProject implements SProject {
 	public boolean isReadOnly() {
 		return false;
 	}
-
+	*/
 }

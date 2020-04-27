@@ -52,13 +52,11 @@ import jetbrains.buildServer.serverSide.dependency.CyclicDependencyFoundExceptio
 import jetbrains.buildServer.serverSide.dependency.Dependency;
 import jetbrains.buildServer.serverSide.dependency.Dependent;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
-import jetbrains.buildServer.serverSide.parameters.types.TypedValue;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.util.Option;
 import jetbrains.buildServer.vcs.CheckoutRules;
 import jetbrains.buildServer.vcs.FilteredVcsChange;
-import jetbrains.buildServer.vcs.OperationRequestor;
 import jetbrains.buildServer.vcs.PathMapping;
 import jetbrains.buildServer.vcs.SVcsModification;
 import jetbrains.buildServer.vcs.SVcsRoot;
@@ -1170,7 +1168,7 @@ public class MockSBuildType implements SBuildType {
 	}
 
 	// Since TeamCity 10.0
-	
+	/*
 	@Override
 	public void addArtifactDependency(SArtifactDependency dependency) {
 		
@@ -1225,5 +1223,5 @@ public class MockSBuildType implements SBuildType {
 	public boolean isReadOnly() {
 		return false;
 	}
-	
+	*/
 }

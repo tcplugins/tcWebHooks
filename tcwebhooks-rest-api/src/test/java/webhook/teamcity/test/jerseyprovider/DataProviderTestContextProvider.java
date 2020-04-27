@@ -20,7 +20,7 @@ import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SecurityContextEx;
+import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.ProjectIdResolver;
@@ -45,7 +45,7 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
   private WebHookManager webHookManager;
   private WebHookFinder webHookFinder;
   private final ProjectIdResolver projectIdResolver;
-  private final SecurityContextEx securityContext;
+  private final SecurityContext securityContext;
   private final AuthorityHolder authorityHolder;
   
   
@@ -55,7 +55,7 @@ public class DataProviderTestContextProvider implements InjectableProvider<Conte
 	  permissionChecker = mock(PermissionChecker.class);
 	  projectManager = new MockProjectManager();
 	  projectIdResolver = mock(ProjectIdResolver.class);
-	  securityContext = mock(SecurityContextEx.class);
+	  securityContext = mock(SecurityContext.class);
 	  authorityHolder = mock(AuthorityHolder.class);
 	  when(securityContext.getAuthorityHolder()).thenReturn(authorityHolder);
 	  when(authorityHolder.isPermissionGrantedForAnyProject(eq(Permission.EDIT_PROJECT))).thenReturn(true);

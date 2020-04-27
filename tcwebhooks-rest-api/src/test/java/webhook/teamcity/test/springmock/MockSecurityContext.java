@@ -34,12 +34,6 @@ public class MockSecurityContext implements SecurityContext {
 			}
 			
 			@Override
-			public boolean isPermissionGrantedForAllProjects(Collection<String> projectIds, Permission permission) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
 			public Map<String, Permissions> getProjectsPermissions() {
 				// TODO Auto-generated method stub
 				return null;
@@ -47,12 +41,6 @@ public class MockSecurityContext implements SecurityContext {
 			
 			@Override
 			public Permissions getPermissionsGrantedForProject(String projectId) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-			@Override
-			public Permissions getPermissionsGrantedForAllProjects(Collection<String> projectIds) {
 				// TODO Auto-generated method stub
 				return null;
 			}
