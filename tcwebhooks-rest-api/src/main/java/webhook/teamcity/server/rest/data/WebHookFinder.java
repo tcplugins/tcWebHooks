@@ -1,8 +1,8 @@
 package webhook.teamcity.server.rest.data;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -82,11 +82,13 @@ public class WebHookFinder {
 	}
 
 	public Collection<String> getBuildTypeExternalIds(Collection<String> internalIds) {
-		return internalIds.stream()
-				.filter(id ->
-						Objects.nonNull(this.projectManager.findBuildTypeById(id))
-					 && Objects.nonNull(this.projectManager.findBuildTypeById(id).getExternalId()))
-				.map(id -> this.projectManager.findBuildTypeById(id).getExternalId())
-				.collect(Collectors.toList());
+		// Don't use Java8 streams. They don't work with Jersey 1.16 (TC9.x)
+		List<String> externalExternalIds = new ArrayList<>();
+		for (String internalId : internalIds) {
+			if (this.projectManager.findBuildTypeById(internalId) != null) {
+				externalExternalIds.add(this.projectManager.findBuildTypeById(internalId).getExternalId());
+			}
+		}
+		return externalExternalIds;
 	}
 }
