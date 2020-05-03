@@ -102,6 +102,10 @@ ul.commalist li:last-child:after {
 			</c:otherwise>
 		</c:choose>
 
+		<c:if test="${fn:length(webHookTemplates) == 0}" >
+				<p>There are no Templates associated with this project.</p>
+				<a href="../webhooks/index.html?projectId=${projectExternalId}">Add project WebHooks</a>.
+		</c:if>
 		<c:if test="${fn:length(webHookTemplates) > 0}" >
 				<p>There are <strong>${fn:length(webHookTemplates)}</strong> Templates associated with this project.
 					<a href="../webhooks/templates.html?projectId=${projectExternalId}">View project Templates</a>.</p>
