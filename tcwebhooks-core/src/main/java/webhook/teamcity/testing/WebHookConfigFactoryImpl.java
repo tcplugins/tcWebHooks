@@ -49,6 +49,7 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 				// This means that customTemplate, Parameters and filters will be copied over.
 				WebHookConfig webHookConfig = findWebHookWithId(webHookExecutionRequest.getProjectExternalId(), webHookExecutionRequest.getUniqueKey());
 				webHookConfig.setUrl(webHookExecutionRequest.getUrl());
+				webHookConfig.setPayloadTemplate(webHookExecutionRequest.getTemplateId());
 				webHookConfig.setAuthEnabled(webHookExecutionRequest.isAuthEnabled());
 				webHookConfig.setAuthType(webHookExecutionRequest.getAuthType());
 				webHookConfig.setAuthPreemptive(webHookExecutionRequest.isAuthPreemptive());
