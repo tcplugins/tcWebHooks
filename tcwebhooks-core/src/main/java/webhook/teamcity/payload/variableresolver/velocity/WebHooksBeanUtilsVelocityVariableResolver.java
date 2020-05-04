@@ -28,7 +28,6 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 	Map<String, ExtraParametersMap> extraAndTeamCityProperties;
 	VelocityContext velocityContext = new VelocityContext();
 	
-	@SuppressWarnings("unchecked")
 	public WebHooksBeanUtilsVelocityVariableResolver(Object javaBean, Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
 		this.bean = javaBean;
 		this.extraAndTeamCityProperties = extraAndTeamCityProperties;
@@ -38,7 +37,6 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 				velocityContext.put(entry.getKey().replaceAll("\\.", "_"), entry.getValue());
 			}
 		}
-		
 		
 		try {
 			Map<String, Object> beanProperties = PropertyUtils.describe(bean);
@@ -54,6 +52,11 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 			velocityContext.put("jsonTool", new VelocityJsonTool());
 		} else {
 			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'jsonTool' to Velocity context. An item of that name already exists");
+		}
+		if (!velocityContext.containsKey("nullUtils")) {
+			velocityContext.put("nullUtils", new VelocityNullUtils());
+		} else {
+			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'nullUtils' to Velocity context. An item of that name already exists");
 		}
 		
 	}
