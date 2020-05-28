@@ -93,7 +93,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 		        		params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. No matching project found</error></errors>");
 		        		noErrors = false;
 		        	} else {
-		        		WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"));
+		        		WebHookProjectSettings projSettings = mySettings.getSettings(request.getParameter("projectId"));
 
 			    		if (noErrors && (projSettings != null) && (myProject != null)
 			    				&& (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT))){
@@ -240,7 +240,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
 	        	if (project != null){
 	        	
-			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) mySettings.getSettings(request.getParameter("projectId"));
+			    	WebHookProjectSettings projSettings = mySettings.getSettings(request.getParameter("projectId"));
 			    	
 			    	String message = projSettings.getWebHooksAsString();
 			    	

@@ -87,13 +87,13 @@
 					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><c:out value="${hook.payloadFormatForWeb}" /></td>
 								</c:when>
 								<c:otherwise>
-					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><a href="template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
+					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><a title='<c:out value="${hook.templateToolTip}"/>' href="template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
 								</c:otherwise>
 							</c:choose>
 
 
 						<td class="value <%--highlight--%>" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"--%>><c:out value="${hook.enabledEventsListForWeb}" /></td>
-						<td class="value <%--highlight--%>" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"--%>><c:out value="${hook.enabledBuildsListForWeb}" /></td>
+						<td class="value <%--highlight--%>" title="${hook.buildTypeCountAsToolTip}" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"--%>><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
 						<%--
 						<td class="edit highlight"><a onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
 						<td class="edit highlight"><a onclick="WebHooksPlugin.showDeleteDialog('${hook.uniqueKey}');" href="javascript://">delete</a></td>

@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +25,8 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private boolean enabled;
 	private String payloadTemplate;
 	private String payloadFormatForWeb = "Unknown";
+	
+	private String templateToolTip = "";
 	private List<StateBean> states = new ArrayList<>();
 	private boolean allBuildTypesEnabled;
 	private boolean subProjectsEnabled;
@@ -30,11 +34,12 @@ public class WebhookConfigAndBuildTypeListHolder {
 
 	@Setter
 	private List<WebhookBuildTypeEnabledStatusBean> builds = new ArrayList<>();
+	
+	@Setter
+	private Set<String> enabledBuildIds = new HashSet<>();
 
 	@Setter
 	private String enabledEventsListForWeb;
-	@Setter
-	private String enabledBuildsListForWeb;
 
 	@Setter
 	private WebhookAuthenticationConfigBean authConfig = null;
@@ -46,8 +51,8 @@ public class WebhookConfigAndBuildTypeListHolder {
 		uniqueKey = config.getUniqueKey();
 		enabled = config.getEnabled();
 		payloadTemplate = config.getPayloadTemplate();
+		enabledBuildIds = config.getEnabledBuildTypesSet();
 		setEnabledEventsListForWeb(config.getEnabledListAsString());
-		setEnabledBuildsListForWeb(config.getBuildTypeCountAsFriendlyString());
 		allBuildTypesEnabled = config.isEnabledForAllBuildsInProject();
 		subProjectsEnabled = config.isEnabledForSubProjects();
 		addBuildStatesFromConfig(config);
@@ -68,6 +73,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 				if (t.supportsPayloadFormat(payload.getFormatShortName())){
 					this.payloadFormatForWeb = t.getTemplateDescription() + " (" + payload.getFormatDescription() + ")";
 					this.payloadTemplateEngineType = payload.getTemplateEngineType();
+					this.templateToolTip = t.getTemplateToolTip();
 					break;
 				}
 			}
@@ -112,4 +118,45 @@ public class WebhookConfigAndBuildTypeListHolder {
 		return "Unable to display GeneralisedUrl";
 	}
 
+	public String getBuildTypeCountAsFriendlyString(){
+		if (this.allBuildTypesEnabled  && this.subProjectsEnabled){
+			return "All builds & Sub-Projects";
+		} else if (this.allBuildTypesEnabled){ // this.subProjectsEnabled is false
+			return "All builds";
+		} else {
+			String subProjectsString = "";
+			if (this.subProjectsEnabled){
+				subProjectsString = " & All Sub-Project builds";
+			}
+			int enabledBuildTypeCount = this.builds.stream()
+													.filter(build -> this.enabledBuildIds.contains(build.buildTypeId))
+													.map(build -> build.buildTypeName).collect(Collectors.toSet()).size();
+			if (enabledBuildTypeCount == 1){
+				return enabledBuildTypeCount + " build" + subProjectsString;
+			}
+			return enabledBuildTypeCount + " builds" + subProjectsString;
+		}
+	}
+	
+	public String getBuildTypeCountAsToolTip() {
+		if (this.allBuildTypesEnabled  && this.subProjectsEnabled){
+			return "All builds & Sub-Projects";
+		} else if (this.allBuildTypesEnabled){ // this.subProjectsEnabled is false
+			return "All builds";
+		} else {
+			String subProjectsString = "";
+			if (this.subProjectsEnabled){
+				subProjectsString = "All Sub-Project builds";
+			}
+			String buildsList = this.builds.stream()
+											.filter(build -> this.enabledBuildIds.contains(build.buildTypeId))
+											.map(build -> build.buildTypeName).collect(Collectors.joining(" &#10;"));
+			if (buildsList.isEmpty() || subProjectsString.isEmpty() ) {
+				return buildsList + subProjectsString;
+			} else {
+				return buildsList + " &#10;" + subProjectsString;
+				
+			}
+		}	
+	}
 }

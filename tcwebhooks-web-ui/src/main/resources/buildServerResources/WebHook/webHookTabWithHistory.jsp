@@ -6,85 +6,117 @@
 
 	${permissionError}
 
-	<c:forEach items="${projectAndParents}" var="project">
-		<div style="background-color: #f5f5f5; padding: 5px; margin-bottom:3em;">
-		<c:choose>
-			<c:when test="${project.externalProjectId == '_Root'}">
-				<h3 class="title actionBar" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for every TeamCity build (_Root)</h3>
-			</c:when>
-			<c:otherwise>
-				<h3 class="title actionBar" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for <c:out value="${project.project.fullName}" /></h3>
-			</c:otherwise>
-		</c:choose>
-
-
-		<c:if test="${project.projectWebhookCount == 0}" >
-				<div style='margin-left: 1em; margin-right:1em;'>
-				<p>There are no WebHooks configured for this project.</p>
-				<a href="./webhooks/index.html?projectId=<c:out value="${project.externalProjectId}" />">Add project WebHooks</a>.
-				</div>
-		</c:if>
-		<c:if test="${project.projectWebhookCount > 0}" >
-				<div style='margin-left: 1em; margin-right:1em;'>
-				<c:if test="${not project.webHooksEnabledForProject}" >
-					<div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
-				</c:if>
-				<p>There are <strong>${project.projectWebhookCount}</strong> WebHooks configured for all builds in this project.
-					<a href="./webhooks/index.html?projectId=<c:out value="${project.externalProjectId}" />">Edit project WebHooks</a>.</p>
-				<table class="testList dark borderBottom">
-					<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
-					<tbody>
-					<c:if test="${not project.admin}">
-						<c:forEach items="${project.projectWebhooks}" var="hook">
-							<tr><td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** <c:out value="${hook.generalisedUrl}" /></span></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>
-						</c:forEach>
+    <table id="webHookSearchTable" class="buildTab settings">
+			<c:forEach items="${projectAndParents}" var="projectList">
+	   		<thead>
+			<tr style="background-color: rgb(245, 245, 245);"><th colspan="4" style="border-bottom:1px solid #ccc; border-top:1px solid #ccc;">
+			<h3 style="text-align: left; padding-left: 10px;">
+				<c:choose>
+				<c:when test="${projectList.externalProjectId == '_Root'}">
+					WebHooks configured for every TeamCity build (_Root)
+				</c:when>
+				<c:otherwise>
+					WebHooks configured for <c:out value="${projectList.sensibleProjectFullName}" />
+				</c:otherwise>
+				</c:choose>
+					<c:if test="${afn:permissionGrantedForProjectWithId(projectList.projectId, 'EDIT_PROJECT')}">
+						&nbsp;-&nbsp;<a href="./webhooks/index.html?projectId=${projectList.externalProjectId}">Edit Project WebHooks</a>
 					</c:if>
-					<c:if test="${project.admin}">
-						<c:forEach items="${project.projectWebhooks}" var="hook">
-							<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>
-						</c:forEach>
-					</c:if>
-					</tbody>
-				</table>
-				</div>
-		</c:if>
+			</h3>
+			</th></tr>
+		   		<tr style="background-color: rgb(245, 245, 245);">
+					<th class="name">URL</th>
+					<th class="name">Format</th>
+					<th class="name">Build Events</th>
+					<th class="value" style="width:20%;">Enabled Builds</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${projectList.webHookList}" var="hook">
 
-			<c:forEach items="${project.buildWebhooks}" var="config">
-
-				<div style='margin-top: 2.5em;'><h3 class="title" style="background-color: #f5f5f5; border-bottom: solid 2px #ABB1C4;">WebHooks configured for <c:out value="${projectName}"/> &gt; <c:out value="${config.buildName}"/></h3>
-
-				<c:if test="${config.hasNoBuildWebHooks}" >
-						<div style='margin-left: 1em; margin-right:1em;'>
-						<p>There are no WebHooks configured for this specific build.</p>
-						<a href="./webhooks/index.html?buildTypeId=<c:out value="${config.buildExternalId}" />">Add build WebHooks</a>.
-						</div>
-				</c:if>
-				<c:if test="${config.hasBuildWebHooks}" >
-						<div style='margin-left: 1em; margin-right:1em;'>
-						<p>There are <strong>${config.buildCount}</strong> WebHooks for this specific build.
-							<a href="./webhooks/index.html?buildTypeId=<c:out value="${config.buildExternalId}" />">Edit build WebHooks</a>.</p>
-						<table class="testList dark borderBottom">
-							<thead><tr><th class=name style="background-color: #f5f5f5; color:#333333;">URL</th><th class=name style="background-color: #f5f5f5; color:#333333;">Enabled</th></tr></thead>
-							<tbody>
-							<c:if test="${not project.admin}">
-								<c:forEach items="${config.buildWebHookList}" var="hook">
-									<tr><td><span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** <c:out value="${hook.generalisedUrl}" /></span></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>
-								</c:forEach>
+					<tr id="viewRow_${hook.uniqueKey}" class="webHookRow" style="line-height:1;">
+					<td class="name <%--highlight--%>" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"--%>>
+							<c:if test="${not afn:permissionGrantedForProjectWithId(projectList.projectId, 'EDIT_PROJECT')}">
+								<span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** <c:out value="${hook.generalisedUrl}" /></span>
 							</c:if>
-							<c:if test="${project.admin}">
-								<c:forEach items="${config.buildWebHookList}" var="hook">
-									<tr><td><c:out value="${hook.url}" /></td><td><c:out value="${hook.enabledListAsString}" /></td></tr>
-								</c:forEach>
+							<c:if test="${afn:permissionGrantedForProjectWithId(projectList.projectId, 'EDIT_PROJECT')}">
+								<c:out value="${hook.url}" />
 							</c:if>
-							</tbody>
-						</table>
-						</div>
-				</c:if>
-				</div>
+					</td>
+							<c:choose>
+								<c:when test="${hook.payloadTemplate == 'none'}">
+					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><c:out value="${hook.payloadFormatForWeb}" /></td>
+								</c:when>
+								<c:otherwise>
+					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><a title='<c:out value="${hook.templateToolTip}"/>' href="./webhooks/template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
+								</c:otherwise>
+							</c:choose>
+
+
+						<td class="value <%--highlight--%>" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"--%>><c:out value="${hook.enabledEventsListForWeb}" /></td>
+						<td class="value <%--highlight--%>" title="${hook.buildTypeCountAsToolTip}" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"--%>><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
+						<%--
+						<td class="edit highlight"><a onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
+						<td class="edit highlight"><a onclick="WebHooksPlugin.showDeleteDialog('${hook.uniqueKey}');" href="javascript://">delete</a></td>
+						 --%>
+					</tr>
+				</c:forEach>
+				<tr class="blankRow"><td colspan="5">&nbsp;</td></tr>
 			</c:forEach>
-		</div>
-		</c:forEach>
+			
+			
+			
+			<c:forEach items="${buildWebHooks}" var="projectList">
+		   		<thead>
+				<tr style="background-color: rgb(245, 245, 245);"><th colspan="4" style="border-bottom:1px solid #ccc; border-top:1px solid #ccc;">
+				<h3 style="text-align: left; padding-left: 10px;">
+						WebHooks configured for <c:out value="${projectList.sensibleProjectFullName}" /> &gt; <c:out value="${buildName}"/>
+						<c:if test="${afn:permissionGrantedForProjectWithId(projectList.projectId, 'EDIT_PROJECT')}">
+							&nbsp;-&nbsp;<a href="./webhooks/index.html?buildTypeId=<c:out value="${buildExternalId}" />">Edit build WebHooks</a>
+						</c:if>
+				</h3>
+				</th></tr>
+			   		<tr style="background-color: rgb(245, 245, 245);">
+						<th class="name">URL</th>
+						<th class="name">Format</th>
+						<th class="name">Build Events</th>
+						<th class="value" style="width:20%;">Enabled Builds</th>
+					</tr>
+				</thead>			
+				<c:forEach items="${projectList.webHookList}" var="hook">
 
+					<tr id="viewRow_${hook.uniqueKey}" class="webHookRow" style="line-height:1;">
+					<td class="name <%--highlight--%>" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"--%>>
+							<c:if test="${not afn:permissionGrantedForProjectWithId(projectList.projectId, 'EDIT_PROJECT')}">
+								<span title="You do not have permission to see the full URL for this webhook (no project edit permission)">** <c:out value="${hook.generalisedUrl}" /></span>
+							</c:if>
+							<c:if test="${afn:permissionGrantedForProjectWithId(projectList.projectId, 'EDIT_PROJECT')}">
+								<c:out value="${hook.url}" />
+							</c:if>
+					</td>
+							<c:choose>
+								<c:when test="${hook.payloadTemplate == 'none'}">
+					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><c:out value="${hook.payloadFormatForWeb}" /></td>
+								</c:when>
+								<c:otherwise>
+					<td class="value <%--highlight--%> webHookRowItemFormat" style="width:15%;"><a title='<c:out value="${hook.templateToolTip}"/>' href="./webhooks/template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}" /></a></td>
+								</c:otherwise>
+							</c:choose>
+
+
+						<td class="value <%--highlight--%>" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"--%>><c:out value="${hook.enabledEventsListForWeb}" /></td>
+						<td class="value <%--highlight--%>" title="${hook.buildTypeCountAsToolTip}" style="width:15%;" <%-- onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"--%>><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
+						<%--
+						<td class="edit highlight"><a onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
+						<td class="edit highlight"><a onclick="WebHooksPlugin.showDeleteDialog('${hook.uniqueKey}');" href="javascript://">delete</a></td>
+						 --%>
+					</tr>
+					
+				</c:forEach>
+				<tr class="blankRow"><td colspan="5">&nbsp;</td></tr>
+			</c:forEach>	
+			</tbody>
+		</table>
 		<h2 class="noBorder">All Recent WebHook Events</h2>
 	        The following table shows the ${items.itemsOnThisPage} most recent <span class="lowercase">${countContext} webhook events</span>.
 	        <table class="settings" style="width:100%;">

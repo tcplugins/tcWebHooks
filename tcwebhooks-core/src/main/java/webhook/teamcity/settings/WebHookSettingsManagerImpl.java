@@ -77,7 +77,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	@Override
 	public WebHookProjectSettings getSettings(String projectInternalId) {
 		return (WebHookProjectSettings) myProjectSettingsManager.getSettings(projectInternalId, WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
-
 	}
 
 	@Override
@@ -166,6 +165,35 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			if ( !webhookResultList.isEmpty()) {
 				projectGroupedResults.put(entry.getKey(), webhookResultList);
 			}
+		}
+		return projectGroupedResults;
+	}
+	
+	@Override
+	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForProjects(List<SProject> sProjects) {
+		Map<SProject,List<WebHookConfigEnhanced>> projectGroupedResults = new LinkedHashMap<>();
+		for (SProject project : sProjects) {
+			List<WebHookConfigEnhanced> webhookConfigs = new ArrayList<>();
+			for (WebHookConfigEnhanced wh : this.webhooksEnhanced.values()) {
+				if (project.getExternalId().equals(wh.getProjectExternalId())) {
+					webhookConfigs.add(wh);
+				}
+			}
+			projectGroupedResults.put(project, webhookConfigs);
+		}
+		return projectGroupedResults;
+	}
+	
+	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForBuild(List<SProject> sProjects, SBuildType sBuildType) {
+		Map<SProject,List<WebHookConfigEnhanced>> projectGroupedResults = new LinkedHashMap<>();
+		for (SProject project : sProjects) {
+			List<WebHookConfigEnhanced> webhookConfigs = new ArrayList<>();
+			for (WebHookConfigEnhanced wh : this.webhooksEnhanced.values()) {
+				if (project.getExternalId().equals(wh.getProjectExternalId()) && wh.getWebHookConfig().isSpecificBuildTypeEnabled(sBuildType)) {
+					webhookConfigs.add(wh);
+				}
+			}
+			projectGroupedResults.put(project, webhookConfigs);
 		}
 		return projectGroupedResults;
 	}
@@ -322,6 +350,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 					templateName = template.getTemplateDescription();
 					templateFormat = format.getFormatShortName();
 					templateFormatDescription = format.getFormatDescription();
+					
 				} catch (NullPointerException ex) {
 					Loggers.SERVER.warn(String.format(
 							"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s",
@@ -341,7 +370,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 						.generalisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(c.getUrl()))
 						.build();
 				configEnhanced.addTag(templateFormat)
-						.addTag(c.getEnabled() ? "enabled" : "disabled")
+						.addTag(Boolean.TRUE.equals(c.getEnabled()) ? "enabled" : "disabled")
 						.addTag(c.getPayloadTemplate())
 						.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress());
 				if (c.getAuthenticationConfig() != null) {

@@ -89,8 +89,7 @@ public class WebHookIndexPageController extends BaseController {
 	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
 	        	if (project != null){
 	        		
-			    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-			    			mySettings.getSettings(project.getProjectId());
+			    	WebHookProjectSettings projSettings = mySettings.getSettings(project.getProjectId());
 			    	
 			        SUser myUser = SessionUser.getUser(request);
 			        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
@@ -164,48 +163,45 @@ public class WebHookIndexPageController extends BaseController {
         		SBuildType sBuildType = TeamCityIdResolver.findBuildTypeById(this.myServer.getProjectManager(), request.getParameter("buildTypeId"));
         		if (sBuildType != null){
 		        	SProject project = sBuildType.getProject();
-		        	if (project != null){
 		        		
-				    	WebHookProjectSettings projSettings = (WebHookProjectSettings) 
-				    			mySettings.getSettings(project.getProjectId());
-				    	
-				    	SUser myUser = SessionUser.getUser(request);
-				        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
-				    	
-			    		ProjectWebHooksBean bean = ProjectWebHooksBean.buildWithoutNew(projSettings, sBuildType,
-								project, 
-								myManager.getRegisteredFormatsAsCollection(),
-								myTemplateResolver.findWebHookTemplatesForProject(project)
-			    				);
-				    	
-			    		params.put("webHookList", bean);
-				    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-								myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()).getTemplateList());
-				    	params.put("webHooksDisabled", !projSettings.isEnabled());
-				    	params.put("projectId", project.getProjectId());
-				    	params.put("haveProject", "true");
-				    	params.put("projectName", getProjectName(TeamCityIdResolver.getExternalProjectId(project), project.getName()));
-				    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
-				    	params.put("haveBuild", "true");
-				    	params.put("buildName", sBuildType.getName());
-				    	params.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(sBuildType));
-				    	params.put("buildTypeList", project.getBuildTypes());
-			    		params.put("noWebHooks", bean.getWebHookList().isEmpty());
-			    		params.put("webHooks", ! bean.getWebHookList().isEmpty());
-				    	
-			    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
-								TemplatesAndProjectWebHooksBean.build(
-										RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
-																			myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()), 
-										ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
-																	myTemplateResolver.findWebHookTemplatesForProject(project)
-																	),
-										//ProjectHistoryResolver.getBuildHistory(sBuildType),
-										RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
-										)
+			    	WebHookProjectSettings projSettings = mySettings.getSettings(project.getProjectId());
+			    	
+			    	SUser myUser = SessionUser.getUser(request);
+			        params.put("hasPermission", myUser.isPermissionGrantedForProject(project.getProjectId(), Permission.EDIT_PROJECT));
+			    	
+		    		ProjectWebHooksBean bean = ProjectWebHooksBean.buildWithoutNew(projSettings, sBuildType,
+							project, 
+							myManager.getRegisteredFormatsAsCollection(),
+							myTemplateResolver.findWebHookTemplatesForProject(project)
+		    				);
+			    	
+		    		params.put("webHookList", bean);
+			    	params.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+							myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()).getTemplateList());
+			    	params.put("webHooksDisabled", !projSettings.isEnabled());
+			    	params.put("projectId", project.getProjectId());
+			    	params.put("haveProject", "true");
+			    	params.put("projectName", getProjectName(TeamCityIdResolver.getExternalProjectId(project), project.getName()));
+			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
+			    	params.put("haveBuild", "true");
+			    	params.put("buildName", sBuildType.getName());
+			    	params.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(sBuildType));
+			    	params.put("buildTypeList", project.getBuildTypes());
+		    		params.put("noWebHooks", bean.getWebHookList().isEmpty());
+		    		params.put("webHooks", ! bean.getWebHookList().isEmpty());
+			    	
+		    		params.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
+							TemplatesAndProjectWebHooksBean.build(
+									RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(project),
+																		myManager.getRegisteredFormats(), mySettings, myServer.getProjectManager()), 
+									ProjectWebHooksBean.build(projSettings, sBuildType, project, myManager.getRegisteredFormatsAsCollection(),
+																myTemplateResolver.findWebHookTemplatesForProject(project)
+																),
+									//ProjectHistoryResolver.getBuildHistory(sBuildType),
+									RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
 									)
-								);			    				
-		        	}
+								)
+							);			    				
         		} else {
 		    		params.put("haveProject", "false");
 		    		params.put("errorReason", "The build requested does not appear to be valid.");

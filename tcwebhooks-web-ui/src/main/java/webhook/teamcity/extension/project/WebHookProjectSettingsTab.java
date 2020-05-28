@@ -28,7 +28,6 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class WebHookProjectSettingsTab extends EditProjectTab {
@@ -101,7 +100,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 			if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
 
 				projectBean = ProjectWebHooksBean.buildWithoutNew(
-						(WebHookProjectSettings) this.myWebhookSettingsManager.getSettings(projectParent.getProjectId()),
+						this.myWebhookSettingsManager.getSettings(projectParent.getProjectId()),
 						currentProject,
 						myPayloadManager.getRegisteredFormatsAsCollection(),
 						myTemplateResolver.findWebHookTemplatesForProject(currentProject)
@@ -118,7 +117,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 				projectWebHooksAndTemplates.add(
 						new ProjectWebHooksAndTemplatesBean(
 						ProjectWebHooksBean.buildWithoutNew(
-							(WebHookProjectSettings) this.myWebhookSettingsManager.getSettings(projectParent.getProjectId()),
+							this.myWebhookSettingsManager.getSettings(projectParent.getProjectId()),
 							projectParent,
 							myPayloadManager.getRegisteredFormatsAsCollection(),
 							myTemplateResolver.findWebHookTemplatesForProject(projectParent)

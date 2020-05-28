@@ -1,8 +1,10 @@
 package webhook.teamcity.extension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,38 +12,42 @@ import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
 import webhook.teamcity.TeamCityIdResolver;
-import webhook.teamcity.extension.bean.ProjectAndBuildWebhooksBean;
-import webhook.teamcity.history.WebAddressTransformer;
+import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.history.WebHookHistoryRepository;
+import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookSettingsManager;
+import webhook.teamcity.settings.WebHookConfigEnhanced;
 
 
 
 public class WebHookBuildTypeTabExtension extends BuildTypeTab {
-	private final WebHookSettingsManager myProjectSettingsManager;
+	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final String myPluginPath;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
-	private final WebAddressTransformer myWebAddressTransformer;
+	private final WebHookPayloadManager myPayloadManager;
+	private final WebHookTemplateResolver myTemplateResolver;	
 
 	public WebHookBuildTypeTabExtension(
 			@NotNull ProjectManager projectManager, 
-			@NotNull WebHookSettingsManager projectSettingsManager, 
+			@NotNull WebHookSettingsManager webHookSettingsManager, 
 			@NotNull WebControllerManager manager,
 			@NotNull PluginDescriptor pluginDescriptor,
 			@NotNull WebHookHistoryRepository webHookHistoryRepository,
-			@NotNull WebAddressTransformer webAddressTransformer) {
+			@NotNull WebHookPayloadManager webhookPayloadManager,
+			@NotNull WebHookTemplateResolver webHookTemplateResolver) {
 		super("webHooks", "WebHooks", manager, projectManager);
-		myProjectSettingsManager = projectSettingsManager;
+		myWebHookSettingsManager = webHookSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		myWebHookHistoryRepository = webHookHistoryRepository;
-		myWebAddressTransformer = webAddressTransformer;
+		myPayloadManager = webhookPayloadManager;
+		myTemplateResolver = webHookTemplateResolver;
+		addCssFile(myPluginPath+ "WebHook/css/styles.css");
 	}
 
 	@Override
@@ -52,21 +58,32 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 	@Override
 	protected void fillModel(Map<String,Object> model, HttpServletRequest request,
 			 @NotNull SBuildType buildType, SUser user) {
-		List<ProjectAndBuildWebhooksBean> projectAndParents = new ArrayList<>();  
-		List<SProject> parentProjects = buildType.getProject().getProjectPath();
-		for (SProject projectParent : parentProjects){
-			projectAndParents.add(
-					ProjectAndBuildWebhooksBean.newInstance(
-							projectParent,
-							this.myProjectSettingsManager.getSettings(projectParent.getProjectId()),
-							buildType, 
-							user.isPermissionGrantedForProject(projectParent.getProjectId(), Permission.EDIT_PROJECT), 
-							myWebAddressTransformer
-							)
-					);
-		}
 		
-		model.put("projectAndParents", projectAndParents);
+		List<ProjectWebHooksBean> projectWebHooks = new ArrayList<>();
+		List<ProjectWebHooksBean> buildWebHooks = new ArrayList<>();
+		this.myWebHookSettingsManager.getWebHooksForProjects(buildType.getProject().getProjectPath()).forEach((project, webhooks) -> {
+			
+			// Filter out webhooks that are for our buildType. We'll get them again below.
+			List<WebHookConfigEnhanced> filteredWebHooks = webhooks.stream().filter(w -> !w.getWebHookConfig().isSpecificBuildTypeEnabled(buildType)).collect(Collectors.toList());
+			ProjectWebHooksBean result =
+					ProjectWebHooksBean.buildWithoutNew(filteredWebHooks, project,
+							myPayloadManager.getRegisteredFormatsAsCollection(),
+							myTemplateResolver.findWebHookTemplatesForProject(project),
+							myWebHookSettingsManager.iswebHooksEnabledForProject(project.getProjectId()));
+			projectWebHooks.add(result);
+		});
+		
+		this.myWebHookSettingsManager.getWebHooksForBuild(Arrays.asList(buildType.getProject()), buildType).forEach((project, webhooks) -> {
+			ProjectWebHooksBean result =
+					ProjectWebHooksBean.buildWithoutNew(webhooks, project,
+							myPayloadManager.getRegisteredFormatsAsCollection(),
+							myTemplateResolver.findWebHookTemplatesForProject(project),
+							myWebHookSettingsManager.iswebHooksEnabledForProject(project.getProjectId()));
+			buildWebHooks.add(result);
+		});
+		
+		model.put("projectAndParents", projectWebHooks);
+		model.put("buildWebHooks", buildWebHooks);
    	
     	model.put("projectId", buildType.getProject().getProjectId());
     	model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(buildType.getProject()));

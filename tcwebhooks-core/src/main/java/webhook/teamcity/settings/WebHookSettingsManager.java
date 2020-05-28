@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.auth.WebHookAuthConfig;
 
@@ -30,4 +32,7 @@ public interface WebHookSettingsManager {
 	public int getTemplateUsageCount(String templateId);
 	public Map<String, List<WebHookSearchResult>> findWebHooksByProject(WebHookSearchFilter buildFilter);
 	public WebHookProjectSettings getSettings(String projectInternalId);
+	
+	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForProjects(List<SProject> sProjects);
+	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForBuild(List<SProject> projectPath, SBuildType buildType);
 }

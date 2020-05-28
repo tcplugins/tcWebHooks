@@ -80,11 +80,11 @@ ul.commalist li:last-child:after {
 									<td><c:out value="${hook.payloadFormatForWeb}"/></td>
 								</c:when>
 								<c:otherwise>
-									<td><a href="../webhooks/template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}"/></a></td>
+									<td><a title='<c:out value="${hook.templateToolTip}"/>' href="../webhooks/template.html?template=<c:out value="${hook.payloadTemplate}"/>"><c:out value="${hook.payloadFormatForWeb}"/></a></td>
 								</c:otherwise>
 							</c:choose>
 							<td><c:out value="${hook.enabledEventsListForWeb}"/></td>
-							<td><c:out value="${hook.enabledBuildsListForWeb}"/></td>
+							<td title="${hook.buildTypeCountAsToolTip}"><c:out value="${hook.buildTypeCountAsFriendlyString}"/></td>
 						</tr>
 					</c:forEach>
 					</tbody>

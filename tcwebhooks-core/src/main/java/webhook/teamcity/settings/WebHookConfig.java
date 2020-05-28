@@ -450,24 +450,6 @@ public class WebHookConfig {
 		return enabledBuildTypesSet;
 	}
 
-	public String getBuildTypeCountAsFriendlyString(){
-		if (this.allBuildTypesEnabled  && this.subProjectsEnabled){
-			return "All builds & Sub-Projects";
-		} else if (this.allBuildTypesEnabled){ // this.subProjectsEnabled is false
-			return "All builds";
-		} else {
-			String subProjectsString = "";
-			if (this.subProjectsEnabled){
-				subProjectsString = " & All Sub-Project builds";
-			}
-			int enabledBuildTypeCount = this.enabledBuildTypesSet.size();
-			if (enabledBuildTypeCount == 1){
-				return enabledBuildTypeCount + " build" + subProjectsString;
-			}
-			return enabledBuildTypeCount + " builds" + subProjectsString;
-		}
-	}
-
 	public Boolean getEnabled() {
 		return enabled;
 	}
