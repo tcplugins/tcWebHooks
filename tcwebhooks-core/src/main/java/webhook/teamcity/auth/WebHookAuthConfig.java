@@ -14,4 +14,12 @@ public class WebHookAuthConfig {
 	private Boolean preemptive = true;
 	
 	private Map<String, String> parameters = new LinkedHashMap<>();
+	
+	public WebHookAuthConfig copy() {
+		WebHookAuthConfig newConfig = new WebHookAuthConfig();
+		newConfig.setType(this.getType());
+		newConfig.setPreemptive(this.getPreemptive());
+		newConfig.getParameters().putAll(getParameters());
+		return newConfig;
+	}
 }

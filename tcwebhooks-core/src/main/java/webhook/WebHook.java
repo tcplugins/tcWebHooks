@@ -82,6 +82,8 @@ public interface WebHook {
 	public abstract void setCharset(String charset);
 
 	public abstract void setAuthentication(WebHookAuthenticator authenticator);
+	
+	public abstract void resolveAuthenticationParameters(VariableResolver variableResolver);
 
 	/**
 	 * Returns true if all enabled filters match.
@@ -121,5 +123,7 @@ public interface WebHook {
 	public abstract VariableResolverFactory getVariableResolverFactory();
 	
 	public abstract void setVariableResolverFactory(VariableResolverFactory variableResolverFactory);
+
+
 
 }

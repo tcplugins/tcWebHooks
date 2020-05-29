@@ -37,6 +37,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookExecutionException;
+import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.variableresolver.VariableResolver;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
@@ -372,6 +373,18 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setAuthentication(WebHookAuthenticator authenticator) {
 		this.authenticator = authenticator;
+	}
+	
+	@Override
+	public void resolveAuthenticationParameters(VariableResolver variableResolver) {
+		if (this.authenticator != null) {
+			WebHookAuthConfig newConfig = this.authenticator.getWebHookAuthConfig().copy();
+			for (Entry<String, String> e : newConfig.getParameters().entrySet()) {
+				String value = this.variableResolverFactory.createVariableMessageBuilder(e.getValue(), variableResolver).build();
+				newConfig.getParameters().put(e.getKey(), value);
+			}
+			this.authenticator.setWebHookAuthConfig(newConfig);
+		}
 	}
 	
 	@Override

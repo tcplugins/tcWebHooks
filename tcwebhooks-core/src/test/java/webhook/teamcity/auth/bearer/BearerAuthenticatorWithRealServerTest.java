@@ -41,5 +41,16 @@ public class BearerAuthenticatorWithRealServerTest extends AuthWithRealServerTes
 		RecordedRequest req1 = server.takeRequest();
 		assertEquals("Bearer my_preemptive_token", req1.getHeader("Authorization"));
 	}
+	
+	@Test
+	public void testRealWebHookWithPremptiveAuthFromToken() throws JDOMException, IOException, InterruptedException {
+		server.enqueue(new MockResponse().setResponseCode(201));
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-preemptive-bearer-auth-from-token.xml"));
+		framework.getWebHookListener().buildFinished(framework.getRunningBuild());
+		
+		RecordedRequest req1 = server.takeRequest();
+		assertEquals("Bearer thing1", req1.getHeader("Authorization"));
+	}
 
 }

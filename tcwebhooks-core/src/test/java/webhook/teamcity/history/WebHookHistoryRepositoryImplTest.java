@@ -358,6 +358,11 @@ public class WebHookHistoryRepositoryImplTest {
 			notImplemented();
 			
 		}
+		
+		@Override
+		public void resolveAuthenticationParameters(VariableResolver variableResolver) {
+			notImplemented();
+		}
 
 		@Override
 		public boolean checkFilters(VariableResolver variableResolver) {
@@ -434,6 +439,6 @@ public class WebHookHistoryRepositoryImplTest {
 		public void setVariableResolverFactory(VariableResolverFactory variableResolverFactory) {
 			notImplemented();
 		}
-		
+
 	}
 }
