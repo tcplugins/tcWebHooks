@@ -172,6 +172,11 @@
 		init-method="register" 
 		/>
 		
+	<bean id="ntlmAuthenticatorFactory"
+		class="webhook.teamcity.auth.ntlm.NtlmAuthenticatorFactory"
+		init-method="register" 
+		/>
+		
 	<bean id="webHookPluginDataResolver"
 		class="webhook.teamcity.WebHookPluginDataResolverImpl"
 		/>
