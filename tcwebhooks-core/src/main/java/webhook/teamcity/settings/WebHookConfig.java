@@ -26,6 +26,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jdom.DataConversionException;
 import org.jdom.Element;
 
@@ -34,6 +35,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.settings.converter.TemplateToPayloadRollbackConverter;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 @Builder @AllArgsConstructor
@@ -284,6 +286,7 @@ public class WebHookConfig {
 			}
 		}
 		
+		this.handle_1_2_Rollback();
 	}
 	
 	private String getRandomKey() {
@@ -335,6 +338,15 @@ public class WebHookConfig {
 			this.authEnabled = true;
 			this.authParameters.putAll(webHookAuthConfig.getParameters());
 		}
+	}
+
+	private void handle_1_2_Rollback() {
+		Pair<String,String> formatAndTemplate= TemplateToPayloadRollbackConverter.transformTemplateToPayloadAndTemplate(
+				this.getPayloadFormat(), 
+				this.getPayloadTemplate()
+			);
+		this.setPayloadFormat(formatAndTemplate.getLeft());
+		this.setPayloadTemplate(formatAndTemplate.getRight());
 	}
 
 	private Element getKeyAndValueAsElement(Map<String,String> map, String key, String elementName){

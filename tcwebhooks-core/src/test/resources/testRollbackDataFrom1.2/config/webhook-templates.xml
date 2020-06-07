@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<webhook-templates>
+    <webhook-template id="test-03" enabled="true" rank="50" format="nvpairsTemplate">
+        <default-template use-for-branch-template="true">test01=${buildStatusUrl}</default-template>
+        <default-branch-template></default-branch-template>
+        <template-description>Test 03 NVPairs standard</template-description>
+        <template-tool-tip></template-tool-tip>
+        <preferred-date-format></preferred-date-format>
+        <associated-project-id>_Root</associated-project-id>
+        <templates max-id="0"/>
+    </webhook-template>
+    <webhook-template id="test-04" enabled="true" rank="50" format="nvpairsVelocityTemplate">
+        <default-template use-for-branch-template="true">test01=${buildStatusUrl}</default-template>
+        <default-branch-template></default-branch-template>
+        <template-description>Test 04 - NV Pairs Velocity</template-description>
+        <template-tool-tip></template-tool-tip>
+        <preferred-date-format></preferred-date-format>
+        <associated-project-id>_Root</associated-project-id>
+        <templates max-id="0"/>
+    </webhook-template>
+    <webhook-template id="test-01" enabled="true" rank="50" format="jsonTemplate">
+        <default-template use-for-branch-template="true">{
+    "test01" : "${buildStatusUrl}"
+}</default-template>
+        <default-branch-template></default-branch-template>
+        <template-description>Test 01 - Standard</template-description>
+        <template-tool-tip></template-tool-tip>
+        <preferred-date-format></preferred-date-format>
+        <associated-project-id>_Root</associated-project-id>
+        <templates max-id="0"/>
+    </webhook-template>
+    <webhook-template id="test-02" enabled="true" rank="50" format="jsonVelocityTemplate">
+        <default-template use-for-branch-template="true">{
+    "test01" : "${buildStatusUrl}"
+}</default-template>
+        <default-branch-template></default-branch-template>
+        <template-description>Test 02 - Velocity</template-description>
+        <template-tool-tip></template-tool-tip>
+        <preferred-date-format></preferred-date-format>
+        <associated-project-id>project1</associated-project-id>
+        <templates max-id="0"/>
+    </webhook-template>
+</webhook-templates>
