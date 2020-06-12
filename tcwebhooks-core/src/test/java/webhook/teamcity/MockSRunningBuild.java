@@ -23,6 +23,8 @@ import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.BuildRevision;
 import jetbrains.buildServer.serverSide.BuildStatistics;
 import jetbrains.buildServer.serverSide.BuildStatisticsOptions;
+import jetbrains.buildServer.serverSide.BuildTypeNotFoundException;
+import jetbrains.buildServer.serverSide.CompatibilityResult;
 import jetbrains.buildServer.serverSide.DownloadedArtifacts;
 import jetbrains.buildServer.serverSide.RepositoryVersion;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -31,8 +33,10 @@ import jetbrains.buildServer.serverSide.SBuildFeatureDescriptor;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.ShortStatistics;
+import jetbrains.buildServer.serverSide.TagData;
 import jetbrains.buildServer.serverSide.TriggeredBy;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
@@ -40,6 +44,7 @@ import jetbrains.buildServer.serverSide.artifacts.SArtifactDependency;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.buildLog.BuildLog;
 import jetbrains.buildServer.serverSide.comments.Comment;
+import jetbrains.buildServer.serverSide.dependency.BuildDependency;
 import jetbrains.buildServer.serverSide.impl.RunningBuildState;
 import jetbrains.buildServer.serverSide.userChanges.CanceledInfo;
 import jetbrains.buildServer.serverSide.userChanges.PersonalChangeDescriptor;
@@ -825,8 +830,367 @@ public class MockSRunningBuild implements SRunningBuild {
 	}
 
 	public BuildPromotion getBuildPromotion() {
-		// TODO Auto-generated method stub
-		return null;
+		return new BuildPromotion() {
+			
+			@Override
+			public int compareTo(BuildPromotion o) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public void setTags(List<String> labels) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void setTagDatas(Collection<TagData> tags) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void setPrivateTags(List<String> labels, SUser user) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void setDesiredBranchName(String branchName) throws IllegalArgumentException {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void setBuildComment(User user, String comment) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public boolean isUsed() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isPersonal() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isPartOfBuildChain() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isOutOfChangesSequence() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isLaterThan(BuildPromotion promotion) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isFailedToCollectChanges() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isEquivalentTo(BuildPromotion promotion) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isChangesDetached() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public boolean isCanceled() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public List<VcsRootInstanceEntry> getVcsRootEntries() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<String> getTags() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Collection<TagData> getTagDatas() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Date getServerStartDate() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<BuildRevision> getRevisions() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Date getQueuedDate() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SQueuedBuild getQueuedBuild() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<String> getPrivateTags(SUser user) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public BuildPromotion getPreviousBuildPromotion(SelectPrevBuildPolicy policy) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<SVcsModification> getPersonalChanges() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String getParentBuildTypeId() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SBuildType getParentBuildType() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Map<String, String> getParameters() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String getParameterValue(String paramName) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SUser getOwner() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public int getNumberOfDependencies() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public int getNumberOfDependedOnMe() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public Long getLastModificationId() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public long getId() {
+				return getBuildId();
+			}
+			
+			@Override
+			public Collection<? extends BuildDependency> getDependencies() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Collection<? extends BuildDependency> getDependedOnMe() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Map<String, String> getDefaultParameters() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Map<String, String> getCustomParameters() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<SVcsModification> getContainingChanges() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Collection<SBuildAgent> getCompatibleAgents(Collection<SBuildAgent> available) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Map<SBuildAgent, CompatibilityResult> getCompatibilityMap(Collection<SBuildAgent> available) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public UserSet<SUser> getCommitters(SelectPrevBuildPolicy selectPrevBuildPolicy) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<SVcsModification> getChanges(SelectPrevBuildPolicy policy, boolean returnChangesIfNoPreviousBuild) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Collection<SBuildAgent> getCanRunOnAgents(Collection<SBuildAgent> available) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String getBuildTypeId() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String getBuildTypeExternalId() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SBuildType getBuildType() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Map<String, String> getBuildParameters() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public BuildLog getBuildLog() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Comment getBuildComment() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Branch getBranch() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Long getAssociatedBuildId() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SBuild getAssociatedBuild() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public File getArtifactsDirectory() throws BuildTypeNotFoundException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<SArtifactDependency> getArtifactDependencies() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<? extends BuildPromotion> getAllDependencies() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public BuildPromotion[] findTops() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public BuildPromotion copy(boolean copyRevisions) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SQueuedBuild addToQueue(SBuildAgent buildAgent, String triggeredBy) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public SQueuedBuild addToQueue(String triggeredBy) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
 	}
 
 	public SBuild getSequenceBuild() {

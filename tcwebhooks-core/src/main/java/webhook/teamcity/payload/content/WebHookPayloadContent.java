@@ -122,7 +122,8 @@ public class WebHookPayloadContent {
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SQueuedBuild sQueuedBuild, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates, String user, String comment) {
 			populateCommonContent(variableResolverFactory, server, sQueuedBuild.getBuildType(), buildState, templates);
-    		setTriggeredBy(sQueuedBuild.getTriggeredBy().getAsString());
+    		setBuildId(String.valueOf(sQueuedBuild.getBuildPromotion().getId()));
+			setTriggeredBy(sQueuedBuild.getTriggeredBy().getAsString());
 			this.extraParameters =  new ExtraParametersMap(extraParameters);
 			this.teamcityProperties =  new ExtraParametersMap(sQueuedBuild.getBuildType().getParametersProvider().getAll());
 		}

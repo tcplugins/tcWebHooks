@@ -27,10 +27,12 @@ import jetbrains.buildServer.util.filters.Filter;
  */
 public class TestingSQueuedBuild implements SQueuedBuild {
 
+	private SBuild build;
 	private SBuildType buildType;
 	private TriggeredBy triggeredBy = new TestingTriggeredBy();
 
 	public TestingSQueuedBuild(SBuild sBuild) {
+		this.build = sBuild;
 		this.buildType = sBuild.getBuildType();
 	}
 
@@ -71,7 +73,7 @@ public class TestingSQueuedBuild implements SQueuedBuild {
 
 	@Override
 	public BuildPromotion getBuildPromotion() {
-		return null;
+		return this.build.getBuildPromotion();
 	}
 
 	@Override
