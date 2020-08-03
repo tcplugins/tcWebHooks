@@ -32,4 +32,5 @@ public interface WebHookHistoryRepository {
 	public int getErroredCount();
 	public int getDisabledCount();
 	public int getOkCount();
+	public int getTotalStoreItems();
 }

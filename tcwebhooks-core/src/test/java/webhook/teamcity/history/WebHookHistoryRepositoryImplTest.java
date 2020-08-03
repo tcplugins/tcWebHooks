@@ -2,13 +2,18 @@ package webhook.teamcity.history;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.NameValuePair;
+import org.awaitility.Awaitility;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
@@ -36,6 +41,15 @@ public class WebHookHistoryRepositoryImplTest {
 
 	@Mock
 	SBuild sBuild02;
+	
+	@Mock
+	SBuild sBuild03;
+	
+	@Mock
+	SBuild sBuild04;
+	
+	@Mock
+	SBuild sBuild05;
 	
 	WebHookConfig whc1;
 	WebHookConfig whc2;
@@ -131,7 +145,83 @@ public class WebHookHistoryRepositoryImplTest {
 		}
 		assertEquals(2, count);
 	}
+	
+	@Test
+	public void putManyItemsInAsync() {
+		MockitoAnnotations.initMocks(this);
 
+		WebHookHistoryRepository historyRepository = mockSBuilds();
+		
+		populateHistoryStore(historyRepository); // // Create 12500 items in a threadpool
+		
+		// Max should only contain 10k items.
+		assertEquals(10000, historyRepository.getTotalStoreItems());
+	}
+
+	
+	@Test
+	public void putManyItemsInAsyncAndValidateRemainingItems() {
+		MockitoAnnotations.initMocks(this);
+		
+		WebHookHistoryRepository historyRepository = mockSBuilds();
+		
+		populateHistoryStore(historyRepository); // Create 12500 items in a threadpool
+		
+		// Max should only contain 10k items.
+		assertEquals(10000, historyRepository.getTotalStoreItems());
+		
+		assertEquals(2500, historyRepository.getOkCount()); 		// 20% of 12500)
+		assertEquals(5000, historyRepository.getErroredCount());	// 40% of 12500)
+		assertEquals(5000, historyRepository.getDisabledCount());	// 40% of 12500)
+	}
+
+	
+	@Test
+	public void putManyItemsInAsyncAndValidateThatRemainingItemsAreOnlyHigh() {
+		MockitoAnnotations.initMocks(this);
+		
+		WebHookHistoryRepository historyRepository = mockSBuilds();
+		
+		populateHistoryStore(historyRepository); // // Create 12500 items in a threadpool
+		
+		// But max should only contain 10k items.
+		assertEquals(10000, historyRepository.getTotalStoreItems());
+		
+		assertEquals(2500, historyRepository.getOkCount()); 		// 20% of 12500)
+		assertEquals(5000, historyRepository.getErroredCount());	// 40% of 12500)
+		assertEquals(5000, historyRepository.getDisabledCount());	// 40% of 12500)
+		
+		PagedList<WebHookHistoryItem> items = historyRepository.findHistoryItemsForBuildType(sBuild01.getBuildTypeId(), 20, 100);
+		System.out.println(items.getItems().get(0).getWebHookExecutionStats().getStatusCode());
+		
+		items = historyRepository.findHistoryItemsForBuildType(sBuild02.getBuildTypeId(), 20, 100);
+		System.out.println(items.getItems().get(0).getWebHookExecutionStats().getStatusCode());
+		
+		items = historyRepository.findHistoryItemsForBuildType(sBuild03.getBuildTypeId(), 20, 100);
+		System.out.println(items.getItems().get(0).getWebHookExecutionStats().getStatusCode());
+		
+		items = historyRepository.findHistoryItemsForBuildType(sBuild04.getBuildTypeId(), 20, 100);
+		System.out.println(items.getItems().get(0).getWebHookExecutionStats().getStatusCode());
+		
+		items = historyRepository.findHistoryItemsForBuildType(sBuild05.getBuildTypeId(), 20, 100);
+		System.out.println(items.getItems().get(0).getWebHookExecutionStats().getStatusCode());
+	}
+
+	private void populateHistoryStore(WebHookHistoryRepository historyRepository) {
+		AtomicInteger atomic = new AtomicInteger(0); // Create a counter, so we can wait for it in the test.
+		ExecutorService executorService = Executors.newFixedThreadPool(100);
+		for (int i = 0; i < 2500; i++) {
+			executorService.execute(new WebHookStatisticsRunner(historyRepository, sBuild01, false, true, 10000 + i, atomic));
+			executorService.execute(new WebHookStatisticsRunner(historyRepository, sBuild02, false, false, 20000 + 1, atomic));
+			executorService.execute(new WebHookStatisticsRunner(historyRepository, sBuild03, true, true, 30000 + 1, atomic));
+			executorService.execute(new WebHookStatisticsRunner(historyRepository, sBuild04, true, false, 40000 + i, atomic));
+			executorService.execute(new WebHookStatisticsRunner(historyRepository, sBuild05, true, true, 50000 + i, atomic));
+		}
+		// Run 12500 times
+		Awaitility.await().untilAtomic(atomic, equalTo(12500));
+		executorService.shutdown();
+	}
+	
 	private WebHookHistoryRepository setupMocks() {
 		Period fiveDays = new Period().withDays(5);
 		MockitoAnnotations.initMocks(this);
@@ -159,6 +249,54 @@ public class WebHookHistoryRepositoryImplTest {
 		return historyRepository;
 	}
 
+	private WebHookHistoryRepository mockSBuilds() {
+		WebHookHistoryRepository historyRepository = new WebHookHistoryRepositoryImpl();
+		
+		when(sBuild01.getBuildTypeId()).thenReturn("bt01");
+		when(sBuild02.getBuildTypeId()).thenReturn("bt02");
+		when(sBuild03.getBuildTypeId()).thenReturn("bt03");
+		when(sBuild04.getBuildTypeId()).thenReturn("bt04");
+		when(sBuild05.getBuildTypeId()).thenReturn("bt05");
+		when(sBuild01.getProjectId()).thenReturn("project01");
+		when(sBuild02.getProjectId()).thenReturn("project01");
+		when(sBuild03.getProjectId()).thenReturn("project01");
+		when(sBuild04.getProjectId()).thenReturn("project01");
+		when(sBuild05.getProjectId()).thenReturn("project01");
+		when(sBuild01.getBuildId()).thenReturn(01L);
+		when(sBuild02.getBuildId()).thenReturn(02L);
+		when(sBuild03.getBuildId()).thenReturn(03L);
+		when(sBuild04.getBuildId()).thenReturn(04L);
+		when(sBuild05.getBuildId()).thenReturn(05L);
+		
+		return historyRepository;
+	}
+
+	public static class WebHookStatisticsRunner implements Runnable {
+		
+		Period fiveDays = new Period().withDays(5);
+		private WebHookHistoryRepository historyRepository;
+		private SBuild sBuild;
+		private WebHookExecutionStats stats;
+		private AtomicInteger atomic;
+
+		public WebHookStatisticsRunner(WebHookHistoryRepository historyRepository, SBuild sBuild, boolean errored, boolean enabled, int status, AtomicInteger atomic) {
+			this.historyRepository = historyRepository;
+			this.sBuild = sBuild;
+			this.stats = new WebHookExecutionStats("url");
+			this.stats.setErrored(errored);
+			this.stats.setEnabled(enabled);
+			this.stats.setStatusCode(status);
+			this.atomic = atomic;
+		}
+
+		@Override
+		public void run() {
+			WebHookConfig whc = new WebHookConfig("project01", "MyProject", "http://url/1", true, new BuildState().setAllEnabled(), "testFormat", "jsonTemplate", true, true, null, null);
+			WebHook webhook = new SimpleMockedWebHook(stats);
+			historyRepository.addHistoryItem(new WebHookHistoryItem(whc, webhook.getExecutionStats(), sBuild, null));
+			atomic.addAndGet(1);
+		}
+	}
 	
 	public static class SimpleMockedWebHook implements WebHook {
 
