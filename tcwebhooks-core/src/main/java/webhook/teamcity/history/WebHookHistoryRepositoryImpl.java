@@ -9,18 +9,32 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.LocalDate;
 
 public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	
-	MaxSizeHashMap<UUID,WebHookHistoryItem> webHookHistoryItems = new MaxSizeHashMap<>(10000); 
+	Map<UUID,WebHookHistoryItem> webHookHistoryItems = Collections.synchronizedMap(new MaxSizeHashMap<UUID,WebHookHistoryItem>(10000)); 
 	Comparator<WebHookHistoryItem> chronComparator = new WebHookHistoryRepositoryDateSortingCompator(SortDirection.ASC);
 	Comparator<WebHookHistoryItem> reverseChronComparator = new WebHookHistoryRepositoryDateSortingCompator(SortDirection.DESC);
+	
+	AtomicInteger okCounter = new AtomicInteger(0);
+	AtomicInteger erroredCounter = new AtomicInteger(0);
+	AtomicInteger disabledCounter = new AtomicInteger(0);
+	AtomicInteger totalCounter = new AtomicInteger(0);
 	
 	@Override
 	public void addHistoryItem(WebHookHistoryItem histoyItem) {
 		this.webHookHistoryItems.put(histoyItem.getWebHookExecutionStats().getTrackingId(), histoyItem);
+		if (histoyItem.getWebHookExecutionStats().isEnabled()  && ! histoyItem.getWebHookExecutionStats().isErrored()) {
+			okCounter.incrementAndGet();
+		} else if (histoyItem.getWebHookExecutionStats().isEnabled()) {
+			erroredCounter.incrementAndGet();
+		} else if (! histoyItem.getWebHookExecutionStats().isEnabled()) {
+			disabledCounter.incrementAndGet();
+		}
+		totalCounter.incrementAndGet();
 	}
 	
 	@Override
@@ -49,7 +63,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuildType(String buildTypeId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> buildTypeItems = new ArrayList<>();
 		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (buildTypeId.equals(item.getBuildTypeId())) {
+			if (item.getBuildTypeId().equals(buildTypeId)) {
 				buildTypeItems.add(item);
 			}
 		}
@@ -61,7 +75,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuild(Long buildId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> buildItems = new ArrayList<>();
 		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (buildId.equals(item.getBuildId())) {
+			if (item.getBuildId().equals(buildId)) {
 				buildItems.add(item);
 			}
 		}
@@ -233,23 +247,28 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 
 	@Override
 	public int getTotalCount() {
-		return webHookHistoryItems.size();
+		return this.totalCounter.get();
 	}
 
 
 	@Override
 	public int getDisabledCount() {
-		return findHistoryItemsDisabled(webHookHistoryItems.values()).size();
+		return this.disabledCounter.get();
 	}	
 	
 	@Override
 	public int getErroredCount() {
-		return findHistoryItemsInError(webHookHistoryItems.values()).size();
+		return this.erroredCounter.get();
 	}
 
 	@Override
 	public int getOkCount() {
-		return webHookHistoryItems.size() - ( getErroredCount() + getDisabledCount() );
+		return this.okCounter.get();
+	}
+
+	@Override
+	public int getTotalStoreItems() {
+		return webHookHistoryItems.size();
 	}
 
 	public class WebHookHistoryRepositoryDateSortingCompator implements Comparator<WebHookHistoryItem> {
