@@ -57,7 +57,7 @@
 	        <div class="repoList">
 	        <c:set var="pagerUrlPattern" value="history.html?view=${countContext}&page=[page]"/>
 	        
-	        <p>The most recent 10,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
+	        <p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">
 	        <div class="webhookCounts">
 		        <div class="webhookOkCount webhookCount"><a href="history.html?view=ok">
@@ -84,7 +84,8 @@
 	        <hr>
 	        <p>
 	        <h2 class="noBorder"><span class="sentenceCase">${countContext}</span> Recent WebHook Events - Page ${items.pageNumber} of ${items.totalPages} </h2>
-	        The following table shows the ${items.itemsOnThisPage} most recent <span class="lowercase">${countContext} webhook events</span>.
+	        <p>A log of the most recent 10,000 webhook executions is stored in memory in TeamCity. These are cleared on restart.</p>
+	        The following table shows the ${items.itemsOnThisPage} most recent <span class="lowercase">${countContext} webhook events</span>, with older items on subsequent pages.
 	        <bs:pager place="top" urlPattern="${pagerUrlPattern}" pager="${historyPager}"/>
 	        <table class="settings">
 	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>Build</th><th>URL (some URLs may be partially hidden)</th><th>Build Event</th><th>Event Response</th></tr>
