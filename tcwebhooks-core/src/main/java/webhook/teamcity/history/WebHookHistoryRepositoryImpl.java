@@ -50,9 +50,11 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryItemsForProject(String projectId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> projItems = new ArrayList<>();
-		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (item.getProjectId().equals(projectId)) {
-				projItems.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : webHookHistoryItems.values()) {
+				if (item.getProjectId().equals(projectId)) {
+					projItems.add(item);
+				}
 			}
 		}
 		Collections.sort(projItems, reverseChronComparator);
@@ -62,9 +64,11 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuildType(String buildTypeId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> buildTypeItems = new ArrayList<>();
-		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (item.getBuildTypeId().equals(buildTypeId)) {
-				buildTypeItems.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : webHookHistoryItems.values()) {
+				if (item.getBuildTypeId().equals(buildTypeId)) {
+					buildTypeItems.add(item);
+				}
 			}
 		}
 		Collections.sort(buildTypeItems, reverseChronComparator);
@@ -74,9 +78,11 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryItemsForBuild(Long buildId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> buildItems = new ArrayList<>();
-		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (item.getBuildId().equals(buildId)) {
-				buildItems.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : webHookHistoryItems.values()) {
+				if (item.getBuildId().equals(buildId)) {
+					buildItems.add(item);
+				}
 			}
 		}
 		Collections.sort(buildItems, reverseChronComparator);
@@ -86,9 +92,11 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryItemsForWebHookConfigId(String webHookId, int pageNumber, int pageSize) {
 		List<WebHookHistoryItem> historyItems = new ArrayList<>();
-		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (webHookId.equals(item.getWebHookConfig().getUniqueKey())) {
-				historyItems.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : webHookHistoryItems.values()) {
+				if (webHookId.equals(item.getWebHookConfig().getUniqueKey())) {
+					historyItems.add(item);
+				}
 			}
 		}
 		Collections.sort(historyItems, reverseChronComparator);
@@ -98,9 +106,11 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	@Override
 	public Map<String, Integer> findHistoryItemCountsForWebHookConfigId(String webhookId) {
 		List<WebHookHistoryItem> historyItems = new ArrayList<>();
-		for (WebHookHistoryItem item : webHookHistoryItems.values()) {
-			if (webhookId.equals(item.getWebHookConfig().getUniqueKey())) {
-				historyItems.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : webHookHistoryItems.values()) {
+				if (webhookId.equals(item.getWebHookConfig().getUniqueKey())) {
+					historyItems.add(item);
+				}
 			}
 		}
 		Map<String, Integer> itemCounts = new HashMap<>();
@@ -113,29 +123,28 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryErroredItems(int pageNumber, int pageSize) {
-		List<WebHookHistoryItem> errorItems = findHistoryItemsInError(webHookHistoryItems.values());
+		List<WebHookHistoryItem> errorItems = findHistoryItemsInError(getAllStoreItems());
 		Collections.sort(errorItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, errorItems);
 	}
 	
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryDisabledItems(int pageNumber, int pageSize) {
-		List<WebHookHistoryItem> disabledItems = findHistoryItemsDisabled(webHookHistoryItems.values());
+		List<WebHookHistoryItem> disabledItems = findHistoryItemsDisabled(getAllStoreItems());
 		Collections.sort(disabledItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, disabledItems);
 	}
 	
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryOkItems(int pageNumber, int pageSize) {
-		List<WebHookHistoryItem> okItems =  findHistoryItemsOK(webHookHistoryItems.values());
+		List<WebHookHistoryItem> okItems =  findHistoryItemsOK(getAllStoreItems());
 		Collections.sort(okItems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, okItems);
 	}
 
 	@Override
 	public PagedList<WebHookHistoryItem> findHistoryAllItems(int pageNumber, int pageSize) {
-		List<WebHookHistoryItem> allitems = new ArrayList<>();
-		allitems.addAll(webHookHistoryItems.values());
+		List<WebHookHistoryItem> allitems = getAllStoreItems();
 		Collections.sort(allitems, reverseChronComparator);
 		return PagedList.build(pageNumber, pageSize, allitems);
 	}	
@@ -213,13 +222,15 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	private List<WebHookHistoryItem> findItemsSince(LocalDate untilDate, int numberOfDays, boolean isErrored, boolean isDisabled) {
 		List<WebHookHistoryItem> itemsSince = new ArrayList<>();
 		LocalDate sinceDate = untilDate.minusDays(numberOfDays);
-		for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
-			LocalDate itemTimeStamp = item.getTimestamp().toLocalDate(); 
-			if (sinceDate.isBefore(itemTimeStamp) 
-					&& untilDate.isAfter(itemTimeStamp) 
-					&& item.getWebHookExecutionStats().isErrored() == isErrored 
-					&& item.getWebHookExecutionStats().isEnabled() != isDisabled) {
-				itemsSince.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
+				LocalDate itemTimeStamp = item.getTimestamp().toLocalDate(); 
+				if (sinceDate.isBefore(itemTimeStamp) 
+						&& untilDate.isAfter(itemTimeStamp) 
+						&& item.getWebHookExecutionStats().isErrored() == isErrored 
+						&& item.getWebHookExecutionStats().isEnabled() != isDisabled) {
+					itemsSince.add(item);
+				}
 			}
 		}
 		return itemsSince;
@@ -228,10 +239,12 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	private List<WebHookHistoryItem> findAllItemsSince(LocalDate untilDate, int numberOfDays) {
 		List<WebHookHistoryItem> erroredItemsSince = new ArrayList<>();
 		LocalDate sinceDate = untilDate.minusDays(numberOfDays);
-		for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
-			LocalDate itemTimeStamp = item.getTimestamp().toLocalDate(); 
-			if (sinceDate.isBefore(itemTimeStamp) && untilDate.isAfter(itemTimeStamp)) {
-				erroredItemsSince.add(item);
+		synchronized (webHookHistoryItems) {
+			for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
+				LocalDate itemTimeStamp = item.getTimestamp().toLocalDate(); 
+				if (sinceDate.isBefore(itemTimeStamp) && untilDate.isAfter(itemTimeStamp)) {
+					erroredItemsSince.add(item);
+				}
 			}
 		}
 		return erroredItemsSince;
@@ -268,7 +281,17 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 
 	@Override
 	public int getTotalStoreItems() {
-		return webHookHistoryItems.size();
+		synchronized (webHookHistoryItems) {
+			return webHookHistoryItems.size();
+		}
+	}
+	
+	private List<WebHookHistoryItem> getAllStoreItems() {
+		List<WebHookHistoryItem> allItems = new ArrayList<>();
+		synchronized (webHookHistoryItems) {
+			allItems.addAll(this.webHookHistoryItems.values());
+		}
+		return allItems;
 	}
 
 	public class WebHookHistoryRepositoryDateSortingCompator implements Comparator<WebHookHistoryItem> {
