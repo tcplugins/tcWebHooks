@@ -52,13 +52,15 @@ public class WebHookHistoryController extends BaseController {
     	params.put("okCount", myWebHookHistoryRepository.getOkCount());
     	params.put("skippedCount", myWebHookHistoryRepository.getDisabledCount());
     	params.put("totalCount", myWebHookHistoryRepository.getTotalCount());
+    	
+    	String viewType = request.getParameter(PARAM_NAME_VIEW) != null ? request.getParameter(PARAM_NAME_VIEW) : "All";
 		
-		if (isGet(request) && request.getParameter(PARAM_NAME_VIEW) != null) {
+		if (isGet(request)) {
 			int pageNumber = getPageNumber(request);
 			int pageSize = getPageSize(request);
 			params.put("page", pageNumber);
 			PagedList<WebHookHistoryItem> pagedList;
-			switch ( request.getParameter(PARAM_NAME_VIEW)) {
+			switch ( viewType ) {
 				case "errors":
 				case "Errors":
 					pagedList = myWebHookHistoryRepository.findHistoryErroredItems(pageNumber, pageSize);
@@ -71,6 +73,7 @@ public class WebHookHistoryController extends BaseController {
 					break;
 				case "ok":
 				case "Ok":
+				case "OK":
 					pagedList = myWebHookHistoryRepository.findHistoryOkItems(pageNumber, pageSize);
 					params.put(PARAM_NAME_COUNT_CONTEXT, "OK");
 					break;
