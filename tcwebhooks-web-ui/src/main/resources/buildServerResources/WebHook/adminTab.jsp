@@ -17,7 +17,7 @@
 	        <p>Please see the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction">WebHook Templates wiki pages</a> for more information.</p>
 	        
 	        <h2>WebHook Execution History</h2>
-	        <p>The most recent 10,000 webhook executions are stored in memory in TeamCity. These are cleared on restart.</p><p>Since the last TeamCity restart, there have been:</p>
+	        <p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">
 	        <div class="webhookCounts">
 		        <div class="webhookOkCount webhookCount"><a href="../webhooks/history.html?view=ok">
@@ -43,7 +43,7 @@
 	        </div>
 	        <p>
 	        <h2 class="noBorder">Recent WebHook Errors</h2>
-	        The following table shows the 20 most recent webhook errors.
+	        <p>A log of the most recent 10,000 webhook executions is stored in memory in TeamCity. These are cleared on restart. Click the numbers above to see relevant events.</p> The following table shows the 20 most recent webhook errors. 
 	        <table class="settings">
 	        <tr><th colspan="1" style="text-align: left;padding:0.5em;">Date</th><th>URL</th><th>Build Event</th><th>Error</th></tr>
 	        <c:forEach items="${history}" var="historyItem">
