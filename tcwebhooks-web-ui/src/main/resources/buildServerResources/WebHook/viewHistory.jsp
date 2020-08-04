@@ -55,7 +55,7 @@
 <bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
 
 	        <div class="repoList">
-	        <c:set var="pagerUrlPattern" value="history.html?view=${countContext}&page=[page]"/>
+	        <c:set var="pagerUrlPattern" value="history.html?view=${view}&page=[page]"/>
 	        
 	        <p>Since the last TeamCity restart, there have been:</p>
 	        <div class="stats-table-wrapper">

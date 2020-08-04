@@ -74,22 +74,27 @@ public class WebHookHistoryController extends BaseController {
 					case "Errors":
 						pagedList = myWebHookHistoryRepository.findHistoryErroredItems(pageNumber, pageSize);
 						params.put(PARAM_NAME_COUNT_CONTEXT, "Recent Errored WebHook Events");
+						params.put(PARAM_NAME_VIEW, "errors");
 						break;
 					case "skipped":
 					case "Skipped":
 						pagedList = myWebHookHistoryRepository.findHistoryDisabledItems(pageNumber, pageSize);
 						params.put(PARAM_NAME_COUNT_CONTEXT, "Recent Skipped WebHook Events");
+						params.put(PARAM_NAME_VIEW, "skipped");
 						break;
 					case "ok":
 					case "Ok":
+					case "OK":
 						pagedList = myWebHookHistoryRepository.findHistoryOkItems(pageNumber, pageSize);
 						params.put(PARAM_NAME_COUNT_CONTEXT, "Recent OK WebHook Events");
+						params.put(PARAM_NAME_VIEW, "ok");
 						break;
 					case "all":
 					case "All":
 					default:
 						pagedList = myWebHookHistoryRepository.findHistoryAllItems(pageNumber, pageSize);
 						params.put(PARAM_NAME_COUNT_CONTEXT, "All Recent WebHook Events");
+						params.put(PARAM_NAME_VIEW, "all");
 						break;
 				}
     		}
