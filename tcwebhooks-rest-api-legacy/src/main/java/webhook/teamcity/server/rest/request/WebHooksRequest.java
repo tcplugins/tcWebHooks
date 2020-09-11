@@ -16,7 +16,7 @@ import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import webhook.teamcity.server.rest.data.DataProvider;
+import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookFinder;
 import webhook.teamcity.server.rest.errors.WebHookPermissionException;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
@@ -29,7 +29,7 @@ public class WebHooksRequest {
 
 	@Context
 	@NotNull
-	private DataProvider myDataProvider;
+	private WebHookDataProvider myDataProvider;
 
 	@Context
 	@NotNull

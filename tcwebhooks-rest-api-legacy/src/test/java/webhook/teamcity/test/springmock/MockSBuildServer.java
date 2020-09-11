@@ -34,6 +34,8 @@ import jetbrains.buildServer.vcs.VcsManager;
 import jetbrains.buildServer.vcs.VcsModificationHistory;
 
 public class MockSBuildServer implements SBuildServer {
+	
+	private static final int MINIMUM_SUPPORTED_VERSION = 42002;  // TeamCity 10
 
 	@Override
 	public List<String> getResponsibilityIds(long userId) {
@@ -320,8 +322,7 @@ public class MockSBuildServer implements SBuildServer {
 
 	@Override
 	public String getBuildNumber() {
-		// TODO Auto-generated method stub
-		return null;
+		return String.valueOf(MINIMUM_SUPPORTED_VERSION);
 	}
 
 	@Override

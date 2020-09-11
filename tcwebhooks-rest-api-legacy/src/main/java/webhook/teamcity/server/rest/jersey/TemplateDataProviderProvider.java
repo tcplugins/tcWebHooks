@@ -20,17 +20,16 @@ import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.server.rest.data.DataProvider;
+import webhook.teamcity.server.rest.data.TemplateDataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookFinder;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 
 @Provider
 @SuppressWarnings("squid:S1191")
-public class DataProviderProvider implements InjectableProvider<Context, Type>, Injectable<DataProvider> {
-  private final DataProvider dataProvider;
+public class TemplateDataProviderProvider implements InjectableProvider<Context, Type>, Injectable<TemplateDataProvider> {
+  private final TemplateDataProvider dataProvider;
 
-  public DataProviderProvider(
+  public TemplateDataProviderProvider(
 		  	@NotNull final SBuildServer sBuildServer,
 			@NotNull final RootUrlHolder rootUrlHolder,
 			@NotNull final PermissionChecker permissionChecker,
@@ -38,27 +37,26 @@ public class DataProviderProvider implements InjectableProvider<Context, Type>, 
 			@NotNull final TemplateFinder templateFinder,
 			@NotNull final WebHookTemplateManager templateManager,
 			@NotNull final ProjectManager projectManager,
-			@NotNull final WebHookManager webHookManager,
 			@NotNull final WebHookFinder webHookFinder,
 			@NotNull final ProjectIdResolver projectIdResolver,
 			@NotNull final SecurityContext securityContext
 	) 
   {
-	  dataProvider = new DataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, webHookFinder, projectIdResolver, securityContext);
+	  dataProvider = new TemplateDataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookFinder, projectIdResolver, securityContext);
   }
 
   public ComponentScope getScope() {
     return ComponentScope.Singleton;
   }
 
-  public Injectable<DataProvider> getInjectable(final ComponentContext ic, final Context context, final Type type) {
-    if (type.equals(DataProvider.class)) {
+  public Injectable<TemplateDataProvider> getInjectable(final ComponentContext ic, final Context context, final Type type) {
+    if (type.equals(TemplateDataProvider.class)) {
       return this;
     }
     return null;
   }
 
-  public DataProvider getValue() {
+  public TemplateDataProvider getValue() {
     return dataProvider;
   }
 
