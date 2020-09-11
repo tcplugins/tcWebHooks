@@ -1,28 +1,18 @@
 package webhook.teamcity;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import org.junit.Test;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-
-import org.junit.Test;
-
 import webhook.TestingWebHookFactory;
-import webhook.WebHook;
-import webhook.WebHookImpl;
-import webhook.WebHookTest;
-import webhook.WebHookTestServer;
-import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
@@ -30,8 +20,6 @@ import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
-import webhook.teamcity.settings.WebHookConfig;
-import webhook.teamcity.settings.WebHookProjectSettings;
 
 
 public class WebHookPayloadTest {
@@ -58,7 +46,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm, resolverManager);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<>();
+		ExtraParameters extraParameters = new ExtraParameters();
 		extraParameters.put("something", "somewhere");
 		//String content = wpm.getFormat("nvpairs").buildStarted(sRunningBuild, extraParameters);
 		System.out.println(sRunningBuild.getBuildDescription());

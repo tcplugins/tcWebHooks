@@ -9,7 +9,6 @@ import org.jdom.Element;
 
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.settings.ProjectSettings;
-import lombok.Getter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;

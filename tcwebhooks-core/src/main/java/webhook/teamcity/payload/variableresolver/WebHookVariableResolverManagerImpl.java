@@ -1,7 +1,11 @@
 package webhook.teamcity.payload.variableresolver;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import jetbrains.buildServer.log.Loggers;
 import webhook.teamcity.WebHookContentResolutionException;
@@ -10,6 +14,7 @@ import webhook.teamcity.payload.PayloadTemplateEngineType;
 public class WebHookVariableResolverManagerImpl implements WebHookVariableResolverManager {
 	
 	Map<PayloadTemplateEngineType, VariableResolverFactory> variableResolvers = new TreeMap<>();
+	Map<String, VariableResolverFactory> variableResolversWithStringKeys = new TreeMap<>();
 	
 	@Override
 	public void registerVariableResolverFactory(VariableResolverFactory factory) {
@@ -32,6 +37,16 @@ public class WebHookVariableResolverManagerImpl implements WebHookVariableResolv
 			throw new WebHookContentResolutionException("No VariableResolverFactory is registered for type '" + type.toString() + "'", WebHookContentResolutionException.WEBHOOK_VARIABLE_RESOLVER_NOT_FOUND_EXCEPTION_ERROR_CODE);
 		}
 		return variableResolvers.get(type);
+	}
+	
+	@Override
+	public Map<String, VariableResolverFactory> getAllVariableResolverFactoriesMap() {
+		return ImmutableMap.copyOf(this.variableResolversWithStringKeys);
+	}
+	
+	@Override
+	public List<VariableResolverFactory> getAllVariableResolverFactories() {
+		return ImmutableList.copyOf(variableResolvers.values());
 	}
 
 }

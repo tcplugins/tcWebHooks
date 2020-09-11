@@ -9,14 +9,14 @@ import org.junit.Before;
 
 import okhttp3.mockwebserver.MockWebServer;
 import webhook.WebHookTestServerTestBase;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.testframework.WebHookMockingFramework;
 
 public class AuthWithRealServerTestBase extends WebHookTestServerTestBase {
 
 	protected SortedMap<String, String> map = new TreeMap<>();
-	protected ExtraParametersMap  extraParameters  = new ExtraParametersMap(map); 
-	protected ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
+	protected ExtraParameters  extraParameters  = new ExtraParameters(map); 
+	protected ExtraParameters  teamcityProperties  = new ExtraParameters(map); 
 	protected WebHookMockingFramework framework;
 	
 	protected MockWebServer server;

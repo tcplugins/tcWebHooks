@@ -50,8 +50,8 @@ public class WebHookPayloadXmlTemplate extends WebHookPayloadGeneric implements 
 
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(webHookTemplateContent.getTemplateText(), this.myVariableResolverFactory.buildVariableResolver(this, content, content.getAllParameters()));
-		return builder.build();
+		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(this.myVariableResolverFactory.buildVariableResolver(content.getProject(), this, content, content.getAllParameters()));
+		return builder.build(webHookTemplateContent.getTemplateText());
 	}
 
 	@Override

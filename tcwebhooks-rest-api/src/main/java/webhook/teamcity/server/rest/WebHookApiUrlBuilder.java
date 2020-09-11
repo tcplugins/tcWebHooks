@@ -6,10 +6,12 @@ import jetbrains.buildServer.server.rest.PathTransformer;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault.Value;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.request.TemplateRequest;
+import webhook.teamcity.server.rest.request.WebHookParametersRequest;
 import webhook.teamcity.server.rest.request.WebHooksRequest;
 import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.project.WebHookParameter;
 
 /**
  * Adds the WebHooks urls into the resolver.
@@ -26,6 +28,10 @@ public class WebHookApiUrlBuilder {
 	
 	public String getHref(final WebHookTemplateConfig template) {
 	    return myPathTransformer.transform(TemplateRequest.getTemplateHref(template));
+	}
+	
+	public String getHref(String projectExternalId, WebHookParameter parameter) {
+		return myPathTransformer.transform(WebHookParametersRequest.getWebHookParameterHref(projectExternalId, parameter));
 	}
 	
 	public String getHref(String projectExternalId, WebHookConfig config) {

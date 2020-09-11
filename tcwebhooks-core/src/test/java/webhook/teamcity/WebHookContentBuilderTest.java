@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -23,6 +24,7 @@ import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.settings.project.WebHookParameterStore;
 
 public class WebHookContentBuilderTest {
 	
@@ -41,6 +43,8 @@ public class WebHookContentBuilderTest {
 	WebHookVariableResolverManager resolverManager = new WebHookVariableResolverManagerImpl();
 	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
 	
+	WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class);
+	
 
 	@Before
 	public void setUp() throws Exception {
@@ -52,11 +56,13 @@ public class WebHookContentBuilderTest {
 		when(buildHistory.getEntriesBefore(sRunningBuild, false)).thenReturn(finishedSuccessfulBuilds);
 		when(server.getHistory()).thenReturn(buildHistory);
 		sBuildType.setProject(sProject);
+		
+		when(webHookParameterStore.getAllWebHookParameters(sProject)).thenReturn(Collections.emptyList());
 	}
 
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsPersonal() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager, webHookParameterStore);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
@@ -79,7 +85,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPreviousIsNonPersonal() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager, webHookParameterStore);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
@@ -98,7 +104,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenPersonalPreviousReturnsNull() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager, webHookParameterStore);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);
@@ -118,7 +124,7 @@ public class WebHookContentBuilderTest {
 	
 	@Test
 	public void testGetPreviousNonPreviousNonPersonalBuild_WhenNonPersonalPreviousReturnsNull() {
-		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager);
+		WebHookContentBuilder builder = new WebHookContentBuilder(null, null, resolverManager, webHookParameterStore);
 		WebHook wh = factory.getWebHook();
 		
 		SBuild runningBuild = mock(SBuild.class);

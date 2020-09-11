@@ -4,7 +4,6 @@
 package webhook.teamcity.payload.format;
 
 import java.util.Map;
-import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -15,6 +14,7 @@ import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
@@ -43,37 +43,37 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	}
 
 	@Override
-	public String buildAddedToQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
+	public String buildAddedToQueue(SQueuedBuild sQueuedBuild, ExtraParameters extraParameters,
 			Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sQueuedBuild, BuildStateEnum.BUILD_ADDED_TO_QUEUE, extraParameters, templates, null, null);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
-	public String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, SortedMap<String, String> extraParameters,
+	public String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, ExtraParameters extraParameters,
 			Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sQueuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, extraParameters, templates, user, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
-	public String buildPinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates,
+	public String buildPinned(SBuild sBuild, ExtraParameters extraParameters, Map<String, String> templates,
 			WebHookTemplateContent webHookTemplate, String username, String comment) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_PINNED, extraParameters, sBuild.getParametersProvider().getAll(), templates, username, comment);
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_PINNED, extraParameters, templates, username, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
-	public String buildUnpinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates,
+	public String buildUnpinned(SBuild sBuild, ExtraParameters extraParameters, Map<String, String> templates,
 			WebHookTemplateContent webHookTemplate, String username, String comment) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_UNPINNED, extraParameters, sBuild.getParametersProvider().getAll(), templates, username, comment);
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_UNPINNED, extraParameters, templates, username, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+			ExtraParameters extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
@@ -85,41 +85,41 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	@Deprecated
 	public String buildChangedStatus(SBuild runningBuild, SFinishedBuild previousBuild,
 			Status oldStatus, Status newStatus,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+			ExtraParameters extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
 		return "";
 	}
 
 	@Override
 	public String buildFinished(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+			ExtraParameters extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String buildInterrupted(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+			ExtraParameters extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_INTERRUPTED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String changesLoaded(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.CHANGES_LOADED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+			ExtraParameters extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.CHANGES_LOADED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String buildStarted(SBuild runningBuild, SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
-		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, runningBuild.getParametersProvider().getAll(), templates);
+			ExtraParameters extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), runningBuild, previousBuild, BuildStateEnum.BUILD_STARTED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 
 	@Override
 	public String responsibilityChanged(WebHookResponsibilityHolder responsibilityHolder,
-			SortedMap<String, String> extraParameters, Map<String, String> templates,
+			ExtraParameters extraParameters, Map<String, String> templates,
 			WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), responsibilityHolder, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);

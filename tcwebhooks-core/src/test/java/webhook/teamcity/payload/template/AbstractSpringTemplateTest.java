@@ -2,8 +2,10 @@ package webhook.teamcity.payload.template;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVaria
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
+import webhook.teamcity.settings.project.WebHookParameterStore;
 
 public abstract class AbstractSpringTemplateTest {
 	
@@ -45,18 +48,18 @@ public abstract class AbstractSpringTemplateTest {
 	protected WebHookFactory webHookFactory;
 	protected MockSRunningBuild sRunningBuild;
 	protected ProjectIdResolver projectIdResolver;
-
-
 	
 	@Before
 	public void setup() {
 		
+		WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class);
 		projectIdResolver = mock(ProjectIdResolver.class);
 		when(projectIdResolver.getExternalProjectId(Mockito.eq("project1"))).thenReturn("ATestProject");
 		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project1");
 		
 		when(projectIdResolver.getExternalProjectId(Mockito.eq("_Root"))).thenReturn("_Root");
 		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("_Root");
+		when(webHookParameterStore.getAllWebHookParameters(any())).thenReturn(Collections.emptyList());
 		
 		SBuildServer sBuildServer = mock(SBuildServer.class);
 		WebHookMainSettings mainSettings = mock(WebHookMainSettings.class);
@@ -72,7 +75,7 @@ public abstract class AbstractSpringTemplateTest {
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager, variableResolverManager);
 		webHookPayloadJsonTemplate.register();
 		WebHookTemplateResolver templateResolver = new WebHookTemplateResolver(templateManager, payloadManager);
-		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, templateResolver, variableResolverManager);
+		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, templateResolver, variableResolverManager, webHookParameterStore);
 		
 		when(mainSettings.getProxyConfigForUrl(getUrl())).thenReturn(null);
 		

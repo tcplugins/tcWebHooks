@@ -3,7 +3,7 @@ package webhook.teamcity.payload.convertor;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -15,7 +15,7 @@ public class ExtraParametersMapToXmlConvertor implements Converter {
 
     public void marshal(Object myMap, HierarchicalStreamWriter writer,
             MarshallingContext context) {
-    	ExtraParametersMap map = (ExtraParametersMap) myMap;
+    	ExtraParameters map = (ExtraParameters) myMap;
     	for (Entry<String, String> entry : map.getEntriesAsSet()){
     		if (Objects.nonNull(entry.getValue())) {
 				this.addNode(writer, entry.getKey().trim(), entry.getValue().toString().trim());
@@ -41,6 +41,6 @@ public class ExtraParametersMapToXmlConvertor implements Converter {
 
 	@SuppressWarnings("rawtypes")
 	public boolean canConvert(Class clazz) {
-		return ExtraParametersMap.class == clazz;
+		return ExtraParameters.class == clazz;
 	}
 }

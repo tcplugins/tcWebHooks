@@ -4,16 +4,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import jetbrains.buildServer.messages.Status;
-import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.serverSide.SBuildServer;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
@@ -22,6 +19,7 @@ import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
@@ -71,7 +69,7 @@ public class JsonTemplateRenderingTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadJsonTemplate whp = new WebHookPayloadJsonTemplate(wpm, variableResolverManager);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<>();
+		ExtraParameters extraParameters = new ExtraParameters();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");

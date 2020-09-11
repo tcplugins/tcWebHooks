@@ -1,5 +1,6 @@
 package webhook.testframework;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -7,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
@@ -46,7 +48,7 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
@@ -61,6 +63,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
+import webhook.teamcity.settings.project.WebHookParameterStore;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework {
@@ -95,8 +98,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	SBuildType build2 = mock(SBuildType.class);
 	SBuildType build3 = mock(SBuildType.class);
 	
-	SortedMap<String, String> extraParameters;
-	SortedMap<String, String> teamcityProperties;
+	ExtraParameters extraParameters;
 	BuildStateEnum buildstateEnum;
 	
 	private WebHookPayloadManager webHookPayloadManager;
@@ -113,14 +115,16 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private WebHookRunnerFactory webHookRunnerFactory;
 	private WebHookExecutor webHookExecutor;
 	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
+	
+	private WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class); 
+
 
 	
-	public static WebHookSemiMockingFrameworkImpl create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
+	public static WebHookSemiMockingFrameworkImpl create(BuildStateEnum buildState, ExtraParameters extraParameters) {
 		WebHookSemiMockingFrameworkImpl framework = new WebHookSemiMockingFrameworkImpl();
 		framework.setup();
 		framework.buildstateEnum = buildState;
 		framework.extraParameters = extraParameters;
-		framework.teamcityProperties = teamcityProperties;
 		
 		return framework;
 	}
@@ -143,7 +147,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		
 		webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxHelper, projectIdResolver);
 		webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
-		webHookContentBuilder =  new WebHookContentBuilder(sBuildServer, webHookTemplateResolver, webHookVariableResolverManager);
+		webHookContentBuilder =  new WebHookContentBuilder(sBuildServer, webHookTemplateResolver, webHookVariableResolverManager, webHookParameterStore);
 		
 		authenticatorProvider = setupAuthenticatorProviderAndRegisterFactories();
 		webAddressTransformer = new WebAddressTransformerImpl();
@@ -185,6 +189,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		((MockSProject) sProject03).setParentProject(sProject02);
 		((MockSProject) sProject02).addChildProjectToMock(sProject03);
 		
+		when(webHookParameterStore.getAllWebHookParameters(any())).thenReturn(Collections.emptyList());
 	}
 	
 	private WebHookAuthenticatorProvider setupAuthenticatorProviderAndRegisterFactories() {

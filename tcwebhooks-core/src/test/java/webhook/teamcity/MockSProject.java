@@ -36,6 +36,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.TemplateCannotBeRemovedException;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
+import jetbrains.buildServer.serverSide.impl.ProjectFeatureDescriptorImpl;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.vcs.DuplicateVcsRootNameException;
 import jetbrains.buildServer.vcs.SVcsRoot;
@@ -55,6 +56,7 @@ public class MockSProject implements SProject {
 	private Map<String,SBuildType> buildTypes = new HashMap<>();
 	private List<SProject> parentPath = new ArrayList<>();
 	private List<SProject> childProjects = new ArrayList<>();
+	private List<SProjectFeatureDescriptor> features = new ArrayList<>();
 
 	public MockSProject(String name, String description, String projectId, String projectExternalId, 
 						SBuildType buildType)
@@ -648,7 +650,9 @@ public class MockSProject implements SProject {
 
 	@Override
 	public SProjectFeatureDescriptor addFeature(String type, Map<String, String> params) {
-		return null;
+		SProjectFeatureDescriptor feature = new ProjectFeatureDescriptorImpl(String.valueOf(features.size()), type, params, this);
+		this.features.add(feature);
+		return feature;
 	}
 
 	@Override
@@ -658,27 +662,29 @@ public class MockSProject implements SProject {
 
 	@Override
 	public Collection<SProjectFeatureDescriptor> getOwnFeatures() {
-		return null;
+		return this.features;
 	}
 
 	@Override
 	public Collection<SProjectFeatureDescriptor> getOwnFeaturesOfType(String type) {
-		return null;
+		return getOwnFeatures();
 	}
 
 	@Override
 	public Collection<SProjectFeatureDescriptor> getAvailableFeaturesOfType(String type) {
-		return null;
+		return getOwnFeaturesOfType(type);
 	}
 
 	@Override
 	public Collection<SProjectFeatureDescriptor> getAvailableFeatures() {
-		return null;
+		return getOwnFeatures();
 	}
 
 	@Override
 	public SProjectFeatureDescriptor removeFeature(String featureId) {
-		return null;
+		SProjectFeatureDescriptor feature = findFeatureById(featureId);
+		this.features.remove(feature);
+		return feature;
 	}
 
 	@Override
@@ -688,7 +694,7 @@ public class MockSProject implements SProject {
 
 	@Override
 	public SProjectFeatureDescriptor findFeatureById(String featureId) {
-		return null;
+		return this.features.get(Integer.valueOf(featureId));
 	}
 
 	@Override

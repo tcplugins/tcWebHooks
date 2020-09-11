@@ -1,13 +1,13 @@
 package webhook.teamcity.payload;
 
 import java.util.Map;
-import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 
 public interface WebHookPayload extends WebHookContentObjectSerialiser {
@@ -70,7 +70,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildAddedToQueue event.
 	 */
-    String buildAddedToQueue(SQueuedBuild sQueuedBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildAddedToQueue(SQueuedBuild sQueuedBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
      * Extracts the required information from the sQueuedBuild and extraParameters configured in the webhook
@@ -80,7 +80,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
      * @param extraParameters
      * @return Formatted payload for the WebHook to send for the buildAddedToQueue event.
      */
-    String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment);
+    String buildRemovedFromQueue(SQueuedBuild sQueuedBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String user, String comment);
 
     /**
      * Extracts the required information from the sBuild and extraParameters configured in the webhook
@@ -94,7 +94,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
      * @param comment
      * @return Formatted payload for the WebHook to send for the buildPinned event.
      */
-	String buildPinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String username, String comment);
+	String buildPinned(SBuild sBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String username, String comment);
 
 	/**
 	 * Extracts the required information from the sBuild and extraParameters configured in the webhook
@@ -108,7 +108,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * @param comment
 	 * @return Formatted payload for the WebHook to send for the buildUnpinned event.
 	 */
-	String buildUnpinned(SBuild sBuild, SortedMap<String, String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String username, String comment);
+	String buildUnpinned(SBuild sBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate, String username, String comment);
 
 
     /**
@@ -119,7 +119,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
      * @param extraParameters
      * @return Formatted payload for the WebHook to send for the buildStarted event.
      */
-    String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildStarted(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
      * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -129,7 +129,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
      * @param extraParameters
      * @return Formatted payload for the WebHook to send for the changesLoaded event.
      */
-    String changesLoaded(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String changesLoaded(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -139,7 +139,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildFinished event.
 	 */
-    String buildFinished(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildFinished(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -149,7 +149,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the buildInterrupted event.
 	 */
-    String buildInterrupted(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String buildInterrupted(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
     /**
 	 * Extracts the required information from the sRunningBuild and extraParameters configured in the webhook
@@ -159,7 +159,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * @param extraParameters
 	 * @return Formatted payload for the WebHook to send for the beforeBuildFinish event.
 	 */
-    String beforeBuildFinish(SBuild sRunningBuild, SFinishedBuild previousBuild, SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    String beforeBuildFinish(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
 	/**
 	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
@@ -169,7 +169,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
     String buildChangedStatus(SBuild sRunningBuild, SFinishedBuild previousBuild,
     		Status oldStatus,
     		Status newStatus,
-    		SortedMap<String,String> extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
+    		ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate);
 
 	/**
 	 * ResponsibilityChanged handler for all responsibility events.<p>
@@ -191,7 +191,7 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	 * @since tcWebHooks 1.2.0
 	 */
 	String responsibilityChanged(WebHookResponsibilityHolder responsibilityHolder,
-			SortedMap<String, String> mergeParameters, Map<String, String> enabledTemplates,
+			ExtraParameters mergeParameters, Map<String, String> enabledTemplates,
 			WebHookTemplateContent templateForThisBuild);
 
 	/**

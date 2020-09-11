@@ -27,6 +27,7 @@
         /js/bs/editProject.js
         /js/bs/adminActions.js
       ${jspHome}WebHook/js/editWebhook.js
+      ${jspHome}WebHook/js/editWebhookParameter.js
       </bs:linkScript>
 
       <script type="text/javascript">
@@ -93,6 +94,8 @@
 		});		
 		
 	});
+	
+	var restApiDetected = true;
 	
 	function populateBuildHistory() {
 		

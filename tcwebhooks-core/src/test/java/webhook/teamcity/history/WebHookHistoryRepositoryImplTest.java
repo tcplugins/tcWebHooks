@@ -29,7 +29,7 @@ import webhook.WebHookProxyConfig;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
-import webhook.teamcity.payload.variableresolver.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
@@ -498,12 +498,12 @@ public class WebHookHistoryRepositoryImplTest {
 		}
 		
 		@Override
-		public void resolveAuthenticationParameters(VariableResolver variableResolver) {
+		public void resolveAuthenticationParameters(VariableMessageBuilder variableMessageBuilder) {
 			notImplemented();
 		}
 
 		@Override
-		public boolean checkFilters(VariableResolver variableResolver) {
+		public boolean checkFilters(VariableMessageBuilder variableMessageBuilder) {
 			notImplemented();
 			return false;
 		}
@@ -563,7 +563,7 @@ public class WebHookHistoryRepositoryImplTest {
 		}
 
 		@Override
-		public void resolveHeaders(VariableResolver variableResolver) {
+		public void resolveHeaders(VariableMessageBuilder variableMessageBuilder) {
 			notImplemented();
 		}
 

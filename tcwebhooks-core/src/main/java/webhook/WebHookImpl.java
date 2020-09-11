@@ -39,7 +39,7 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticator;
-import webhook.teamcity.payload.variableresolver.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
@@ -376,11 +376,11 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	@Override
-	public void resolveAuthenticationParameters(VariableResolver variableResolver) {
+	public void resolveAuthenticationParameters(VariableMessageBuilder variableMessageBuilder) {
 		if (this.authenticator != null) {
 			WebHookAuthConfig newConfig = this.authenticator.getWebHookAuthConfig().copy();
 			for (Entry<String, String> e : newConfig.getParameters().entrySet()) {
-				String value = this.variableResolverFactory.createVariableMessageBuilder(e.getValue(), variableResolver).build();
+				String value = variableMessageBuilder.build(e.getValue());
 				newConfig.getParameters().put(e.getKey(), value);
 			}
 			this.authenticator.setWebHookAuthConfig(newConfig);
@@ -396,7 +396,7 @@ public class WebHookImpl implements WebHook {
 	}
 
 	@Override
-	public boolean checkFilters(VariableResolver variableResolver) {
+	public boolean checkFilters(VariableMessageBuilder variableMessageBuilder) {
 		if (this.filters == null){
 			return true;
 		}
@@ -409,7 +409,7 @@ public class WebHookImpl implements WebHook {
 			}
 			
 			/* Otherwise, parse it and test it */
-			String variable = this.variableResolverFactory.createVariableMessageBuilder(filter.getValue(), variableResolver).build();
+			String variable = variableMessageBuilder.build(filter.getValue());
 			Pattern p = filter.getPattern();
 			if (!p.matcher(variable).matches()){
 				this.disabledReason = "Filter mismatch: " + filter.getValue() + " (" + variable + ") does not match using regex " + filter.getRegex();
@@ -433,10 +433,10 @@ public class WebHookImpl implements WebHook {
 	}
 	
 	@Override
-	public void resolveHeaders(VariableResolver variableResolver) {
+	public void resolveHeaders(VariableMessageBuilder variableMessageBuilder) {
 		for (WebHookHeaderConfig header : this.headers ) {
-			String headerName = this.variableResolverFactory.createVariableMessageBuilder(header.getName(), variableResolver).build();
-			String headerValue = this.variableResolverFactory.createVariableMessageBuilder(header.getValue(), variableResolver).build();
+			String headerName = variableMessageBuilder.build(header.getName());
+			String headerValue = variableMessageBuilder.build(header.getValue());
 			resolvedHeaders.put(headerName, headerValue);
 		}
 	}

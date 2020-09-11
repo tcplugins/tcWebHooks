@@ -41,7 +41,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
-import webhook.teamcity.server.rest.data.DataProvider;
+import webhook.teamcity.server.rest.data.TemplateDataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.TemplateValidator;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
@@ -82,7 +82,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   private static final Permission PROJECT_TEMPLATE_READ_PERMISSION = Permission.VIEW_PROJECT;
   private static final Permission PROJECT_TEMPLATE_EDIT_PERMISSION = Permission.EDIT_PROJECT;
 
-  @Context @NotNull private DataProvider myDataProvider;
+  @Context @NotNull private TemplateDataProvider myDataProvider;
   @Context @NotNull private WebHookTemplateManager myTemplateManager;
   @Context @NotNull private TemplateValidator myTemplateValidator;
 

@@ -107,11 +107,19 @@
 			</exclusions>
 		</dependency>
 
-		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
+		<!-- TeamCity/webapps/WEB-INF/lib/common-impl.jar -->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>common-impl</artifactId>
 			<version>${teamcityVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- TeamCity/webapps/WEB-INF/lib/server.jar -->
+		<dependency>
+			<groupId>org.jetbrains.teamcity</groupId>
+			<artifactId>server</artifactId>
+			<version>${teamcityServerVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 

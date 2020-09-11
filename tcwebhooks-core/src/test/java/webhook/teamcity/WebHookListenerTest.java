@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -52,6 +53,7 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
+import webhook.teamcity.settings.project.WebHookParameterStore;
 
 public class WebHookListenerTest {
 	SBuildServer sBuildServer = mock(SBuildServer.class);
@@ -88,6 +90,9 @@ public class WebHookListenerTest {
 	WebHookListener whl;
 	BuildState allBuildStates = new BuildState();
 	
+	WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class);
+
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -104,7 +109,8 @@ public class WebHookListenerTest {
 		webHookImpl.setBuildStates(allBuildStates);
 		spyWebHook = spy(webHookImpl);   
 		webHookConfig = mock(WebHookConfig.class);
-		contentBuilder = new WebHookContentBuilder(sBuildServer, templateResolver, resolverManager);
+		when(webHookParameterStore.getAllWebHookParameters(sProject)).thenReturn(Collections.emptyList());
+		contentBuilder = new WebHookContentBuilder(sBuildServer, templateResolver, resolverManager, webHookParameterStore);
 		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);

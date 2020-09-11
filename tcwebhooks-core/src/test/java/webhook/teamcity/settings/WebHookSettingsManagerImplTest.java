@@ -21,7 +21,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.history.WebAddressTransformerImpl;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.testframework.WebHookMockingFramework;
@@ -54,8 +54,7 @@ public class WebHookSettingsManagerImplTest {
 		
 		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
 														BuildStateEnum.BUILD_STARTED,
-														new ExtraParametersMap(new HashMap<String, String>()),
-														new ExtraParametersMap(new HashMap<String, String>())
+														new ExtraParameters(new HashMap<String, String>())
 												);
 		
 		ElasticSearchXmlWebHookTemplate elasticTemplate = new ElasticSearchXmlWebHookTemplate(

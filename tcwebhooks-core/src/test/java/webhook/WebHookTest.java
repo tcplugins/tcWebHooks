@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
+import org.springframework.util.SocketUtils;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.AbstractWebHookAuthenticator;
@@ -20,12 +21,12 @@ import webhook.teamcity.auth.basic.UsernamePasswordAuthenticator;
 
 public class WebHookTest{
 	public String proxy = "127.0.0.1";
-	public Integer proxyPort = 58002;
-	String proxyPortString = "58002";
-	public Integer webserverPort = 58001;
-	public Integer proxyserverPort = 58002;
+	public Integer proxyPort = SocketUtils.findAvailableTcpPort();
+	String proxyPortString = String.valueOf(proxyPort);
+	public Integer webserverPort = SocketUtils.findAvailableTcpPort();
+	public Integer proxyserverPort = proxyPort;
 	public String webserverHost = "127.0.0.1";
-	String url = "http://127.0.0.1:58001";
+	String url = "http://"  + webserverHost + ":" + webserverPort;
 	
 	public String proxyUsername = "foo";
 	public String proxyPassword = "bar";

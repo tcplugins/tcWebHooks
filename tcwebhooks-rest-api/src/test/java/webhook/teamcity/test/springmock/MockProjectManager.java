@@ -1,8 +1,5 @@
 package webhook.teamcity.test.springmock;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,16 +23,14 @@ import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.vcs.SVcsRoot;
+import webhook.teamcity.MockSBuildType;
+import webhook.teamcity.MockSProject;
 
 public class MockProjectManager implements ProjectManager {
 	
-	SProject testProject = mock(SProject.class);
+	private SBuildType sBuildType = new MockSBuildType("BuildType", "description", "bt01");
+	private SProject testProject = new MockSProject("Project 01", "Description", "project01", "Project01", sBuildType);
 	
-	public MockProjectManager() {
-		when(testProject.getProjectId()).thenReturn("project01");
-	}
-	
-
 	@Override
 	public SVcsRoot findVcsRootById(long id) {
 		// TODO Auto-generated method stub
@@ -74,8 +69,7 @@ public class MockProjectManager implements ProjectManager {
 
 	@Override
 	public List<SProject> getProjects() {
-		// TODO Auto-generated method stub
-		return null;
+		return getActiveProjects();
 	}
 
 	@Override
@@ -91,14 +85,12 @@ public class MockProjectManager implements ProjectManager {
 
 	@Override
 	public int getNumberOfProjects() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getActiveProjects().size();
 	}
 
 	@Override
 	public List<SProject> getProjects(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		return Arrays.asList(testProject);
 	}
 
 	@Override
@@ -125,14 +117,12 @@ public class MockProjectManager implements ProjectManager {
 
 	@Override
 	public SProject findProjectByName(String projectName) {
-		// TODO Auto-generated method stub
-		return null;
+		return testProject;
 	}
 
 	@Override
 	public SProject findProjectById(String internalId) {
-		// TODO Auto-generated method stub
-		return null;
+		return testProject;
 	}
 
 	@Override
@@ -142,14 +132,12 @@ public class MockProjectManager implements ProjectManager {
 
 	@Override
 	public SProject findProjectByConfigId(String configId) {
-		// TODO Auto-generated method stub
-		return null;
+		return testProject;
 	}
 
 	@Override
 	public Collection<SProject> findProjects(Collection<String> projectsIds) {
-		// TODO Auto-generated method stub
-		return null;
+		return Arrays.asList(testProject);
 	}
 
 	@Override

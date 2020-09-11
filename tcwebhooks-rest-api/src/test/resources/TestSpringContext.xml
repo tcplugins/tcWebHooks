@@ -29,10 +29,11 @@
 	<bean id="mainConfigManager" class="webhook.teamcity.server.rest.util.mainconfig.MainConfigManager"/>
 	<bean id="mainConfigManagerProvider" class="webhook.teamcity.server.rest.jersey.MainConfigManagerProvider"/>
 	<bean id="dataProvider" class="webhook.teamcity.server.rest.data.DataProvider"/>
-	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.DataProviderProvider"/>
+	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.TemplateDataProviderProvider"/>
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
 	<bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/>
 	<bean id="webHookFinder" class="webhook.teamcity.server.rest.data.WebHookFinder"/>
+	<bean id="webHookParameterFinder" class="webhook.teamcity.server.rest.data.WebHookParameterFinder"/>
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
 	<bean id="webHookSettingsManagerProvider" class="webhook.teamcity.server.rest.jersey.WebHookSettingsManagerProvider"/>
 	<bean id="webHookUserRequestedExecutorProvider" class="webhook.teamcity.test.jerseyprovider.MockingWebHookUserRequestedExecutorProvider"/>
@@ -83,6 +84,14 @@
 		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
 		
+	<bean id="webHookParameterStoreFactory"
+		class="webhook.teamcity.settings.project.WebHookParameterStoreFactoryImpl"
+		/>
+		
+	<bean id="teamCityCoreFacade"
+		class="webhook.teamcity.TeamCityCoreFacadeImpl"
+		/>
+		
 	<bean id="webHookTemplateJaxHelper"
 		class="webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper"
 		/>
@@ -92,7 +101,7 @@
      	/>  
 		
 	<bean id="dataProviderTestContextProvider" 
-		class="webhook.teamcity.test.jerseyprovider.DataProviderTestContextProvider"
+		class="webhook.teamcity.test.jerseyprovider.TemplateDataProviderTestContextProvider"
 		/>
 		
 	<bean id="webHookTemplateManagerTestProvider" 

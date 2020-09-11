@@ -2,6 +2,7 @@ package webhook.teamcity.testing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -63,7 +64,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
 import webhook.teamcity.payload.template.SlackComCompactXmlWebHookTemplate;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
@@ -77,6 +78,8 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBra
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateText;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
+import webhook.teamcity.settings.project.WebHookParameterStore;
+import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookExecutionRequestGsonBuilder;
 import webhook.teamcity.testing.model.WebHookRenderResult;
@@ -88,6 +91,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	
 	
 	private SBuildServer server = mock(SBuildServer.class);
+	private WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class);
+	private WebHookParameterStoreFactory webHookParameterStoreFactory = mock(WebHookParameterStoreFactory.class);
 	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	private WebHookSettingsManager projectSettingsManager = mock(WebHookSettingsManager.class);
 	
@@ -111,7 +116,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	private WebHookAuthenticatorProvider webHookAuthenticatorProvider = new WebHookAuthenticatorProvider();
 
 	private WebHookFactory webHookFactory = new WebHookFactoryImpl(mainSettings, webHookAuthenticatorProvider, webHookHttpClientFactory);
-	private WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(server, webHookTemplateResolver, variableResolverManager);
+	private WebHookContentBuilder webHookContentBuilder = new WebHookContentBuilder(server, webHookTemplateResolver, variableResolverManager, webHookParameterStore);
 	
 	private MockSBuildType buildType = new MockSBuildType("name", "description", "buildTypeId");
 	private SProject sproject = new MockSProject("My Project", "description", "project01", "MyProject", buildType);
@@ -153,12 +158,14 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		usernamePasswordAuthenticatorFactory.register();
 		
 		
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, new ExtraParametersMap(new HashMap<String,String>()), new ExtraParametersMap(new HashMap<String,String>()));
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, new ExtraParameters(new HashMap<String,String>()));
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-slackcompact-jsonTemplate-AllEnabled.xml"));
 		webHookProjectSettings = framework.getWebHookProjectSettings(); 
 
 		when(projectSettingsManager.getSettings(anyString())).thenReturn(webHookProjectSettings);
 		when(parametersProvider.getAll()).thenReturn(new TreeMap<String,String>());
+		when(webHookParameterStore.getAllWebHookParameters(any())).thenReturn(Collections.emptyList());
+		when(webHookParameterStoreFactory.getWebHookParameterStore()).thenReturn(webHookParameterStore);
 		
 		buildType.setParametersProvider(parametersProvider);
 		
@@ -180,7 +187,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 			);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -217,7 +225,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				null, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -254,7 +263,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 			);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -288,7 +298,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -327,7 +338,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(webHookTemplateManager, webHookPayloadManager, webHookTemplateJaxTestHelper, framework.getProjectIdResolver(), null);
@@ -370,7 +382,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
@@ -412,7 +425,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		WebHookExecutionRequest webHookExecutionRequest = WebHookExecutionRequest.builder()
@@ -459,7 +473,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				null, 
 				variableResolverManager, 
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 			);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -498,7 +513,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				null, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		BuildState addedToQueueBuildState = new BuildState();
@@ -542,7 +558,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				webHookContentBuilder, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		BuildState finishedBuildState = new BuildState();
@@ -586,7 +603,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webAddressTransformer,
 				null, 
 				variableResolverManager,
-				projectIdResolver
+				projectIdResolver,
+				webHookParameterStoreFactory
 				);
 		
 		BuildState finishedBuildState = new BuildState();

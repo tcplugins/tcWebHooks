@@ -1,6 +1,8 @@
 package webhook.teamcity.extension;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +22,9 @@ import jetbrains.buildServer.web.util.SessionUser;
 import webhook.Constants;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.extension.bean.ProjectWebHookParameterBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
 import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
@@ -31,6 +35,8 @@ import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
+import webhook.teamcity.settings.project.WebHookParameterStore;
+import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookIndexPageController extends BaseController {
@@ -42,11 +48,22 @@ public class WebHookIndexPageController extends BaseController {
 	    private final WebHookPayloadManager myManager;
 		private final WebHookTemplateResolver myTemplateResolver;
 		private final WebHookAuthenticatorProvider myAuthenticatorProvider;
+		private final WebHookParameterStore myWebHookParameterStore;
+		private final WebHookPluginDataResolver myWebHookPluginDataResolver;
 
-	    public WebHookIndexPageController(SBuildServer server, WebControllerManager webManager, 
-	    		WebHookSettingsManager settings, PluginDescriptor pluginDescriptor, WebHookPayloadManager manager, 
+
+	    public WebHookIndexPageController(
+	    		SBuildServer server, 
+	    		WebControllerManager webManager, 
+	    		WebHookSettingsManager settings, 
+	    		PluginDescriptor pluginDescriptor, 
+	    		WebHookPayloadManager manager, 
 	    		WebHookTemplateResolver templateResolver,
-	    		WebHookMainSettings configSettings, WebHookAuthenticatorProvider authenticatorProvider) {
+	    		WebHookMainSettings configSettings, 
+	    		WebHookAuthenticatorProvider authenticatorProvider,
+	    		WebHookParameterStoreFactory webHookParameterStoreFactory,
+	    		WebHookPluginDataResolver webHookPluginDataResolver
+	    	) {
 	        super(server);
 	        myWebManager = webManager;
 	        mySettings = settings;
@@ -55,7 +72,9 @@ public class WebHookIndexPageController extends BaseController {
 	        myManager = manager;
 	        myTemplateResolver = templateResolver;
 	        myAuthenticatorProvider = authenticatorProvider;
-	        
+	        myWebHookParameterStore = webHookParameterStoreFactory.getWebHookParameterStore();
+			myWebHookPluginDataResolver = webHookPluginDataResolver;
+
 	    }
 
 	    public void register(){
@@ -102,6 +121,12 @@ public class WebHookIndexPageController extends BaseController {
 			    	params.put("buildTypeList", project.getBuildTypes());
 			    	params.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(project));
 			    	params.put("projectName", getProjectName(TeamCityIdResolver.getExternalProjectId(project), project.getName()));
+			    	
+			    	Map<String, ProjectWebHookParameterBean> projectParameters = new TreeMap<>();
+					myWebHookParameterStore.getOwnWebHookParameters(project).forEach(param -> {
+						projectParameters.put(param.getName(), new ProjectWebHookParameterBean(project, param));
+					});
+					params.put("projectWebhookParameters", projectParameters.values());
 			    	
 			    	Loggers.SERVER.debug(myMainSettings.getInfoText() + myMainSettings.getInfoUrl() + myMainSettings.getProxyListasString());
 			    	
@@ -210,6 +235,7 @@ public class WebHookIndexPageController extends BaseController {
 	        	params.put("haveProject", "false");
 	        	params.put("errorReason", "No project specified.");
 	        }
+	    	params.put("isRestApiInstalled", myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
 
 	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/webhookEdit.jsp", params);
 	    }

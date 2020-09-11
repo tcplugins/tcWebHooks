@@ -11,7 +11,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticator;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
-import webhook.teamcity.payload.variableresolver.VariableResolver;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 
@@ -83,14 +83,14 @@ public interface WebHook {
 
 	public abstract void setAuthentication(WebHookAuthenticator authenticator);
 	
-	public abstract void resolveAuthenticationParameters(VariableResolver variableResolver);
+	public abstract void resolveAuthenticationParameters(VariableMessageBuilder variableMessageBuilder);
 
 	/**
 	 * Returns true if all enabled filters match.
 	 * @param variableResolver
 	 * @return boolean indicating if webhook is enabled.
 	 */
-	public abstract boolean checkFilters(VariableResolver variableResolver);
+	public abstract boolean checkFilters(VariableMessageBuilder variableMessageBuilder);
 
 	public abstract void addFilter(WebHookFilterConfig filterHolder);
 	
@@ -104,7 +104,7 @@ public interface WebHook {
 	 * Iterates over headers and resolves them with WebHook content.
 	 * @param variableResolver
 	 */
-	public abstract void resolveHeaders(VariableResolver variableResolver);
+	public abstract void resolveHeaders(VariableMessageBuilder variableMessageBuilder);
 
 	public abstract String getDisabledReason();
 

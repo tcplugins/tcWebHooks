@@ -264,6 +264,7 @@ public class Template {
 		
 		Boolean editable;
 		
+		@XmlAttribute
 		String href;
 		
 		public WebHookTemplateStateRest(String shortName, boolean enabled, Boolean editable, String href) {

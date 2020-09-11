@@ -10,7 +10,7 @@ import java.util.Set;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import lombok.Getter;
-import webhook.Constants;
+import webhook.CommonUtils;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
@@ -36,8 +36,8 @@ public class ProjectWebHooksBean {
 		projectId = TeamCityIdResolver.getInternalProjectId(project);
 		externalProjectId = TeamCityIdResolver.getExternalProjectId(project);
 		webHookList = new LinkedHashMap<>();
-		sensibleProjectName = getSensibleProjectName(project);
-		sensibleProjectFullName = getSensibleProjectFullName(project);
+		sensibleProjectName = CommonUtils.getSensibleProjectName(project);
+		sensibleProjectFullName = CommonUtils.getSensibleProjectFullName(project);
 		webHooksEnabledForProject = projectWebHooksEnabled;
 	}
 
@@ -174,20 +174,6 @@ public class ProjectWebHooksBean {
 					);
 		}
 		bean.webHookList.put(holder.getUniqueKey(), holder);
-	}
-
-	private String getSensibleProjectName(SProject project){
-		if (project.getProjectId().equals(Constants.ROOT_PROJECT_ID)) {
-			return project.getProjectId();
-		}
-		return project.getName();
-	}
-
-	private String getSensibleProjectFullName(SProject project){
-		if (project.getProjectId().equals(Constants.ROOT_PROJECT_ID)) {
-			return project.getProjectId();
-		}
-		return project.getFullName();
 	}
 
 }

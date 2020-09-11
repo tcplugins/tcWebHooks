@@ -32,11 +32,12 @@ ul.commalist li:last-child:after {
 			WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.
 			Parent projects have the following webhooks and templates:
 			<table class="highlightable parametersTable">
-				<tr><th class="name" style="width:60%">Project Name</th><th style="width:20%">WebHook Count</th><th style="width:20%">Template Count</th></tr>
+				<tr><th class="name" style="width:40%">Project Name</th><th style="width:20%">WebHook Count</th><th style="width:20%">Template Count</th><th style="width:20%">Parameter Count</th></tr>
 			<c:forEach items="${projectWebHooksAndTemplates}" var="parent">
 				<tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
 					<td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
 					<td>${fn:length(parent.templates.templateList)} templates available</td>
+					<td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
 				</tr>
 			</c:forEach>
 			</table>
@@ -65,10 +66,10 @@ ul.commalist li:last-child:after {
 				<table class="highlightable parametersTable">
 					<thead>
 						<tr>
-							<th class=name style="width:40%">URL</th>
-							<th style="width:20%">Format</th>
-							<th style="width:20%">Build Events</th>
-							<th style="width:20%">Enabled Builds</th>
+							<th class=name style="font-weight: bold; width:40%">URL</th>
+							<th style="font-weight: bold; width:20%">Format</th>
+							<th style="font-weight: bold; width:20%">Build Events</th>
+							<th style="font-weight: bold; width:20%">Enabled Builds</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -91,6 +92,51 @@ ul.commalist li:last-child:after {
 				</table>
 		</c:if>
 		
+		<p>
+			<h3>WebHook Parameters available to WebHooks in this Project</h3>
+			<c:if test="${fn:length(projectWebhookParameters) == 0}" >
+				<p>There are no WebHook Parameters configured for this project.</p>
+				<a href="../webhooks/index.html?projectId=${projectExternalId}#parameters">Add project Parameters</a>.
+			</c:if>
+			<c:if test="${fn:length(projectWebhookParameters) > 0}" >
+				<p>There are <strong>${fn:length(projectWebhookParameters)}</strong> Parameters available to <c:out value="${project.fullName}"/> and sub-projects.
+					<a href="../webhooks/index.html?projectId=${projectExternalId}#parameters">Edit project Parameters</a>.</p>
+				<table class="highlightable parametersTable webhooktable">
+					<thead>
+						<tr>
+							<th class=name style="font-weight: bold; width:20%">Parameter Name</th>
+							<th style="font-weight: bold; width:40%">Parameter Value</th>
+							<th style="font-weight: bold; width:15%" title="Legacy Parameters are shown in Legacy Payloads as well as being available to templates">Legacy Parameter</th>
+							<th style="font-weight: bold; width:25%">Defined in Project</th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:forEach items="${projectWebhookParameters}" var="myParam">
+						<tr>
+							<td><c:out value="${myParam.parameter.name}" /></td>
+							<c:choose>
+								<c:when test="${myParam.parameter.secure}">
+									<td>*****</td>
+								</c:when>
+								<c:otherwise>
+									<td><c:out value="${myParam.parameter.value}"/></td>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${myParam.parameter.includedInLegacyPayloads}">
+									<td title="This parameter will appear in Legacy Payloads as well as being available to templates">Yes</td>
+								</c:when>
+								<c:otherwise>
+									<td title="This parameter will be hidden from Legacy Payloads, but will be available to templates.">No</td>
+								</c:otherwise>							
+							</c:choose>
+							<td>${myParam.sensibleProjectName}</td>
+							
+						</tr>
+					</c:forEach>
+					</tbody>
+				</table>
+			</c:if>
 		<p>
 		
 		<c:choose>

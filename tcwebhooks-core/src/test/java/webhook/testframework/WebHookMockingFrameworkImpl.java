@@ -3,11 +3,14 @@ package webhook.testframework;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +61,7 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateContent;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
@@ -69,12 +72,14 @@ import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsLegacyVariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.velocity.WebHooksBeanUtilsVelocityVariableResolverFactory;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
+import webhook.teamcity.settings.project.WebHookParameterStore;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
@@ -92,8 +97,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	WebHookVariableResolverManager webHookVariableResolverManager = mock(WebHookVariableResolverManager.class);
 	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
 	VariableResolverFactory legacyVariableResolverFactory = new WebHooksBeanUtilsLegacyVariableResolverFactory();
-	 
-	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(sBuildServer, resolver, webHookVariableResolverManager);
+	VariableResolverFactory velocityVariableResolverFactory = new WebHooksBeanUtilsVelocityVariableResolverFactory();
+	
+	WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class); 
+
+	WebHookContentBuilder contentBuilder = new WebHookContentBuilder(sBuildServer, resolver, webHookVariableResolverManager, webHookParameterStore);
 	WebHookPayloadTemplate template;
 	WebHookPayload payloadJson = new WebHookPayloadJson(manager, webHookVariableResolverManager);
 	WebHookPayload payloadXml = new WebHookPayloadXml(manager, webHookVariableResolverManager);
@@ -132,8 +140,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	SBuildType build3 = mock(SBuildType.class);
 	
 	WebHookListener whl;
-	SortedMap<String, String> extraParameters;
-	SortedMap<String, String> teamcityProperties;
+	ExtraParameters extraParameters;
 	BuildStateEnum buildstateEnum;
 	List<WebHookPayloadTemplate> templateList = new ArrayList<>();
 	List<WebHookPayload> formatList = new ArrayList<>();
@@ -155,6 +162,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		when(settings.getTemplateUsageCount((String)any())).thenReturn(0);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.STANDARD)).thenReturn(variableResolverFactory);
 		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY)).thenReturn(legacyVariableResolverFactory);
+		when(webHookVariableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.VELOCITY)).thenReturn(velocityVariableResolverFactory);
+		when(webHookVariableResolverManager.getAllVariableResolverFactories()).thenReturn(Arrays.asList(variableResolverFactory, legacyVariableResolverFactory, velocityVariableResolverFactory));
 		when(manager.isRegisteredFormat("nvpairs")).thenReturn(true);
 		when(manager.getFormat("nvpairs")).thenReturn(payloadNvpairs);
 		when(manager.isRegisteredFormat("json")).thenReturn(true);
@@ -222,6 +231,8 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 
 		((MockSBuildType) sBuildType).setMockingFrameworkInstance(this);
 		
+		when(webHookParameterStore.getAllWebHookParameters(any())).thenReturn(Collections.emptyList());
+
 	}
 	
 	@Override
@@ -328,12 +339,11 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 		};
 	}
 
-	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParametersMap extraParameters, ExtraParametersMap teamcityProperties) {
+	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParameters extraParameters) {
 		WebHookMockingFrameworkImpl framework = new WebHookMockingFrameworkImpl();
 		framework.buildstateEnum = buildState;
-		framework.extraParameters = extraParameters;
-		framework.teamcityProperties = teamcityProperties;
-		framework.content = new WebHookPayloadContent(framework.variableResolverFactory, framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, teamcityProperties, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
+		framework.extraParameters = framework.contentBuilder.mergeParameters(extraParameters.getWebHookParameters().asMap(), framework.sProject, framework.sRunningBuild, "");
+		framework.content = new WebHookPayloadContent(framework.variableResolverFactory, framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		return framework;
 	}
 
@@ -355,13 +365,13 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	@Override
 	public void loadWebHookConfigXml(File xmlConfigFile) throws JDOMException, IOException {
 		webHookConfig = ConfigLoaderUtil.getFirstWebHookInConfig(xmlConfigFile);
-		this.content = new WebHookPayloadContent(this.variableResolverFactory, this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, teamcityProperties, webHookConfig.getEnabledTemplates());
+		this.content = new WebHookPayloadContent(this.variableResolverFactory, this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, webHookConfig.getEnabledTemplates());
 	}
 	
 	@Override
 	public void loadNthWebHookConfigXml(int itemNumber, File xmlConfigFile) throws JDOMException, IOException {
 		webHookConfig = ConfigLoaderUtil.getSpecificWebHookInConfig(itemNumber, xmlConfigFile);
-		this.content = new WebHookPayloadContent(this.variableResolverFactory, this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, teamcityProperties, webHookConfig.getEnabledTemplates());
+		this.content = new WebHookPayloadContent(this.variableResolverFactory, this.sBuildServer, this.sRunningBuild, this.previousSuccessfulBuild, this.buildstateEnum, extraParameters, webHookConfig.getEnabledTemplates());
 	}
 	
 	@Override

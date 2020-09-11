@@ -54,9 +54,9 @@ public class WebHookPayloadNameValuePairsTemplate extends WebHookPayloadGeneric 
 
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
-		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(webHookTemplateContent.getTemplateText(), this.myVariableResolverFactory.buildVariableResolver(this, content, content.getAllParameters()));
+		VariableMessageBuilder builder = this.myVariableResolverFactory.createVariableMessageBuilder(this.myVariableResolverFactory.buildVariableResolver(content.getProject(), this, content, content.getAllParameters()));
 		try {
-			return URLEncodedUtils.format(parseToNvPairs(builder.build()), Charset.forName(getCharset()));
+			return URLEncodedUtils.format(parseToNvPairs(builder.build(webHookTemplateContent.getTemplateText())), Charset.forName(getCharset()));
 		} catch (Exception ex) {
 			throw new WebHookPayloadContentAssemblyException("Failed to parse template input. Check the input is correct");
 		}

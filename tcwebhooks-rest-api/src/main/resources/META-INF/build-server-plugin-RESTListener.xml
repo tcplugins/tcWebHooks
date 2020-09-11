@@ -27,13 +27,18 @@
 	<bean id="mainConfigManager" class="webhook.teamcity.server.rest.util.mainconfig.MainConfigManager"/>
 	<bean id="mainConfigManagerProvider" class="webhook.teamcity.server.rest.jersey.MainConfigManagerProvider"/>
 	<bean id="dataProvider" class="webhook.teamcity.server.rest.data.DataProvider"/>
-	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.DataProviderProvider"/>
+	<bean id="templateDataProviderProvider" class="webhook.teamcity.server.rest.jersey.TemplateDataProviderProvider"/>
+	<bean id="webHookDataProviderProvider" class="webhook.teamcity.server.rest.jersey.WebHookDataProviderProvider"/>
+	<bean id="webHookParameterDataProviderProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterDataProviderProvider"/>
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
 	<bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/>
 	<bean id="webHookFinder" class="webhook.teamcity.server.rest.data.WebHookFinder"/>
+	<bean id="webHookParameterFinder" class="webhook.teamcity.server.rest.data.WebHookParameterFinder"/>
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
 	<bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/>
 	<bean id="templateValidatorProvider" class="webhook.teamcity.server.rest.jersey.TemplateValidatorProvider"/>
+	<bean id="webHookParameterValidatorProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterValidatorProvider"/>
+	<bean id="webHookParameterStoreProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterStoreProvider"/>
 	<bean id="webHookSettingsManagerProvider" class="webhook.teamcity.server.rest.jersey.WebHookSettingsManagerProvider"/>
 	<bean id="webHookUserRequestedExecutorProvider" class="webhook.teamcity.server.rest.jersey.WebHookUserRequestedExecutorProvider"/>
 	<bean id="webHookWebLinks" class="webhook.teamcity.server.rest.WebHookWebLinks"/>

@@ -101,7 +101,7 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	 */
 	public static void doPost(WebHook wh, String payloadTemplate) {
 		try {
-			if (wh.isEnabled()){
+			if (Boolean.TRUE.equals(wh.isEnabled())){
 				wh.post();
 				Loggers.SERVER.info(CLASS_NAME + " :: WebHook triggered : " 
 						+ wh.getUrl() + " using template " + payloadTemplate 
@@ -109,7 +109,7 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 						+ " " + wh.getErrorReason());	
 				Loggers.SERVER.debug(CLASS_NAME + ":doPost :: content dump: " + wh.getPayload());
 				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
-				if (wh.isErrored()){
+				if (Boolean.TRUE.equals(wh.isErrored())){
 					Loggers.SERVER.error(wh.getErrorReason());
 				}
 				if (wh.getStatus() == null) {

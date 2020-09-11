@@ -3,7 +3,6 @@ package webhook.teamcity.payload.content;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -83,8 +82,8 @@ public class WebHookPayloadContent {
 		List<String> buildRunners;
 		WebHooksComment buildComment; 
 		List<String> buildTags;
-		ExtraParametersMap extraParameters;
-		private ExtraParametersMap teamcityProperties;
+		ExtraParameters extraParameters;
+		private ExtraParameters teamcityProperties;
 		@Getter private int maxChangeFileListSize = 100;
 		@Getter private boolean maxChangeFileListCountExceeded = false;
 		@Getter private int changeFileListCount = 0;
@@ -105,11 +104,11 @@ public class WebHookPayloadContent {
 		 * @param extraParameters
 		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
-		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates) {
+		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum buildState, ExtraParameters extraParameters, Map<String,String> templates) {
 			populateCommonContent(variableResolverFactory, server, responsibilityHolder, buildState, templates);
-			this.extraParameters =  new ExtraParametersMap(extraParameters);
+			this.extraParameters =  new ExtraParameters(extraParameters);
 			if (responsibilityHolder.getSBuildType() != null) {
-				this.teamcityProperties =  new ExtraParametersMap(responsibilityHolder.getSBuildType().getParametersProvider().getAll());
+				this.teamcityProperties =  new ExtraParameters(responsibilityHolder.getSBuildType().getParametersProvider().getAll());
 			}
 		}
 		
@@ -118,14 +117,15 @@ public class WebHookPayloadContent {
 		 * @param server
 		 * @param buildType
 		 * @param buildState
-		 * @param extraParameters
+		 * @param extraParameters2
 		 */
-		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SQueuedBuild sQueuedBuild, BuildStateEnum buildState, Map<String, String> extraParameters, Map<String,String> templates, String user, String comment) {
+		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SQueuedBuild sQueuedBuild, 
+				BuildStateEnum buildState, ExtraParameters extraParameters, Map<String,String> templates, String user, String comment) {
 			populateCommonContent(variableResolverFactory, server, sQueuedBuild.getBuildType(), buildState, templates);
-    		setBuildId(String.valueOf(sQueuedBuild.getBuildPromotion().getId()));
+			setBuildId(String.valueOf(sQueuedBuild.getBuildPromotion().getId()));
 			setTriggeredBy(sQueuedBuild.getTriggeredBy().getAsString());
-			this.extraParameters =  new ExtraParametersMap(extraParameters);
-			this.teamcityProperties =  new ExtraParametersMap(sQueuedBuild.getBuildType().getParametersProvider().getAll());
+			this.extraParameters =  extraParameters;
+			this.teamcityProperties =  extraParameters.getTeamcityParameters();
 		}
 
 		/**
@@ -141,14 +141,13 @@ public class WebHookPayloadContent {
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sBuild, 
 				BuildStateEnum buildState, 
-				Map<String, String> extraParameters, 
-				Map<String, String> teamcityProperties,
+				ExtraParameters extraParameters, 
 				Map<String, String> customTemplates,
 				String username,
 				String comment) {
 			
-			this.extraParameters =  new ExtraParametersMap(extraParameters);
-			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
+			this.extraParameters =  extraParameters;
+			this.teamcityProperties =  extraParameters.getTeamcityParameters();
     		populateCommonContent(variableResolverFactory, server, sBuild, null, buildState, customTemplates);
     		populateMessageAndText(sBuild, buildState);
     		populateArtifacts(sBuild);
@@ -168,17 +167,15 @@ public class WebHookPayloadContent {
 		 * @param previousBuild
 		 * @param buildState
 		 * @param extraParameters
-		 * @param teamcityProperties
 		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sRunningBuild, SFinishedBuild previousBuild, 
 				BuildStateEnum buildState, 
-				Map<String, String> extraParameters, 
-				Map<String, String> teamcityProperties,
+				ExtraParameters extraParameters, 
 				Map<String, String> customTemplates) {
 			
-			this.extraParameters =  new ExtraParametersMap(extraParameters);
-			this.teamcityProperties =  new ExtraParametersMap(teamcityProperties);
+			this.extraParameters =  extraParameters;
+			this.teamcityProperties =  extraParameters.getTeamcityParameters();
     		populateCommonContent(variableResolverFactory, server, sRunningBuild, previousBuild, buildState, customTemplates);
     		populateMessageAndText(sRunningBuild, buildState);
     		populateArtifacts(sRunningBuild);
@@ -773,12 +770,11 @@ public class WebHookPayloadContent {
 		private void setBuildStatusHtml(VariableResolverFactory variableResolverFactory, final String htmlStatusTemplate) {
 			
 			VariableMessageBuilder builder = variableResolverFactory.createVariableMessageBuilder(
-						htmlStatusTemplate, 
 						variableResolverFactory.buildVariableResolver(
-									new SimpleSerialiser(), this, getAllParameters()
+									this.getProject(), new SimpleSerialiser(), this, getAllParameters()
 								)
 					);
-			this.buildStatusHtml = builder.build();
+			this.buildStatusHtml = builder.build(htmlStatusTemplate);
 		}
 		
 		public String getBuildStartTime() {
@@ -852,40 +848,33 @@ public class WebHookPayloadContent {
 			return responsibilityUserNew;
 		}
 		
-		public Map<String, ExtraParametersMap> getAllParameters(){
-			Map<String, ExtraParametersMap> allParameters = new LinkedHashMap<>();
-			
-			allParameters.put("teamcity", this.teamcityProperties);
-			allParameters.put("webhook", this.extraParameters);
-			
-			return allParameters;
-			
+		public ExtraParameters getAllParameters(){
+			return this.extraParameters;
 		}
 
-		public ExtraParametersMap getExtraParameters(VariableResolverFactory variableResolverFactory) {
-			if (this.extraParameters.size() > 0){
+		public ExtraParameters getExtraParameters(VariableResolverFactory variableResolverFactory) {
+			if (!this.extraParameters.isEmpty()){
 				VariableMessageBuilder builder;
-				VariableResolver resolver = variableResolverFactory.buildVariableResolver(new SimpleSerialiser(), this, getAllParameters());
-				ExtraParametersMap resolvedParametersMap = new ExtraParametersMap(extraParameters);
+				VariableResolver resolver = variableResolverFactory.buildVariableResolver(getProject(), new SimpleSerialiser(), this, getAllParameters());
+				ExtraParameters resolvedParametersMap = new ExtraParameters();
 
+				builder = variableResolverFactory.createVariableMessageBuilder(resolver);
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
-					builder = variableResolverFactory.createVariableMessageBuilder(entry.getValue(), resolver);
-					resolvedParametersMap.put(entry.getKey(), builder.build());
+					resolvedParametersMap.put(entry.getKey(), builder.build(entry.getValue()));
 				}
-				resolver = new WebHooksBeanUtilsVariableResolver(new SimpleSerialiser(),this, getAllParameters());
+				resolver = new WebHooksBeanUtilsVariableResolver(getProject(), new SimpleSerialiser(),this, getAllParameters(), null);
+				builder = variableResolverFactory.createVariableMessageBuilder(resolver);
 				for (Entry<String,String> entry  : extraParameters.getEntriesAsSet()){
-					builder = variableResolverFactory.createVariableMessageBuilder(entry.getValue(), resolver);
-					resolvedParametersMap.put(entry.getKey(), builder.build());
+					resolvedParametersMap.put(entry.getKey(), builder.build(entry.getValue()));
 				}
 				return resolvedParametersMap;
 			} else {
 				return null;
 			}
-				
 		}
 
 		public void setExtraParameters(SortedMap<String, String> extraParameters) {
-			this.extraParameters = new ExtraParametersMap(extraParameters);
+			this.extraParameters = new ExtraParameters(extraParameters);
 		}
 
 		public static class SimpleSerialiser implements WebHookContentObjectSerialiser {

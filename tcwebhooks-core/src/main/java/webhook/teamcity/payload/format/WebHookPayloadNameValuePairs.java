@@ -12,6 +12,7 @@ import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContent;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.template.render.WwwFormUrlEncodedToHtmlPrettyPrintingRenderer;
@@ -50,7 +51,6 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		return "Send the payload as a set of normal Name/Value Pairs";
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplateContent){
 		StringBuilder returnString = new StringBuilder();
@@ -65,11 +65,11 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		}
 
 		if (contentMap != null && contentMap.size() > 0){
-			appendToBuilder(returnString, contentMap, "content");
+			appendToBuilder(returnString, new ExtraParameters(contentMap), "content");
 		}
 
 
-		if (content != null && content.getExtraParameters(this.myVariableResolverFactory) != null  && content.getExtraParameters(this.myVariableResolverFactory).size() > 0){
+		if (content != null && content.getExtraParameters(this.myVariableResolverFactory) != null  && !content.getExtraParameters(this.myVariableResolverFactory).isEmpty()){
 			appendToBuilder(returnString, content.getExtraParameters(myVariableResolverFactory), "extra");
 		}
 
@@ -81,7 +81,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		}
 	}
 
-	private void appendToBuilder(StringBuilder stringBuilder, Map<String,String> inputMap, String logType) {
+	private void appendToBuilder(StringBuilder stringBuilder, ExtraParameters inputMap, String logType) {
 		for(Map.Entry<String, String> entry : inputMap.entrySet())
 		{
 			String pair = "&";

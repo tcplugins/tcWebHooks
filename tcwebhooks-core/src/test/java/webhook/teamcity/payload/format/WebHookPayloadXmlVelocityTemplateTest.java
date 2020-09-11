@@ -21,6 +21,7 @@ import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateContent;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.velocity.WebHooksBeanUtilsVelocityVariableResolverFactory;
@@ -126,7 +127,7 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 					.sBuildType(buildType)
 					.sProject(project)
 					.build(),
-				new TreeMap<String,String>(),
+				new ExtraParameters(),
 				new TreeMap<String,String>(),
 				templateContent));
 

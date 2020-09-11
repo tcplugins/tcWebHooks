@@ -11,6 +11,7 @@
     	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>10.0</teamcityVersion>
+    	<teamcityServerVersion>2018.2</teamcityServerVersion>
     	<springframework.version>4.3.17.RELEASE</springframework.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

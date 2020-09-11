@@ -61,7 +61,7 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
   public MockingBeanContextProvider() {
 	System.out.println("We are here: Trying to provide a test BeanContext instance");
 	myServiceLocator = mock(ServiceLocator.class);
-	when(myServiceLocator.getSingletonService(WebHookWebLinks.class)).thenReturn(new WebHookWebLinks(new DataProviderTestContextProvider.TestUrlHolder()));
+	when(myServiceLocator.getSingletonService(WebHookWebLinks.class)).thenReturn(new WebHookWebLinks(new TemplateDataProviderTestContextProvider.TestUrlHolder()));
   }
 
   public ComponentScope getScope() {

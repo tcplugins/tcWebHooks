@@ -15,21 +15,20 @@ import org.junit.Test;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthConfig;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
 
 public class WebHookProjectSettingsTest {
 	
 	protected SortedMap<String, String> map = new TreeMap<>();
-	protected ExtraParametersMap  extraParameters  = new ExtraParametersMap(map); 
-	protected ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
+	protected ExtraParameters  extraParameters  = new ExtraParameters(map); 
 	protected WebHookMockingFramework framework;
 	
 	@Test
 	public void TestUpdateToWebhookConfigToRemoveAuthenicationUpdatesCorrectlyWhenNullWebHookAuthConfigPassedIn() throws IOException, JDOMException{
 		
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
 		
 		WebHookProjectSettings settings = framework.getWebHookProjectSettings(); 
@@ -45,7 +44,7 @@ public class WebHookProjectSettingsTest {
 	@Test
 	public void TestUpdateToWebhookConfigToAddAuthenicationUpdatesCorrectlyWhenValidWebHookAuthConfigPassedIn() throws IOException, JDOMException{
 		
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branchNameFilter.xml"));
 		
 		WebHookProjectSettings settings = framework.getWebHookProjectSettings(); 

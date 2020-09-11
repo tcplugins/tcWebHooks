@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -21,6 +18,7 @@ import webhook.teamcity.MockSRunningBuild;
 import webhook.teamcity.payload.UnsupportedWebHookFormatException;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.teamcity.payload.WebHookPayloadManager;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.content.WebHookPayloadContentAssemblyException;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
@@ -53,7 +51,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadXml whp = new WebHookPayloadXml(wpm, variableResolverManager);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<>();
+		ExtraParameters extraParameters = new ExtraParameters();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");
@@ -83,7 +81,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadJson whp = new WebHookPayloadJson(wpm, variableResolverManager);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<>();
+		ExtraParameters extraParameters = new ExtraParameters();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");
@@ -112,18 +110,18 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadNameValuePairs whp = new WebHookPayloadNameValuePairs(wpm, variableResolverManager);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<>();
+		ExtraParameters extraParameters = new ExtraParameters();
 		
-		extraParameters.put("item1", "content1");
-		extraParameters.put("item2", "content2");
-		extraParameters.put("item3", "content3");
-		extraParameters.put("item4", "content4");
-		extraParameters.put("item5", "content5");
+		extraParameters.put(ExtraParameters.WEBHOOK, "item1", "content1");
+		extraParameters.put(ExtraParameters.WEBHOOK, "item2", "content2");
+		extraParameters.put(ExtraParameters.WEBHOOK, "item3", "content3");
+		extraParameters.put(ExtraParameters.WEBHOOK, "item4", "content4");
+		extraParameters.put(ExtraParameters.WEBHOOK, "item5", "content5");
 		
 		System.out.println(sRunningBuild.getBuildDescription());
 		assertTrue(wpm.getFormat("nvpairs").getContentType().equals("application/x-www-form-urlencoded"));
 		assertTrue(wpm.getFormat("nvpairs").getFormatDescription().equals("Name Value Pairs"));
-		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters,WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
+		System.out.println(wpm.getFormat("nvpairs").buildStarted(sRunningBuild, previousBuild, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates(), null));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -140,7 +138,7 @@ public class WebHookPayloadTest {
 		WebHookPayloadManager wpm = new WebHookPayloadManager(mockServer);
 		WebHookPayloadEmpty whp = new WebHookPayloadEmpty(wpm);
 		whp.register();
-		SortedMap<String, String> extraParameters = new TreeMap<>();
+		ExtraParameters extraParameters = new ExtraParameters();
 		
 		extraParameters.put("item1", "content1");
 		extraParameters.put("item2", "content2");

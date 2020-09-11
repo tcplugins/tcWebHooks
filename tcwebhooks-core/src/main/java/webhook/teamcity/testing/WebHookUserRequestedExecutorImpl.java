@@ -39,6 +39,8 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.settings.project.WebHookParameterStore;
+import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
 import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookRenderResult;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
@@ -60,6 +62,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 	private final WebHookVariableResolverManager myWebHookVariableResolverManager;
 	private final WebHookPayloadManager myWebHookPayloadManager;
 	private final ProjectIdResolver myProjectIdResolver;
+	
+	private final WebHookParameterStore myWebHookParameterStore;
 
 	public WebHookUserRequestedExecutorImpl(
 			SBuildServer server,
@@ -73,7 +77,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 			WebAddressTransformer webAddressTransformer,
 			WebHookContentBuilder webHookContentBuilder,
 			WebHookVariableResolverManager webHookVariableResolverManager,
-			ProjectIdResolver projectIdResolver
+			ProjectIdResolver projectIdResolver,
+			WebHookParameterStoreFactory webHookParameterStoreFactory
 		) {
 		myServer = server;
 		myMainSettings = mainSettings;
@@ -87,6 +92,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		myWebHookVariableResolverManager = webHookVariableResolverManager;
 		myWebHookPayloadManager = webHookPayloadManager;
 		myProjectIdResolver = projectIdResolver;
+		myWebHookParameterStore = webHookParameterStoreFactory.getWebHookParameterStore();
 	}
 
 
@@ -261,14 +267,14 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		WebHookTemplateResolver webHookTemplateResolver = new NonDiscrimatoryTemplateResolver(webHookTemplateManager, webHookTemplateConfig, payloadManager);
 		webHookTemplateManager.registerTemplateFormatFromXmlConfig(webHookTemplateConfig);
 
-		return new WebHookContentBuilder(myServer, webHookTemplateResolver, myWebHookVariableResolverManager );
+		return new WebHookContentBuilder(myServer, webHookTemplateResolver, myWebHookVariableResolverManager, myWebHookParameterStore);
 	}
 
 	@Override
 	public WebHookHistoryItem requestWebHookExecution(WebHookExecutionRequest webHookExecutionRequest) {
 		WebHookConfig webHookConfig = myWebHookConfigFactory.build(webHookExecutionRequest);
 
-		WebHookContentBuilder contentBuilder = new WebHookContentBuilder(myServer, myWebHookTemplateResolver, myWebHookVariableResolverManager);
+		WebHookContentBuilder contentBuilder = new WebHookContentBuilder(myServer, myWebHookTemplateResolver, myWebHookVariableResolverManager, myWebHookParameterStore);
 		WebHook wh = myWebHookFactory.getWebHook(webHookConfig,
 												myMainSettings.getProxyConfigForUrl(
 														webHookConfig.getUrl()

@@ -22,7 +22,7 @@ public class BearerAuthenticatorWithRealServerTest extends AuthWithRealServerTes
 		server.enqueue(new MockResponse().setResponseCode(401).setHeader("www-authenticate", "Bearer realm=\"http://example1.com\""));
 		server.enqueue(new MockResponse().setResponseCode(201));
 		
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-bearer-auth.xml"));
 		framework.getWebHookListener().buildFinished(framework.getRunningBuild());
 		RecordedRequest req1 = server.takeRequest();
@@ -34,7 +34,7 @@ public class BearerAuthenticatorWithRealServerTest extends AuthWithRealServerTes
 	@Test
 	public void testRealWebHookWithPremptiveAuth() throws JDOMException, IOException, InterruptedException {
 		server.enqueue(new MockResponse().setResponseCode(201));
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-preemptive-bearer-auth.xml"));
 		framework.getWebHookListener().buildFinished(framework.getRunningBuild());
 		
@@ -45,7 +45,7 @@ public class BearerAuthenticatorWithRealServerTest extends AuthWithRealServerTes
 	@Test
 	public void testRealWebHookWithPremptiveAuthFromToken() throws JDOMException, IOException, InterruptedException {
 		server.enqueue(new MockResponse().setResponseCode(201));
-		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters, teamcityProperties);
+		framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
 		framework.loadWebHookProjectSettingsFromConfigXml(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-preemptive-bearer-auth-from-token.xml"));
 		framework.getWebHookListener().buildFinished(framework.getRunningBuild());
 		

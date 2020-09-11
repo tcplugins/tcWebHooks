@@ -1,22 +1,24 @@
 package webhook.teamcity.payload.variableresolver.velocity;
 
-import java.util.Map;
-
 import org.apache.velocity.context.Context;
 
 import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.WebHookContentResolutionException;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.settings.secure.WebHookSecretResolver;
+import webhook.teamcity.settings.secure.WebHookSecretResolverFactory;
 import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHooksBeanUtilsVelocityVariableResolverFactory implements VariableResolverFactory {
 	
-	WebHookVariableResolverManager variableResolverManager;
+	private WebHookVariableResolverManager variableResolverManager;
+	private WebHookSecretResolver webHookSecretResolver;
 	
 	@Override
 	public void register() {
@@ -27,6 +29,11 @@ public class WebHooksBeanUtilsVelocityVariableResolverFactory implements Variabl
 	@Override
 	public void setWebHookVariableResolverManager(WebHookVariableResolverManager variableResolverManager) {
 		this.variableResolverManager = variableResolverManager;
+	}
+	
+	@Override
+	public void setWebHookSecretResolverFactory(WebHookSecretResolverFactory webHookSecretResolverFactory) {
+		this.webHookSecretResolver = webHookSecretResolverFactory.getWebHookSecretResolver();
 	}
 
 	@Override
@@ -40,15 +47,15 @@ public class WebHooksBeanUtilsVelocityVariableResolverFactory implements Variabl
 	}
 
 	@Override
-	public VariableResolver buildVariableResolver(WebHookContentObjectSerialiser webhookPayload, Object javaBean,
-			Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
-		return new WebHooksBeanUtilsVelocityVariableResolver(javaBean, extraAndTeamCityProperties);
+	public VariableResolver buildVariableResolver(SProject sProject, WebHookContentObjectSerialiser webhookPayload, Object javaBean,
+			ExtraParameters extraAndTeamCityProperties) {
+		return new WebHooksBeanUtilsVelocityVariableResolver(sProject, webhookPayload, javaBean, extraAndTeamCityProperties, webHookSecretResolver);
 	}
 
 	@Override
-	public VariableMessageBuilder createVariableMessageBuilder(String template, VariableResolver resolver) {
+	public VariableMessageBuilder createVariableMessageBuilder(VariableResolver resolver) {
 		if (resolver instanceof WebHooksBeanUtilsVelocityVariableResolver) {
-			return WebHookVelocityVariableMessageBuilder.create(template, (Context)resolver);
+			return WebHookVelocityVariableMessageBuilder.create((Context)resolver, webHookSecretResolver);
 		} 
 		throw new WebHookContentResolutionException("Incompatible VariableResolver. It must implement Velocity Context");
 	}

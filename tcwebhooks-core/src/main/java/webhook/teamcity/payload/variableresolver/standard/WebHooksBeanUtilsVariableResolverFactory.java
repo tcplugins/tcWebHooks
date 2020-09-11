@@ -1,19 +1,21 @@
 package webhook.teamcity.payload.variableresolver.standard;
 
-import java.util.Map;
-
 import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
+import webhook.teamcity.settings.secure.WebHookSecretResolver;
+import webhook.teamcity.settings.secure.WebHookSecretResolverFactory;
 import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolverFactory {
 	
 	WebHookVariableResolverManager variableResolverManager;
+	WebHookSecretResolver webHookSecretResolver;
 	
 	@Override
 	public void register() {
@@ -25,7 +27,12 @@ public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolve
 	public void setWebHookVariableResolverManager(WebHookVariableResolverManager variableResolverManager) {
 		this.variableResolverManager = variableResolverManager;
 	}
-
+	
+	@Override
+	public void setWebHookSecretResolverFactory(WebHookSecretResolverFactory webHookSecretResolverFactory) {
+		this.webHookSecretResolver = webHookSecretResolverFactory.getWebHookSecretResolver();
+	}
+	
 	@Override
 	public PayloadTemplateEngineType getPayloadTemplateType() {
 		return PayloadTemplateEngineType.STANDARD;
@@ -37,14 +44,14 @@ public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolve
 	}
 
 	@Override
-	public VariableResolver buildVariableResolver(WebHookContentObjectSerialiser webhookPayload, Object javaBean,
-			Map<String, ExtraParametersMap> extraAndTeamCityProperties) {
-		return new WebHooksBeanUtilsVariableResolver(webhookPayload, javaBean, extraAndTeamCityProperties);
+	public VariableResolver buildVariableResolver(SProject sProject, WebHookContentObjectSerialiser webhookPayload, Object javaBean,
+			ExtraParameters extraAndTeamCityProperties) {
+		return new WebHooksBeanUtilsVariableResolver(sProject, webhookPayload, javaBean, extraAndTeamCityProperties, webHookSecretResolver);
 	}
 
 	@Override
-	public VariableMessageBuilder createVariableMessageBuilder(String template, VariableResolver resolver) {
-		return WebHookVariableMessageBuilder.create(template, resolver);
+	public VariableMessageBuilder createVariableMessageBuilder(VariableResolver resolver) {
+		return WebHookVariableMessageBuilder.create(resolver);
 	}
 
 }

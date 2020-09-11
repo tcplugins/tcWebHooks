@@ -14,21 +14,20 @@ import org.junit.Test;
 
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
-import webhook.teamcity.payload.content.ExtraParametersMap;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 import webhook.testframework.WebHookSemiMockingFrameworkImpl;
 
 public class SlackComCompactTest {
 	
 	protected SortedMap<String, String> map = new TreeMap<>();
-	protected ExtraParametersMap  extraParameters  = new ExtraParametersMap(map); 
-	protected ExtraParametersMap  teamcityProperties  = new ExtraParametersMap(map); 
+	protected ExtraParameters  extraParameters  = new ExtraParameters(map); 
 	protected WebHookSemiMockingFrameworkImpl framework;
 	
 	@Test
 	public void testBuildStarted() throws IOException, JDOMException, InterruptedException, JAXBException {
 		
-		framework = WebHookSemiMockingFrameworkImpl.create(BuildStateEnum.BUILD_STARTED, extraParameters, teamcityProperties);
+		framework = WebHookSemiMockingFrameworkImpl.create(BuildStateEnum.BUILD_STARTED, extraParameters);
 		
 		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(
 														framework.getWebHookTemplateManager(), 
@@ -51,7 +50,7 @@ public class SlackComCompactTest {
 	@Test
 	public void testBuildSuccessful() throws IOException, JDOMException, InterruptedException {
 		
-		framework = WebHookSemiMockingFrameworkImpl.create(BuildStateEnum.BUILD_SUCCESSFUL, extraParameters, teamcityProperties);
+		framework = WebHookSemiMockingFrameworkImpl.create(BuildStateEnum.BUILD_SUCCESSFUL, extraParameters);
 		
 		WebHookPayloadTemplate slackCompact = new SlackComCompactXmlWebHookTemplate(
 				framework.getWebHookTemplateManager(), 
