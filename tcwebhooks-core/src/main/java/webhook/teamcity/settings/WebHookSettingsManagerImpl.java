@@ -11,6 +11,9 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.serverSide.ConfigAction;
+import jetbrains.buildServer.serverSide.ConfigActionFactory;
+import jetbrains.buildServer.serverSide.PersistFailedException;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
@@ -30,6 +33,7 @@ import webhook.teamcity.settings.WebHookSearchResult.Match;
 public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 
 	@NotNull private final ProjectManager myProjectManager;
+	@NotNull private final ConfigActionFactory myConfigActionFactory;
 	@NotNull private final ProjectSettingsManager myProjectSettingsManager;
 	@NotNull private final WebHookTemplateManager myWebHookTemplateManager;
 	@NotNull private final WebHookPayloadManager myWebHookPayloadManager;
@@ -44,12 +48,14 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 
 	public WebHookSettingsManagerImpl(
 			@NotNull final ProjectManager projectManager,
+			@NotNull final ConfigActionFactory configActionFactory,
 			@NotNull final ProjectSettingsManager projectSettingsManager,
 			@NotNull final WebHookTemplateManager webHookTemplateManager,
 			@NotNull final WebHookPayloadManager webHookPayloadManager,
 			@NotNull final WebAddressTransformer webAddressTransformer)
 	{
 		this.myProjectManager = projectManager;
+		this.myConfigActionFactory = configActionFactory;
 		this.myProjectSettingsManager = projectSettingsManager;
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookPayloadManager = webHookPayloadManager;
@@ -89,7 +95,12 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig
 											);
 		if (result.updated) {
-			rebuildWebHooksEnhanced(projectInternalId);
+			if (persist(projectInternalId, "Added new WebHook")) {
+				result.updated = true;
+				rebuildWebHooksEnhanced(projectInternalId);
+			} else {
+				result.updated = false;
+			}
 		}
 		return result;
 
@@ -99,10 +110,14 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	public WebHookUpdateResult deleteWebHook(String webHookId, String projectInternalId) {
 		WebHookUpdateResult result = getSettings(projectInternalId).deleteWebHook(webHookId, projectInternalId);
 		if (result.updated) {
-			rebuildWebHooksEnhanced(projectInternalId);
+			if (persist(projectInternalId, "Deleted existing WebHook")) {
+				result.updated = true;
+				rebuildWebHooksEnhanced(projectInternalId);
+			} else {
+				result.updated = false;
+			}
 		}
 		return result;
-
 	}
 
 	@Override
@@ -115,9 +130,26 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 													buildTypesEnabled,  webHookAuthConfig
 												);
 		if (result.updated) {
-			rebuildWebHooksEnhanced(projectInternalId);
+			if (persist(projectInternalId, "Edited existing WebHook")) {
+				result.updated = true;
+				rebuildWebHooksEnhanced(projectInternalId);
+			} else {
+				result.updated = false;
+			}
 		}
 		return result;
+	}
+	
+	private boolean persist(String projectInternalId, String message) {
+		try {
+			SProject project = this.myProjectManager.findProjectById(projectInternalId);
+			ConfigAction cause = myConfigActionFactory.createAction(project, message);
+			project.persist(cause);
+			return true;
+		} catch (AccessDeniedException | PersistFailedException ex) {
+			webhook.teamcity.Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
+			return false;
+		}			
 	}
 
 	@Override

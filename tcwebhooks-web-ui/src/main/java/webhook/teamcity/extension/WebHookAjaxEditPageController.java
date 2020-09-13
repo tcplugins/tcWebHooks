@@ -102,7 +102,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    				&& (request.getParameter("removedWebHookId") != null)){
 			    					WebHookUpdateResult result = mySettings.deleteWebHook(request.getParameter("removedWebHookId"), myProject.getProjectId());
 			    					if(result.isUpdated()){
-			    						myProject.persist();
 	    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='delete' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    					} else {
 			    						params.put(PARAMS_MESSAGES_KEY, "<errors><error id=\"messageArea\">The webhook was not found. Have the WebHooks been edited on disk or by another user?</error></errors>");		
@@ -194,7 +193,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    														states, request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(result.isUpdated()){
-			    								myProject.persist();
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='new' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
 			    								params.put("message", "<errors><error id=\"persistenceError\">Unable to perist webhook</error>");
@@ -205,7 +203,6 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    														states, request.getParameter("payloadTemplate"), 
 			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
 			    							if(result.isUpdated()){
-			    								myProject.persist();
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='update' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
 			    								params.put("message", "<errors><error id=\"persistenceError\">Unable to perist webhook</error>");

@@ -1,7 +1,7 @@
 package webhook.teamcity.settings;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -13,9 +13,13 @@ import java.util.HashMap;
 import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import jetbrains.buildServer.serverSide.ConfigAction;
+import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
@@ -32,6 +36,7 @@ public class WebHookSettingsManagerImplTest {
 	
 	@Mock SProject sProject;
 	@Mock ProjectManager projectManager;
+	@Mock ConfigActionFactory configActionFactory;
 	@Mock ProjectSettingsManager projectSettingsManager;
 	
 	private WebHookSettingsManager webHookSettingsManager;
@@ -46,6 +51,7 @@ public class WebHookSettingsManagerImplTest {
 		when(sProject.getName()).thenReturn("My Project");
 		when(projectManager.getActiveProjects()).thenReturn(Collections.singletonList(sProject));
 		when(projectManager.findProjectById(anyString())).thenReturn(sProject);
+		when(configActionFactory.createAction(eq(sProject), any())).thenReturn(Mockito.mock(ConfigAction.class));
 		
 		projectSettings = new WebHookProjectSettings();
 		projectSettings.readFrom(ConfigLoaderUtil.getFullConfigElement(new File("src/test/resources/project-settings-test-elastic.xml")).getChild("webhooks"));
@@ -68,7 +74,7 @@ public class WebHookSettingsManagerImplTest {
 		
 		webHookSettingsManager = new WebHookSettingsManagerImpl(
 														projectManager, 
-														projectSettingsManager, 
+														null, projectSettingsManager, 
 														framework.getWebHookTemplateManager(), 
 														framework.getWebHookPayloadManager(), 
 														new WebAddressTransformerImpl());
