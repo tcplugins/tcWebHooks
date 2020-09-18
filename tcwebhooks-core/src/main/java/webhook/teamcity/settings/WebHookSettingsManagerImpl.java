@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.PersistFailedException;
@@ -20,6 +19,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.history.WebAddressTransformer;
@@ -147,7 +147,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 			project.persist(cause);
 			return true;
 		} catch (AccessDeniedException | PersistFailedException ex) {
-			webhook.teamcity.Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
+			Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
 			return false;
 		}			
 	}
@@ -163,6 +163,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		for (WebHookConfig c : getSettings(projectInternalId).getWebHooksConfigs()) {
 			webHookConfigCopies.add(c.copy());
 		}
+		Loggers.SERVER.debug(String.format("WebHookSettingsManagerImpl :: getWebHooksConfigs. ProjectId '%s'. Found %s webhook config(s).", projectInternalId, webHookConfigCopies.size()));
 		return webHookConfigCopies;
 	}
 	
