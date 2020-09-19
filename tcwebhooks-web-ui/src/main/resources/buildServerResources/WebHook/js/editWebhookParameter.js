@@ -21,21 +21,21 @@ WebHooksPlugin.Parameters = {
 	},
     editParameter: function(data) {
     	if (!restApiDetected) {
-    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
     	} else {
     		WebHooksPlugin.Parameters.EditDialog.showDialog("Edit WebHook Parameter", 'editWebhookParameter', data);
     	}
     },
     addParameter: function(data) {
     	if (!restApiDetected) {
-    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
     	} else {
     		WebHooksPlugin.Parameters.EditDialog.showDialog("Add WebHook Parameter", 'addWebhookParameter', data);
     	}
     },
     deleteParameter: function(data) {
     	if (!restApiDetected) {
-    		WebHooksPlugin.NoRestApiDialog.showDialog();
+    		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
     	} else {
     		WebHooksPlugin.Parameters.DeleteDialog.showDialog("Delete WebHook Parameter", 'deleteWebhookParameter', data);
     	}

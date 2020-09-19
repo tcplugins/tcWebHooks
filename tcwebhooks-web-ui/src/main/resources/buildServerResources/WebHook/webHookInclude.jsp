@@ -1,4 +1,5 @@
 		<script>
+		var restApiDetected = ${isRestApiInstalled};
         var ProjectBuilds = ${projectWebHooksAsJson};
         </script>
 	    <table id="webHookTable" class="settings webhooktable">
@@ -57,6 +58,9 @@
 
 		<p>
 		<h2 id="parameters">WebHook Parameters in this Project</h2>
+		<c:if test="${not isRestApiInstalled}">
+		<div class="icon_before icon16 attentionRed">The <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> is not installed. Creating or modifying parameters will be disabled.</div>
+		</c:if>
 		<bs:refreshable containerId="projectWebhookParametersContainer" pageUrl="${pageUrl}">
 				<table class="parametersTable webhooktable">
 					<thead>
@@ -375,6 +379,26 @@
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="deleteWebHookParameterDialogSubmit" label="Delete Parameter"/>
                 <forms:cancel onclick="WebHooksPlugin.Parameters.DeleteDialog.cancelDialog()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
+    
+    <bs:dialog dialogId="noRestApiDialog"
+               dialogClass="noRestApiDialog"
+               title="No WebHoooks REST API Plugin detected"
+               closeCommand="WebHooksPlugin.NoRestApiDialog.close()">
+        <forms:multipartForm id="noRestApiForm"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHooksPlugin.NoRestApi.NoRestApiDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td>The WebHoooks REST API Plugin was not detected. This page requires
+                		the WebHooks REST API to provide editing of WebHook Parameters.<p>
+                		Please install the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> to use this page.
+                </td></tr>
+            </table>
+            <div class="popupSaveButtonsBlock">
+                <forms:cancel onclick="WebHooksPlugin.NoRestApi.NoRestApiDialog.close()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>

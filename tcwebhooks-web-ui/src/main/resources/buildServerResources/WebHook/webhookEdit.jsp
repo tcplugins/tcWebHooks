@@ -28,6 +28,7 @@
         /js/bs/adminActions.js
       ${jspHome}WebHook/js/editWebhook.js
       ${jspHome}WebHook/js/editWebhookParameter.js
+      ${jspHome}WebHook/js/noRestApi.js
       </bs:linkScript>
 
       <script type="text/javascript">
