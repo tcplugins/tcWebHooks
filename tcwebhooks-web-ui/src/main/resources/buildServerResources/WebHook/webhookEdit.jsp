@@ -277,7 +277,7 @@
          	</c:otherwise>  
 		</c:choose>  	        
 	          		ProjectBuilds = data;
-	          		$j('.webHookRow').remove();
+	          		$j('#webHookTable .webHookRow').remove();
 	          		addWebHooksFromJsonCallback();
 				});
 	        }

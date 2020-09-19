@@ -347,6 +347,7 @@ WebHooksPlugin.Parameters = {
 					'Accept' : 'application/json'
 				},
 				success: function (response) {
+					let refreshDone = false;
 					dialog.close();
 					// Animate the removal of the webhook parameter table row.
 					// Then do the div refresh after the row is gone.
@@ -356,8 +357,11 @@ WebHooksPlugin.Parameters = {
 			            .wrapInner('<div />')	// Wrap the content in a div, so that the height can be animated.
 			            .children()
 			            .slideUp(function() {
-			            	$j(this).closest('tr').remove();
-			            	$("projectWebhookParametersContainer").refresh();
+			            	if (!refreshDone) {
+			            		$j(this).closest('tr').remove();
+			            		$("projectWebhookParametersContainer").refresh();
+			            		refreshDone = true;
+			            	}
 			            });
 				},
 				error: function (response) {

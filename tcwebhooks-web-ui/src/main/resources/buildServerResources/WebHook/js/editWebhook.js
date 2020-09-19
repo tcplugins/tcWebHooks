@@ -98,6 +98,7 @@ WebHooksPlugin = {
 					    dialog.ajaxError(thing.textContent);
 				    });
     				if (! isErrored) {
+    					let refreshDone = false;
     					dialog.close();
 
     					// Animate the removal of the webhook table row.
@@ -107,8 +108,11 @@ WebHooksPlugin = {
     			            .wrapInner('<div />')	// Wrap the content in a div, so that the height can be animated.
     			            .children()
     			            .slideUp(function() {
-    			            	$j(this).closest('tr').remove();
-    			            	$('systemParams').updateContainer();
+    			            	if (!refreshDone) {
+    			            		$j(this).closest('tr').remove();
+    			            		$('systemParams').updateContainer();
+    			            		refreshDone = true;
+    			            	}
     			            });
     				}
     			},
