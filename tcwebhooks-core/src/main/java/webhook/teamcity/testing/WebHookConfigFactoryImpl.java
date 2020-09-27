@@ -11,6 +11,7 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
@@ -84,7 +85,7 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 					 .authParameters(getAuthParameters(webHookExecutionRequest.getAuthParameters()))
 					 .filters(new ArrayList<WebHookFilterConfig>())
 					 .states(buildStates(webHookExecutionRequest.getConfigBuildStates()))
-					 .extraParameters(new TreeMap<String,String>())
+					 .extraParameters(new ExtraParameters())
 					 .build();
 	}
 
@@ -141,7 +142,7 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 				 .payloadFormat(webHookTemplateExecutionRequest.getFormat())
 				 .templates(new TreeMap<String,CustomMessageTemplate>())
 				 .headers(new ArrayList<WebHookHeaderConfig>())
-				 .extraParameters(new TreeMap<String,String>()) //TODO: Should we get from config somehow?
+				 .extraParameters(new ExtraParameters()) //TODO: Should we get from config somehow?
 				 .build();
 	}
 

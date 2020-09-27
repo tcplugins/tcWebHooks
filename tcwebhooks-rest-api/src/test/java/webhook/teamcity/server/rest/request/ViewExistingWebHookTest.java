@@ -94,5 +94,46 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     	assertNotNull(responseMsg.getWebhooks().get(0).getUrl());
     	assertNull(responseMsg.getWebhooks().get(0).getAuthentication());
     }
+    @Test
+    public void testJsonWebHooksRequestUsingRegisteredWebHookWithFiltersAndParameters() throws JAXBException, IOException, JDOMException {
+    	
+    	SortedMap<String, String> map = new TreeMap<>();
+    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
+    	
+    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
+    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	
+    	Element webhooksParent = new Element("webhooks");
+    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
+    	projectSettingsManager.readFrom(webhooksParent, "testProject");
+    	
+    	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
+    	prettyPrint(responseMsg);
+    	assertEquals(1, (int)responseMsg.getCount());
+    	assertNotNull(responseMsg.getWebhooks().get(0).getParameters());
+    	//assertNotNull(responseMsg.getWebhooks().get(0).getFilters());
+    }
+    
+    @Test
+    public void testShortJsonWebHooksRequestUsingRegisteredWebHookWithFiltersAndParameters() throws JAXBException, IOException, JDOMException {
+    	
+    	SortedMap<String, String> map = new TreeMap<>();
+    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
+    	
+    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
+    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	
+    	Element webhooksParent = new Element("webhooks");
+    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
+    	projectSettingsManager.readFrom(webhooksParent, "testProject");
+    	
+    	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
+    	prettyPrint(responseMsg);
+    	assertEquals(1, (int)responseMsg.getCount());
+    	assertNotNull(responseMsg.getWebhooks().get(0).getUrl());
+    	assertNull(responseMsg.getWebhooks().get(0).getAuthentication());
+    	assertNull(responseMsg.getWebhooks().get(0).getParameters());
+    	//assertNull(responseMsg.getWebhooks().get(0).getFilters());
+    }
 
 }

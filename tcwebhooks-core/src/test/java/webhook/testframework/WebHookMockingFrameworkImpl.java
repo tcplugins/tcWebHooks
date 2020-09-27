@@ -342,7 +342,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	public static WebHookMockingFramework create(BuildStateEnum buildState, ExtraParameters extraParameters) {
 		WebHookMockingFrameworkImpl framework = new WebHookMockingFrameworkImpl();
 		framework.buildstateEnum = buildState;
-		framework.extraParameters = framework.contentBuilder.mergeParameters(extraParameters.getWebHookParameters().asMap(), framework.sProject, framework.sRunningBuild, "");
+		framework.extraParameters = framework.contentBuilder.mergeParameters(extraParameters, framework.sProject, framework.sRunningBuild, "");
 		framework.content = new WebHookPayloadContent(framework.variableResolverFactory, framework.sBuildServer, framework.sRunningBuild, framework.previousSuccessfulBuild, buildState, extraParameters, WebHookPayloadDefaultTemplates.getDefaultEnabledPayloadTemplates());
 		return framework;
 	}
