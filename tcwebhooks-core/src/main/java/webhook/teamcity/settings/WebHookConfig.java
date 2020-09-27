@@ -33,9 +33,13 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.converter.PayloadToTemplateConverter;
 import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
+import webhook.teamcity.settings.project.WebHookParameter;
+import webhook.teamcity.settings.project.WebHookParameterModel;
 
 @Builder @AllArgsConstructor
 public class WebHookConfig {
@@ -61,7 +65,7 @@ public class WebHookConfig {
 	private static final String ATTR_ENABLED_FOR_ALL = "enabled-for-all";
 	private static final String ATTR_ENABLED_FOR_SUBPROJECTS = "enabled-for-subprojects";
 	private static final String LOG_PREFIX_WEB_HOOK_CONFIG = "WebHookConfig :: ";
-	private SortedMap<String,String> extraParameters;
+	private ExtraParameters extraParameters;
 	@Builder.Default private Boolean enabled = true;
 	@Builder.Default private String uniqueKey = "";
 	private String url;
@@ -86,7 +90,7 @@ public class WebHookConfig {
 	public WebHookConfig (Element e) {
 
 		this.uniqueKey = "id_" + getRandomKey();
-		this.extraParameters = new TreeMap<>();
+		this.extraParameters = new ExtraParameters();
 		this.states = new BuildState();
 		this.templates = new TreeMap<>();
 		this.allBuildTypesEnabled = true;
@@ -184,13 +188,23 @@ public class WebHookConfig {
 			Element eParams = e.getChild(EL_PARAMETERS);
 			List<Element> paramsList = eParams.getChildren(ATTR_PARAM);
 			if ( ! paramsList.isEmpty()){
-				for(Element eParam : paramsList)
-				{
-					this.extraParameters.put(
+				List<WebHookParameter> webHookParameters = new ArrayList<>();
+				int counter = 0;
+				for(Element eParam : paramsList) {
+					counter++;
+					WebHookParameterModel param = new WebHookParameterModel(
+							eParam.getAttributeValue("id", String.valueOf(counter)),
+							"webhook", 
 							eParam.getAttributeValue(ATTR_NAME),
-							eParam.getAttributeValue(ATTR_VALUE)
-							);
+							eParam.getAttributeValue(ATTR_VALUE),
+							Boolean.valueOf(eParam.getAttributeValue("secure", Boolean.toString(false))),
+							Boolean.valueOf(eParam.getAttributeValue("includedInLegacyPayloads", Boolean.toString(true))),
+							eParam.getAttributeValue("templateEngine", PayloadTemplateEngineType.STANDARD.toString())
+						);
+					
+					webHookParameters.add(param);
 				}
+				this.extraParameters.putAll(ExtraParameters.WEBHOOK, webHookParameters);
 			}
 		}
 
@@ -326,7 +340,7 @@ public class WebHookConfig {
 		this.uniqueKey = "id_" + getRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
-		this.extraParameters = new TreeMap<>();
+		this.extraParameters = new ExtraParameters();
 		this.templates = new TreeMap<>();
 		this.authType = "";
 		this.authEnabled = false;
@@ -367,7 +381,6 @@ public class WebHookConfig {
 		Element el = new Element("webhook");
 		el.setAttribute("url", this.getUrl());
 		el.setAttribute(ATTR_ENABLED, String.valueOf(this.enabled));
-		//el.setAttribute(ATTR_FORMAT, String.valueOf(this.payloadFormat).toLowerCase());
 		el.setAttribute(ATTR_TEMPLATE, String.valueOf(this.payloadTemplate));
 		el.setAttribute(ATTR_HIDE_SECURE, String.valueOf(this.hideSecureValues));
 
@@ -399,10 +412,10 @@ public class WebHookConfig {
 			el.addContent(filtersEl);
 		}
 
-		if (this.extraParameters.size() > 0){
+		if (!this.extraParameters.isEmpty()){
 			Element paramsEl = new Element(EL_PARAMETERS);
-			for (String i : this.extraParameters.keySet()){
-				paramsEl.addContent(this.getKeyAndValueAsElement(this.extraParameters, i, ATTR_PARAM));
+			for (String i : this.extraParameters.asMap().keySet()){
+				paramsEl.addContent(this.getKeyAndValueAsElement(this.extraParameters.asMap(), i, ATTR_PARAM));
 			}
 			el.addContent(paramsEl);
 		}
@@ -443,7 +456,7 @@ public class WebHookConfig {
 
 	// Getters and Setters..
 
-	public SortedMap<String,String> getParams() {
+	public ExtraParameters getParams() {
 		return extraParameters;
 	}
 

@@ -394,7 +394,7 @@ public class WebHookContentBuilder {
 		return webHookTemplateResolver.findWebHookTemplate(state, sProject, payloadtemplateName);
 	}
 	
-	public ExtraParameters mergeParameters(SortedMap<String,String> parametersFromConfig, SProject project, SBuild build, String preferredDateFormat){
+	public ExtraParameters mergeParameters(ExtraParameters parametersFromConfig, SProject project, SBuild build, String preferredDateFormat){
 		ExtraParameters extraParameters = new ExtraParameters();
 		
 		// First add the preferredDateFormat from the template. This can then be overriden 
@@ -404,7 +404,7 @@ public class WebHookContentBuilder {
 		extraParameters.put(ExtraParameters.WEBHOOK, "preferredDateFormat", preferredDateFormat);
 		
 		// Now add any parameters passed in in the webhook configuration in plugin-settings.xml
-		extraParameters.putAll(ExtraParameters.WEBHOOK, parametersFromConfig);
+		extraParameters.putAll(ExtraParameters.WEBHOOK, parametersFromConfig.getAll());
 
 		if (project != null ) {
 			List<WebHookParameter> projectParameters = this.webHookParameterStore.getAllWebHookParameters(project);

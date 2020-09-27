@@ -17,7 +17,7 @@ import webhook.teamcity.settings.project.WebHookParameter;
 
 @Getter @Setter @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="projectParameter")
+@XmlRootElement(name="parameter")
 @XmlType( propOrder = { "id", "name", "value", "secure", "includedInLegacyPayloads", "forceResolveTeamCityVariable", "templateEngine", "href" })
 public class ProjectWebhookParameter implements WebHookParameter {
 	

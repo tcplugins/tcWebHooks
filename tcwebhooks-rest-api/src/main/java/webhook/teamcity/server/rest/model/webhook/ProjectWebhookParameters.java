@@ -1,4 +1,4 @@
-package webhook.teamcity.server.rest.model.parameter;
+package webhook.teamcity.server.rest.model.webhook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,13 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @XmlRootElement(name = "parameters")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "parameters", propOrder = { "count", "projectId", "parameters", "href", "prevHref", "nextHref" })
+@XmlType(name = "parameters", propOrder = { "count", "webhookId", "parameters", "href", "prevHref", "nextHref" })
 @Getter
 @Setter
 @NoArgsConstructor // empty constructor for JAXB
@@ -34,7 +35,7 @@ public class ProjectWebhookParameters {
 	Integer count = 0;
 
 	@XmlAttribute
-	String projectId;
+	String webhookId;
 
 	@XmlAttribute
 	String href;
@@ -53,7 +54,7 @@ public class ProjectWebhookParameters {
 	public ProjectWebhookParameters(@NotNull final List<WebHookParameter> webhookParameters, @NotNull String projectExternalId,
 			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 		
-		this.projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, true), projectExternalId);
+		this.webhookId = ValueWithDefault.decideDefault(fields.isIncluded("webhookId", false, true), projectExternalId);
 
 		if (fields.isIncluded("parameters", true, true)) {
 			parameters = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("parameters"),

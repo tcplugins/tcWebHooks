@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.server.rest.WebHookWebLinks;
+import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 
@@ -77,7 +78,7 @@ public class ProjectWebhook {
 	private ProjectWebHookBuildType buildTypes;
 
 	@XmlElement(name = "parameters")
-	private List<ProjectWebhookParameter> parameters;
+	private ProjectWebhookParameters parameters;
 	
 	@XmlElement(name = "customTemplates")
 	private List<CustomTemplate> customTemplates;
@@ -117,6 +118,10 @@ public class ProjectWebhook {
 		
 		if (config.getAuthenticationConfig() != null && ( fields.isIncluded("authentication", false, true) || fields.isAllNested() ) ) {
 			authentication = new ProjectWebHookAuthConfig(config.getAuthenticationConfig());
+		}
+		if (config.getParams() != null && ( fields.isIncluded("parameters", false, true) || fields.isAllNested() ) ) {
+			parameters = new ProjectWebhookParameters(config.getParams().getWebHookParameters().getAll(),
+					projectExternalId, null, fields, beanContext);
 		}
 	}
 
