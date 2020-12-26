@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +24,8 @@ import webhook.teamcity.settings.config.WebHookTemplateConfig;
 @XmlRootElement
 public class Templates {
 	
-	  @XmlElement(name = "template") @XmlElementWrapper(name = "templates") @Getter
-	  private List<Template> templateList = new ArrayList<>();
+	  @XmlElement(name = "template") @Getter
+	  private List<Template> templates = new ArrayList<>();
 
 	  @XmlAttribute
 	  public Integer count;
@@ -48,7 +47,7 @@ public class Templates {
 
 	  public Templates(@NotNull final List<WebHookTemplateConfigWrapper> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 	    if (fields.isIncluded("template", false, true)){
-	      templateList = ValueWithDefault.decideDefault(fields.isIncluded("template"), new ValueWithDefault.Value<List<Template>>() {
+	      templates = ValueWithDefault.decideDefault(fields.isIncluded("template"), new ValueWithDefault.Value<List<Template>>() {
 	        public List<Template> get() {
 	          final ArrayList<Template> result = new ArrayList<>(templateObjects.size());
 	          final Fields nestedField = new Fields("id,name,description,status,href,webUrl");
@@ -59,7 +58,7 @@ public class Templates {
 	        }
 	      });
 	    }else{
-	    	templateList = null;
+	    	templates = null;
 	    }
 	    if (pagerData != null) {
 	      href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getHref()));
@@ -73,11 +72,11 @@ public class Templates {
 
 	  @NotNull
 	  public List<WebHookTemplateConfig> getTemplatesFromPosted(@NotNull TemplateFinder templateFinder) {
-	    if (templateList == null) {
+	    if (templates == null) {
 	      throw new BadRequestException("List of projects should be supplied");
 	    }
-	    final ArrayList<WebHookTemplateConfig> result = new ArrayList<>(templateList.size());
-	    for (Template template : templateList) {
+	    final ArrayList<WebHookTemplateConfig> result = new ArrayList<>(templates.size());
+	    for (Template template : templates) {
 	      result.add(template.getTemplateFromPosted(templateFinder));
 	    }
 	    return result;
