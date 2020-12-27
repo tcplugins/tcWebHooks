@@ -102,7 +102,11 @@
      	/>
      	
     <bean id="projectIdResolver" 
-     	class="webhook.teamcity.ProjectIdResolverImpl"
+     	class="webhook.teamcity.ProjectAndBuildTypeResolverImpl"
+     	/>
+     	
+    <bean id="buildTypeIdResolver" 
+     	class="webhook.teamcity.ProjectAndBuildTypeResolverImpl"
      	/>
      	
     <bean id="webHookTemplateEditPageController" 

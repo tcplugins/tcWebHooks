@@ -17,6 +17,7 @@ import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
+import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookFinder;
@@ -35,10 +36,11 @@ public class WebHookDataProviderProvider implements InjectableProvider<Context, 
 			@NotNull final WebHookFinder webHookFinder,
 			@NotNull final WebHookManager webHookManager,
 			@NotNull final ProjectIdResolver projectIdResolver,
+			@NotNull final BuildTypeIdResolver buildTypeIdResolver,
 			@NotNull final SecurityContext securityContext
 	) 
   {
-	  dataProvider = new WebHookDataProvider(sBuildServer, rootUrlHolder, permissionChecker, projectManager, webHookFinder, webHookManager, projectIdResolver, securityContext);
+	  dataProvider = new WebHookDataProvider(sBuildServer, rootUrlHolder, permissionChecker, projectManager, webHookFinder, webHookManager, projectIdResolver, buildTypeIdResolver, securityContext);
   }
 
   public ComponentScope getScope() {

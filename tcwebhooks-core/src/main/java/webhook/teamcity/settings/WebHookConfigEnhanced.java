@@ -25,6 +25,7 @@ public class WebHookConfigEnhanced {
 	private String payloadFormat;
 	private String payloadFormatDescription;
 	private String projectExternalId;
+	private String projectInternalId;
 	private Set<BuildStateEnum> buildStates;
 	private GeneralisedWebAddress generalisedWebAddress;
 
@@ -44,6 +45,7 @@ public class WebHookConfigEnhanced {
 							 .payloadFormat(this.payloadFormat)
 							 .payloadFormatDescription(this.payloadFormatDescription)
 							 .projectExternalId(this.projectExternalId)
+							 .projectInternalId(this.projectInternalId)
 							 .buildStates(new TreeSet<BuildStateEnum>(this.buildStates))
 							 .generalisedWebAddress(
 									 GeneralisedWebAddress.build(

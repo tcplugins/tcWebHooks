@@ -102,7 +102,12 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   public static String getTemplateHref(WebHookTemplateConfig template) {
     return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template);
   }
-
+	
+	@NotNull
+	public static String getTemplatesHref() {
+		return API_TEMPLATES_URL;
+	}
+	
   @NotNull
   public static String getDefaultTemplateTextHref(WebHookTemplateConfig template) {
 	  return API_TEMPLATES_URL + "/" + TemplateFinder.getLocator(template) + "/" + TEMPLATE_ITEMS + "/" + DEFAULT_TEMPLATE + "/templateContent" ;
@@ -1134,6 +1139,6 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 			throw new TemplatePermissionException("Writing Project templates requires permission 'EDIT_PROJECT' on the relevant project");
 		}
 	}
-	
+
 }
 
