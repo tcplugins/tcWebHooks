@@ -59,7 +59,7 @@ public class ProjectWebhooks {
 	@XmlAttribute
 	String projectId;
 	
-	@XmlElementWrapper
+	@XmlElement(name="webhook")
 	List<ProjectWebhook> webhooks = new ArrayList<>();
 	
 	public void addWebhook(ProjectWebhook webhook){

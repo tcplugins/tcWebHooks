@@ -45,7 +45,7 @@ public class ProjectWebhookParameter implements WebHookParameter {
 	@XmlAttribute
 	private String href;
 	
-	public ProjectWebhookParameter(WebHookParameter parameter, String projectExternalId, Fields fields, BeanContext beanContext) {
+	public ProjectWebhookParameter(WebHookParameter parameter, Fields fields, String href) {
 		this.id = ValueWithDefault.decideDefault(fields.isIncluded("id", true, true), parameter.getId());
 		this.name = ValueWithDefault.decideDefault(fields.isIncluded("name", true, true), parameter.getName());
 		this.value = ValueWithDefault.decideDefault(fields.isIncluded("value", false, true), parameter.getValue());
@@ -62,7 +62,7 @@ public class ProjectWebhookParameter implements WebHookParameter {
 				Boolean.TRUE.equals(parameter.getForceResolveTeamCityVariable()) // true if defined and true, else false
 				);
 		this.templateEngine = ValueWithDefault.decideDefault(fields.isIncluded("templateEngine", false, true), parameter.getTemplateEngine());
-		href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(projectExternalId, parameter));
+		this.href = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("href"), href);
 
 	}
 

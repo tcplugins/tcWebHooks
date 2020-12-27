@@ -39,8 +39,10 @@
 	<bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/>
 	<bean id="templateValidatorProvider" class="webhook.teamcity.server.rest.jersey.TemplateValidatorProvider"/>
 	<bean id="webHookParameterValidatorProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterValidatorProvider"/>
+	<bean id="webHookConfigurationValidatorProvider" class="webhook.teamcity.server.rest.jersey.WebHookConfigurationValidatorProvider"/>
 	<bean id="webHookParameterStoreProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterStoreProvider"/>
 	<bean id="webHookSettingsManagerProvider" class="webhook.teamcity.server.rest.jersey.WebHookSettingsManagerProvider"/>
 	<bean id="webHookUserRequestedExecutorProvider" class="webhook.teamcity.server.rest.jersey.WebHookUserRequestedExecutorProvider"/>
+	<bean id="webHookPluginDataResolverProvider" class="webhook.teamcity.server.rest.jersey.WebHookPluginDataResolverProvider"/>
 	<bean id="webHookWebLinks" class="webhook.teamcity.server.rest.WebHookWebLinks"/>
 </beans>

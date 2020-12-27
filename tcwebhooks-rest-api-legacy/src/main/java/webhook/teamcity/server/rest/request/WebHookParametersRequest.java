@@ -121,7 +121,7 @@ public class WebHookParametersRequest {
 			throw new BadRequestException("Parameter name already exists in this project");
 		}
 		WebHookParameter persistedParameter = myWebHookParameterStore.addWebHookParameter(sProject.getProjectId(), newParameter);
-		return new ProjectWebhookParameter(persistedParameter, projectExternalId, new Fields(fields), myBeanContext);
+		return new ProjectWebhookParameter(persistedParameter, new Fields(fields), myBeanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, persistedParameter));
 	}
 	
 	@PUT
@@ -155,7 +155,8 @@ public class WebHookParametersRequest {
 		}
 		
 		if (myWebHookParameterStore.updateWebHookParameter(sProject.getProjectId(), updatedParameter, "")) {
-			return new ProjectWebhookParameter(myWebHookParameterStore.getWebHookParameterById(sProject, existingParameter.getId()), projectExternalId, new Fields(fields), myBeanContext);
+			WebHookParameter webHookParameterById = myWebHookParameterStore.getWebHookParameterById(sProject, existingParameter.getId());
+			return new ProjectWebhookParameter(webHookParameterById, new Fields(fields), myBeanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, webHookParameterById));
 		} else {
 			throw new OperationException("An error occured updating the prarameter");
 		}

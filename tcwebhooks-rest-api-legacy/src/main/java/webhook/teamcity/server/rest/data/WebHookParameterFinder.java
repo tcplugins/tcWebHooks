@@ -62,9 +62,8 @@ public class WebHookParameterFinder {
 			if (param != null) {
 				return new ProjectWebhookParameter(
 						param, 
-						sProject.getExternalId(),
 						fields,
-						myBeanContext
+						myBeanContext.getApiUrlBuilder().getProjectParameterHref(sProject.getExternalId(), param)
 					);
 			}
 			throw new NotFoundException(
@@ -78,9 +77,8 @@ public class WebHookParameterFinder {
 			if (param != null) {
 				return new ProjectWebhookParameter(
 						param, 
-						sProject.getExternalId(),
 						fields,
-						myBeanContext
+						myBeanContext.getApiUrlBuilder().getProjectParameterHref(sProject.getExternalId(), param)
 					);
 			}
 			throw new NotFoundException(
@@ -93,9 +91,8 @@ public class WebHookParameterFinder {
 			if (param != null) {
 				return new ProjectWebhookParameter(
 						param, 
-						sProject.getExternalId(),
 						fields,
-						myBeanContext
+						myBeanContext.getApiUrlBuilder().getProjectParameterHref(sProject.getExternalId(), param)
 					);
 			}
 			throw new NotFoundException(
