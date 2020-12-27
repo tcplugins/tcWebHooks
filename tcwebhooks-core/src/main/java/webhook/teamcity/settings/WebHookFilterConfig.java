@@ -3,10 +3,12 @@ package webhook.teamcity.settings;
 import java.util.regex.Pattern;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.jdom.Element;
 
-@Getter
+@Getter @Setter @NoArgsConstructor
 public class WebHookFilterConfig {
 	
 	public static final String XML_ELEMENT_NAME = "filter";

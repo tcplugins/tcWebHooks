@@ -83,7 +83,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	prettyPrint(responseMsg);
     	
     	assertEquals(1, (int)responseMsg.count);
-    	assertEquals(1, responseMsg.getTemplateList().size());
+    	assertEquals(1, responseMsg.getTemplates().size());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ViewExistingTemplateTest extends WebHookAbstractSpringAwareJerseyTe
     	}
     	Templates responseMsg = webResource.path(API_TEMPLATES_URL).accept(MediaType.APPLICATION_JSON_TYPE).get(Templates.class);
     	assertEquals(3, (int)responseMsg.count);
-    	assertEquals(3, responseMsg.getTemplateList().size());
+    	assertEquals(3, responseMsg.getTemplates().size());
     	
     	prettyPrint(responseMsg);
     }    

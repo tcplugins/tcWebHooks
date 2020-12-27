@@ -135,6 +135,21 @@ public class WebHookProjectSettings implements ProjectSettings {
         return new WebHookUpdateResult(updateSuccess, configToDelete);
     }
 
+    public WebHookUpdateResult updateWebHook(WebHookConfig webHookConfig) {
+    	return updateWebHook(
+    			webHookConfig.getProjectInternalId(), 
+    			webHookConfig.getUniqueKey(),
+    			webHookConfig.getUrl(), 
+    			webHookConfig.getEnabled(), 
+    			webHookConfig.getBuildStates(),
+    			webHookConfig.getPayloadTemplate(), 
+    			webHookConfig.isEnabledForAllBuildsInProject(),
+    			webHookConfig.isEnabledForSubProjects(),
+    			webHookConfig.getEnabledBuildTypesSet(),
+    			webHookConfig.getAuthenticationConfig(),
+				webHookConfig.isHideSecureValues()
+    		);
+    }
 	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
 		boolean updateSuccess = false;
 		WebHookConfig configToUpdate = null;

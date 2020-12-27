@@ -400,6 +400,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 						.payloadFormat(templateFormat)
 						.payloadFormatDescription(templateFormatDescription)
 						.projectExternalId(sProject.getExternalId())
+						.projectInternalId(sProject.getProjectId())
 						.templateId(c.getPayloadTemplate())
 						.templateDescription(templateName)
 						.buildStates(enabledBuildStates)

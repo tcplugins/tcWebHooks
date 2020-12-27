@@ -23,6 +23,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SecurityContextEx;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
@@ -41,6 +42,7 @@ public class WebHookDataProviderTestContextProvider implements InjectableProvide
   private WebHookManager webHookManager;
   private WebHookFinder webHookFinder;
   private final ProjectIdResolver projectIdResolver;
+  private final BuildTypeIdResolver buildTypeIdResolver;
   private final SecurityContextEx securityContext;
   private final AuthorityHolder authorityHolder;
   
@@ -51,6 +53,7 @@ public class WebHookDataProviderTestContextProvider implements InjectableProvide
 	  permissionChecker = mock(PermissionChecker.class);
 	  projectManager = new MockProjectManager();
 	  projectIdResolver = mock(ProjectIdResolver.class);
+	  buildTypeIdResolver = mock(BuildTypeIdResolver.class);
 	  securityContext = mock(SecurityContextEx.class);
 	  authorityHolder = mock(AuthorityHolder.class);
 	  when(securityContext.getAuthorityHolder()).thenReturn(authorityHolder);
@@ -77,7 +80,7 @@ public class WebHookDataProviderTestContextProvider implements InjectableProvide
 	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
-	  dataProvider = new WebHookDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, webHookFinder, webHookManager, projectIdResolver, securityContext);
+	  dataProvider = new WebHookDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, webHookFinder, webHookManager, projectIdResolver, buildTypeIdResolver, securityContext);
 	  return dataProvider;
   }
   
