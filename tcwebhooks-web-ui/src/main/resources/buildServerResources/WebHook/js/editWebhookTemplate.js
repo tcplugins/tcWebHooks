@@ -573,7 +573,7 @@ WebHooksPlugin = {
     		}
     		$j("#previewTemplateItemDialogWebHookSelect").empty().append($j('<option></option>').val(null).text("Loading project WebHooks ..."))
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/' + projectId + "?fields=$short",
+    			url: window['base_uri'] + '/app/rest/webhooks/configurations?locator=project:' + projectId + "&fields=$short",
     			type: "GET",
     			headers : {
     				'Accept' : 'application/json'
@@ -587,7 +587,7 @@ WebHooksPlugin = {
     					WebHooksPlugin.PreviewTemplateItemDialog.handleWebHookListChange(null); // Enable the URL input box.
     				} else {
 	    				myselect.empty().append( $j('<option></option>').val(null).text("Choose a WebHook (or enter a URL below)...") );
-	    				$j(response.webhooks).each(function(index, webhook) {
+	    				$j(response.webhook).each(function(index, webhook) {
 	    					var desc = WebHooksPlugin.PreviewTemplateItemDialog.elipsizeUrl(webhook.url)
 	    							  + " ("
 	    							  + webhook.template
@@ -1066,6 +1066,7 @@ WebHooksPlugin = {
     		if (action === "editTemplate") {
     			URL = URL + "/id:" + myJson.id + "/patch";
     		} else if (action === "copyTemplate") {
+    			URL = URL + "/" + $j("#editTemplateForm select#templateDialogProjectSelect").val();
     			myJson.id = $j("#editTemplateForm input[id='template.id']").val();
     		} else {
     			alert("eeek. I can't tell what action we are performing. Please report bug for tcWebhooks");
@@ -1075,8 +1076,8 @@ WebHooksPlugin = {
 			myJson.toolTip = $j("#editTemplateForm input[id='template.tooltip']").val();
 			myJson.rank = $j("#editTemplateForm input[id='template.rank']").val();
 			myJson.preferredDateFormat = $j("#editTemplateForm input[id='template.dateFormat']").val();
-			myJson.format = $j("#editTemplateForm select#payloadFormat").val()
-			myJson.projectId = $j("#editTemplateForm select#templateDialogProjectSelect").val()
+			myJson.format = $j("#editTemplateForm select#payloadFormat").val();
+			myJson.projectId = $j("#editTemplateForm select#templateDialogProjectSelect").val();
 
     		$j.ajax ({
     			url: URL,
