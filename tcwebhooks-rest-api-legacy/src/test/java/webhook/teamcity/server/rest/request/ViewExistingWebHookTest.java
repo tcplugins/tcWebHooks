@@ -111,7 +111,7 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     	prettyPrint(responseMsg);
     	assertEquals(1, (int)responseMsg.getCount());
     	assertNotNull(responseMsg.getWebhooks().get(0).getParameters());
-    	//assertNotNull(responseMsg.getWebhooks().get(0).getFilters());
+    	assertNotNull(responseMsg.getWebhooks().get(0).getFilters());
     }
     
     @Test
@@ -133,7 +133,7 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     	assertNotNull(responseMsg.getWebhooks().get(0).getUrl());
     	assertNull(responseMsg.getWebhooks().get(0).getAuthentication());
     	assertNull(responseMsg.getWebhooks().get(0).getParameters());
-    	//assertNull(responseMsg.getWebhooks().get(0).getFilters());
+    	assertNull(responseMsg.getWebhooks().get(0).getFilters());
     }
 
 }

@@ -32,7 +32,7 @@ public class WebHookConfigurationValidator {
 
 	public ErrorResult validateUpdatedWebHook(String externalId, ProjectWebhook updatedWebHook, ErrorResult result) {
 		
-		if (updatedWebHook.getId() == null || !updatedWebHook.getId().trim().isEmpty()) {
+		if (updatedWebHook.getId() == null || updatedWebHook.getId().trim().isEmpty()) {
 			result.addError("id-empty", "The webhook id must not be empty.");
 		}
 		validateStandardWebHookFields(externalId, updatedWebHook, result);

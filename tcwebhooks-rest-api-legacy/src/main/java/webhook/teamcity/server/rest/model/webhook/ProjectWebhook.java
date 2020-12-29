@@ -146,7 +146,7 @@ public class ProjectWebhook {
 
 	public WebHookConfig toWebHookConfig(ProjectIdResolver projectIdResolver, BuildTypeIdResolver buildTypeIdResolver) {
 		List<WebHookParameter> params = null;
-		if (parameters != null && parameters.getParameters() != null && !parameters.getParameters().isEmpty()) {
+		if (parameters != null && parameters.getParameters() != null) {
 			params = new ArrayList<>();
 			params.addAll(parameters.getParameters());
 		}

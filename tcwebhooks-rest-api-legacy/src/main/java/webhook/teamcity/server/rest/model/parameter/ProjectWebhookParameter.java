@@ -12,7 +12,8 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.payload.PayloadTemplateEngineType;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @Getter @Setter @NoArgsConstructor
@@ -31,16 +32,16 @@ public class ProjectWebhookParameter implements WebHookParameter {
 	private String value;
 	
 	@XmlElement
-	private Boolean secure;
+	private Boolean secure = false;
 	
 	@XmlElement
-	private Boolean includedInLegacyPayloads;
+	private Boolean includedInLegacyPayloads = true;
 
 	@XmlElement
 	private Boolean forceResolveTeamCityVariable;
 	
 	@XmlElement
-	private String templateEngine;
+	private String templateEngine = PayloadTemplateEngineType.STANDARD.toString();
 	
 	@XmlAttribute
 	private String href;
