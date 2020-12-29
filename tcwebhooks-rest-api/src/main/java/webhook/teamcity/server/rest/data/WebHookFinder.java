@@ -97,6 +97,12 @@ public class WebHookFinder {
 					return webHookConfig;
 				}
 			}
+		} else if (locator.getSingleDimensionValue("id") != null){
+			for (WebHookConfig webHookConfig : getWebHookProjectSettings(projectExternalId).getWebHooksConfigs()) {
+				if (locator.getSingleDimensionValue("id").equals(webHookConfig.getUniqueKey())) {
+					return webHookConfig;
+				}
+			}			
 		}
 		throw new NotFoundException("Could not find a webhook with that id");
 	}
