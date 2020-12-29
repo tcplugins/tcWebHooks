@@ -63,7 +63,9 @@ public class ProjectWebHookParameters {
 					new ValueWithDefault.Value<List<ProjectWebhookParameter>>() {
 						public List<ProjectWebhookParameter> get() {
 							final ArrayList<ProjectWebhookParameter> result = new ArrayList<>(parameters.size());
+							int counter = 1;
 							for (WebHookParameter parameter : webhookParameters) {
+								parameter.setId(String.valueOf(counter++));
 								result.add(new ProjectWebhookParameter(parameter, fields, beanContext.getApiUrlBuilder().getWebHookParameterHref(projectExternalId, config, parameter)));
 							}
 							return result;

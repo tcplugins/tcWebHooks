@@ -342,7 +342,7 @@ public class WebHookConfig {
 	 * @param enabledBuildTypes
 	 * @param webHookAuthConfig
 	 */
-	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues){
+	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, boolean hideSecureValues){
 		this.uniqueKey = "id_" + getRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
@@ -370,6 +370,9 @@ public class WebHookConfig {
 			this.authPreemptive = webHookAuthConfig.getPreemptive();
 			this.authEnabled = true;
 			this.authParameters.putAll(webHookAuthConfig.getParameters());
+		}
+		if (extraParameters != null && !extraParameters.isEmpty()) {
+			this.extraParameters.putAll(ExtraParameters.WEBHOOK, extraParameters.asMap());
 		}
 		this.hideSecureValues = hideSecureValues;
 	}
@@ -475,6 +478,10 @@ public class WebHookConfig {
 	// Getters and Setters..
 	public ExtraParameters getParams() {
 		return extraParameters;
+	}
+
+	public void setExtraParameters(ExtraParameters extraParameters) {
+		this.extraParameters = extraParameters;
 	}
 
 	/**
@@ -738,6 +745,9 @@ public class WebHookConfig {
 
 	public List<WebHookFilterConfig> getTriggerFilters() {
 		return this.filters;
+	}
+	public void setTriggerFilters(List<WebHookFilterConfig> filters) {
+		this.filters = filters;
 	}
 
 	public List<WebHookHeaderConfig> getHeaders() {

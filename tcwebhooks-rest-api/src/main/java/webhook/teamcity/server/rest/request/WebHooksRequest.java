@@ -31,10 +31,12 @@ import webhook.teamcity.server.rest.data.WebHookParameterValidator;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.errors.WebHookPermissionException;
+import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilters;
+import webhook.teamcity.server.rest.model.webhook.ProjectWebHookParameters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.util.BeanContext;
@@ -216,6 +218,47 @@ public class WebHooksRequest {
 			return filters.getFilters().get(filterId -1);
 		}
 		throw new NotFoundException("Could not find a webhook filter with that id");
+	}
+	@GET
+	@Path("/{projectId}/{webhookLocator}/parameters")
+	@Produces({ "application/xml", "application/json" })
+	public ProjectWebHookParameters serveWebHookParameters(
+			@PathParam("projectId") String projectExternalId, 
+			@PathParam("webhookLocator") String webhookLocator,
+			@QueryParam("fields") String fields
+			)
+	{
+		SProject sProject = resolveProject(projectExternalId);
+		checkWebHookReadPermission(sProject.getProjectId());
+		return this.myDataProvider.getWebHookFinder().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext).getParameters(); // Throws permissionDenied or notFound
+	}
+	
+	@GET
+	@Path("/{projectId}/{webhookLocator}/parameters/{parameterLocator}")
+	@Produces({ "application/xml", "application/json" })
+	public ProjectWebhookParameter serveWebHookParameter(
+			@PathParam("projectId") String projectExternalId, 
+			@PathParam("webhookLocator") String webhookLocator,
+			@PathParam("parameterLocator") String parameterLocator,
+			@QueryParam("fields") String fields
+			)
+	{
+		SProject sProject = resolveProject(projectExternalId);
+		checkWebHookReadPermission(sProject.getProjectId());
+		ProjectWebHookParameters parameters = this.myDataProvider.getWebHookFinder().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext).getParameters(); // Throws permissionDenied or notFound
+		
+		final Locator locator = new Locator(parameterLocator, "id", Locator.LOCATOR_SINGLE_VALUE_UNUSED_NAME);
+		Integer parameterId = null;
+		if (locator.isSingleValue()) {
+			// no dimensions found, assume it's an id
+			parameterId = Integer.valueOf(locator.getSingleValue());
+		} else if (locator.getSingleDimensionValue("id") != null){
+			parameterId = Integer.valueOf(locator.getSingleDimensionValue("id"));
+		}
+		if (Objects.nonNull(parameterId) && Objects.nonNull(parameters.getParameters()) && parameterId > 0 && parameters.getParameters().size() >= parameterId) {
+			return parameters.getParameters().get(parameterId -1);
+		}
+		throw new NotFoundException("Could not find a webhook parameter with that id");
 	}
 
 	private void checkWebHookReadPermission(String projectInternalId) {

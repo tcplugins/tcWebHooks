@@ -30,6 +30,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
 public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer {
@@ -90,11 +91,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	@Override
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
-			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
+			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig,
+			ExtraParameters extraParameters, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
 												projectInternalId, projectExternalId, url,
 												enabled, buildState, template, buildTypeAll,
-												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, hideSecureValues
+												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, 
+												extraParameters, hideSecureValues
 											);
 		if (result.updated) {
 			if (persist(projectInternalId, "Added new WebHook")) {
@@ -125,11 +128,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	@Override
 	public WebHookUpdateResult updateWebHook(String projectInternalId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
-			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
+			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, 
+			List<WebHookFilterConfig> filters, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(
 													projectInternalId, webHookId, url, enabled,
 													buildState, template, buildTypeAll, buildSubProjects,
-													buildTypesEnabled,  webHookAuthConfig, hideSecureValues
+													buildTypesEnabled,  webHookAuthConfig, extraParameters,
+													filters, hideSecureValues
 												);
 		if (result.updated) {
 			if (persist(projectInternalId, "Edited existing WebHook")) {
@@ -240,25 +245,25 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	 * @param webhookResultList
 	 * @param webHookConfigEnhanced
 	 */
-	private void addMatchingWebHook(WebHookSearchFilter filter, List<WebHookSearchResult> webhookResultList, WebHookConfigEnhanced e) {
+	private void addMatchingWebHook(WebHookSearchFilter filter, List<WebHookSearchResult> webhookResultList, WebHookConfigEnhanced webHookConfigEnhanced) {
 		WebHookSearchResult result = new WebHookSearchResult();
 		if (filter.getShow() != null && filter.getShow().equalsIgnoreCase("all")) {
 			result.addMatch(Match.SHOW);
 		} else {
 		
-			doTextSearch(filter, e, result);
-			doPayloadFormatSearch(filter, e, result);
+			doTextSearch(filter, webHookConfigEnhanced, result);
+			doPayloadFormatSearch(filter, webHookConfigEnhanced, result);
 			
-			doTemplateIdSearch(filter, e, result);
-			doUrlSearch(filter, e, result);
-			doProjectIdSearch(filter, e, result);
-			doWebHookIdSearch(filter, e, result);
-			doTagsSearch(filter, e, result);
-			doBuildTypeIdSearch(filter, e, result);
+			doTemplateIdSearch(filter, webHookConfigEnhanced, result);
+			doUrlSearch(filter, webHookConfigEnhanced, result);
+			doProjectIdSearch(filter, webHookConfigEnhanced, result);
+			doWebHookIdSearch(filter, webHookConfigEnhanced, result);
+			doTagsSearch(filter, webHookConfigEnhanced, result);
+			doBuildTypeIdSearch(filter, webHookConfigEnhanced, result);
 		}
 
 		if ( ! result.getMatches().isEmpty() ) {
-			result.setWebHookConfigEnhanced(e);
+			result.setWebHookConfigEnhanced(webHookConfigEnhanced);
 			webhookResultList.add(result);
 		}
 	}
