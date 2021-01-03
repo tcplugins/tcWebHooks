@@ -89,6 +89,11 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 			}
 		}
 	}
+	
+	@Override
+	public void unregister() {
+		// Nothing required for shutdown
+	}
 
 	private URL findXmlFileUrlInVariousClassloaders(String xmlFile) {
 		final ClassLoader[] classLoaders = {AbstractXmlBasedWebHookTemplate.class.getClassLoader(), ClassLoader.getSystemClassLoader()}; 

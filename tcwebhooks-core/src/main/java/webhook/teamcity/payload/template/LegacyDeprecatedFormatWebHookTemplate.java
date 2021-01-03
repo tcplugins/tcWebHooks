@@ -1,5 +1,6 @@
 package webhook.teamcity.payload.template;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,9 +19,7 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 	public LegacyDeprecatedFormatWebHookTemplate(WebHookTemplateManager manager) {
 		super();
 		this.manager = manager;
-		for (BuildStateEnum b : BuildStateEnum.getNotifyStates()){
-			states.add(b);
-		}
+		Collections.addAll(states, BuildStateEnum.getNotifyStates());
 	}
 
 	@Override

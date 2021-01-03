@@ -24,6 +24,7 @@ import jetbrains.buildServer.users.User;
 import webhook.WebHook;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
+import webhook.teamcity.executor.WebHookStatisticsExecutor;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -32,13 +33,15 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
+import webhook.teamcity.statistics.StatisticsReport;
+import webhook.teamcity.statistics.WebHooksStatisticsReportEventListener;
 
 
 /**
  * WebHookListner
  * Listens for Server events and then triggers the execution of webhooks if configured.
  */
-public class WebHookListener extends BuildServerAdapter {
+public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener {
     
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
@@ -50,6 +53,7 @@ public class WebHookListener extends BuildServerAdapter {
     private final WebHookTemplateManager myManager;
     private final WebHookFactory webHookFactory;
     private final WebHookExecutor webHookExecutor;
+    private final WebHookStatisticsExecutor webHookStatisticsExecutor;
     
     
     public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings, 
@@ -57,7 +61,7 @@ public class WebHookListener extends BuildServerAdapter {
     						WebHookFactory factory, WebHookTemplateResolver resolver,
     						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
     						WebHookHistoryItemFactory historyItemFactory,
-    						WebHookExecutor executor) {
+    						WebHookExecutor executor, WebHookStatisticsExecutor statisticsExecutor) {
 
         myBuildServer = sBuildServer;
         mySettings = settings;
@@ -65,6 +69,7 @@ public class WebHookListener extends BuildServerAdapter {
         myManager = manager;
         webHookFactory = factory;
         webHookExecutor = executor;
+        webHookStatisticsExecutor = statisticsExecutor;
         
         Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
     }
@@ -108,7 +113,7 @@ public class WebHookListener extends BuildServerAdapter {
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
 		}
 	}
-
+	
 	/** 
 	 * Build a list of Enabled webhooks to pass to the POSTing logic.
 	 * @param projectId
@@ -330,6 +335,23 @@ public class WebHookListener extends BuildServerAdapter {
 	@Override
 	public void serverStartup() {
 		mySettings.initialise();
+	}
+
+	@Override
+	public void reportStatistics(WebHookConfig reportingWebhookConfig, StatisticsReport statisticsReport) {
+		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
+		webHookStatisticsExecutor.execute(reportingWebhook, reportingWebhookConfig, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
+	}
+	
+	@Override
+	public void reportStatistics(StatisticsReport statisticsReport) {
+		for (WebHookConfig whc : getListOfEnabledWebHooks(myBuildServer.getProjectManager().getRootProject().getProjectId())){
+			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+			if (Boolean.TRUE.equals(wh.isEnabled()) && wh.getBuildStates().enabled(BuildStateEnum.REPORT_STATISTICS)) {
+				webHookStatisticsExecutor.execute(wh, whc, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
+			}
+		}
+
 	}
 	
 }

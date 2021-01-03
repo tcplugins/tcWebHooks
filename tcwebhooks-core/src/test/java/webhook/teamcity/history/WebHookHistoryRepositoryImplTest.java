@@ -114,8 +114,8 @@ public class WebHookHistoryRepositoryImplTest {
 	@Test
 	public void testFindHistoryErroredItemsGroupedByDay() {
 		WebHookHistoryRepository historyRepository = setupMocks();
-		Map<LocalDate, List<WebHookHistoryItem>> historyItems = historyRepository.findHistoryErroredItemsGroupedByDay(LocalDate.now(), 8);
-		assertEquals(8, historyItems.entrySet().size());
+		Map<LocalDate, List<WebHookHistoryItem>> historyItems = historyRepository.findHistoryErroredItemsGroupedByDayInclusive(LocalDate.now(), 8);
+		assertEquals(9, historyItems.entrySet().size());
 		int count = 0;
 		for (List<WebHookHistoryItem> items : historyItems.values()) {
 			count += items.size(); 
@@ -126,8 +126,8 @@ public class WebHookHistoryRepositoryImplTest {
 	@Test
 	public void testFindHistoryNonErroredItemsGroupedByDay() {
 		WebHookHistoryRepository historyRepository = setupMocks();
-		Map<LocalDate, List<WebHookHistoryItem>> historyItems = historyRepository.findHistoryOkItemsGroupedByDay(LocalDate.now(), 8);
-		assertEquals(8, historyItems.entrySet().size());
+		Map<LocalDate, List<WebHookHistoryItem>> historyItems = historyRepository.findHistoryOkItemsGroupedByDayInclusive(LocalDate.now(), 8);
+		assertEquals(9, historyItems.entrySet().size());
 		int count = 0;
 		for (List<WebHookHistoryItem> items : historyItems.values()) {
 			count += items.size(); 
@@ -138,8 +138,8 @@ public class WebHookHistoryRepositoryImplTest {
 	@Test
 	public void testFindHistoryAllItemsGroupedByDay() {
 		WebHookHistoryRepository historyRepository = setupMocks();
-		Map<LocalDate, List<WebHookHistoryItem>> historyItems = historyRepository.findHistoryAllItemsGroupedByDay(LocalDate.now(), 8);
-		assertEquals(8, historyItems.entrySet().size());
+		Map<LocalDate, List<WebHookHistoryItem>> historyItems = historyRepository.findHistoryAllItemsGroupedByDayInclusive(LocalDate.now(), 8);
+		assertEquals(9, historyItems.entrySet().size());
 		int count = 0;
 		for (List<WebHookHistoryItem> items : historyItems.values()) {
 			count += items.size(); 

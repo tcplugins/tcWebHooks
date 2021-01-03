@@ -34,6 +34,7 @@ import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookRunnerFactory;
 import webhook.teamcity.executor.WebHookSerialExecutorImpl;
+import webhook.teamcity.executor.WebHookStatisticsExecutor;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
@@ -70,6 +71,7 @@ public class WebHookListenerTest {
 	WebHookContentBuilder contentBuilder;
 	WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(contentBuilder, historyRepository, historyItemFactory);
 	WebHookExecutor webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
+	WebHookStatisticsExecutor webHookStatisticsExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 	WebHookAuthenticatorProvider authenticatorProvider = mock(WebHookAuthenticatorProvider.class);
 	WebHookVariableResolverManager resolverManager = new WebHookVariableResolverManagerImpl();
 	VariableResolverFactory variableResolverFactory = new WebHooksBeanUtilsVariableResolverFactory();
@@ -111,7 +113,7 @@ public class WebHookListenerTest {
 		webHookConfig = mock(WebHookConfig.class);
 		when(webHookParameterStore.getAllWebHookParameters(sProject)).thenReturn(Collections.emptyList());
 		contentBuilder = new WebHookContentBuilder(sBuildServer, templateResolver, resolverManager, webHookParameterStore);
-		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
 		projSettings = new WebHookProjectSettings();
 		when(factory.getWebHook(any(WebHookConfig.class), any(WebHookProxyConfig.class))).thenReturn(webHookImpl);
 		when(manager.isRegisteredFormat("JSON")).thenReturn(true);
@@ -141,12 +143,12 @@ public class WebHookListenerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testWebHookListener() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
 	}
 
 	@Test
 	public void testRegister() {
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
 		whl.register();
 		verify(sBuildServer).addListener(whl);
 	}
@@ -239,7 +241,7 @@ public class WebHookListenerTest {
 		
 		MockSProject sProject = new MockSProject("Test Project", "A test project", "project1", "ATestProject", sBuildType);
 		sBuildType.setProject(sProject);
-		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		WebHookListener whl = new WebHookListener(sBuildServer, settings,configSettings, templateManager, factory, templateResolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
 		Status oldStatus = Status.NORMAL;
 		Status newStatus = Status.FAILURE;
 		whl.register();

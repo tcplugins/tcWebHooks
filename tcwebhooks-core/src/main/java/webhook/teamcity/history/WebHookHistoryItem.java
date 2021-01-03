@@ -42,13 +42,6 @@ public class WebHookHistoryItem {
 		return "unknown";
 	}
 	
-	public String getUrlHash() {
-		if (generalisedWebAddress != null) {
-			return generalisedWebAddress.getHashedGeneralisedAddress();
-		}
-		return "unknown";
-	}
-	
 	public String getTest() {
 		return this.isTest ? " (Test)" : "";
 	}

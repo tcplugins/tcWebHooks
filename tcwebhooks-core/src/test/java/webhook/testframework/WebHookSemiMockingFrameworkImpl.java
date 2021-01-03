@@ -1,7 +1,6 @@
 package webhook.testframework;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedMap;
 
 import org.jdom.JDOMException;
 import org.mockito.Mockito;
@@ -38,6 +36,7 @@ import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookRunnerFactory;
 import webhook.teamcity.executor.WebHookSerialExecutorImpl;
+import webhook.teamcity.executor.WebHookStatisticsExecutor;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
@@ -114,6 +113,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private WebHookVariableResolverManager webHookVariableResolverManager;
 	private WebHookRunnerFactory webHookRunnerFactory;
 	private WebHookExecutor webHookExecutor;
+	private WebHookStatisticsExecutor webHookStatisticsExecutor;
 	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	
 	private WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class); 
@@ -155,8 +155,9 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		historyRepository = new WebHookHistoryRepositoryImpl();
 		webHookRunnerFactory = new WebHookRunnerFactory(webHookContentBuilder, historyRepository, historyItemFactory);
 		webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
+		webHookStatisticsExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		
-		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
 		when(projectSettingsManager.getTemplateUsageCount((String)any())).thenReturn(0);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);

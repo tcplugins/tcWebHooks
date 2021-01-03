@@ -6,5 +6,8 @@
       <noproxy url="192.168.0." />
     </proxy>
     <info url="http://intranet.mycompany.com/docs/UsingWebHooks" text="Using WebHooks in myCompany Inc." />
+    <statistics enabled="true">
+      <reporting enabled="true" frequency="5"/>
+    </statistics>
   </webhooks>
 </server>

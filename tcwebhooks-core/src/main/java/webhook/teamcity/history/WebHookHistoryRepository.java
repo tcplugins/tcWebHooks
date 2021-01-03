@@ -31,10 +31,10 @@ public interface WebHookHistoryRepository {
 	public PagedList<WebHookHistoryItem> findHistoryDisabledItems(int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryOkItems(int pageNumber, int pageSize);
 	public PagedList<WebHookHistoryItem> findHistoryAllItems(int pageNumber, int pageSize);
-	public Map<LocalDate,List<WebHookHistoryItem>> findHistoryErroredItemsGroupedByDay(LocalDate untilDate, int numberOfDays);
+	public Map<LocalDate,List<WebHookHistoryItem>> findHistoryErroredItemsGroupedByDayInclusive(LocalDate untilDate, int numberOfDays);
 	public Map<LocalDate,List<WebHookHistoryItem>> findHistoryDisabledItemsGroupedByDay(LocalDate untilDate, int numberOfDays);
-	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryOkItemsGroupedByDay(LocalDate untilDate, int numberOfDays);
-	public Map<LocalDate,List<WebHookHistoryItem>> findHistoryAllItemsGroupedByDay(LocalDate untilDate, int numberOfDays);
+	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryOkItemsGroupedByDayInclusive(LocalDate untilDate, int numberOfDays);
+	public Map<LocalDate,List<WebHookHistoryItem>> findHistoryAllItemsGroupedByDayInclusive(LocalDate untilDate, int numberOfDays);
 	public int getTotalCount();
 	public int getErroredCount();
 	public int getDisabledCount();

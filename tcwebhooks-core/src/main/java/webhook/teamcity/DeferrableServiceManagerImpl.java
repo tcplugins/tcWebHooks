@@ -16,6 +16,10 @@ public class DeferrableServiceManagerImpl implements DeferrableServiceManager {
 			public void serverStartup() {
 				deferrableServices.forEach(DeferrableService::register);
 			}
+			@Override
+			public void serverShutdown() {
+				deferrableServices.forEach(DeferrableService::unregister);
+			}
 		});
 	}
 

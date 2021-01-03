@@ -8,6 +8,7 @@
   		init-method="register" 
   		>
         <constructor-arg ref="webHookExecutor"/>
+        <constructor-arg ref="webHookExecutor"/>
   	</bean>
   		
 	<!-- bean id="testListener" 
@@ -15,7 +16,7 @@
   		init-method="register" 
   		/-->
   		
-	<bean id="webHookExecutor"
+	<bean id="webHookExecutor" name="webHookExecutor, webHookStatisticsExecutor"
         class="webhook.teamcity.executor.WebHookExecutorManager">
         <constructor-arg ref="webHookMainSettings"/>
         <constructor-arg ref="webHookSerialExecutor"/>
@@ -334,7 +335,24 @@
 	<bean id="webHookUserRequestedExecutor"
 		class="webhook.teamcity.testing.WebHookUserRequestedExecutorImpl"
 		/>
-
+		
+	<bean id="reportPayloadJaxHelper"
+		class="webhook.teamcity.statistics.StatisticsJaxHelper"
+		/>
+	
+	<bean id="statisticsManager"
+		class="webhook.teamcity.statistics.StatisticsManagerImpl"
+		/>
+		
+	<bean id="statisticsReportAssembler"
+		class="webhook.teamcity.statistics.StatisticsReportAssemblerImpl"
+		/>
+	
+	<bean id="reportingScheduler"
+		class="webhook.teamcity.statistics.StatisticsSnapshotScheduler"
+		init-method="requestDeferredRegistration"
+		/>
+	
 	<bean id="legacyEmptyWebHookTemplate"
 		class="webhook.teamcity.payload.template.LegacyEmptyWebHookTemplate"
 		init-method="register">
@@ -372,6 +390,14 @@
 		init-method="register">
 		<property name="rank">
 			<value>500</value>
+		</property>
+	</bean>
+	
+	<bean id="statisticsReportWebHookTemplate"
+		class="webhook.teamcity.payload.template.StatisticsReportWebHookTemplate"
+		init-method="register">
+		<property name="rank">
+			<value>1000</value>
 		</property>
 	</bean>
 	

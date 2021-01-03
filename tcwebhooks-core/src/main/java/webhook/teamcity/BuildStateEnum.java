@@ -14,7 +14,8 @@ public enum BuildStateEnum {
 	BUILD_BROKEN			("buildBroken", 			"broken",								"Build Broken",						"Finished (Broken)"),
 	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",				"Build Responsibility Changed", 	"Responsibility Changed"),
 	BUILD_PINNED			("buildPinned", 			"been pinned",							"Build Pinned",						"Pinned"), 
-	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned");
+	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned"),
+	REPORT_STATISTICS		("reportStatistics",		"reported statistics",					"Statistics Reported",				"Statistics Reported");
     
     private final String shortName;
     private final String descriptionSuffix;

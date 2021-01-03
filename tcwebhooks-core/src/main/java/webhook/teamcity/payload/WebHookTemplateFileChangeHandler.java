@@ -36,11 +36,13 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: Starting");
 	}
 	
+	@Override
 	public void requestDeferredRegistration() {
 		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Registering as a deferrable service");
 		deferrableServiceManager.registerService(this);
 	}
 	
+	@Override
 	public void register(){
 		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: Registering");
 		this.configFile = new File(this.serverPaths.getConfigDir() + File.separator + "webhook-templates.xml");
@@ -54,6 +56,11 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 		this.fw.start();
 		
 		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Watching for changes to file: " + this.configFile.getPath());
+	}
+	
+	@Override
+	public void unregister() {
+		// Nothing required for shutdown
 	}
 
 	@Override

@@ -129,6 +129,13 @@
 		    <artifactId>commons-beanutils</artifactId>
 		    <version>1.9.4</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.15</version>
+		</dependency>
 
      	<!--Jetty dependencies start here -->
      	<dependency>

@@ -1,5 +1,5 @@
 package webhook.teamcity.executor;
 
-public interface WebHookSerialExecutor extends WebHookExecutor {
+public interface WebHookSerialExecutor extends WebHookExecutor, WebHookStatisticsExecutor {
 
 }

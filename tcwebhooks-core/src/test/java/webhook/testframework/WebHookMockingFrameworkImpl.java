@@ -47,6 +47,7 @@ import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookRunnerFactory;
 import webhook.teamcity.executor.WebHookSerialExecutorImpl;
+import webhook.teamcity.executor.WebHookStatisticsExecutor;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
@@ -149,12 +150,13 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookHistoryItemFactory historyItemFactory = new WebHookHistoryItemFactoryImpl(webAddressTransformer, projectManager);
 	private WebHookRunnerFactory webHookRunnerFactory = new WebHookRunnerFactory(contentBuilder, historyRepository, historyItemFactory);
 	private WebHookExecutor webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
+	private WebHookStatisticsExecutor webHookStatisticsExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, resolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, resolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);

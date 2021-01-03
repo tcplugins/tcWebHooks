@@ -70,7 +70,21 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	        	}
 	        }
 	        
-    		Element proxyElement = webhooksElement.getChild("proxy");
+	        Element statisticsElement = webhooksElement.getChild("statistics");
+	        if (statisticsElement != null && statisticsElement.getAttribute("enabled") != null) {
+	        	tempConfig.setAssembleStatistics(Boolean.valueOf(statisticsElement.getAttributeValue("enabled")));
+	        }
+	        if (statisticsElement != null) {
+	        	Element reportingElement = statisticsElement.getChild("reporting");
+	        	if (reportingElement != null && reportingElement.getAttribute("enabled") != null) {
+	        		tempConfig.setReportStatistics(Boolean.valueOf(reportingElement.getAttributeValue("enabled")));
+	        	}
+	        	if (reportingElement != null && reportingElement.getAttribute("frequency") != null) {
+	        		tempConfig.setReportStatisticsFrequency(Integer.valueOf(reportingElement.getAttributeValue("frequency")));
+	        	}
+	        }
+	        
+	        Element proxyElement = webhooksElement.getChild("proxy");
 	        if(proxyElement != null)
 	        {
 	        	if (proxyElement.getAttribute("proxyShortNames") != null){
@@ -179,4 +193,17 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	public boolean useThreadedExecutor() {
 		return this.webHookMainConfig.useThreadedExecutor();
 	}
+	
+	public boolean isReportStatisticsEnabled() {
+		return this.webHookMainConfig.isReportStatisticsEnabled();
+	}
+	
+	public int getReportStatisticsFrequency() {
+		return this.webHookMainConfig.getReportStatisticsFrequency();
+	}
+
+	public boolean isAssembleStatisticsEnabled() {
+		return this.webHookMainConfig.isAssembleStatistics();
+	}
+	
 }

@@ -112,7 +112,7 @@
 				<td><a href="search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
 
 		<c:choose>  
-    		<c:when test="${template.templateDescription == 'Legacy Webhook'}"> 		
+    		<c:when test="${template.templateDescription == 'Legacy Webhook' || template.templateId == 'statistics-report'}"> 		
 				<td>No template available</td>
 			</c:when>
 			<c:otherwise>  		

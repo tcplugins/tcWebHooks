@@ -1,0 +1,129 @@
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+
+<div style="width:1000px; height:500px;">
+	    <canvas id="historyChart"></canvas>
+</div>
+
+	<script type="text/javascript" src="./3rd-party/Chart.bundle.min.js"></script>
+	<script>
+	
+
+	var graphData = [
+				{
+				"2021-01-24" : {
+					"801" : 1,
+					"204" : 212,
+					"701" : 75
+				},
+				"2021-02-14" : {
+					"204" : 1
+				},
+				"2021-02-16" : {
+					"204" : 1
+				},
+				"2021-02-12" : {
+					"204" : 55,
+					"701" : 20
+				},
+				"2021-02-15" : {
+					"204" : 1
+				},
+				"2021-01-25" : {
+					"204" : 11,
+					"701" : 4
+				},
+				"2021-01-19" : {
+					"204" : 139,
+					"701" : 50
+				},
+				"2021-02-13" : {
+					"204" : 14,
+					"701" : 4
+				}
+			}
+		];
+		var ctx = document.getElementById('historyChart').getContext('2d');
+		var chart = new Chart(ctx, {
+			type : 'bar',
+			data: {
+				//labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+		        datasets: [{
+		            label: '200 - OK',
+		            data: [{t: '2021-01-01', y:12}, {t: '2021-02-01', y:0}, {t: '2021-02-02', y:19}, {t: '2021-02-03', y:3}, {t: '2021-02-04', y:5}, {t: '2021-02-05', y:2}, {t: '2021-02-06', y:3}],
+		            //data: [{x: '2021-02-17', y:20}, {x:'2021-02-18', y:10}],
+		            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+		            borderColor: 'rgba(255, 99, 132, 1)',
+		            borderWidth: 1
+		        },
+		        {
+		            label: '800 - Error',
+		            data: [
+		            	{t: '2021-01-01', y:12}, 
+		            	{t: '2021-02-01', y:10}, 
+		            	{t: '2021-02-02', y:0}, 
+		            	{t: '2021-02-03', y:3}, 
+		            	{t: '2021-02-04', y:5}, 
+		            	{t: '2021-02-05', y:2}, 
+		            	{t: '2021-02-06', y:3}
+		            ],
+		            //data: [{x: '2021-02-17', y:20}, {x:'2021-02-18', y:10}],
+		            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+		            borderColor: 'rgba(255, 159, 64, 1)',
+		            borderWidth: 1
+		        }
+		        ]
+			}
+		,
+			options : {
+				aspectRatio: 4,
+		        layout: {
+		            padding: {
+		                left: 50,
+		                right: 0,
+		                top: 0,
+		                bottom: 0
+		            }
+		        },
+				legend: {
+					display: false
+				},
+				scales : {
+ 					xAxes : [ {
+ 						offset: true,
+						stacked : true,
+						type : 'time',
+						time : {
+							unit : 'week'
+						}
+					} ],
+					yAxes : [ {
+						stacked : true
+					} ]
+				}
+			}
+		});
+
+/* 		var ctx = document.getElementById('historyChart').getContext('2d');
+		var chart = new Chart(ctx, {
+			type : 'line',
+			data : graphData.statuses,
+			options : {
+				scales : {
+					xAxes : [ {
+						type : 'time',
+						time : {
+							unit : 'day'
+						}
+					} ],
+					yAxes : [ {
+						stacked : true
+					} ]
+				}
+			}
+		}); */
+		
+	</script>
+</body>
+</html>

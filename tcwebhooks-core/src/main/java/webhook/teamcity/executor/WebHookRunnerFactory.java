@@ -1,6 +1,7 @@
 package webhook.teamcity.executor;
 
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import lombok.AllArgsConstructor;
 import webhook.WebHook;
@@ -9,6 +10,7 @@ import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.statistics.StatisticsReport;
 
 @AllArgsConstructor
 public class WebHookRunnerFactory {
@@ -65,6 +67,21 @@ public class WebHookRunnerFactory {
 				user, 
 				comment,
 				isTest
+			);
+	}
+
+	public Runnable getRunner(WebHook webhook, WebHookConfig whc, BuildStateEnum state, StatisticsReport report, SProject rootProject, boolean isTest) {
+		return new StatisticsReporterWebHookRunner(
+				webHookContentBuilder, 
+				webHookHistoryRepository, 
+				webHookHistoryItemFactory, 
+				whc, 
+				state, 
+				isTest, 
+				webhook, 
+				isTest, 
+				rootProject, 
+				report
 			);
 	}
 

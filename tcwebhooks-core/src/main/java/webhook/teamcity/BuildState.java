@@ -5,6 +5,7 @@ import static webhook.teamcity.BuildStateEnum.BUILD_FAILED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FINISHED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
+import static webhook.teamcity.BuildStateEnum.REPORT_STATISTICS;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -30,9 +31,10 @@ public class BuildState {
 		states.put(BuildStateEnum.BUILD_BROKEN, 			new SimpleBuildState(BuildStateEnum.BUILD_BROKEN, 				false));
 		states.put(BuildStateEnum.BUILD_FIXED, 				new SimpleBuildState(BuildStateEnum.BUILD_FIXED, 				false));
 		
-		states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 			false)); 		
-		states.put(BuildStateEnum.BUILD_PINNED, 			new SimpleBuildState(BuildStateEnum.BUILD_PINNED, 				false)); 		
-		states.put(BuildStateEnum.BUILD_UNPINNED, 			new SimpleBuildState(BuildStateEnum.BUILD_UNPINNED, 			false)); 		
+		states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 			false)); 
+		states.put(BuildStateEnum.BUILD_PINNED, 			new SimpleBuildState(BuildStateEnum.BUILD_PINNED, 				false)); 
+		states.put(BuildStateEnum.BUILD_UNPINNED, 			new SimpleBuildState(BuildStateEnum.BUILD_UNPINNED, 			false)); 
+		states.put(BuildStateEnum.REPORT_STATISTICS, 		new SimpleBuildState(BuildStateEnum.REPORT_STATISTICS, 			false)); 
 	}
 	
 	public Set<BuildStateEnum> getStateSet(){
@@ -100,11 +102,11 @@ public class BuildState {
     	return currentBuildState;
     }
     
-    public void setEnabled(BuildStateEnum currentBuildState, boolean enabled){
+    public BuildState setEnabled(BuildStateEnum currentBuildState, boolean enabled){
     	if (enabled)
-    		enable(currentBuildState);
+    		return enable(currentBuildState);
     	else
-    		disable(currentBuildState);
+    		return disable(currentBuildState);
     }
     
     /**
@@ -120,6 +122,9 @@ public class BuildState {
     		case BUILD_FIXED:
     			disable(state);
     			break;
+    		case REPORT_STATISTICS:		// This is not available to templates, so it makes no sense to include it in "all"
+    			disable(state);
+    			break;
     		default:
     			enable(state);
     			break;
@@ -128,12 +133,14 @@ public class BuildState {
     	return this;
     }
     
-    public void enable(BuildStateEnum currentBuildState){
+    public BuildState enable(BuildStateEnum currentBuildState){
     	states.get(currentBuildState).enable();
+    	return this;
     }
 
-    public void disable(BuildStateEnum currentBuildState){
+    public BuildState disable(BuildStateEnum currentBuildState){
     	states.get(currentBuildState).disable();
+    	return this;
     }
 
     /**
@@ -166,6 +173,12 @@ public class BuildState {
 				continue;
 			}
 			if (state.getKey().equals(BUILD_FIXED)){
+				if (state.getValue().isEnabled()){
+					return false;
+				}
+				continue;
+			}
+			if (state.getKey().equals(REPORT_STATISTICS)){
 				if (state.getValue().isEnabled()){
 					return false;
 				}

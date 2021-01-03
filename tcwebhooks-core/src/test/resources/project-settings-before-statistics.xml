@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <webhooks enabled="true">
+    <webhook url="https://hooks.slack.com/" enabled="true" format="jsontemplate" template="slack.com-compact">
+      <states>
+        <state type="buildAddedToQueue" enabled="true" />
+        <state type="buildRemovedFromQueue" enabled="true" />
+        <state type="buildStarted" enabled="true" />
+        <state type="changesLoaded" enabled="true" />
+        <state type="buildInterrupted" enabled="true" />
+        <state type="beforeBuildFinish" enabled="true" />
+        <state type="buildFinished" enabled="true" />
+        <state type="buildSuccessful" enabled="true" />
+        <state type="buildFailed" enabled="true" />
+        <state type="buildFixed" enabled="false" />
+        <state type="buildBroken" enabled="false" />
+        <state type="responsibilityChanged" enabled="false" />
+        <state type="buildPinned" enabled="false" />
+        <state type="buildUnpinned" enabled="false" />
+      </states>
+      <build-types enabled-for-all="true" enabled-for-subprojects="true" />
+    </webhook>
+  </webhooks>
+</settings>

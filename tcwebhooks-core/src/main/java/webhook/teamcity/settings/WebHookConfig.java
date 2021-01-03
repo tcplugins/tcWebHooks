@@ -304,9 +304,15 @@ public class WebHookConfig {
 	 * It will still allow you to add the template, but the webhook might not
 	 * fire at runtime if the template configured is not available.
 	 *
+	 * @param projectInternalId
+	 * @param projectExternalId
 	 * @param url
 	 * @param enabled
-	 * @param stateMask
+	 * @param states
+	 * @param payloadTemplate
+	 * @param buildTypeAllEnabled
+	 * @param buildTypeSubProjects
+	 * @param enabledBuildTypes
 	 * @param webHookAuthConfig
 	 */
 	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){

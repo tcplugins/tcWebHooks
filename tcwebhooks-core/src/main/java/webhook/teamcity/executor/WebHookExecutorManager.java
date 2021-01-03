@@ -1,13 +1,15 @@
 package webhook.teamcity.executor;
 
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
+import webhook.teamcity.statistics.StatisticsReport;
 
-public class WebHookExecutorManager implements WebHookExecutor {
+public class WebHookExecutorManager implements WebHookExecutor, WebHookStatisticsExecutor {
 	
 	boolean useThreadedExecutor = true;
 	private WebHookMainSettings myWebHookMainSettings;
@@ -51,6 +53,12 @@ public class WebHookExecutorManager implements WebHookExecutor {
 		} else {
 			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
 		}
+	}
+
+	@Override
+	public void execute(WebHook webHook, WebHookConfig whc, BuildStateEnum state, StatisticsReport report, SProject rootProject, boolean isTest) {
+		myWebHookSerialExecutor.execute(webHook, whc, state, report, rootProject, isTest);
+
 	}
 
 }

@@ -3,6 +3,7 @@ package webhook.teamcity.settings;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,11 @@ public class WebHookMainConfig {
 	private Integer httpConnectionTimeout;
 	private Integer httpResponseTimeout;
 	private boolean useThreadedExecutor = true;
-
+	
+	private boolean assembleStatistics = true;
+	private Boolean reportStatistics;
+	private Integer reportStatisticsFrequencyDays;
+	
 	private Pattern singleHostPattern;
 	private Pattern hostnameOnlyPattern;
 
@@ -188,10 +193,32 @@ public class WebHookMainConfig {
 		if (this.httpConnectionTimeout == null && this.httpResponseTimeout == null) {
 			return null;
 		}
-		Element el = new Element("http-timeout")
+		return new Element("http-timeout")
 				.setAttribute("connect", String.valueOf(getHttpConnectionTimeout()))
 				.setAttribute("response", String.valueOf(this.getHttpResponseTimeout()));
-		return el;
+	}
+	
+	public Element getReportStatisticsAsElement() {
+		if (Objects.nonNull(this.reportStatistics)) {
+			return new Element("statistics").setAttribute("reporting", this.reportStatistics.toString());
+		}
+		return null;
+	}
+	
+	public boolean isAssembleStatistics() {
+		return assembleStatistics;
+	}
+	
+	public void setAssembleStatistics(boolean assembleStatistics) {
+		this.assembleStatistics = assembleStatistics;
+	}
+	
+	public boolean isReportStatisticsEnabled() {
+		return Boolean.TRUE.equals(this.reportStatistics);
+	}
+	
+	public void setReportStatistics(Boolean reportStatistics) {
+		this.reportStatistics = reportStatistics;
 	}
 
 	public Integer getProxyPort() {
@@ -294,6 +321,17 @@ public class WebHookMainConfig {
 
 	public void setThreadPoolExecutor(boolean threadPoolSender) {
 		this.useThreadedExecutor = threadPoolSender;
+	}
+
+	public int getReportStatisticsFrequency() {
+		if (this.reportStatisticsFrequencyDays != null) {
+			return this.reportStatisticsFrequencyDays;
+		}
+		return 5;
+	}
+
+	public void setReportStatisticsFrequency(Integer statisticsFrequencyDays) {
+		this.reportStatisticsFrequencyDays = statisticsFrequencyDays;
 	}
 
 }

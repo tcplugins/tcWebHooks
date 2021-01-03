@@ -2,6 +2,7 @@ package webhook.teamcity.settings;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.auth.WebHookAuthConfig;
@@ -377,13 +379,14 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 				String templateName = "Missing template";
 				String templateFormat = "";
 				String templateFormatDescription = "Unknown payload format";
+				Set<BuildStateEnum> enabledBuildStates = null;
 				try {
 					WebHookPayloadTemplate template = this.myWebHookTemplateManager.getTemplate(c.getPayloadTemplate());
 					WebHookPayload format = this.myWebHookPayloadManager.getFormat(this.myWebHookTemplateManager.getTemplateConfig(template.getTemplateId(), TemplateState.BEST).getFormat());
 					templateName = template.getTemplateDescription();
 					templateFormat = format.getFormatShortName();
 					templateFormatDescription = format.getFormatDescription();
-					
+					enabledBuildStates = determineEnabledBuildStates(c, template);
 				} catch (NullPointerException ex) {
 					Loggers.SERVER.warn(String.format(
 							"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s",
@@ -399,6 +402,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 						.projectExternalId(sProject.getExternalId())
 						.templateId(c.getPayloadTemplate())
 						.templateDescription(templateName)
+						.buildStates(enabledBuildStates)
 						.webHookConfig(c)
 						.generalisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(c.getUrl()))
 						.build();
@@ -421,6 +425,20 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		}
 	}
 	
+	private Set<BuildStateEnum> determineEnabledBuildStates(WebHookConfig c, WebHookPayloadTemplate template) {
+		if(Objects.nonNull(c.isEnabledForAllBuildsInProject())) {
+			return new HashSet<>(template.getSupportedBuildStates());
+		} else {
+			Set<BuildStateEnum> enabled = new HashSet<>();
+			for (BuildStateEnum s : c.getBuildStates().getStateSet()) {
+				if (template.getSupportedBuildStates().contains(s)) {
+					enabled.add(s);
+				}
+			}
+			return enabled;
+		}
+	}
+
 	@SuppressWarnings("rawtypes")
 	private void addTagIfPresent(WebHookConfigEnhanced config, Collection collection, String tagName) {
 		if (collection != null && !collection.isEmpty()) {

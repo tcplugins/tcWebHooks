@@ -5,13 +5,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.LocalDate;
+
+import webhook.teamcity.Loggers;
 
 public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	
@@ -183,31 +187,35 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryDisabledItemsGroupedByDay(LocalDate untilDate, int numberOfDays) {
 		boolean errored = false;
 		boolean disabled = true;
-		return findHistoryItemsGroupedByDay(untilDate, numberOfDays, findItemsSince(untilDate, numberOfDays, errored, disabled));
+		Set<LocalDate> arrayOfDatesInclusive = getArrayOfDatesInclusive(untilDate, numberOfDays);
+		return findHistoryItemsGroupedByDay(arrayOfDatesInclusive, findItemsInRange(arrayOfDatesInclusive, errored, disabled));
 	}
 
 	@Override
-	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryErroredItemsGroupedByDay(LocalDate untilDate, int numberOfDays) {
+	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryErroredItemsGroupedByDayInclusive(LocalDate untilDate, int numberOfDays) {
 		boolean errored = true;
 		boolean disabled = false;
-		return findHistoryItemsGroupedByDay(untilDate, numberOfDays, findItemsSince(untilDate, numberOfDays, errored, disabled));
+		Set<LocalDate> arrayOfDatesInclusive = getArrayOfDatesInclusive(untilDate, numberOfDays);
+		return findHistoryItemsGroupedByDay(arrayOfDatesInclusive, findItemsInRange(arrayOfDatesInclusive, errored, disabled));
 	}
 	
 	@Override
-	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryOkItemsGroupedByDay(LocalDate untilDate, int numberOfDays) {
+	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryOkItemsGroupedByDayInclusive(LocalDate untilDate, int numberOfDays) {
 		boolean errored = false;
 		boolean disabled = false;
-		return findHistoryItemsGroupedByDay(untilDate, numberOfDays, findItemsSince(untilDate, numberOfDays, errored, disabled));
+		Set<LocalDate> arrayOfDatesInclusive = getArrayOfDatesInclusive(untilDate, numberOfDays);
+		return findHistoryItemsGroupedByDay(arrayOfDatesInclusive, findItemsInRange(arrayOfDatesInclusive, errored, disabled));
 	}
 	
 	@Override
-	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryAllItemsGroupedByDay(LocalDate untilDate, int numberOfDays) {
-		return findHistoryItemsGroupedByDay(untilDate, numberOfDays, findAllItemsSince(untilDate, numberOfDays));
+	public Map<LocalDate, List<WebHookHistoryItem>> findHistoryAllItemsGroupedByDayInclusive(LocalDate untilDate, int numberOfDays) {
+		Set<LocalDate> arrayOfDatesInclusive = getArrayOfDatesInclusive(untilDate, numberOfDays);
+		return findHistoryItemsGroupedByDay(arrayOfDatesInclusive, findAllItemsSince(arrayOfDatesInclusive));
 	}
 	
-	private Map<LocalDate, List<WebHookHistoryItem>> findHistoryItemsGroupedByDay(LocalDate untilDate, int numberOfDays, List<WebHookHistoryItem> items) {
-		Map<LocalDate, List<WebHookHistoryItem>> groupedHistoryItems = new LinkedHashMap<>(numberOfDays);
-		for (LocalDate thisDate : getArrayOfDates(untilDate, numberOfDays)) {
+	private Map<LocalDate, List<WebHookHistoryItem>> findHistoryItemsGroupedByDay(Set<LocalDate> dateRange, List<WebHookHistoryItem> items) {
+		Map<LocalDate, List<WebHookHistoryItem>> groupedHistoryItems = new LinkedHashMap<>(dateRange.size());
+		for (LocalDate thisDate : dateRange) {
 			List<WebHookHistoryItem> thisDateList = new ArrayList<>();
 			for (WebHookHistoryItem item : items) {
 				if (thisDate.isEqual(item.getTimestamp().toLocalDate())) {
@@ -219,16 +227,15 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 		return groupedHistoryItems;
 	}
 
-	private List<WebHookHistoryItem> findItemsSince(LocalDate untilDate, int numberOfDays, boolean isErrored, boolean isDisabled) {
+	private List<WebHookHistoryItem> findItemsInRange(Set<LocalDate> dates, boolean isErrored, boolean isDisabled) {
 		List<WebHookHistoryItem> itemsSince = new ArrayList<>();
-		LocalDate sinceDate = untilDate.minusDays(numberOfDays);
 		synchronized (webHookHistoryItems) {
 			for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
-				LocalDate itemTimeStamp = item.getTimestamp().toLocalDate(); 
-				if (sinceDate.isBefore(itemTimeStamp) 
-						&& untilDate.isAfter(itemTimeStamp) 
-						&& item.getWebHookExecutionStats().isErrored() == isErrored 
-						&& item.getWebHookExecutionStats().isEnabled() != isDisabled) {
+				LocalDate itemDate = item.getTimestamp().toLocalDate(); 
+				if (dates.contains(itemDate) 
+					&& item.getWebHookExecutionStats().isErrored() == isErrored 
+					&& item.getWebHookExecutionStats().isEnabled() != isDisabled) 
+				{
 					itemsSince.add(item);
 				}
 			}
@@ -236,25 +243,27 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 		return itemsSince;
 	}
 	
-	private List<WebHookHistoryItem> findAllItemsSince(LocalDate untilDate, int numberOfDays) {
+	private List<WebHookHistoryItem> findAllItemsSince(Set<LocalDate> dateRange) {
 		List<WebHookHistoryItem> erroredItemsSince = new ArrayList<>();
-		LocalDate sinceDate = untilDate.minusDays(numberOfDays);
+		Loggers.SERVER.debug("WebHookHistoryRepositoryImpl :: Waiting on synchronized block for webhookHistoryItems");
 		synchronized (webHookHistoryItems) {
 			for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
-				LocalDate itemTimeStamp = item.getTimestamp().toLocalDate(); 
-				if (sinceDate.isBefore(itemTimeStamp) && untilDate.isAfter(itemTimeStamp)) {
+				if (dateRange.contains(item.getTimestamp().toLocalDate())) {
 					erroredItemsSince.add(item);
 				}
 			}
 		}
+		Loggers.SERVER.debug("WebHookHistoryRepositoryImpl :: Exited synchronized block for webhookHistoryItems");
 		return erroredItemsSince;
 	}
 
-	private List<LocalDate> getArrayOfDates(LocalDate untilDate, int numberOfDays) {
-		List<LocalDate> days = new ArrayList<>();
+	private Set<LocalDate> getArrayOfDatesInclusive(LocalDate untilDate, int numberOfDays) {
+		Set<LocalDate> days = new HashSet<>();
+		days.add(untilDate);
 		for (int i = numberOfDays; i > 0 ; i--) {
 			days.add(untilDate.minusDays(i));
 		}
+		Loggers.SERVER.debug(String.format("WebHookHistoryRepositoryImpl :: Resolving requested dates to: [%s]", days.toString()));
 		return days;
 	}
 

@@ -10,6 +10,7 @@ import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.Test;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadDefaultTemplates;
 import webhook.testframework.util.ConfigLoaderUtil;
 
@@ -23,6 +24,7 @@ public class WebHookConfigTest {
 	WebHookConfig webhookMostEnabled;
 	WebHookConfig webhookWithAuth;
 	WebHookConfig webhookWithFilters;
+	WebHookConfig webhookWithoutStats;
 	
 	
 	@Before
@@ -33,7 +35,10 @@ public class WebHookConfigTest {
 		webhookDisabled    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-webhook-disabled.xml"));
 		webhookMostEnabled = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-but-respchange-states-enabled.xml"));
 		webhookWithAuth    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
-		webhookWithFilters    = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branchNameFilter.xml"));
+		webhookWithFilters = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branchNameFilter.xml"));
+		webhookWithFilters = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-all-states-enabled-with-branchNameFilter.xml"));
+		webhookWithoutStats= ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-before-statistics.xml"));
+
 	}
 	
 //	private WebHookConfig getFirstWebHookInConfig(File f) throws JDOMException, IOException{
@@ -203,5 +208,11 @@ public class WebHookConfigTest {
 		assertTrue(webhookWithFilters.getTriggerFilters().size() == 1);
 		WebHookConfig newTestFilterConfig = new WebHookConfig(webhookWithFilters.getAsElement());
 		assertEquals(webhookWithFilters.getTriggerFilters().get(0).regex, newTestFilterConfig.getTriggerFilters().get(0).regex);
+	}
+	
+	@Test
+	public void testWebHookWithoutStatsIsDisabledForStats(){
+		assertTrue(webhookWithoutStats.getEnabled());
+		assertFalse(webhookWithoutStats.getBuildStates().enabled(BuildStateEnum.REPORT_STATISTICS));
 	}
 }

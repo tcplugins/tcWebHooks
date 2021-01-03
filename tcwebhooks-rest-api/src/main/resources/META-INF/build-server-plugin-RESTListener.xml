@@ -30,6 +30,7 @@
 	<bean id="templateDataProviderProvider" class="webhook.teamcity.server.rest.jersey.TemplateDataProviderProvider"/>
 	<bean id="webHookDataProviderProvider" class="webhook.teamcity.server.rest.jersey.WebHookDataProviderProvider"/>
 	<bean id="webHookParameterDataProviderProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterDataProviderProvider"/>
+	<bean id="statisticsDataProviderProvider" class="webhook.teamcity.server.rest.jersey.StatisticsDataProviderProvider"/>
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
 	<bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/>
 	<bean id="webHookFinder" class="webhook.teamcity.server.rest.data.WebHookFinder"/>

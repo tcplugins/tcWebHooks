@@ -1,4 +1,4 @@
-package webhook.teamcity.reporting;
+package webhook.teamcity.statistics;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,7 +52,6 @@ public class WebAddressTransformerImplTest {
 
         System.out.println(String.format("Expecting %s from URL %s", generalisedResult, url));
 		assertEquals(generalisedResult, generalisedWebAddress.getGeneralisedAddress());
-		assertEquals(getSha256Hash(generalisedResult), generalisedWebAddress.getHashedGeneralisedAddress());
 	}
 
 	

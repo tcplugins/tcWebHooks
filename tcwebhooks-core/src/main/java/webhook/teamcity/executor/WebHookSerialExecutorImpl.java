@@ -1,15 +1,17 @@
 package webhook.teamcity.executor;
 
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import lombok.AllArgsConstructor;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.statistics.StatisticsReport;
 
 @AllArgsConstructor
-public class WebHookSerialExecutorImpl implements WebHookSerialExecutor {
+public class WebHookSerialExecutorImpl implements WebHookSerialExecutor, WebHookStatisticsExecutor {
 	
     private final WebHookRunnerFactory webHookRunnerFactory;
 
@@ -47,6 +49,18 @@ public class WebHookSerialExecutorImpl implements WebHookSerialExecutor {
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
 		webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, username, comment, isTest).run();
+		
+		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: Finished runner for webhook :: " + 
+				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
+	}
+
+	@Override
+	public void execute(WebHook webhook, WebHookConfig whc, BuildStateEnum state, 
+			StatisticsReport report, SProject rootProject, boolean isTest) {
+		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: About to start runner for webhook :: " + 
+				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
+
+		webHookRunnerFactory.getRunner(webhook, whc, state, report, rootProject, isTest).run();
 		
 		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: Finished runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
