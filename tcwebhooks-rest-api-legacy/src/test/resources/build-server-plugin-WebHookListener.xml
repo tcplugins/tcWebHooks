@@ -151,6 +151,10 @@
 	<bean id="webHookTemplateResolver"
 		class="webhook.teamcity.payload.WebHookTemplateResolver"
 		/>
+		
+	<bean id="statisticsReportAssembler"
+		class="webhook.teamcity.statistics.StatisticsReportAssemblerImpl"
+		/>
 
 	<bean id="legacyDepricatedFormatWebHookTemplate"
 		class="webhook.teamcity.payload.template.LegacyDeprecatedFormatWebHookTemplate"
