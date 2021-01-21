@@ -568,7 +568,7 @@ public class WebHookPayloadContent {
 				this.buildResultDelta = WebHookPayload.BUILD_STATUS_UNKNOWN;
 				this.derivedBuildEventType = BuildStateEnum.BUILD_INTERRUPTED;
 
-			} else if (buildState == BuildStateEnum.BUILD_PINNED || buildState == BuildStateEnum.BUILD_UNPINNED) {
+			} else if (buildState == BuildStateEnum.BUILD_PINNED || buildState == BuildStateEnum.BUILD_UNPINNED || buildState == BuildStateEnum.BUILD_TAGGED ) {
 				this.derivedBuildEventType = buildState;			
 			} else {
 				this.buildResult = WebHookPayload.BUILD_STATUS_RUNNING;

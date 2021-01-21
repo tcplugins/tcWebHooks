@@ -60,6 +60,7 @@ import org.jetbrains.annotations.Nullable;
 						<state type="buildFixed" enabled="false" />
 						<state type="buildFailed" enabled="true" />
 						<state type="responsibilityChanged" enabled="false" />
+						<state type="buildTagged" enabled="false" />
 					</states>
 				</template>
 			</templates>

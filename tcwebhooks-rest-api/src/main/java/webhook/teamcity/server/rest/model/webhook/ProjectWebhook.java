@@ -35,6 +35,7 @@ import webhook.teamcity.settings.WebHookConfig;
 	  <state type="buildFixed" enabled="false" />
 	  <state type="buildFailed" enabled="true" />
 	  <state type="responsibilityChanged" enabled="true" />
+	  <state type="buildTagged" enabled="false" />
 	</states>
 	 <parameters>
 	  <param name="color" value="red" />

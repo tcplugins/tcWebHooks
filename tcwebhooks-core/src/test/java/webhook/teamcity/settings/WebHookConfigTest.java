@@ -113,7 +113,7 @@ public class WebHookConfigTest {
 	public void testGetEnabledListAsString() {
 		assertTrue(webhookAllEnabled.getEnabledListAsString().equals("All Build Events"));
 		assertTrue(webhookAllDisabled.getEnabledListAsString().equals("None"));
-		assertEquals(" Build Added to Queue, Build Removed from Queue by User, Build Started, Changes Loaded, Build Interrupted, Build Almost Completed, Build Failed, Build Successful, Build Pinned, Build Unpinned", webhookMostEnabled.getEnabledListAsString());
+		assertEquals(" Build Added to Queue, Build Removed from Queue by User, Build Started, Changes Loaded, Build Interrupted, Build Almost Completed, Build Failed, Build Successful, Build Pinned, Build Unpinned, Build Tagged", webhookMostEnabled.getEnabledListAsString());
 	}
 
 	@Test

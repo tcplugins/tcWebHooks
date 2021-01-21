@@ -14,8 +14,9 @@ public enum BuildStateEnum {
 	BUILD_BROKEN			("buildBroken", 			"broken",								"Build Broken",						"Finished (Broken)"),
 	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",				"Build Responsibility Changed", 	"Responsibility Changed"),
 	BUILD_PINNED			("buildPinned", 			"been pinned",							"Build Pinned",						"Pinned"), 
-	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned");
-    
+	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned"),
+	BUILD_TAGGED			("buildPromotionTagsChanged","been tagged",							"Build Tagged",						"Tagged");
+
     private final String shortName;
     private final String descriptionSuffix;
     private final String shortDescription;
@@ -85,6 +86,6 @@ public enum BuildStateEnum {
 				BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, 
 				CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, 
 				BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED, 
-				BUILD_PINNED, BUILD_UNPINNED };
+				BUILD_PINNED, BUILD_UNPINNED, BUILD_TAGGED };
 	}
 }

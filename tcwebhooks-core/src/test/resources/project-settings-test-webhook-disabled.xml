@@ -12,6 +12,7 @@
         <state type="buildFixed" enabled="false" />
         <state type="buildFailed" enabled="false" />
         <state type="responsibilityChanged" enabled="false" />
+        <state type="buildPromotionTagsChanged" enabled="false" />
       </states>
     </webhook>
   </webhooks>

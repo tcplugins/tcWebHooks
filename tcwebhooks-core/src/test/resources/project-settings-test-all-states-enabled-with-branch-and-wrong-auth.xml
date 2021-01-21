@@ -12,6 +12,7 @@
         <state type="buildFixed" enabled="false" />
         <state type="buildFailed" enabled="true" />
         <state type="responsibilityChanged" enabled="true" />
+        <state type="buildPromotionTagsChanged" enabled="true" />
       </states>
        <parameters>
 	    <param name="color" value="red" />

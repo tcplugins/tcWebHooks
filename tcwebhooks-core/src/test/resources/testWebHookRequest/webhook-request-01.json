@@ -16,6 +16,7 @@
 	    "beforeBuildFinish" : false,
 	    "responsibilityChanged" : false,
 		"BUILD_FIXED" : true,
-	    "BUILD_INTERRUPTED" : false
+		"BUILD_INTERRUPTED" : false,
+		"BUILD_TAGGED": false
     }
 }

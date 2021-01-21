@@ -19,6 +19,8 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
+import jetbrains.buildServer.serverSide.BuildPromotion;
+import jetbrains.buildServer.serverSide.TagData;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.User;
 import webhook.WebHook;

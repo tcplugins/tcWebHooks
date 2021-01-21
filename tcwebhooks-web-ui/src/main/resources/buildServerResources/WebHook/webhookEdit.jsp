@@ -27,8 +27,6 @@
         /js/bs/editProject.js
         /js/bs/adminActions.js
       ${jspHome}WebHook/js/editWebhook.js
-      ${jspHome}WebHook/js/editWebhookParameter.js
-      ${jspHome}WebHook/js/noRestApi.js
       </bs:linkScript>
 
       <script type="text/javascript">
@@ -96,8 +94,6 @@
 		
 	});
 	
-	var restApiDetected = true;
-	
 	function populateBuildHistory() {
 		
 		<c:if test="${not haveBuild && haveProject}"> 
@@ -160,7 +156,8 @@
 										"BUILD_FIXED" : true,
 									    "BUILD_INTERRUPTED" : false,
 									    "BUILD_PINNED" : false,
-									    "BUILD_UNPINNED" : false
+										"BUILD_UNPINNED" : false,
+										"BUILD_TAGGED": false
 								    }
 								}),
 					success:(function(data){
