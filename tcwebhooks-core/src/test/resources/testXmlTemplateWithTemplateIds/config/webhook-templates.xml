@@ -24,6 +24,7 @@
 					<state type="buildFixed" enabled="false" />
 					<state type="buildFailed" enabled="true" />
 					<state type="responsibilityChanged" enabled="false" />
+					<state type="buildPromotionTagsChanged" enabled="true" />
 				</states>
 			</template>
 		</templates>
@@ -48,6 +49,7 @@
 					<state type="buildFixed" enabled="false" />
 					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="false" />
+					<state type="buildPromotionTagsChanged" enabled="false" />
 				</states>
 			</template>
 			<template id="2">
@@ -62,6 +64,7 @@
 					<state type="buildFixed" enabled="false" />
 					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="false" />
+					<state type="buildPromotionTagsChanged" enabled="false" />
 				</states>
 			</template>
 			<template id="2">
@@ -76,6 +79,7 @@
 					<state type="buildFixed" enabled="false" />
 					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="false" />
+					<state type="buildPromotionTagsChanged" enabled="false" />
 				</states>
 			</template>
 			<template id="4">
@@ -90,6 +94,7 @@
 					<state type="buildFixed" enabled="false" />
 					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="false" />
+					<state type="buildPromotionTagsChanged" enabled="false" />
 				</states>
 			</template>
 			<template id="6">
@@ -104,6 +109,7 @@
 					<state type="buildFixed" enabled="false" />
 					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="true" />
+					<state type="buildPromotionTagsChanged" enabled="false" />
 				</states>
 			</template>
 			<template id="7">
@@ -118,6 +124,7 @@
 					<state type="buildFixed" enabled="true" />
 					<state type="buildFailed" enabled="false" />
 					<state type="responsibilityChanged" enabled="false" />
+					<state type="buildPromotionTagsChanged" enabled="false" />
 				</states>
 			</template>
 		</templates>

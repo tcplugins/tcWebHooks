@@ -10,6 +10,7 @@ public final class OldStyleBuildState {
     public static final Integer BEFORE_BUILD_FINISHED 	= Integer.parseInt("00001000",2);
     public static final Integer RESPONSIBILITY_CHANGED 	= Integer.parseInt("00010000",2);
     public static final Integer BUILD_INTERRUPTED 		= Integer.parseInt("00100000",2);
+	public static final Integer BUILD_TAGGED 			= Integer.parseInt("01000000",2);
     
     public static final Integer ALL_ENABLED				= Integer.parseInt("11111111",2);
     
@@ -41,6 +42,7 @@ public final class OldStyleBuildState {
 		if (stateInt.equals(BEFORE_BUILD_FINISHED)) {	return "beforeBuildFinish"; }
 		if (stateInt.equals(RESPONSIBILITY_CHANGED)){ 	return "responsibilityChanged"; }
 		if (stateInt.equals(BUILD_INTERRUPTED))		{ 	return "buildInterrupted"; }
+		if (stateInt.equals(BUILD_TAGGED))			{	return "buildPromotionTagsChanged";}
 		return null;
 	}
 	
@@ -58,6 +60,7 @@ public final class OldStyleBuildState {
 		if (stateInt.equals(BEFORE_BUILD_FINISHED)) {	 return "nearly finished"; }
 		if (stateInt.equals(RESPONSIBILITY_CHANGED)){	 return "changed responsibility"; }
 		if (stateInt.equals(BUILD_INTERRUPTED)) 	{	 return "been interrupted"; }
+		if (stateInt.equals(BUILD_TAGGED))			{	 return "been tagged";}
 		return null;
 	}
     
