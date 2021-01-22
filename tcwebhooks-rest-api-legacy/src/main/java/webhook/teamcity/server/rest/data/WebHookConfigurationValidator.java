@@ -6,7 +6,10 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
+import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
+
+import java.util.Objects;
 
 public class WebHookConfigurationValidator {
 	private static final String PROJECT_ID_KEY = "projectId";
@@ -58,6 +61,12 @@ public class WebHookConfigurationValidator {
 		}
 		
 		validateProjectId(externalId, result);
+		
+		if (Objects.nonNull(updatedWebHook.getFilters())) {
+			for (ProjectWebHookFilter f : updatedWebHook.getFilters().getFilters()) {
+				WebHookFilterValidator.validateFilter(f, result);
+			}
+		}
 		
 		return result;
 	}
