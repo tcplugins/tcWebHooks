@@ -27,13 +27,10 @@ import webhook.teamcity.server.rest.data.WebHookConfigurationValidator;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookFinder;
 import webhook.teamcity.server.rest.data.WebHookParameterFinder;
-import webhook.teamcity.server.rest.data.WebHookParameterValidator;
-import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.errors.WebHookPermissionException;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
-import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookParameters;
@@ -41,11 +38,9 @@ import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
-import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.WebHookSearchFilter;
 import webhook.teamcity.settings.WebHookSearchFilter.WebHookSearchFilterBuilder;
 import webhook.teamcity.settings.WebHookUpdateResult;
-import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @Path(WebHooksRequest.API_WEBHOOKS_URL)
@@ -219,6 +214,7 @@ public class WebHooksRequest {
 		}
 		throw new NotFoundException("Could not find a webhook filter with that id");
 	}
+	
 	@GET
 	@Path("/{projectId}/{webhookLocator}/parameters")
 	@Produces({ "application/xml", "application/json" })
