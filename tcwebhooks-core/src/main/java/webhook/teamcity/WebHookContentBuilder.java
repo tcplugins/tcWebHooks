@@ -232,13 +232,19 @@ public class WebHookContentBuilder {
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_TAGGED)) {
 			wh.setEnabledForBuildState(state, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(state)));
-			if (wh.isEnabled()){
+			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
-				wh.setPayload(payloadFormat.buildPromotionTagsChanged(sBuild, getPreviousNonPersonalBuild(wh, sBuild), mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), templateForThisBuild));
-				wh.setUrl(resolveTemplatedUrl(variableResolverFactory, whc.getUrl(), state, sBuild, payloadFormat, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), username, comment));
-				wh.checkFilters(getVariableResolver(variableResolverFactory, state, sBuild, payloadFormat, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), username, comment));
-				wh.resolveHeaders(getVariableResolver(variableResolverFactory, state, sBuild, payloadFormat, mergeParameters(whc.getParams(),sBuild, getPreferredDateFormat(templateForThisBuild)), whc.getEnabledTemplates(), username, comment));
-			}
+				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, state, extraParameters, whc.getEnabledTemplates(), username, comment);
+				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
+				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
+				extraParameters.resolveParameters(builders);
+				wh.setPayload(payloadFormat.buildTagsChanged(sBuild, extraParameters, whc.getEnabledTemplates(), templateForThisBuild, username, comment));
+				wh.resolveAuthenticationParameters(builder);
+				wh.setUrl(builder.build(whc.getUrl()));
+				wh.checkFilters(builder);
+				wh.resolveHeaders(builder);
+			}			
 		}
 		return wh;
 	}
