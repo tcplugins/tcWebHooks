@@ -133,10 +133,8 @@ public class WebHookPayloadContent {
 		 * @param variableResolverFactory
 		 * @param server
 		 * @param sBuild
-		 * @param previousBuild
 		 * @param buildState
 		 * @param extraParameters
-		 * @param teamcityParameters
 		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sBuild, 
