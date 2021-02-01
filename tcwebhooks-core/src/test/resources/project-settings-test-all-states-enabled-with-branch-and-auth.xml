@@ -18,7 +18,7 @@
         <state type="responsibilityChanged" enabled="true" />
         <state type="buildPinned" enabled="true" />
         <state type="buildUnpinned" enabled="true" />
-        <state type="buildPromotionTagsChanged" enabled="true" />
+        <state type="buildTagsChanged" enabled="true" />
       </states>
        <parameters>
 	    <param name="color" value="red" />

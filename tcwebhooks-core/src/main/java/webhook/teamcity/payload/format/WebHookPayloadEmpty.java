@@ -1,6 +1,7 @@
 package webhook.teamcity.payload.format;
 
 import java.util.Map;
+import java.util.SortedMap;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -53,9 +54,9 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	}
 	
 	@Override
-	public String buildPromotionTagsChanged(SBuild sBuild, 
-			SFinishedBuild previousBuild,
-			SortedMap<String,String> extraParameters, Map<String,String> templates, WebHookTemplateContent webHookTemplate) {
+	public String buildTagsChanged(SBuild sBuild,
+											ExtraParameters extraParameters, Map<String,String> templates, 
+											WebHookTemplateContent webHookTemplate, String username, String comment) {
 		return "";
 	}
 

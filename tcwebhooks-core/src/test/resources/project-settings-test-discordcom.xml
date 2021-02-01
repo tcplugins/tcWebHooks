@@ -13,7 +13,7 @@
         <state type="buildBroken" enabled="false" />
         <state type="beforeBuildFinish" enabled="false" />
         <state type="buildStarted" enabled="true" />
-        <state type="buildPromotionTagsChanged" enabled="true" />
+        <state type="buildTagsChanged" enabled="true" />
       </states>
       <build-types enabled-for-all="true" enabled-for-subprojects="true" />
     </webhook>

@@ -5,17 +5,17 @@ public enum BuildStateEnum {
     BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue by User", "De-queued"),                
     BUILD_STARTED 			("buildStarted",			"started",								"Build Started", 					"Started"),                
     CHANGES_LOADED 			("changesLoaded",			"loaded changes",						"Changes Loaded", 					"Changes Loaded"),                
-    BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",						"Build Interrupted", 				"Interrupted"),
+    BUILD_INTERRUPTED		("buildInterrupted", 		"been interrupted",					"Build Interrupted", 				"Interrupted"),
     BEFORE_BUILD_FINISHED	("beforeBuildFinish", 		"nearly finished",						"Build Almost Completed", 			"Almost Completed"),
-	BUILD_FINISHED 			("buildFinished", 			"finished",								"Build Finished",					"Finished"),
+	BUILD_FINISHED 			("buildFinished", 			"finished",							"Build Finished",					"Finished"),
 	BUILD_SUCCESSFUL		("buildSuccessful", 		"completed successfully",   			"Build Successful", 				"Finished (Success)"),
 	BUILD_FAILED			("buildFailed", 			"failed", 								"Build Failed", 					"Finished (Failed)"),
-	BUILD_FIXED				("buildFixed", 				"been fixed",							"Build Fixed",						"Finished (Fixed)"),
-	BUILD_BROKEN			("buildBroken", 			"broken",								"Build Broken",						"Finished (Broken)"),
+	BUILD_FIXED				("buildFixed", 			"been fixed",							"Build Fixed",						"Finished (Fixed)"),
+	BUILD_BROKEN			("buildBroken", 			"broken",								"Build Broken",					"Finished (Broken)"),
 	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",				"Build Responsibility Changed", 	"Responsibility Changed"),
-	BUILD_PINNED			("buildPinned", 			"been pinned",							"Build Pinned",						"Pinned"), 
+	BUILD_PINNED			("buildPinned", 			"been pinned",							"Build Pinned",					"Pinned"), 
 	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned"),
-	BUILD_TAGGED			("buildPromotionTagsChanged","been tagged",							"Build Tagged",						"Tagged");
+	BUILD_TAGGED			("buildTagsChanged",		"been tagged",							"Build Tagged",					"Tagged");
 
     private final String shortName;
     private final String descriptionSuffix;
