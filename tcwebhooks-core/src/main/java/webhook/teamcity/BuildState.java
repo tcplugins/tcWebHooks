@@ -134,12 +134,16 @@ public class BuildState {
     }
     
     public BuildState enable(BuildStateEnum currentBuildState){
-    	states.get(currentBuildState).enable();
+    	if (currentBuildState != null) {
+    		states.get(currentBuildState).enable();
+    	}
     	return this;
     }
 
     public BuildState disable(BuildStateEnum currentBuildState){
-    	states.get(currentBuildState).disable();
+    	if (currentBuildState != null) {
+    		states.get(currentBuildState).disable();
+    	}
     	return this;
     }
 
