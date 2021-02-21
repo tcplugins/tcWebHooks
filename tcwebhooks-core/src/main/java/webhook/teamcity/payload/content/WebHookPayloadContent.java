@@ -229,8 +229,8 @@ public class WebHookPayloadContent {
 				setBuildTypeId(TeamCityIdResolver.getBuildTypeId(sBuildType));
 	    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(sBuildType));
-	    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + sBuildType.getBuildTypeId() + "&buildId=lastFinished");
-				setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + buildType.getBuildTypeId() + "?");
+	    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=lastFinished");
+				setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + getBuildTypeId() + "?");
 	    		setMessage("Build " + sBuildType.getFullName()
 	    		+ " has changed responsibility from " 
 	    		+ oldUser
@@ -294,8 +294,8 @@ public class WebHookPayloadContent {
 			setProjectInternalId(TeamCityIdResolver.getInternalProjectId(buildType.getProject()));
 			setProjectExternalId(TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
 			setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
-			setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
-			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + buildType.getBuildTypeId() + "?");
+			setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=lastFinished");
+			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + getBuildTypeId() + "?");
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
 		
@@ -390,7 +390,7 @@ public class WebHookPayloadContent {
     		}
     		setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
     		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
-			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + buildType.getBuildTypeId() + "/" + getBuildId());
+			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + getBuildTypeId() + "/" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
 			setBuildStatusHtml(variableResolverFactory, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 			setBuildIsPersonal(sBuild.isPersonal());
