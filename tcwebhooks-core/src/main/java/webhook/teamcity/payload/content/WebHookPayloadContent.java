@@ -50,6 +50,7 @@ public class WebHookPayloadContent {
 		buildInternalTypeId,
 		buildExternalTypeId,
 		buildStatusUrl,
+		buildStatusSakuraUrl,
 		buildStatusHtml,
 		buildStartTime,
 		currentTime,
@@ -229,6 +230,7 @@ public class WebHookPayloadContent {
 	    		setBuildInternalTypeId(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	    		setBuildExternalTypeId(TeamCityIdResolver.getExternalBuildId(sBuildType));
 	    		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + sBuildType.getBuildTypeId() + "&buildId=lastFinished");
+				setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + buildType.getBuildTypeId() + "?");
 	    		setMessage("Build " + sBuildType.getFullName()
 	    		+ " has changed responsibility from " 
 	    		+ oldUser
@@ -293,6 +295,7 @@ public class WebHookPayloadContent {
 			setProjectExternalId(TeamCityIdResolver.getExternalProjectId(buildType.getProject()));
 			setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
 			setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + buildType.getBuildTypeId() + "&buildId=lastFinished");
+			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + buildType.getBuildTypeId() + "?");
 			setBuildStateDescription(state.getDescriptionSuffix());
 		}
 		
@@ -387,6 +390,7 @@ public class WebHookPayloadContent {
     		}
     		setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
     		setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
+			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + buildType.getBuildTypeId() + "/" + getBuildId());
     		setBuildStateDescription(buildState.getDescriptionSuffix());
 			setBuildStatusHtml(variableResolverFactory, templates.get(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE));
 			setBuildIsPersonal(sBuild.isPersonal());
@@ -741,9 +745,17 @@ public class WebHookPayloadContent {
 		public void setBuildStatusUrl(String buildStatusUrl) {
 			this.buildStatusUrl = buildStatusUrl;
 		}
+		
+		public String getBuildStatusSakuraUrl() {
+			return buildStatusSakuraUrl;
+		}
+		
+		public void setBuildStatusSakuraUrl(String buildStatusSakuraUrl) {
+			this.buildStatusSakuraUrl = buildStatusSakuraUrl;
+		}
 
 		public String getRootUrl() {
-			return rootUrl;
+			return StringUtils.stripTrailingSlash(rootUrl) + "/";
 		}
 
 		public void setRootUrl(String rootUrl) {
