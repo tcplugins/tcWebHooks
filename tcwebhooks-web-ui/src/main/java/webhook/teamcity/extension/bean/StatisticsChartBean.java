@@ -66,7 +66,7 @@ public class StatisticsChartBean {
 			.put(WebHookExecutionException.WEBHOOK_CONFIGURATION_NOT_FOUND_EXCEPTION_ERROR_CODE, "rgba(255, 131, 49, 0.1)")
 			.build();
 
-	private List<Dataset> datasets = new ArrayList<>();
+	protected List<Dataset> datasets = new ArrayList<>();
 
 	public static StatisticsChartBean assemble(LocalDate startDate, LocalDate endDate, List<StatisticsEntity> historicalStatistics) {
 
@@ -95,7 +95,7 @@ public class StatisticsChartBean {
 							.filter(e -> e.getKey().equals(statusCode))
 							.mapToInt(Map.Entry::getValue)
 							.sum();
-					data.setY(sum);
+					data.setY(data.getY() + sum);
 				}));
 				dataset.addDataItem(data);
 			}
