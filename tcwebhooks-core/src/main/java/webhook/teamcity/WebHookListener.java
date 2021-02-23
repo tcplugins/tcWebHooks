@@ -353,5 +353,10 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		}
 
 	}
+
+	public void serviceMessageReceived(SRunningBuild runningBuild) {
+		processBuildEvent(runningBuild, BuildStateEnum.SERVICE_MESSAGE_RECEIVED);
+	}
+
 	
 }

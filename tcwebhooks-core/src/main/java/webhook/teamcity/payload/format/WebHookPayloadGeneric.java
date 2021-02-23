@@ -69,6 +69,13 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_UNPINNED, extraParameters, templates, username, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
+	
+	@Override
+	public String serviceMessageReceived(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters,
+			Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sRunningBuild, previousBuild, BuildStateEnum.SERVICE_MESSAGE_RECEIVED, extraParameters, templates);
+		return getStatusAsString(content, webHookTemplate);
+	}
 
 	@Override
 	public String beforeBuildFinish(SBuild runningBuild, SFinishedBuild previousBuild,

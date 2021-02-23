@@ -160,7 +160,8 @@
 										"BUILD_FIXED" : true,
 									    "BUILD_INTERRUPTED" : false,
 									    "BUILD_PINNED" : false,
-									    "BUILD_UNPINNED" : false
+									    "BUILD_UNPINNED" : false,
+									    "SERVICE_MESSAGE_RECEIVED" : false
 								    }
 								}),
 					success:(function(data){

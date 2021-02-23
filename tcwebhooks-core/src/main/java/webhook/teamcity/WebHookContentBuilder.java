@@ -150,6 +150,21 @@ public class WebHookContentBuilder {
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
 			}
+		} else if (state.equals(BuildStateEnum.SERVICE_MESSAGE_RECEIVED)){
+			wh.setEnabledForBuildState(BuildStateEnum.SERVICE_MESSAGE_RECEIVED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.SERVICE_MESSAGE_RECEIVED)));
+			if (Boolean.TRUE.equals(wh.isEnabled())){
+				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
+				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
+				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
+				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
+				extraParameters.resolveParameters(builders);
+				wh.setPayload(payloadFormat.serviceMessageReceived(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				wh.resolveAuthenticationParameters(builder);
+				wh.setUrl(builder.build(whc.getUrl()));
+				wh.checkFilters(builder);
+				wh.resolveHeaders(builder);
+			}
 		} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
 			wh.setEnabledForBuildState(BuildStateEnum.BUILD_INTERRUPTED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED)));
 			if (Boolean.TRUE.equals(wh.isEnabled())){

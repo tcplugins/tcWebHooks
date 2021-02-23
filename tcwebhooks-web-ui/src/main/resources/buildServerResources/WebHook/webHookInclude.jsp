@@ -194,6 +194,10 @@
 														<input onclick='selectBuildState();' class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox />
 														 Build Responsibility Changed</label>
 													</td>
+													<td class="serviceMessageReceived"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="serviceMessageReceived" name="ServiceMessageReceived" type=checkbox />
+														 Service Message Received</label>
+													</td>
 													<td></td>
 												</tr>
 												<tr style="border:none;"><td>&nbsp;</td>
@@ -268,6 +272,7 @@
 								            			<option value="buildRemovedFromQueue">Build Removed from Queue by User</option>
 								            			<option value="buildStarted">Build Started</option>
 								            			<option value="changesLoaded">Changes Loaded</option>
+								            			<option value="serviceMessageReceived">Service Message Received</option>
 								            			<option value="buildInterrupted">Build Interrupted</option>
 								            			<option value="beforeBuildFinish">Build Almost Completed</option>
 								            			<option value="responsibilityChanged">Build Responsibility Changed</option>

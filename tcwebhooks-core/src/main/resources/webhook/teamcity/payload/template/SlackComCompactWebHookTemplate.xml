@@ -45,7 +45,7 @@
         "fallback" : "${buildStateDescription} - ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}",
         "text" : "${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}&amp;tab=buildLog|#${buildNumber}&gt; :: ${buildStateDescription}"
     }]
-}</branch-template-text><states><state type="buildStarted" enabled="true"/><state type="changesLoaded" enabled="true"/><state type="buildInterrupted" enabled="true"/><state type="beforeBuildFinish" enabled="true"/></states></template><template id="4"><template-text use-for-branch-template="true">{
+}</branch-template-text><states><state type="buildStarted" enabled="true"/><state type="changesLoaded" enabled="true"/><state type="buildInterrupted" enabled="true"/><state type="serviceMessageReceived" enabled="true"/><state type="beforeBuildFinish" enabled="true"/></states></template><template id="4"><template-text use-for-branch-template="true">{
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments" : [{

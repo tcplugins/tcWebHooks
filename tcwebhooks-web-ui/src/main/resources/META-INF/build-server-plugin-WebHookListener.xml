@@ -295,6 +295,10 @@
 		class="webhook.teamcity.DeferrableServiceManagerImpl"
 		/>
 		
+	<bean id="webHookServiceMessageHandler"
+		class="webhook.teamcity.WebHookServiceMessageHandler"
+		/>
+		
 	<bean id="teamCityCoreFacade"
 		class="webhook.teamcity.TeamCityCoreFacadeImpl"
 		/>

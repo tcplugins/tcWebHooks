@@ -1,24 +1,33 @@
 package webhook.teamcity;
 
-import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
-import jetbrains.buildServer.messages.serviceMessages.ServiceMessageHandler;
-import jetbrains.buildServer.messages.serviceMessages.ServiceMessagesRegister;
+import java.util.Collections;
+import java.util.List;
 
-public class WebHookServiceMessageHandler implements ServiceMessageHandler {
+import jetbrains.buildServer.messages.BuildMessage1;
+import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
+import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTranslator;
+import jetbrains.buildServer.serverSide.SRunningBuild;
+
+public class WebHookServiceMessageHandler implements ServiceMessageTranslator {
 	
 	public static final String SERVICE_MESSAGE_NAME = "sendWebhook";
 	
 	private final WebHookListener myWebHookListener;
 	
-	public WebHookServiceMessageHandler(ServiceMessagesRegister serviceMessagesRegister, WebHookListener webHookListener) {
+	public WebHookServiceMessageHandler(WebHookListener webHookListener) {
 		myWebHookListener = webHookListener;
-		serviceMessagesRegister.registerHandler(SERVICE_MESSAGE_NAME, this);
 	}
 
 	@Override
-	public void handle(ServiceMessage serviceMessage) {
-		Loggers.SERVER.info("WebHookServiceMessageHandler ::" + serviceMessage.asString());
-		//serviceMessage.get
+	public List<BuildMessage1> translate(SRunningBuild runningBuild, BuildMessage1 originalMessage, ServiceMessage serviceMessage) {
+		myWebHookListener.serviceMessageReceived(runningBuild);
+		
+		return Collections.singletonList(originalMessage);
+	}
+
+	@Override
+	public String getServiceMessageName() {
+		return SERVICE_MESSAGE_NAME;
 	}
 
 }

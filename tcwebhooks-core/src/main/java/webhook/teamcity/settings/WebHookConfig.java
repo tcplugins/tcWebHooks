@@ -538,6 +538,9 @@ public class WebHookConfig {
 			if (states.enabled(BuildStateEnum.BUILD_UNPINNED)){
 				enabledStates += ", Build Unpinned";
 			}
+			if (states.enabled(BuildStateEnum.SERVICE_MESSAGE_RECEIVED)){
+				enabledStates += ", Service Message Received";
+			}
 			if (enabledStates.length() > 0){
 				return enabledStates.substring(1);
 			} else {
