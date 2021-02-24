@@ -181,7 +181,15 @@
 	<bean id="webHookPluginDataResolver"
 		class="webhook.teamcity.WebHookPluginDataResolverImpl"
 		/>
-
+		
+	<bean id="webHookServiceMessagePropertiesProcessor"
+		class="webhook.teamcity.buildrunner.WebHookServiceMessageRunType"
+		/>
+		
+	<bean id="webHookServiceMessageRunType"
+		class="webhook.teamcity.buildrunner.WebHookServiceMessagePropertiesProcessor"
+		/>
+		
 	<bean id="webHookPayloadNameValuePairs"
 		class="webhook.teamcity.payload.format.WebHookPayloadNameValuePairs"
 		init-method="register">
@@ -293,6 +301,10 @@
 		
 	<bean id="deferrableServiceManager"
 		class="webhook.teamcity.DeferrableServiceManagerImpl"
+		/>
+		
+	<bean id="webHookServiceMessageHandler"
+		class="webhook.teamcity.WebHookServiceMessageHandler"
 		/>
 		
 	<bean id="teamCityCoreFacade"

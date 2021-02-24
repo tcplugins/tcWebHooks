@@ -184,7 +184,7 @@
             	</tr>
             	<tr><td></td>
 	            	<td class="responsibilityChanged" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="responsibilityChanged" name="ResponsibilityChanged" type=checkbox /> Responsibility Changed</label></td>
-            		<td></td>
+	            	<td class="serviceMessageReceived" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="serviceMessageReceived" name="ServiceMessageReceived" type=checkbox /> Service Message Received</label></td>
             	</tr>
             	<tr><td></td>
             		<td class="buildSuccessful" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildSuccessful" name="BuildSuccessful" type=checkbox /> Build Successful</label></td>

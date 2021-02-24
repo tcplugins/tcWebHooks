@@ -29,6 +29,7 @@ public class WebHookBuildStateConverter {
 
 		newStates.setEnabled(BuildStateEnum.BUILD_PINNED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
 		newStates.setEnabled(BuildStateEnum.BUILD_UNPINNED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
+		newStates.setEnabled(BuildStateEnum.SERVICE_MESSAGE_RECEIVED, OldStyleBuildState.enabled(OldStyleBuildState.BUILD_FINISHED, oldState));
 		return newStates;
 	}
 }
