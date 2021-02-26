@@ -19,6 +19,7 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.exception.StatisticsFileOperationException;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryRepository;
+import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 
@@ -151,7 +152,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 		// if it was more than 4 days ago, then build stats until yesterday.
 		if (unreportedStats.size() >= this.myWebHookMainSettings.getReportStatisticsFrequency()) {
 			try {
-				WebHookConfig whc = new WebHookConfig("_Root", "_Root", "http://localhost:8111/webhooks/endpoint.html", Boolean.TRUE, new BuildState().enable(BuildStateEnum.REPORT_STATISTICS), "statistics-report", false, false, null, null, true);
+				WebHookConfig whc = new WebHookConfig("_Root", "_Root", "http://localhost:8111/webhooks/endpoint.html", Boolean.TRUE, new BuildState().enable(BuildStateEnum.REPORT_STATISTICS), "statistics-report", false, false, null, null, new ExtraParameters(), true);
 				StatisticsReport report = this.myStatisticReportAssembler.assembleStatisticsReports(new CryptValueHasher(), unreportedStats);
 				myStatisticsEventListener.reportStatistics(whc, report);
 				markStatisticsAsReported(unreportedStats);
