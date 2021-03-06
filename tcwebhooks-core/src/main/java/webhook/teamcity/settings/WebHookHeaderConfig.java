@@ -1,10 +1,11 @@
 package webhook.teamcity.settings;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import org.jdom.Element;
 
-@Getter
+@Getter @Setter
 public class WebHookHeaderConfig {
 	
 	public static final String XML_ELEMENT_NAME = "header";

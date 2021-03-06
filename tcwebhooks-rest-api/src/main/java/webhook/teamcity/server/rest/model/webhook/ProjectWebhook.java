@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -27,7 +28,6 @@ import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.server.rest.WebHookWebLinks;
-import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
@@ -59,7 +59,7 @@ import webhook.teamcity.settings.project.WebHookParameter;
 @NoArgsConstructor
 @Getter @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType (propOrder = { "url", "id", "projectId", "enabled", "template", "hideSecureValues", "webUrl", "href", "states", "buildTypes", "parameters", "filters", "headers", "customTemplates", "authentication" })
+@XmlType (propOrder = { "url", "id", "projectId", "enabled", "template", "hideSecureValues", "webUrl", "href", "buildStates", "buildTypes", "parameters", "filters", "headers", "customTemplates", "authentication" })
 public class ProjectWebhook {
 	
 	@XmlElement
@@ -80,8 +80,8 @@ public class ProjectWebhook {
 	@XmlAttribute
 	private Boolean hideSecureValues;
 	
-	@XmlElement
-	public List<ProjectWebhookState> states;
+	@XmlElement(name = "buildState")	@XmlElementWrapper(name = "buildStates")
+	public List<ProjectWebhookState> buildStates;
 
 	@XmlElement(name="buildTypes")
 	private ProjectWebHookBuildType buildTypes;
@@ -120,13 +120,13 @@ public class ProjectWebhook {
 		this.buildTypes = ValueWithDefault.decideDefault(fields.isIncluded("buildTypes", true, true), new ProjectWebHookBuildType(config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), enabledBuildTypes));
 
 		if (Boolean.TRUE.equals(fields.isIncluded("states", false, true))) {
-			states = new ArrayList<>();
+			buildStates = new ArrayList<>();
 			for (BuildStateEnum state : config.getBuildStates().getStateSet()) {
 				if (config.getBuildStates().enabled(state)) {
 					ProjectWebhookState webhookState = new ProjectWebhookState();
 					webhookState.enabled = true;
 					webhookState.type=state.getShortName();
-					states.add(webhookState);
+					buildStates.add(webhookState);
 				}
 			}
 		}
@@ -140,6 +140,10 @@ public class ProjectWebhook {
 		}
 		if (config.getTriggerFilters() != null && ( fields.isIncluded("filters", false, true) || fields.isAllNested() ) ) {
 			filters = new ProjectWebHookFilters(config, config.getTriggerFilters(), 
+					projectExternalId, null, fields, beanContext);
+		}
+		if (config.getHeaders() != null && ( fields.isIncluded("headers", false, true) || fields.isAllNested() ) ) {
+			headers = new ProjectWebHookHeaders(config, config.getHeaders(), 
 					projectExternalId, null, fields, beanContext);
 		}
 	}
@@ -165,7 +169,7 @@ public class ProjectWebhook {
 				.payloadTemplate(template)
 				.projectExternalId(this.projectId)
 				.projectInternalId(projectIdResolver.getInternalProjectId(this.projectId))
-				.states(toBuildState(states))
+				.states(toBuildState(buildStates))
 				.subProjectsEnabled(Objects.nonNull(buildTypes) ? Boolean.TRUE.equals(buildTypes.getSubProjectsEnabled()) : Boolean.FALSE)
 				.templates(toCustomTemplates(customTemplates))
 				.uniqueKey(id)

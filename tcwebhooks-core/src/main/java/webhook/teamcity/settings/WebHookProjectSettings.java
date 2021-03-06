@@ -214,6 +214,12 @@ public class WebHookProjectSettings implements ProjectSettings {
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
 		return new WebHookUpdateResult(true, newWebHook);
 	}
+	
+	public WebHookUpdateResult addNewWebHook(WebHookConfig webHookConfig) {
+		this.webHooksConfigs.add(webHookConfig);
+		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + webHookConfig.getProjectExternalId() + " with URL " + webHookConfig.getUrl());
+		return new WebHookUpdateResult(true, webHookConfig);
+	}
     
 	public void dispose() {
 		Loggers.SERVER.debug(NAME + ":dispose() called");
