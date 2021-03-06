@@ -60,6 +60,21 @@ public class WebHookApiUrlBuilder {
 		return myPathTransformer.transform(WebHooksRequest.getWebHookFilterHref(projectExternalId, config, filterId));
 	}
 	
+	public String getWebHookHeaderHref(String projectExternalId, WebHookConfig config, Integer count) {
+		return myPathTransformer.transform(WebHooksRequest.getWebHookHeaderHref(projectExternalId, config, count));
+	}
+	
+	/**
+	 * Gets the href for the list of parameters for the specified webhook.
+	 * @param projectExternalId
+	 * @param config
+	 * @param filterId
+	 * @return transfored href for the list of filters
+	 */
+	public String getWebHookParametersHref(String projectExternalId, WebHookConfig config) {
+		return myPathTransformer.transform(WebHooksRequest.getWebHookParametersHref(projectExternalId, config));
+	}
+	
 	/**
 	 * Gets the href for the list of filters for the specified webhook.
 	 * @param projectExternalId
@@ -69,6 +84,16 @@ public class WebHookApiUrlBuilder {
 	 */
 	public String getWebHookFiltersHref(String projectExternalId, WebHookConfig config) {
 		return myPathTransformer.transform(WebHooksRequest.getWebHookFiltersHref(projectExternalId, config));
+	}
+	
+	/**
+	 * Gets the href for the list of headers for the specified webhook.
+	 * @param projectExternalId
+	 * @param config
+	 * @return transfored href for the list of filters
+	 */
+	public String getWebHookHeadersHref(String projectExternalId, WebHookConfig config) {
+		return myPathTransformer.transform(WebHooksRequest.getWebHookHeadersHref(projectExternalId, config));
 	}
 	
 	public String getConfigurationsHref() {
