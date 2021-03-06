@@ -71,9 +71,10 @@ public class ProjectWebHookParameters {
 							return result;
 						}
 					});
+			count = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("count"), parameters.size());
+			href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getWebHookParametersHref(projectExternalId, config));
+
 			if (pagerData != null) {
-				href = ValueWithDefault.decideDefault(fields.isIncluded("href"),
-						beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getHref()));
 				nextHref = ValueWithDefault.decideDefault(fields.isIncluded("nextHref"),
 						pagerData.getNextHref() != null
 								? beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getNextHref())
@@ -83,7 +84,6 @@ public class ProjectWebHookParameters {
 								? beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getPrevHref())
 								: null);
 			}
-			count = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("count"), parameters.size());
 		} else {
 			parameters = null;
 		}

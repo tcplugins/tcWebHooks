@@ -68,7 +68,8 @@ public class WebHooksRequest {
 
 	public static final String API_WEBHOOKS_URL = Constants.API_URL + "/configurations";
 	private static final String NO_WEBHOOK_FOUND_BY_THAT_ID = "No webhook found by that id";
-	private static final String WEBHOOK_CONTAINED_INVALID_DATA = "Template contained invalid data";
+	private static final String EXISTING_WEBHOOK_FOUND_BY_THAT_ID = "An existing webhook was found by that id. Please use PUT to update existing Webhooks";
+	private static final String WEBHOOK_CONTAINED_INVALID_DATA = "WebHook contained invalid data";
 
 
 	
@@ -82,11 +83,22 @@ public class WebHooksRequest {
 		return API_WEBHOOKS_URL + "/" + projectExternalId + "/"+ WebHookFinder.getLocator(webhook) + "/parameters/" + WebHookParameterFinder.getLocator(webhookParameter);
 	}
 	@NotNull
+	public static String getWebHookParametersHref(String projectExternalId, WebHookConfig webhook) {
+		return API_WEBHOOKS_URL + "/" + projectExternalId + "/"+ WebHookFinder.getLocator(webhook) + "/parameters";
+	}
+	@NotNull
 	public static String getWebHookFilterHref(String projectExternalId, WebHookConfig webhook, Integer filterId) {
 		return API_WEBHOOKS_URL + "/" + projectExternalId + "/"+ WebHookFinder.getLocator(webhook) + "/filters/id:" + filterId;
 	}
 	public static String getWebHookFiltersHref(String projectExternalId, WebHookConfig webhook) {
 		return API_WEBHOOKS_URL + "/" + projectExternalId + "/"+ WebHookFinder.getLocator(webhook) + "/filters";
+	}
+	@NotNull
+	public static String getWebHookHeaderHref(String projectExternalId, WebHookConfig webhook, Integer headerId) {
+		return API_WEBHOOKS_URL + "/" + projectExternalId + "/"+ WebHookFinder.getLocator(webhook) + "/headers/id:" + headerId;
+	}
+	public static String getWebHookHeadersHref(String projectExternalId, WebHookConfig webhook) {
+		return API_WEBHOOKS_URL + "/" + projectExternalId + "/"+ WebHookFinder.getLocator(webhook) + "/headers";
 	}
 
 	@GET
@@ -148,6 +160,28 @@ public class WebHooksRequest {
 	}
 	
 	@PUT
+	@Path("/{projectId}")
+	@Consumes({ "application/xml", "application/json" })
+	@Produces({ "application/xml", "application/json" })
+	public ProjectWebhook createWebHook(@PathParam("projectId") String projectExternalId, @PathParam("webhookLocator") String webhookLocator, ProjectWebhook webhook, @QueryParam("fields") String fields) {
+		SProject sProject  = resolveProject(projectExternalId);
+		checkWebHookWritePermission(sProject.getProjectId());
+		WebHookConfig existingWebhookConfig = this.myDataProvider.getWebHookFinder().getWebHookConfigById(projectExternalId, webhookLocator);
+		
+		if (existingWebhookConfig != null) {
+			throw new NotFoundException(EXISTING_WEBHOOK_FOUND_BY_THAT_ID);
+		}
+		ErrorResult validationResult = myWebHookValidator.validateUpdatedWebHook(projectExternalId, webhook, new ErrorResult());
+
+		if (validationResult.isErrored()) {
+			throw new UnprocessableEntityException(WEBHOOK_CONTAINED_INVALID_DATA, validationResult);
+		}
+		WebHookConfig config = webhook.toWebHookConfig(this.myDataProvider.getProjectIdResolver(), this.myDataProvider.getBuildTypeIdResolver());
+		WebHookUpdateResult result = myDataProvider.getWebHookFinder().getWebHookProjectSettings(projectExternalId).addNewWebHook(config);
+		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookFinder().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
+	}
+	
+	@PUT
 	@Path("/{projectId}/{webhookLocator}")
 	@Consumes({ "application/xml", "application/json" })
 	@Produces({ "application/xml", "application/json" })
@@ -160,7 +194,7 @@ public class WebHooksRequest {
 			throw new NotFoundException(NO_WEBHOOK_FOUND_BY_THAT_ID);
 		}
 		ErrorResult validationResult = myWebHookValidator.validateUpdatedWebHook(projectExternalId, webhook, new ErrorResult());
-
+		
 		if (!existingWebhookConfig.getUniqueKey().equals(webhook.getId())) {
 			validationResult.addError("id", "The webhookId in the webhook does not match the webhookId in the URL.");
 		}
