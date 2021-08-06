@@ -21,10 +21,15 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import webhook.teamcity.TeamCityIdResolver;
+import webhook.teamcity.WebHookPluginDataResolver;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectParametersBean;
 import webhook.teamcity.extension.bean.ProjectTemplatesBean;
 import webhook.teamcity.extension.bean.ProjectWebHookParameterBean;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
+import webhook.teamcity.extension.bean.ProjectWebHooksBeanGsonSerialiser;
+import webhook.teamcity.extension.bean.RegisteredWebhookAuthenticationTypesBean;
+import webhook.teamcity.extension.bean.TemplatesAndProjectWebHooksBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean;
 import webhook.teamcity.extension.bean.template.RegisteredWebHookTemplateBean.SimpleTemplate;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -41,10 +46,13 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 	private final WebHookPayloadManager myPayloadManager;
 	private final WebHookTemplateManager myWebHookTemplateManager;
 	private final WebHookTemplateResolver myTemplateResolver;
+	private final WebHookAuthenticatorProvider myAuthenticatorProvider;
+
 
 	private final WebHookParameterStore myWebHookParameterStore;
 	private final ProjectManager myProjectManager;
 	String myPluginPath;
+	private final WebHookPluginDataResolver myWebHookPluginDataResolver;
 
 	public WebHookProjectSettingsTab(@NotNull PagePlaces pagePlaces,
 									@NotNull WebHookSettingsManager settings,
@@ -53,14 +61,23 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 									@NotNull WebHookTemplateManager webHookTemplateManager,
 									@NotNull WebHookTemplateResolver templateResolver,
 									@NotNull WebHookParameterStoreFactory webHookParameterStoreFactory,
-									@NotNull ProjectManager projectManager) {
+									@NotNull WebHookAuthenticatorProvider authenticatorProvider,
+									@NotNull ProjectManager projectManager,
+									@NotNull WebHookPluginDataResolver webHookPluginDataResolver) {
 		super(pagePlaces, pluginDescriptor.getPluginName(), "WebHook/webHookProjectSettingsTab.jsp", TAB_TITLE);
 		this.myWebhookSettingsManager = settings;
 		this.myPayloadManager = payloadManager;
 		this.myTemplateResolver = templateResolver;
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookParameterStore = webHookParameterStoreFactory.getWebHookParameterStore();
+		this.myAuthenticatorProvider = authenticatorProvider;
 		this.myProjectManager = projectManager;
+		this.myWebHookPluginDataResolver = webHookPluginDataResolver;
+		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/css/styles.css"));
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.color.js"));
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.easytabs.min.js"));
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookParameter.js"));
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookConfiguration.js"));
 
 	}
 
@@ -144,9 +161,12 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		}
 
 		model.put("projectWebHooksAndTemplates", projectWebHooksAndTemplates);
+		model.put("buildList", currentProject.getBuildTypes());
 		model.put("parentProjectBeans", parentProjectBeans);
 		model.put("projectBean", projectBean);
 		model.put("webHookTemplates", projectTemplatesBean);
+		model.put("formatList", RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(currentProject),
+				myPayloadManager.getRegisteredFormats(), myWebhookSettingsManager, myProjectManager).getTemplateList());
 		model.put("projectWebhookParameters", projectParameters.values());
 		model.put("project", currentProject);
 
@@ -154,6 +174,19 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		model.put("projectExternalId", TeamCityIdResolver.getExternalProjectId(currentProject));
 		model.put("externalId", TeamCityIdResolver.getExternalProjectId(currentProject));
 		model.put("projectName", currentProject.getName());
+		model.put("isRestApiInstalled", myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
+		
+		model.put("projectWebHooksAsJson", ProjectWebHooksBeanGsonSerialiser.serialise(
+				TemplatesAndProjectWebHooksBean.build(
+						RegisteredWebHookTemplateBean.build(myTemplateResolver.findWebHookTemplatesForProject(currentProject),
+															myPayloadManager.getRegisteredFormats(), myWebhookSettingsManager, myProjectManager), 
+						null,
+						//ProjectHistoryResolver.getProjectHistory(project),
+						RegisteredWebhookAuthenticationTypesBean.build(myAuthenticatorProvider)
+						)
+					)
+				);
+
 	}
 
 	@Getter @AllArgsConstructor
