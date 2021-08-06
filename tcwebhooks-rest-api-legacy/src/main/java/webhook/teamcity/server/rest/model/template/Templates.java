@@ -50,7 +50,8 @@ public class Templates {
 	      templates = ValueWithDefault.decideDefault(fields.isIncluded("template"), new ValueWithDefault.Value<List<Template>>() {
 	        public List<Template> get() {
 	          final ArrayList<Template> result = new ArrayList<>(templateObjects.size());
-	          final Fields nestedField = new Fields("id,name,description,status,href,webUrl");
+	          //final Fields nestedField = new Fields("id,name,description,status,href,webUrl");
+	          final Fields nestedField = fields.getNestedField("templates");
 	          for (WebHookTemplateConfigWrapper template : templateObjects) {
 	            result.add(new Template(template, nestedField, beanContext));
 	          }
