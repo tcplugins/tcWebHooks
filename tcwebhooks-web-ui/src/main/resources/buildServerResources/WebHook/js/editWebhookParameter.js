@@ -1,5 +1,6 @@
-WebHooksPlugin.Parameters = {
+WebHookParameters = {
 	localStore: {
+		loading: {},
 		myJson: {}
 	},
 	handleAjaxError: function(dialog, response) {
@@ -50,6 +51,8 @@ WebHooksPlugin.Parameters = {
         },
 
         showDialog: function (title, action, data) {
+			WebHookParameters.localStore.loading[parameterId] = data.projectId;
+			WebHookParameters.localStore.loading[action] = action;
 
             $j("input[id='parameterProjectId']").val(data.projectId);
             $j("input[id='WebHookParameteraction']").val(action);

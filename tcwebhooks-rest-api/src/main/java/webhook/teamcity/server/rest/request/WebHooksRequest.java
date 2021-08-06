@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -159,7 +161,7 @@ public class WebHooksRequest {
 		
 	}
 	
-	@PUT
+	@POST
 	@Path("/{projectId}")
 	@Consumes({ "application/xml", "application/json" })
 	@Produces({ "application/xml", "application/json" })
@@ -205,6 +207,23 @@ public class WebHooksRequest {
 		WebHookConfig config = webhook.toWebHookConfig(this.myDataProvider.getProjectIdResolver(), this.myDataProvider.getBuildTypeIdResolver());
 		WebHookUpdateResult result = myDataProvider.getWebHookFinder().getWebHookProjectSettings(projectExternalId).updateWebHook(config);
 		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookFinder().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
+	}
+	
+	@DELETE
+	@Path("/{projectId}/{webhookLocator}")
+	@Consumes({ "application/xml", "application/json" })
+	@Produces({ "application/xml", "application/json" })
+	public ProjectWebhook deleteWebHook(@PathParam("projectId") String projectExternalId, @PathParam("webhookLocator") String webhookLocator, @QueryParam("fields") String fields) {
+		SProject sProject  = resolveProject(projectExternalId);
+		checkWebHookWritePermission(sProject.getProjectId());
+		WebHookConfig existingWebhookConfig = this.myDataProvider.getWebHookFinder().getWebHookConfigById(projectExternalId, webhookLocator);
+		
+		if (existingWebhookConfig == null) {
+			throw new NotFoundException(NO_WEBHOOK_FOUND_BY_THAT_ID);
+		}
+		
+		WebHookUpdateResult result = myDataProvider.getWebHookFinder().getWebHookProjectSettings(projectExternalId).deleteWebHook(existingWebhookConfig.getUniqueKey(), existingWebhookConfig.getProjectExternalId());
+		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookFinder().getBuildTypeExternalIds(result.getWebHookConfig().getEnabledBuildTypesSet()));
 	}
 	
 	@GET

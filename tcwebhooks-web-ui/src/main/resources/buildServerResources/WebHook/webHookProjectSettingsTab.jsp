@@ -26,13 +26,24 @@ ul.commalist li:last-child:after {
 </style>
 	<div>
 		<h2>WebHooks and Templates</h2>
+		<c:if test="${not isRestApiInstalled}">
+			<div class="icon_before icon16 attentionRed">The <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> is not installed. Experimental support for modifying webhooks and parameters will be disabled.</div>
+		</c:if>
+		<c:if test="${isRestApiInstalled}">
+			<div class="icon_before icon16 attentionRed">The WebHooks REST API plugin is installed. Experimental support for modifying webhooks and parameters on this page is enabled.</div>
+		</c:if>
+		
 		${permissionError}
+		
 		<c:if test="${fn:length(projectWebHooksAndTemplates) > 0}" >
 			<h3>WebHooks and Templates in parent Projects</h3>
 			WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.
 			Parent projects have the following webhooks and templates:
-			<table class="highlightable parametersTable">
+			<table class="highlightable parametersTable webhooktable">
+				<thead>
 				<tr><th class="name" style="width:40%">Project Name</th><th style="width:20%">WebHook Count</th><th style="width:20%">Template Count</th><th style="width:20%">Parameter Count</th></tr>
+				</thead>
+				<tbody>
 			<c:forEach items="${projectWebHooksAndTemplates}" var="parent">
 				<tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
 					<td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
@@ -40,6 +51,7 @@ ul.commalist li:last-child:after {
 					<td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
 				</tr>
 			</c:forEach>
+			</tbody>
 			</table>
 			<p><p>
 		</c:if>
@@ -52,29 +64,28 @@ ul.commalist li:last-child:after {
 				<h3>WebHooks configured for <c:out value="${project.fullName}"/></h3>
 			</c:otherwise>
 		</c:choose>
+		
+		<bs:refreshable containerId="projectWebhooksContainer" pageUrl="${pageUrl}">
+		
+		
 
-		<c:if test="${fn:length(projectBean.webHookList) == 0}" >
-				<p>There are no WebHooks configured for this project.</p>
-				<a href="../webhooks/index.html?projectId=${projectExternalId}">Add project WebHooks</a>.
-		</c:if>
-		<c:if test="${fn:length(projectBean.webHookList) > 0}" >
 				<c:if test="${not projectBean.webHooksEnabledForProject}" >
 					<div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
 				</c:if>
 				<p>There are <strong>${fn:length(projectBean.webHookList)}</strong> WebHooks configured for all builds in this project.
 					<a href="../webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.</p>
-				<table class="highlightable parametersTable">
+				<table id="webHookTable" class="parametersTable settings webhooktable">
 					<thead>
 						<tr>
 							<th class=name style="font-weight: bold; width:40%">URL</th>
 							<th style="font-weight: bold; width:20%">Format</th>
 							<th style="font-weight: bold; width:20%">Build Events</th>
-							<th style="font-weight: bold; width:20%">Enabled Builds</th>
+							<th style="font-weight: bold; width:20%" colspan=3>Enabled Builds</th>
 						</tr>
 					</thead>
 					<tbody>
 					<c:forEach items="${projectBean.webHookList}" var="hook">
-						<tr>
+						<tr id="viewRow_${hook.uniqueKey}" class="webHookRow">
 							<td><c:out value="${hook.url}" /></td>
 							<c:choose>
 								<c:when test="${hook.payloadTemplate == 'none'}">
@@ -86,12 +97,18 @@ ul.commalist li:last-child:after {
 							</c:choose>
 							<td><c:out value="${hook.enabledEventsListForWeb}"/></td>
 							<td title="${hook.buildTypeCountAsToolTip}"><c:out value="${hook.buildTypeCountAsFriendlyString}"/></td>
+							<td><a onclick="WH.Configurations.showEditDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'}, '#hookPane');" href="javascript://">edit</a></td>
+							<td><a onclick="WH.Configurations.showDeleteDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'});" href="javascript://">delete</a></td>
 						</tr>
 					</c:forEach>
 					</tbody>
+					<tfoot>
+						<tr class="newWebHookRow">
+							<td colspan="6" class="highlight newWebHookRow"><p onclick="WH.Configurations.showAddDialog();" class="addNew">Click to create new WebHook for this project</p></td>
+						</tr>
+					</tfoot>
 				</table>
-		</c:if>
-		
+		</bs:refreshable>
 		<p>
 			<h3>WebHook Parameters available to WebHooks in this Project</h3>
 			<c:if test="${fn:length(projectWebhookParameters) == 0}" >
@@ -199,3 +216,13 @@ ul.commalist li:last-child:after {
 		</c:if>		
 		
 	</div>
+	<%@ include file="jsp-includes/editWebHookDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookParameterDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookParameterDialog.jsp" %>
+	<%@ include file="jsp-includes/noRestApiDialog.jsp" %>
+	
+	<<script type="text/javascript">
+		var restApiDetected = ${isRestApiInstalled};
+		var ProjectBuilds = ${projectWebHooksAsJson};
+	</script>
