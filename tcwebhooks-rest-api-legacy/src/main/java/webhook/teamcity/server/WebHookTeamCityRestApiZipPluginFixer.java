@@ -208,7 +208,15 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	}
 	
 	protected boolean doesRestApiZipFileContainJaxJars(File restApiZip, String[] filenames, JarReport jarReport) throws IOException {
-        /* Define ZIP File System Properies in HashMap */    
+        // If we have a new TC version the jar conflict is resolved so just return false
+		if (mySBuildServer.getServerMajorVersion() >= 21) {
+			Loggers.SERVER.debug("TeamCity is 2021.0 or newer. Skipping ZIP file checking for " + restApiZip.getAbsolutePath());
+			for (String filename : filenames) {
+        		jarReport.setJarFoundInZipFile(filename, false);
+			}
+			return false;
+		}
+		/* Define ZIP File System Properies in HashMap */    
         Map<String, String> zipProperties = new HashMap<>(); 
         /* We want to read an existing ZIP File, so we set this to False */
         zipProperties.put("create", "false"); 
