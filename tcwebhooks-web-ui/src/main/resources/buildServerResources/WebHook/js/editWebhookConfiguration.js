@@ -1,24 +1,6 @@
- const webHookConfigurations = {
-		localStore: {
-			myJson: {}
-		},
-		handleAjaxError: function(dialog, response) {
-			dialog.cleanErrors();
-			if (response.status === 422) {
-				if (response.responseJSON.errored) {
-					$j.each(response.responseJSON.errors, function(index, errorMsg){
-						dialog.ajaxError(errorMsg)
-					});
-				}
-			} else {
-				console.log("----- begin webhooks AJAX error response -----")
-				console.log(response);
-				console.log("----- end webhooks AJAX error response -----")
-				alert("An unexpected error occured. Please see your browser's javascript console.");
-			}
-		},
-	    showAddDialog: function() {
-			this.EditDialog.showDialog("Add Web Hook", 'addWebHook', 'new', '#hookPane');
+WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
+	    showAddDialog: function(data, tab) {
+			this.EditDialog.showDialog("Add Web Hook", 'addWebHook', 'new', data, tab);
 	    },
 	    showEditDialog: function(data, tab) {
 	    	this.EditDialog.showDialog("Edit Web Hook", 'updateWebHook', data, tab);
@@ -26,8 +8,11 @@
 		showDeleteDialog: function(data){
 			this.DeleteDialog.showDialog("Delete Web Hook", 'deleteWebHook', data);
 		},
+		showAddParameterDialog: function(data) {
+			this.EditParameterDialog.showDialog("Add Web Hook Parameter", 'addWebhookParameter', data);
+		},
 		showEditParameterDialog: function(data) {
-			this.EditParameterDialog.showDialog("Edit Web Hook Parameter", 'updateParameter', data);
+			this.EditParameterDialog.showDialog("Edit Web Hook Parameter", 'updateWebhookParameter', data);
 		},
 		
 	    DeleteDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
@@ -138,6 +123,10 @@
 	            return $('editWebHookForm');
 	        },
 
+			getStore: function () {
+				return WebHooksPlugin.Configurations.localStore;
+			},
+
 	        showDialog: function (title, action, data) {
 
 	            $j("input[id='webhookProjectId']").val(data.projectId);
@@ -197,8 +186,7 @@
 
 			getWebHookData: function (projectId, webhookId, action) {
 				if (action === 'addWebHook') {
-					alert(action);
-					this.localStore.myJson = { 
+					this.getStore().myJson = { 
 						"id": "_new", 
 						"projectId": projectId,
 						"enabled": true,
@@ -259,7 +247,10 @@
 								"type": "serviceMessageReceived",
 								"enabled": true
 							}
-						]
+						],
+						"parameters" : { "count": 0, "parameter": [] },
+						"headers" : { "count": 0, "header": [] },
+						"filters" : { "count": 0, "filter": [] },
 					};
 					this.handleGetSuccess(action)
 				} else {
@@ -290,7 +281,7 @@
 				myJson.id = $j('#editWebHookForm #webhookId').val();
 				myJson.projectId = $j('#editWebHookForm #webhookProjectId').val();
 				myJson.href = $j('#editWebHookForm #webhookHref').val();
-				this.localStore.myJson = myJson;
+				this.getStore().myJson = myJson;
 			},
 			getData: function (projectId, webhookId, action) {
 				var dialog = this;
@@ -301,18 +292,18 @@
 	    		        'Accept' : 'application/json'
 	    		    },
 	    		    success: function (response) {
-	    				WH.Configurations.localStore.myJson = response;
+	    		    	dialog.getStore().myJson = response;
 	    				dialog.handleGetSuccess(action);
 	    		    },
 					error: function (response) {
 						console.log(response);
-						this.handleAjaxError(dialog, response);
+						WebHooksPlugin.Configurations.handleAjaxError(dialog, response);
 					}
 	    		});
 			},
 
 			handleGetSuccess: function (action) {
-				var myJson = WH.Configurations.localStore.myJson;
+				var myJson = this.getStore().myJson;
 				console.log(myJson);
 				$j('#editWebHookForm #parameterId').val(myJson.id);
 				$j('#editWebHookForm #parameterHref').val(myJson.href);
@@ -321,9 +312,9 @@
 			putData: function () {
 				var dialog = this;
 				$j.ajax ({
-					url: window['base_uri'] + WH.Configurations.localStore.myJson.href,
+					url: window['base_uri'] + this.getStore().myJson.href,
 					type: "PUT",
-					data: JSON.stringify(WH.Configurations.localStore.myJson),
+					data: JSON.stringify(this.getStore().myJson),
 					dataType: 'json',
 					headers : {
 						'Content-Type' : 'application/json',
@@ -341,18 +332,18 @@
 					},
 					error: function (response) {
 						console.log(response);
-						this.handleAjaxError(dialog, response);
+						WebHooksPlugin.Configurations.handleAjaxError(dialog, response);
 					}
 				});
 			},
 			postData: function () {
 				var dialog = this;
 				// For creating, the ID must be empty
-				WH.Configurations.localStore.myJson.id = "";
+				this.getStore().myJson.id = "";
 				$j.ajax ({
-					url: window['base_uri'] + '/app/rest/webhooks/configurations/' + WH.Configurations.localStore.myJson.projectId,
+					url: window['base_uri'] + '/app/rest/webhooks/configurations/' + this.getStore().myJson.projectId,
 					type: "POST",
-					data: JSON.stringify(WH.Configurations.localStore.myJson),
+					data: JSON.stringify(this.getStore().myJson),
 					dataType: 'json',
 					headers : {
 						'Content-Type' : 'application/json',
@@ -376,11 +367,11 @@
 				});
 			},
 			handlePutSuccess: function () {
-				$j("#templateHeading").text(WH.Configurations.localStore.myJson.parentTemplateDescription);
+				$j("#templateHeading").text(this.getStore().myJson.parentTemplateDescription);
 				this.updateEditor();
 			},
 			doPost: function() {
-				if (WH.Configurations.localStore.myJson.id == '_new' || WH.Configurations.localStore.myJson.id == '_copy') {
+				if (this.getStore().myJson.id == '_new' || this.getStore().myJson.id == '_copy') {
 					this.postWebHookData();
 				} else {
 					this.putWebHookData();
@@ -391,16 +382,37 @@
 		})),
 
 		EditParameterDialog: OO.extend(WebHooksPlugin.Parameters.EditDialog, {
+
+			getStore: function () {
+				return WebHooksPlugin.Configurations.localStore;
+			},
+
 	        getContainer: function () {
 	            return $('editWebHookParameterDialog');
 	        },
 
 	        formElement: function () {
 	            return $('editWebHookParameterForm');
-	        }
+	        },
+			afterShow: function() {
+				this.formElement().setAttribute("onsubmit", "return WebHooksPlugin.Configurations.EditParameterDialog.doPost()");
+			},
+			doPost: function() {
+				if ($j("input[id='parameterAction']").val() == 'addWebhookParameter') {
+					this.addWebHookParameterDataToWebHook();
+				} else {
+					this.saveWebHookParameterDataToWebHook();
+				}
+				return false;
+			},
+			addWebHookParameterDataToWebHook: function() {
+				var myJson = this.populateJsonDataFromForm();
+				this.getStore().parameters.add(myJson);
+			}
+
 		})
 
-};
+});
 
 function populateBuildHistoryAjax(locator) {
 	$j('#webhookRendered').empty();
@@ -514,40 +526,39 @@ function populateWebHookAuthExtrasPane(webhookObj){
 }
 
 function populateWebHookParametersExtrasPane(webhook) {
+	$j('#webhookParameters > tbody').empty();
 	if (webhook.parameters.count == 0) {
 		$j('#webhookParameters > thead').hide();
 	} else {
+		webhook.parameters.parameter.each(function(parameter) {
+			$j('#webhookParameters > tbody').append('<tr><td>' + parameter.name + '</td><td style="width:40%;">' + parameter.value + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+		});
 		$j('#webhookParameters > thead').show();
 	}
-	$j('#webhookParameters > tbody').empty();
-	webhook.parameters.parameter.each(function(parameter) {
-		console.log("Hi" + parameter);
-		$j('#webhookParameters > tbody').append('<tr><td>' + parameter.name + '</td><td>' + parameter.value + '</td><td style="width:10%;">edit</td><td style="width:10%;">delete</td></tr>');
-	});
 }
 
 function populateWebHookHeadersExtrasPane(webhook) {
+	$j('#webhookHeaders > tbody').empty();
 	if (webhook.headers.count == 0) {
 		$j('#webhookHeaders > thead').hide();
 	} else {
+		webhook.headers.header.each(function(header) {
+			$j('#webhookHeaders > tbody').append('<tr><td>' + header.name + '</td><td style="width:40%;">' + header.value + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+		});
 		$j('#webhookHeaders > thead').show();
 	}
-	$j('#webhookHeaders > tbody').empty();
-	webhook.headers.header.each(function(header) {
-		$j('#webhookHeaders > tbody').append('<tr><td>' + header.name + '</td><td>' + header.value + '</td></tr>');
-	});
 }
 
 function populateWebHookFiltersExtrasPane(webhook) {
+	$j('#webhookFilters > tbody').empty();
 	if (webhook.filters.count == 0) {
 		$j('#webhookFilters > thead').hide();
 	} else {
+		webhook.filters.filter.each(function(filter) {
+			$j('#webhookFilters > tbody').append('<tr><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+		});
 		$j('#webhookFilters > thead').show();
 	}
-	$j('#webhookFilters > tbody').empty();
-	webhook.filters.filter.each(function(filter) {
-		$j('#webhookFilters > tbody').append('<tr><td>' + filter.value + '</td><td>' + filter.regex + '</td></tr>');
-	});
 }
 
 function populateWebHookAuthExtrasPaneFromChange(webhookObj){

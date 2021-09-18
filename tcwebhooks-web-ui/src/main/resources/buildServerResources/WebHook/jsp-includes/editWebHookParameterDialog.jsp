@@ -16,6 +16,7 @@
             	<tr><td>Visibility:</td><td><select id="parameterDialogVisibility" class="editWebHookParameterFormField" width=40><option value="template">Available as Template variable</option><option value="legacy">Include in legacy payloads and template variables</option></select></td></tr>
             	<tr><td>Resolve with:</td><td><select id="parameterDialogTemplateEngine" class="editWebHookParameterFormField" width=40><option value="STANDARD">Standard Template Engine</option><option value="VELOCITY">Velocity Template Engine</option></select></td></tr>
             </table>
+            <input type="hidden" class="editWebHookParameterFormField" id="parameterAction" name="parameterAction"/>
             <input type="hidden" class="editWebHookParameterFormField" id="parameterId" name="parameterId"/>
             <input type="hidden" class="editWebHookParameterFormField" id="parameterHref" name="parameterHref"/>
             <input type="hidden" class="editWebHookParameterFormField" id="parameterProjectId" name="parameterProjectId"/>

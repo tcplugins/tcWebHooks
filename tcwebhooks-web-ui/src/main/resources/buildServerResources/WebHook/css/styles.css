@@ -775,6 +775,14 @@ table.webhooktable tbody tr td {
 	padding: 0.5em;
 }
 
+table.webhooktable tbody tr td.actionCell {
+	text-align:center;
+}
+
+table.webhooktable tbody tr:hover {
+	background-color: rgb(250, 250, 250);
+}
+
 table.webhooktable tfoot tr td {
 	padding: 0.5em;
 }
