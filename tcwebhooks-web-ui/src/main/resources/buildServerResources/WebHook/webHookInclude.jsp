@@ -23,7 +23,7 @@
 			<c:forEach items="${webHookList.webHookList}" var="hook">
 
 				<tr id="viewRow_${hook.uniqueKey}" class="webHookRow">
-					<td class="name highlight" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
+					<td class="name highlight" onclick="WebHooksPlugin.Configurations.showEditDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.url}" /></td>
 
 							<c:choose>
 								<c:when test="${hook.payloadTemplate == 'none'}">
@@ -35,10 +35,10 @@
 							</c:choose>
 
 
-					<td class="value highlight" style="width:15%;" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
-					<td class="value highlight" title="${hook.buildTypeCountAsToolTip}" style="width:10%;" onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#buildPane');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
-					<td class="edit highlight"><a onclick="WebHooksPlugin.showEditDialog('${hook.uniqueKey}','#hookPane');" href="javascript://">edit</a></td>
-					<td class="edit highlight"><a onclick="WebHooksPlugin.showDeleteDialog('${hook.uniqueKey}');" href="javascript://">delete</a></td>
+					<td class="value highlight" style="width:15%;" onclick="WebHooksPlugin.Configurations.showEditDialog({'webhookId':'${hook.uniqueKey}', 'projectId':'${projectExternalId}'},'#hookPane');"><c:out value="${hook.enabledEventsListForWeb}" /></td>
+					<td class="value highlight" title="${hook.buildTypeCountAsToolTip}" style="width:10%;" onclick="WebHooksPlugin.showEditDialog({'webhookId':'${hook.uniqueKey}', 'projectId':'${projectExternalId}'},'#buildPane');"><c:out value="${hook.buildTypeCountAsFriendlyString}" /></td>
+					<td class="edit highlight"><a onclick="WebHooksPlugin.Configurations.showEditDialog({'webhookId':'${hook.uniqueKey}', 'projectId':'${projectExternalId}'},'#hookPane');" href="javascript://">edit</a></td>
+					<td class="edit highlight"><a onclick="WebHooksPlugin.Configurations.showDeleteDialog({'webhookId':'${hook.uniqueKey}', 'projectId':'${projectExternalId}'});" href="javascript://">delete</a></td>
 				</tr>
 			</c:forEach>
 			</tbody>
@@ -46,10 +46,10 @@
 				<tr class="newWebHookRow">
 		<c:choose>
     		<c:when test="${haveBuild}">
-					<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.showAddDialog();" class="addNew">Click to create new WebHook for this build</p></td>
+					<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.Configurations.showAddDialog({'projectId':'${projectExternalId}'}, '#hookPane');" class="addNew">Click to create new WebHook for this build</p></td>
          	</c:when>
          	<c:otherwise>
-					<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.showAddDialog();" class="addNew">Click to create new WebHook for this project</p></td>
+					<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.Configurations.showAddDialog({'projectId':'${projectExternalId}'}, '#hookPane');" class="addNew">Click to create new WebHook for this project</p></td>
          	</c:otherwise>
 		</c:choose>
 				</tr>
@@ -118,11 +118,11 @@
     <bs:dialog dialogId="editWebHookDialog"
                dialogClass="editParameterDialog"
                title="Edit Build Event Template"
-               closeCommand="WebHooksPlugin.EditWebHookDialog.cancelDialog()">
+               closeCommand="WebHooksPlugin.Configurations.EditDialog.cancelDialog()">
 		  <forms:multipartForm id="editWebHookForm"
                              action="ajaxEdit.html?projectId=${projectId}"
                              targetIframe="hidden-iframe"
-          					 onsubmit="return WebHooksPlugin.EditWebHookDialog.doPost();">
+          					 onsubmit="return WebHooksPlugin.Configurations.EditDialog.doPost();">
             <div id='webHookFormContents'>
 
             		<div id="tab-container" class="tab-container">
@@ -305,7 +305,7 @@
 								            	</td></tr></table>
 											</div>
 						            		<div id="webhookPreviewRendered"></div>
-						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return WebHooksPlugin.EditWebHookDialog.executeWebHook();">Send Test WebHook for Build Event</button>
+						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return WebHooksPlugin.Configurations.EditDialog.executeWebHook();">Send Test WebHook for Build Event</button>
 						            		<span class="testingLimitations"><a rel="noopener noreferrer" target="_blank" href="https://github.com/tcplugins/tcWebHooks/wiki/Testing-a-WebHook#limitations-with-webhook-testing">Testing limitations (opens in new window)</a></span>
 											<div id="webhookTestProgress">
 												<forms:progressRing progressTitle="Sending test webhook..."/>
@@ -329,7 +329,7 @@
             <div id="ajaxWebHookEditResult"></div>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="editTemplateItemDialogSubmit" label="Save Web Hook"/>
-                <forms:cancel onclick="WebHooksPlugin.EditWebHookDialog.cancelDialog()"/>
+                <forms:cancel onclick="WebHooksPlugin.Configurations.EditDialog.cancelDialog()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>

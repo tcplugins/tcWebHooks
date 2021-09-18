@@ -1,19 +1,18 @@
-const person = {
-  isHuman: false,
-  localStore: {
+const WebHooksPlugin = {
+	localStore: {
+		loading: {},
 		myJson: {}
-  },
-  printIntroduction: function() {
-    console.log(`My name is ${this.name}. Am I human? ${this.isHuman}`);
-  },
+	},
 	handleAjaxError: function(dialog, response) {
 		dialog.cleanErrors();
-		if (response.status === 422) {
+		if (response.status === 422 || response.status === 409) {
 			if (response.responseJSON.errored) {
 				$j.each(response.responseJSON.errors, function(index, errorMsg){
 					dialog.ajaxError(errorMsg)
 				});
 			}
+		} else if (response.status === 403) {
+			alert("You are not permissioned to perform this operation. Message is: " + response.responseText);
 		} else {
 			console.log("----- begin webhooks AJAX error response -----")
 			console.log(response);
@@ -22,11 +21,3 @@ const person = {
 		}
 	}
 };
-
-const me = Object.create(person);
-
-me.name = 'Matthew'; // "name" is a property set on "me", but not on "person"
-me.isHuman = true; // inherited properties can be overwritten
-
-me.printIntroduction();
-// expected output: "My name is Matthew. Am I human? true"

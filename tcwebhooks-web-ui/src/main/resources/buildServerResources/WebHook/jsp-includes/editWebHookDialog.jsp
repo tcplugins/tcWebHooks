@@ -166,12 +166,12 @@
 												<div id=""></div>
 												<table class="parametersTable settings webhooktable" id="webhookParameters">
 												<thead>
-													<tr><th>Parameter Name</th><th colspan=3>Parameter Value</th></tr>
+													<tr><th>Parameter Name</th><th colspan=3 style="width:60%;">Parameter Value</th></tr>
 												</thead>
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr><td class="newWebHookRow" colspan="5"><p>Click to create new Parameter for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddParameterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Parameter for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>
@@ -180,12 +180,12 @@
 												<div class="error" id="error_header"></div>
 												<table class="parametersTable settings webhooktable" id="webhookHeaders">
 												<thead>
-													<tr><th>Header Name</th><th>Header Value</th></tr>
+													<tr class="webHookRow"><th>Header Name</th><th colspan=3 style="width:60%;">Header Value</th></tr>
 												</thead>
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr><td class="newWebHookRow" colspan="2"><p>Click to create new Header for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddHeaderDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Header for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>
@@ -194,12 +194,12 @@
 												<div class="error" id="error_filter"></div>
 												<table class="parametersTable settings webhooktable" id="webhookFilters">
 												<thead>
-													<tr><th>Filter Name</th><th colspan=3>Filter Value</th></tr>
+													<tr><th>Filter Name</th><th colspan=3 style="width:60%;">Filter Value</th></tr>
 												</thead>
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr><td class="newWebHookRow" colspan="4"><p onclick="WH.Configurations.showEditParameterDialog({'webhookId':'${hook.uniqueKey}'});">Click to create new Filter for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddFilterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Filter for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>

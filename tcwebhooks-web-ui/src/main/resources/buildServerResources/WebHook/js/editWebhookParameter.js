@@ -1,25 +1,4 @@
-WebHookParameters = {
-	localStore: {
-		loading: {},
-		myJson: {}
-	},
-	handleAjaxError: function(dialog, response) {
-		dialog.cleanErrors();
-		if (response.status === 422 || response.status === 409) {
-			if (response.responseJSON.errored) {
-				$j.each(response.responseJSON.errors, function(index, errorMsg){
-					dialog.ajaxError(errorMsg)
-				});
-			}
-		} else if (response.status === 403) {
-			alert("You are not permissioned to perform this operation. Message is: " + response.responseText);
-		} else {
-			console.log("----- begin webhooks AJAX error response -----")
-			console.log(response);
-			console.log("----- end webhooks AJAX error response -----")
-			alert("An unexpected error occured. Please see your browser's javascript console.");
-		}
-	},
+WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
     editParameter: function(data) {
     	if (!restApiDetected) {
     		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
@@ -50,12 +29,17 @@ WebHookParameters = {
             return $('editWebHookParameterForm');
         },
 
+		afterShow: function() {
+			this.formElement().setAttribute("onsubmit", "return WebHooksPlugin.Parameters.EditDialog.doPost()");
+        },
+
         showDialog: function (title, action, data) {
-			WebHookParameters.localStore.loading[parameterId] = data.projectId;
-			WebHookParameters.localStore.loading[action] = action;
+			this.getStore().loading[parameterId] = data.projectId;
+			this.getStore().loading[action] = action;
 
             $j("input[id='parameterProjectId']").val(data.projectId);
             $j("input[id='WebHookParameteraction']").val(action);
+			$j("input[id='parameterAction']").val(action);
             $j(".dialogTitle").text(title);
             $j("#editWebHookParameterDialogSubmit").val(action === "addWebhookParameter" ? "Add Parameter" : "Edit Parameter");
             this.resetAndShow(data);
@@ -63,6 +47,7 @@ WebHookParameters = {
 			$j("#viewRow_" + data.parameterId).animate({
 	            backgroundColor: "#ffffcc"
 	    	}, 1000 );
+			this.afterShow();
         },
         
         cancelDialog: function () {
@@ -109,19 +94,23 @@ WebHookParameters = {
         	}
         },
 
+		getStore: function () {
+			return WebHooksPlugin.Parameters.localStore;
+		},
+
 		getWebHookParameterData: function (projectId, parameterId, action) {
 			if (action === 'addWebhookParameter') {
-				WebHooksPlugin.Parameters.localStore.myJson = { "id": "_new", "projectId": projectId};
+				this.getStore().myJson = { "id": "_new", "projectId": projectId};
 			} else {
 				this.getParameterData(projectId, parameterId, action);
 			}
 		},
 		putWebHookParameterData: function () {
-			this.updateJsonDataFromForm();
+			WebHooksPlugin.Parameters.localStore.myJson = this.populateJsonDataFromForm();
 			this.putParameterData();
 		},
 		postWebHookParameterData: function () {
-			this.updateJsonDataFromForm();
+			WebHooksPlugin.Parameters.localStore.myJson = this.populateJsonDataFromForm();
 			this.postParameterData();
 		},
 		disableAndClearCheckboxes: function () {
@@ -135,7 +124,7 @@ WebHookParameters = {
 		enableCheckboxes: function () {
 			$j("#editWebHookParameterForm input.buildState").prop("disabled", false);
 		},
-		updateJsonDataFromForm: function () {
+		populateJsonDataFromForm: function () {
 			var myJson = {};
 			myJson.id = $j('#editWebHookParameterForm #parameterId').val();
 			myJson.projectId = $j('#editWebHookParameterForm #parameterProjectId').val();
@@ -146,7 +135,7 @@ WebHookParameters = {
 			myJson.includedInLegacyPayloads = $j("#editWebHookParameterForm #parameterDialogVisibility").val() === "legacy";
 			myJson.forceResolveTeamCityVariable = $j("#editWebHookParameterForm #parameterDialogResolve").val() == "forced";
 			myJson.templateEngine = $j("#editWebHookParameterForm #parameterDialogTemplateEngine").val();
-			WebHooksPlugin.Parameters.localStore.myJson = myJson;
+			return myJson;
 		},
 		getParameterData: function (projectId, parameterId, action) {
 			var dialog = this;
@@ -157,8 +146,8 @@ WebHookParameters = {
     		        'Accept' : 'application/json'
     		    },
     		    success: function (response) {
-    				WebHooksPlugin.Parameters.localStore.myJson = response;
-    				dialog.handleGetSuccess(action);
+    				dialog.getStore().myJson = response;
+    				dialog.populateForm(action, response);
     		    },
 				error: function (response) {
 					console.log(response);
@@ -182,8 +171,7 @@ WebHookParameters = {
 		        }
 		    }
 		},
-		handleGetSuccess: function (action) {
-			var myJson = WebHooksPlugin.Parameters.localStore.myJson;
+		populateForm: function (action, myJson) {
 			$j('#editWebHookParameterForm #parameterId').val(myJson.id);
 			$j('#editWebHookParameterForm #parameterHref').val(myJson.href);
 			$j("#editWebHookParameterForm #parameterDialogType").val(myJson.secure ? "password" : "text");
@@ -197,9 +185,9 @@ WebHookParameters = {
 		putParameterData: function () {
 			var dialog = this;
 			$j.ajax ({
-				url: window['base_uri'] + WebHooksPlugin.Parameters.localStore.myJson.href,
+				url: window['base_uri'] + this.getStore().myJson.href,
 				type: "PUT",
-				data: JSON.stringify(WebHooksPlugin.Parameters.localStore.myJson),
+				data: JSON.stringify(this.getStore().myJson),
 				dataType: 'json',
 				headers : {
 					'Content-Type' : 'application/json',
@@ -224,11 +212,11 @@ WebHookParameters = {
 		postParameterData: function () {
 			var dialog = this;
 			// For creating, the ID must be empty
-			WebHooksPlugin.Parameters.localStore.myJson.id = "";
+			this.getStore().myJson.id = "";
 			$j.ajax ({
-				url: window['base_uri'] + '/app/rest/webhooks/parameters/' + WebHooksPlugin.Parameters.localStore.myJson.projectId,
+				url: window['base_uri'] + '/app/rest/webhooks/parameters/' + this.getStore().myJson.projectId,
 				type: "POST",
-				data: JSON.stringify(WebHooksPlugin.Parameters.localStore.myJson),
+				data: JSON.stringify(this.getStore().myJson),
 				dataType: 'json',
 				headers : {
 					'Content-Type' : 'application/json',
@@ -252,11 +240,11 @@ WebHookParameters = {
 			});
 		},
 		handlePutSuccess: function () {
-			$j("#templateHeading").text(WebHooksPlugin.Parameters.localStore.myJson.parentTemplateDescription);
+			$j("#templateHeading").text(this.getStore().myJson.parentTemplateDescription);
 			this.updateEditor();
 		},
 		doPost: function() {
-			if (WebHooksPlugin.Parameters.localStore.myJson.id == '_new' || WebHooksPlugin.Parameters.localStore.myJson.id == '_copy') {
+			if (this.getStore().myJson.id == '_new' || this.getStore().myJson.id == '_copy') {
 				this.postWebHookParameterData();
 			} else {
 				this.putWebHookParameterData();
@@ -377,4 +365,4 @@ WebHookParameters = {
     		return false;
     	}
     }))
-};
+});

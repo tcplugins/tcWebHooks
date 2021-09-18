@@ -27,8 +27,9 @@
         /js/bs/editProject.js
         /js/bs/adminActions.js
       ${jspHome}WebHook/js/editWebhook.jsxxxx
-      ${jspHome}WebHook/js/editWebhookConfiguration.js
+      ${jspHome}WebHook/js/editWebhookCommon.js
       ${jspHome}WebHook/js/editWebhookParameter.js
+      ${jspHome}WebHook/js/editWebhookConfiguration.js
       ${jspHome}WebHook/js/noRestApi.js
       ${jspHome}WebHook/js/person.js
       ${jspHome}WebHook/js/test-person.js
@@ -271,7 +272,7 @@
 		  <p>tcWebHooks version: <strong>${pluginVersion}</strong></p>
       </div>
     </div>
-    <button onclick="javascript:WHTest.showEditDialog();">Button</button>
+    <button onclick="javascript:WHTest2.showEditDialog();">Button</button>
 
     <script type=text/javascript>
 	        $('systemParams').updateContainer = function() {
