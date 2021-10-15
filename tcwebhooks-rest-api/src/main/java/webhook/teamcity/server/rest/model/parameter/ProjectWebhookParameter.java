@@ -18,7 +18,7 @@ import webhook.teamcity.settings.project.WebHookParameter;
 @Getter @Setter @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="projectParameter")
-@XmlType( propOrder = { "id", "name", "value", "secure", "includedInLegacyPayloads", "templateEngine", "href" })
+@XmlType( propOrder = { "id", "name", "value", "secure", "includedInLegacyPayloads", "forceResolveTeamCityVariable", "templateEngine", "href" })
 public class ProjectWebhookParameter implements WebHookParameter {
 	
 	@XmlAttribute
@@ -35,6 +35,9 @@ public class ProjectWebhookParameter implements WebHookParameter {
 	
 	@XmlElement
 	private Boolean includedInLegacyPayloads;
+
+	@XmlElement
+	private Boolean forceResolveTeamCityVariable;
 	
 	@XmlElement
 	private String templateEngine;
@@ -54,6 +57,10 @@ public class ProjectWebhookParameter implements WebHookParameter {
 				fields.isIncluded("includedInLegacyPayloads", false, true),
 				Boolean.TRUE.equals(parameter.getIncludedInLegacyPayloads()) // true if defined and true, else false
 			);
+		this.forceResolveTeamCityVariable = ValueWithDefault.decideDefault(
+				fields.isIncluded("forceResolveTeamCityVariable", false, true),
+				Boolean.TRUE.equals(parameter.getForceResolveTeamCityVariable()) // true if defined and true, else false
+				);
 		this.templateEngine = ValueWithDefault.decideDefault(fields.isIncluded("templateEngine", false, true), parameter.getTemplateEngine());
 		href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(projectExternalId, parameter));
 

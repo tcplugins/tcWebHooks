@@ -141,6 +141,7 @@ WebHooksPlugin.Parameters = {
 			myJson.name = $j("#editWebHookParameterForm #parameterDialogTypeName").val();
 			myJson.value = $j("#editWebHookParameterForm #parameterDialogTypeValue").val();
 			myJson.includedInLegacyPayloads = $j("#editWebHookParameterForm #parameterDialogVisibility").val() === "legacy";
+			myJson.forceResolveTeamCityVariable = $j("#editWebHookParameterForm #parameterDialogResolve").val() == "forced";
 			myJson.templateEngine = $j("#editWebHookParameterForm #parameterDialogTemplateEngine").val();
 			WebHooksPlugin.Parameters.localStore.myJson = myJson;
 		},
@@ -186,6 +187,7 @@ WebHooksPlugin.Parameters = {
 			$j("#editWebHookParameterForm #parameterDialogTypeName").val(myJson.name);
 			$j("#editWebHookParameterForm #parameterDialogTypeValue").val(myJson.value);
 			$j("#editWebHookParameterForm #parameterDialogVisibility").val(myJson.includedInLegacyPayloads ? "legacy" : "template");
+			$j("#editWebHookParameterForm #parameterDialogResolve").val(myJson.forceResolveTeamCityVariable ? "forced" : "unforced");
 			$j("#editWebHookParameterForm #parameterDialogTemplateEngine").val(myJson.templateEngine);
 			this.toggleHidden();
 		},

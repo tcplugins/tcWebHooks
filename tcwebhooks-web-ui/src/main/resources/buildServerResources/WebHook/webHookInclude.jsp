@@ -67,7 +67,9 @@
 						<tr>
 							<th class=name style="font-weight: bold; width:41%;">Parameter Name</th>
 							<th style="font-weight: bold; width:41%;">Parameter Value</th>
-							<th style="font-weight: bold; width:20%;" colspan=3>Legacy Parameter</th>
+							<th style="font-weight: bold; width:20%;">Legacy Parameter</th>
+							<th style="font-weight: bold; width:20%;">Forced Resolve</th>
+							<th style="font-weight: bold; width:20%;" colspan=2>&nbsp;</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -85,6 +87,14 @@
 							</c:choose>
 							<c:choose>
 								<c:when test="${myParam.parameter.includedInLegacyPayloads}">
+									<td style="width:8%" onclick="WebHooksPlugin.Parameters.editParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}'});" class="highlight">Yes</td>
+								</c:when>
+								<c:otherwise>
+									<td style="width:8%" onclick="WebHooksPlugin.Parameters.editParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}'});" class="highlight">No</td>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${myParam.parameter.forceResolveTeamCityVariable}">
 									<td style="width:8%" onclick="WebHooksPlugin.Parameters.editParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}'});" class="highlight">Yes</td>
 								</c:when>
 								<c:otherwise>
@@ -353,6 +363,7 @@
             	<tr><td>Name:</td><td><input type=text length="256" size=40 class="editWebHookParameterFormField" id="parameterDialogTypeName" name="parameterDialogTypeName"></td></tr>
             	<tr><td>Value:</td><td><input type=text length="256" size=40 class="editWebHookParameterFormField" id="parameterDialogTypeValue" name="parameterDialogTypeValue"></td></tr>
             	<tr><td>Visibility:</td><td><select id="parameterDialogVisibility" class="editWebHookParameterFormField" width=40><option value="template">Available as Template variable</option><option value="legacy">Include in legacy payloads and template variables</option></select></td></tr>
+            	<tr><td>Forced Resolve:</td><td><select id="parameterDialogResolve" class="editWebHookParameterFormField" width=40><option value="unforced">Don't force TeamCity to resolve variable early</option><option value="forced">Attempt to resolve variable contents early via TeamCity</option></select></td></tr>
             	<tr><td>Resolve with:</td><td><select id="parameterDialogTemplateEngine" class="editWebHookParameterFormField" width=40><option value="STANDARD">Standard Template Engine</option><option value="VELOCITY">Velocity Template Engine</option></select></td></tr>
             </table>
             <input type="hidden" class="editWebHookParameterFormField" id="parameterId" name="parameterId"/>

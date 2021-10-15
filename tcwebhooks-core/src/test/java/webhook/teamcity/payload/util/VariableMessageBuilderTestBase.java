@@ -41,7 +41,7 @@ public class VariableMessageBuilderTestBase {
 		webhookProperties.put("body", "${body.passed}");
 		webhookProperties.put("body2", "${body.failed}");
 		webhookProperties.put("sha", "${build.vcs.number}");
-		extraParameters.addAll("webhook", webhookProperties, true);
+		extraParameters.addAll("webhook", webhookProperties, true, false);
 		teamcityProperties = new TreeMap<>();
 		teamcityProperties.put("lowercaseString", "yes, we are all lowercase");
 		teamcityProperties.put("env.isInATest", "Yes, we are in a test");
@@ -52,7 +52,7 @@ public class VariableMessageBuilderTestBase {
 		teamcityProperties.put("body.failed", "Boo, this build has failed for ${buildType}.");
 		teamcityProperties.put("config", "This is some config thing");
 		teamcityProperties.put("builder.appVersion", "This is the appVersion");
-		extraParameters.addAll("teamcity", teamcityProperties, false);
+		extraParameters.addAll("teamcity", teamcityProperties, false, false);
 		sBuildServer = mock(SBuildServer.class);
 		when(sBuildServer.getRootUrl()).thenReturn("http://test.url");
 		allProperties = extraParameters;

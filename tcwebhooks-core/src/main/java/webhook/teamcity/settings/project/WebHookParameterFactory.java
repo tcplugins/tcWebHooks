@@ -17,6 +17,7 @@ public class WebHookParameterFactory {
 	private static final String VALUE_KEY 		= "value";
 	private static final String SECURE_KEY  = "boolean.secure";
 	private static final String LEGACY_PAYLOADS_KEY  = "boolean.includedInLegacyPayloads";
+	private static final String FORCE_RESOLVE_KEY  = "boolean.forceResolveTeamCityVariable";
 	private static final String TEMPLATE_ENGINE_KEY  = "templateEngine";
 	
 	private WebHookParameterFactory(){}
@@ -33,6 +34,7 @@ public class WebHookParameterFactory {
 			model.setValue(parameters.get(VALUE_KEY));
 		}
 		model.setIncludedInLegacyPayloads(Boolean.valueOf(parameters.get(LEGACY_PAYLOADS_KEY)));
+		model.setForceResolveTeamCityVariable(Boolean.valueOf(parameters.get(FORCE_RESOLVE_KEY)));
 		model.setTemplateEngine(parameters.getOrDefault(TEMPLATE_ENGINE_KEY, PayloadTemplateEngineType.STANDARD.toString()));
 		return model;
 	}
@@ -48,6 +50,7 @@ public class WebHookParameterFactory {
 		}
 		properties.put(SECURE_KEY, Boolean.toString(Boolean.TRUE.equals(model.getSecure())));
 		properties.put(LEGACY_PAYLOADS_KEY, Boolean.toString(Boolean.TRUE.equals(model.getIncludedInLegacyPayloads())));
+		properties.put(FORCE_RESOLVE_KEY, Boolean.toString(Boolean.TRUE.equals(model.getForceResolveTeamCityVariable())));
 		properties.put(TEMPLATE_ENGINE_KEY, model.getTemplateEngine());
 		
 		return properties;
