@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,9 +53,4 @@ public class WebAddressTransformerImplTest {
 		assertEquals(generalisedResult, generalisedWebAddress.getGeneralisedAddress());
 	}
 
-	
-	private String getSha256Hash(String string) {
-		return DigestUtils.sha256Hex(string);
-	}
-	
 }

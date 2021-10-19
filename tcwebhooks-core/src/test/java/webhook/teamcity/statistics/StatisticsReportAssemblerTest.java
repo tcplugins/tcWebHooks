@@ -2,17 +2,12 @@ package webhook.teamcity.statistics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,19 +16,16 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
@@ -57,7 +49,6 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.WebHookSettingsManagerImpl;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
-import webhook.teamcity.statistics.BaseStatisticsTest.MockingStatisticsJaxHelper;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookSemiMockingFrameworkImpl;
 import webhook.testframework.util.ConfigLoaderUtil;

@@ -9,7 +9,6 @@ import java.net.ConnectException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 import org.springframework.util.SocketUtils;
 
