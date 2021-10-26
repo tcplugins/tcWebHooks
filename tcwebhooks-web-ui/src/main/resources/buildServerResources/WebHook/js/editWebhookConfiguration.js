@@ -114,7 +114,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 	    	}
 	    })),
 	
-	    EditDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+	    EditDialog: OO.extend(WebHooksPlugin.EditDialog, {
 	        getContainer: function () {
 	            return $('editWebHookDialog');
 	        },
@@ -123,7 +123,13 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 	            return $('editWebHookForm');
 	        },
 
+			getRefreshContainer: function() {
+				return $("projectWebhooksContainer");
+			},
+
 			getStore: function () {
+				log("getStore: Getting WebHooksPlugin.Configurations.localStore");
+				log(WebHooksPlugin.Configurations.localStore);
 				return WebHooksPlugin.Configurations.localStore;
 			},
 
@@ -135,16 +141,12 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 	            $j("#editWebHookDialogSubmit").val(action === "addWebhook" ? "Add WebHook" : "Edit WebHook");
 	            this.resetAndShow(data);
 	            this.getWebHookData(data.projectId, data.webhookId, action);
-				$j("#viewRow_" + data.webhookId).animate({
-		            backgroundColor: "#ffffcc"
-		    	}, 1000 );
+				this.highlightRow($j("#viewRow_" + data.webhookId), this);
 	        },
 	        
 	        cancelDialog: function () {
-	        	this.close();
-		        $j("#viewRow_" + $j("#editWebHookForm input[id='webhookId']").val()).animate({
-		            backgroundColor: "#ffffff"
-		        }, 500 );
+				var row = $j("#viewRow_" + $j("#editWebHookForm input[id='webhookId']").val());
+				this.closeCancel(row, this);
 	        },
 
 	        resetAndShow: function (data) {
@@ -278,10 +280,10 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 			},
 			updateJsonDataFromForm: function () {
 				var myJson = {};
-				myJson.id = $j('#editWebHookForm #webhookId').val();
-				myJson.projectId = $j('#editWebHookForm #webhookProjectId').val();
-				myJson.href = $j('#editWebHookForm #webhookHref').val();
-				this.getStore().myJson = myJson;
+				myJson.id = this.getStore().myJson.id;
+				myJson.projectId = this.getStore().myJson.projectId;
+				myJson.href = this.getStore().myJson.href;
+				this.getStore().myJson = convertFormToWebHook(myJson);
 			},
 			getData: function (projectId, webhookId, action) {
 				var dialog = this;
@@ -304,31 +306,27 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 
 			handleGetSuccess: function (action) {
 				var myJson = this.getStore().myJson;
-				console.log(myJson);
+				log(myJson);
+				log(this.getStore().myJson);
 				$j('#editWebHookForm #parameterId').val(myJson.id);
 				$j('#editWebHookForm #parameterHref').val(myJson.href);
-				populateWebHookDialog(myJson);
+				populateWebHookDialog(this.getStore().myJson);
 			},
 			putData: function () {
 				var dialog = this;
+				log(this.getStore().myJson.href);
+				log(this.getStore().myJson);
 				$j.ajax ({
-					url: window['base_uri'] + this.getStore().myJson.href,
+					url: window['base_uri'] + dialog.getStore().myJson.href,
 					type: "PUT",
-					data: JSON.stringify(this.getStore().myJson),
+					data: JSON.stringify(dialog.getStore().myJson),
 					dataType: 'json',
 					headers : {
 						'Content-Type' : 'application/json',
 						'Accept' : 'application/json'
 					},
 					success: function (response) {
-						dialog.close();
-						$("projectWebhookContainer").refresh(function() {
-				            $j("#viewRow_" + response.id)
-				            .css({backgroundColor: '#cceecc'})
-				            .animate({
-				                backgroundColor: "#ffffff"
-				            }, 1500 );
-						});
+						this.closeSuccess($j("#viewRow_" + response.id), dialog);
 					},
 					error: function (response) {
 						console.log(response);
@@ -341,24 +339,16 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 				// For creating, the ID must be empty
 				this.getStore().myJson.id = "";
 				$j.ajax ({
-					url: window['base_uri'] + '/app/rest/webhooks/configurations/' + this.getStore().myJson.projectId,
+					url: window['base_uri'] + '/app/rest/webhooks/configurations/' + dialog.getStore().myJson.projectId,
 					type: "POST",
-					data: JSON.stringify(this.getStore().myJson),
+					data: JSON.stringify(dialog.getStore().myJson),
 					dataType: 'json',
 					headers : {
 						'Content-Type' : 'application/json',
 						'Accept' : 'application/json'
 					},
 					success: function (response) {
-						console.log(response);
-						dialog.close();
-						$("projectWebhooksContainer").refresh(function() {
-				            $j("#viewRow_" + response.id)
-				            .css({backgroundColor: '#cceecc'})
-				            .animate({
-				                backgroundColor: "#ffffff"
-				            }, 2500 );
-						});
+						this.closeSuccess($j("#viewRow_" + response.id), dialog);
 					},
 					error: function (response) {
 						console.log(response);
@@ -379,11 +369,12 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 				return false;
 			}
 
-		})),
+		}),
 
 		EditParameterDialog: OO.extend(WebHooksPlugin.Parameters.EditDialog, {
 
 			getStore: function () {
+				WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
 				return WebHooksPlugin.Configurations.localStore;
 			},
 
@@ -399,8 +390,10 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 			},
 			doPost: function() {
 				if ($j("input[id='parameterAction']").val() == 'addWebhookParameter') {
+					WebHooksPlugin.isDebug() && console.debug("doPost: Add new parameter");
 					this.addWebHookParameterDataToWebHook();
 				} else {
+					WebHooksPlugin.isDebug() && console.debug("doPost: Save exisitng parameter");
 					this.saveWebHookParameterDataToWebHook();
 				}
 				return false;
@@ -768,6 +761,63 @@ function populateBuildHistory() {
 		populateBuildHistoryAjax("buildType:${buildExternalId},");
 	</c:if>
 }*/
+
+function convertFormToWebHook(myJson) {
+	var webhook = {
+		"url": myJson.url,
+		"projectId": myJson.projectId,
+		"uniqueKey": myJson.uniqueKey,
+		"templateId": lookupTemplate($j('#payloadFormatHolder').val()),
+		"payloadFormat": lookupFormat($j('#payloadFormatHolder').val()),
+		"authType" : lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
+		"authEnabled" : lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
+		"authPreemptive" : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
+		"authParameters" : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
+		"builds" : {
+			allEnabled : $j('input#buildTypeAll').is(':checked'),
+			subProjectsEnabled : $j('input#buildTypeSubProjects').is(':checked'),
+		},	
+		"configBuildStates" : {
+			"BUILD_SUCCESSFUL" : true, 
+			"CHANGES_LOADED" : false, 
+			"BUILD_FAILED" : true,
+			"BUILD_BROKEN" : true,
+			"BUILD_STARTED" : false,
+			"BUILD_ADDED_TO_QUEUE" : false,
+			"BUILD_REMOVED_FROM_QUEUE" : false,
+			"BEFORE_BUILD_FINISHED" : false,
+			"RESPONSIBILITY_CHANGED" : false,
+			"BUILD_FIXED" : true,
+			"BUILD_INTERRUPTED" : false,
+			"BUILD_PINNED" : false,
+			"BUILD_UNPINNED" : false,
+			"SERVICE_MESSAGE_RECEIVED" : false
+		}
+	};
+
+	if (!webhook.builds.allEnabled) {
+		$j.each($j('.buildType_single'), function(){
+			if ($j(this).prop('checked')) {
+				webhook.builds.id.add(this.id);
+			}
+		});
+	}
+
+	$j.each(webhook.builds, function() {
+		var isChecked = '';
+		if (this.enabled) {
+			isChecked = ' checked';
+		}
+		var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
+		var label = $j('<label></label>');
+		label.text(this.buildTypeName);
+		label.prepend(cbox);
+		var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
+		container.append(label);
+		$j('#buildList').append(container);
+	});
+	return webhook;
+};
 
 function renderPreviewOnChange() {
 	if ($j('#payloadFormatHolder').val()) {

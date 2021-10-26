@@ -95,6 +95,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
         },
 
 		getStore: function () {
+			debugLog("getStore: Getting WebHooksPlugin.Paramters.localStore");
 			return WebHooksPlugin.Parameters.localStore;
 		},
 

@@ -4,10 +4,12 @@ public class WebhookBuildTypeEnabledStatusBean {
 	
 	boolean enabled;
 	String buildTypeId;
+	String buildTypeExternalId;
 	String buildTypeName;
 	
-	public WebhookBuildTypeEnabledStatusBean(String buildTypeId, String buildTypeName, boolean enabled) {
+	public WebhookBuildTypeEnabledStatusBean(String buildTypeId, String buildTypeExternalId, String buildTypeName, boolean enabled) {
 		this.buildTypeId = buildTypeId;
+		this.buildTypeExternalId = buildTypeExternalId;
 		this.buildTypeName = buildTypeName;
 		this.enabled = enabled;
 	}
@@ -28,6 +30,8 @@ public class WebhookBuildTypeEnabledStatusBean {
 		return buildTypeName;
 	}
 	
-	
+	public String getBuildTypeExternalId() {
+		return buildTypeExternalId;
+	}
 
 }

@@ -78,7 +78,7 @@ public class WebHookFinder {
 		for (WebHookConfig webHookConfig : getWebHookProjectSettings(projectExternalId).getWebHooksConfigs()) {
 			
 			if (singleValue.equals(webHookConfig.getUniqueKey())) {
-				return new ProjectWebhook(webHookConfig, projectExternalId, fields, beanContext, webHookConfig.getEnabledBuildTypesSet());
+				return new ProjectWebhook(webHookConfig, projectExternalId, fields, beanContext, getBuildTypeExternalIds(webHookConfig.getEnabledBuildTypesSet()));
 			}
 		}
 		throw new NotFoundException("Could not find a webhook with that id");
