@@ -155,6 +155,7 @@ public class ProjectWebHooksBean {
 		for (SBuildType sBuildType : projectBuildTypes){
 			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
 													sBuildType.getBuildTypeId(),
+													sBuildType.getExternalId(),
 													sBuildType.getName(),
 													config.isEnabledForBuildType(sBuildType)
 													)
@@ -169,6 +170,7 @@ public class ProjectWebHooksBean {
 		for (SBuildType sBuildType : projectBuildTypes){
 			holder.addWebHookBuildType(new WebhookBuildTypeEnabledStatusBean(
 					sBuildType.getBuildTypeId(),
+					sBuildType.getExternalId(),
 					sBuildType.getName(),
 					config.getWebHookConfig().isEnabledForBuildType(sBuildType)
 					)

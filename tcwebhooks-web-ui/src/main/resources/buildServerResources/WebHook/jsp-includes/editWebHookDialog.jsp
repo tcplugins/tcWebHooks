@@ -139,7 +139,7 @@
 											<input onclick="updateSelectedBuildTypes();" 
 												type=checkbox style="padding-right: 1em;" 
 												name="buildTypeId" 
-												value="${build.buildTypeId}" class="buildType_single">
+												value="${build.externalId}" class="buildType_single">
 												<c:out value="${build.name}" />
 											</label>
 											</p>
