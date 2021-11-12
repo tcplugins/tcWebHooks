@@ -1,0 +1,8 @@
+
+main#main-content-tag div#mocha ul#mocha-stats {
+	position: relative;
+}
+
+main#main-content-tag div#mocha ul#mocha-stats li.progress canvas {
+	display: none;
+}
