@@ -133,6 +133,9 @@
      	class="webhook.teamcity.extension.WebHookPreviewAndExecuteController" 
      	init-method="register" 
      	/>
+     <bean id="webHookJavascriptTestsController" 
+     	class="webhook.teamcity.extension.WebHookJavascriptTestsController" 
+     	/>
 
      <bean id="webHookHttpClientFactory"
      	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 

@@ -188,72 +188,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 
 			getWebHookData: function (projectId, webhookId, action) {
 				if (action === 'addWebHook') {
-					this.getStore().myJson = { 
-						"id": "_new", 
-						"projectId": projectId,
-						"enabled": true,
-						"buildTypes": {
-							"allEnabled": true,
-							"subProjectsEnabled": true,
-						},
-						"buildState": [
-							{
-								"type": "buildAddedToQueue",
-								"enabled": true
-							},
-							{
-								"type": "buildRemovedFromQueue",
-								"enabled": true
-							},
-							{
-								"type": "buildStarted",
-								"enabled": true
-							},
-							{
-								"type": "changesLoaded",
-								"enabled": true
-							},
-							{
-								"type": "buildInterrupted",
-								"enabled": true
-							},
-							{
-								"type": "beforeBuildFinish",
-								"enabled": true
-							},
-							{
-								"type": "buildFinished",
-								"enabled": true
-							},
-							{
-								"type": "buildSuccessful",
-								"enabled": true
-							},
-							{
-								"type": "buildFailed",
-								"enabled": true
-							},
-							{
-								"type": "responsibilityChanged",
-								"enabled": true
-							},
-							{
-								"type": "buildPinned",
-								"enabled": true
-							},
-							{
-								"type": "buildUnpinned",
-								"enabled": true
-							},
-							{
-								"type": "serviceMessageReceived",
-								"enabled": true
-							}
-						],
-						"parameters" : { "count": 0, "parameter": [] },
-						"headers" : { "count": 0, "header": [] },
-						"filters" : { "count": 0, "filter": [] },
-					};
+					this.getStore().myJson = this.createEmptyWebhook(projectId);
 					this.handleGetSuccess(action)
 				} else {
 					this.getData(projectId, webhookId, action);
@@ -367,6 +302,75 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 					this.putWebHookData();
 				}
 				return false;
+			},
+
+			createEmptyWebhook: function(projectId) {
+				return { 
+					"id": "_new", 
+					"projectId": projectId,
+					"enabled": true,
+					"buildTypes": {
+						"allEnabled": true,
+						"subProjectsEnabled": true,
+					},
+					"buildState": [
+						{
+							"type": "buildAddedToQueue",
+							"enabled": true
+						},
+						{
+							"type": "buildRemovedFromQueue",
+							"enabled": true
+						},
+						{
+							"type": "buildStarted",
+							"enabled": true
+						},
+						{
+							"type": "changesLoaded",
+							"enabled": true
+						},
+						{
+							"type": "buildInterrupted",
+							"enabled": true
+						},
+						{
+							"type": "beforeBuildFinish",
+							"enabled": true
+						},
+						{
+							"type": "buildFinished",
+							"enabled": true
+						},
+						{
+							"type": "buildSuccessful",
+							"enabled": true
+						},
+						{
+							"type": "buildFailed",
+							"enabled": true
+						},
+						{
+							"type": "responsibilityChanged",
+							"enabled": true
+						},
+						{
+							"type": "buildPinned",
+							"enabled": true
+						},
+						{
+							"type": "buildUnpinned",
+							"enabled": true
+						},
+						{
+							"type": "serviceMessageReceived",
+							"enabled": true
+						}
+					],
+					"parameters" : { "count": 0, "parameter": [] },
+					"headers" : { "count": 0, "header": [] },
+					"filters" : { "count": 0, "filter": [] },
+				};
 			}
 
 		}),
