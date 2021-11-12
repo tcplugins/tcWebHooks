@@ -213,6 +213,7 @@ public class WebHookContentBuilder {
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				wh.setPayload(payloadFormat.buildFinished(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
