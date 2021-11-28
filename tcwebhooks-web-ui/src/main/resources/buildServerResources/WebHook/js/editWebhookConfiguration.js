@@ -243,8 +243,8 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 				var myJson = this.getStore().myJson;
 				log(myJson);
 				log(this.getStore().myJson);
-				$j('#editWebHookForm #parameterId').val(myJson.id);
-				$j('#editWebHookForm #parameterHref').val(myJson.href);
+				//$j('#editWebHookForm #parameterId').val(myJson.id);
+				//$j('#editWebHookForm #parameterHref').val(myJson.href);
 				populateWebHookDialog(this.getStore().myJson);
 			},
 			putData: function () {
@@ -600,7 +600,7 @@ function buildWebHookAuthParameterHtml(paramObj, webhookObj, setValue) {
 }
 
 function populateWebHookDialog(webhook){
-	populateBuildHistoryAjax();
+	populateBuildHistoryAjax('project:' + webhook.projectId + ',');
 	//$j('#buildList').empty();
 	// $j.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
 	// 	if (id === webHookKey){
@@ -615,7 +615,6 @@ function populateWebHookDialog(webhook){
 		    $j.each(webhook.buildState, function(name, value){
 		    	$j('#' + value.type).prop('checked', value.enabled);
 		    });
-
 			$j('#webHookFormContents select#payloadFormatHolder').val(webhook.template).change();
 
 			$j('#buildTypeAll').prop('checked', webhook.buildTypes.allEnabled);
@@ -767,47 +766,51 @@ function populateBuildHistory() {
 }*/
 
 function convertFormToWebHook(myJson) {
+	var template = $j('#editWebHookForm select#payloadFormatHolder').val();
+	console.log(template);
 	var webhook = {
-		"url": myJson.url,
-		"projectId": myJson.projectId,
-		"uniqueKey": myJson.uniqueKey,
-		"templateId": lookupTemplate($j('#payloadFormatHolder').val()),
-		"payloadFormat": lookupFormat($j('#payloadFormatHolder').val()),
-		"authType" : lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
-		"authEnabled" : lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
-		"authPreemptive" : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
-		"authParameters" : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
-		"builds" : {
+		id : myJson.id,
+		projectId : myJson.projectId,
+		href : myJson.href,
+		url: $j('#webHookUrl').val(),
+		enabled : $j('#editWebHookForm :input#webHooksEnabled').is(':checked'),
+		template : $j('#editWebHookForm select#payloadFormatHolder').val(),
+		authType : lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
+		authEnabled : lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
+		authPreemptive : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
+		authParameters : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
+		buildTypes : {
 			allEnabled : $j('input#buildTypeAll').is(':checked'),
 			subProjectsEnabled : $j('input#buildTypeSubProjects').is(':checked'),
+			id : []
 		},	
-		"configBuildStates" : {
-			"BUILD_SUCCESSFUL" : true, 
-			"CHANGES_LOADED" : false, 
-			"BUILD_FAILED" : true,
-			"BUILD_BROKEN" : true,
-			"BUILD_STARTED" : false,
-			"BUILD_ADDED_TO_QUEUE" : false,
-			"BUILD_REMOVED_FROM_QUEUE" : false,
-			"BEFORE_BUILD_FINISHED" : false,
-			"RESPONSIBILITY_CHANGED" : false,
-			"BUILD_FIXED" : true,
-			"BUILD_INTERRUPTED" : false,
-			"BUILD_PINNED" : false,
-			"BUILD_UNPINNED" : false,
-			"SERVICE_MESSAGE_RECEIVED" : false
-		}
+		buildState : [
+			{ type: "buildSuccessful", enabled : $j("#editWebHookForm :input#buildSuccessful").is(':checked') },
+			{ type: "changesLoaded", enabled : $j("#editWebHookForm :input#changesLoaded").is(':checked') },
+			{ type: "buildFailed", enabled : $j("#editWebHookForm :input#buildFailed").is(':checked') },
+			{ type: "buildBroken", enabled : $j("#editWebHookForm :input#buildBroken").is(':checked') },
+			{ type: "buildStarted", enabled : $j("#editWebHookForm :input#buildStarted").is(':checked') },
+			{ type: "buildAddedToQueue", enabled : $j("#editWebHookForm :input#buildAddedToQueue").is(':checked') },
+			{ type: "buildRemovedFromQueue", enabled : $j("#editWebHookForm :input#buildRemovedFromQueue").is(':checked') },
+			{ type: "beforeBuildFinish", enabled : $j("#editWebHookForm :input#beforeBuildFinish").is(':checked') },
+			{ type: "responsibilityChanged", enabled : $j("#editWebHookForm :input#responsibilityChanged").is(':checked') },
+			{ type: "buildFixed", enabled : $j("#editWebHookForm :input#buildFixed").is(':checked') },
+			{ type: "buildInterrupted", enabled : $j("#editWebHookForm :input#buildInterrupted").is(':checked') },
+			{ type: "buildPinned", enabled : $j("#editWebHookForm :input#buildPinned").is(':checked') },
+			{ type: "buildUnpinned", enabled : $j("#editWebHookForm :input#buildUnpinned").is(':checked') },
+			{ type: "serviceMessageReceived", enabled : $j("#editWebHookForm :input#serviceMessageReceived").is(':checked') }
+		]
 	};
 
-	if (!webhook.builds.allEnabled) {
+	if (!webhook.buildTypes.allEnabled) {
 		$j.each($j('.buildType_single'), function(){
 			if ($j(this).prop('checked')) {
-				webhook.builds.id.add(this.id);
+				webhook.buildTypes.id.add(this.id);
 			}
 		});
 	}
 
-	$j.each(webhook.builds, function() {
+	$j.each(webhook.buildTypes, function() {
 		var isChecked = '';
 		if (this.enabled) {
 			isChecked = ' checked';
