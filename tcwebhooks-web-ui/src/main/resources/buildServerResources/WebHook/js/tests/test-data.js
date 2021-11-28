@@ -1,5 +1,5 @@
 var restApiDetected = true;
-var ProjectBuilds = {
+const ProjectBuilds = {
   "templatesAndWebhooks": {
     "registeredTemplates": {
       "templateList": {
@@ -789,7 +789,7 @@ var webHook01 = {
   "id": "500198782",
   "projectId": "TcPlugins",
   "enabled": true,
-  "template": "sdsds",
+  "template": "test01",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782",
   "buildState": [
@@ -873,7 +873,7 @@ var webHook02 = {
   "id": "500198783",
   "projectId": "TcPlugins",
   "enabled": true,
-  "template": "sdsds",
+  "template": "test01",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783",
   "buildState": [
@@ -913,7 +913,7 @@ var webHook03 = {
   "id": "500198784",
   "projectId": "TcPlugins",
   "enabled": true,
-  "template": "sdsds",
+  "template": "test01",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784",
   "buildState": [

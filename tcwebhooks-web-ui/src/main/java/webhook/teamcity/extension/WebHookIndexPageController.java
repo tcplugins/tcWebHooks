@@ -115,6 +115,8 @@ public class WebHookIndexPageController extends BaseController {
 			    	
 			    	String message = projSettings.getWebHooksAsString();
 			    	
+					params.put("buildList", project.getBuildTypes());
+
 			    	params.put("haveProject", "true");
 			    	params.put("messages", message);
 			    	params.put("projectId", project.getProjectId());
