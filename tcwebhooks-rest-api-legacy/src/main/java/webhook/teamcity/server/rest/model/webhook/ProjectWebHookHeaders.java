@@ -65,6 +65,10 @@ public class ProjectWebHookHeaders {
 	}
 
 	public List<WebHookHeaderConfig> getHeaderConfigs() {
-		return new ArrayList<WebHookHeaderConfig>(this.headers);
+		List<WebHookHeaderConfig> headerConfigs = new ArrayList<>();
+		for (ProjectWebHookHeader header : this.headers) {
+			headerConfigs.add(WebHookHeaderConfig.create(header.getValue(), header.getValue()));
+		}
+		return headerConfigs;
 	}
 }
