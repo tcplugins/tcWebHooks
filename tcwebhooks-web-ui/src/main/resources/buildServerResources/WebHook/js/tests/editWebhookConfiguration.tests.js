@@ -272,10 +272,7 @@ describe('Build WebHook response object from Form when Editing an existing Webho
 	})
 });
 
-
-//	it('convertFormToWebHook buildState matches config', function() {
-
-describe('zzz- Build WebHook response object from Form when Editing an existing Webhook (03)', function() {
+describe('Populate from Form and then POST WebHook - Webhook (03)', function() {
 
 	var dialog = WebHooksPlugin.Configurations.EditDialog;
 	loadTemplatesIntoFormatHolder();
@@ -323,12 +320,9 @@ describe('zzz- Build WebHook response object from Form when Editing an existing 
 		expect(body.buildTypes.id.length).to.equal(0); 
 	})
 	it('POST Payload contains webhook enabled.', function() {
-		console.log(body);
 		expect(body.enabled).to.equal(true); 
 	})
 	it('POST Payload contains webhook template.', function() {
-		console.log(body);
-		console.log(dialog.getStore().myJson);
 		expect(body.template).to.equal("test01");
 	})
 })
