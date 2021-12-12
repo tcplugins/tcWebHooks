@@ -793,78 +793,78 @@ var webHook01 = {
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782",
   "buildState": [
-      {
-          "type": "buildAddedToQueue",
-          "enabled": true
-      },
-      {
-          "type": "buildRemovedFromQueue",
-          "enabled": true
-      },
-      {
-          "type": "buildStarted",
-          "enabled": true
-      },
-      {
-          "type": "changesLoaded",
-          "enabled": true
-      },
-      {
-          "type": "buildInterrupted",
-          "enabled": true
-      },
-      {
-          "type": "beforeBuildFinish",
-          "enabled": true
-      },
-      {
-          "type": "buildFinished",
-          "enabled": true
-      },
-      {
-          "type": "buildSuccessful",
-          "enabled": true
-      },
-      {
-          "type": "buildFailed",
-          "enabled": true
-      },
-      {
-          "type": "responsibilityChanged",
-          "enabled": true
-      },
-      {
-          "type": "buildPinned",
-          "enabled": true
-      },
-      {
-          "type": "buildUnpinned",
-          "enabled": true
-      },
-      {
-          "type": "serviceMessageReceived",
-          "enabled": true
-      }
+    {
+      "type": "buildAddedToQueue",
+      "enabled": true
+    },
+    {
+      "type": "buildRemovedFromQueue",
+      "enabled": true
+    },
+    {
+      "type": "buildStarted",
+      "enabled": true
+    },
+    {
+      "type": "changesLoaded",
+      "enabled": true
+    },
+    {
+      "type": "buildInterrupted",
+      "enabled": true
+    },
+    {
+      "type": "beforeBuildFinish",
+      "enabled": true
+    },
+    {
+      "type": "buildFinished",
+      "enabled": true
+    },
+    {
+      "type": "buildSuccessful",
+      "enabled": true
+    },
+    {
+      "type": "buildFailed",
+      "enabled": true
+    },
+    {
+      "type": "responsibilityChanged",
+      "enabled": true
+    },
+    {
+      "type": "buildPinned",
+      "enabled": true
+    },
+    {
+      "type": "buildUnpinned",
+      "enabled": true
+    },
+    {
+      "type": "serviceMessageReceived",
+      "enabled": true
+    }
   ],
   "buildTypes": {
-      "allEnabled": true,
-      "subProjectsEnabled": true,
-      "id": []
+    "allEnabled": true,
+    "subProjectsEnabled": true,
+    "id": []
   },
   "parameters": {
-      "count": 0,
-      "parameter": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782/parameters"
+    "count": 0,
+    "parameter": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782/parameters"
   },
   "filters": {
-      "count": 0,
-      "filter": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782/filters"
+    "count": 0,
+    "filter": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782/filters"
   },
   "headers": {
-      "count": 0,
-      "header": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782/headers"
+    "count": 0,
+    "header": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782/headers"
   }
 };
 
@@ -877,34 +877,34 @@ var webHook02 = {
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783",
   "buildState": [
-      {
-          "type": "buildBroken",
-          "enabled": true
-      },
-      {
-          "type": "buildFixed",
-          "enabled": true
-      }
+    {
+      "type": "buildBroken",
+      "enabled": true
+    },
+    {
+      "type": "buildFixed",
+      "enabled": true
+    }
   ],
   "buildTypes": {
-      "allEnabled": true,
-      "subProjectsEnabled": true,
-      "id": []
+    "allEnabled": true,
+    "subProjectsEnabled": true,
+    "id": []
   },
   "parameters": {
-      "count": 0,
-      "parameter": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783/parameters"
+    "count": 0,
+    "parameter": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783/parameters"
   },
   "filters": {
-      "count": 0,
-      "filter": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783/filters"
+    "count": 0,
+    "filter": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783/filters"
   },
   "headers": {
-      "count": 0,
-      "header": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783/headers"
+    "count": 0,
+    "header": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783/headers"
   }
 };
 
@@ -917,33 +917,116 @@ var webHook03 = {
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784",
   "buildState": [
-      {
-          "type": "buildBroken",
-          "enabled": true
-      },
-      {
-          "type": "buildFixed",
-          "enabled": true
-      }
+    {
+      "type": "buildBroken",
+      "enabled": true
+    },
+    {
+      "type": "buildFixed",
+      "enabled": true
+    }
   ],
   "buildTypes": {
-      "allEnabled": true,
-      "subProjectsEnabled": true,
-      "id": []
+    "allEnabled": true,
+    "subProjectsEnabled": true,
+    "id": []
   },
   "parameters": {
-      "count": 1,
-      "parameter": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/parameters"
+    "count": 1,
+    "parameter": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/parameters"
   },
   "filters": {
-      "count": 0,
-      "filter": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/filters"
+    "count": 0,
+    "filter": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/filters"
   },
   "headers": {
-      "count": 0,
-      "header": [],
-      "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/headers"
+    "count": 0,
+    "header": [],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/headers"
+  }
+};
+
+var webHook04 = {
+  "url": "http://localhost:8111/webhooks/endpoint.html",
+  "id": "306243139",
+  "projectId": "TcPlugins",
+  "enabled": true,
+  "template": "legacy-json",
+  "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
+  "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139",
+  "buildState": [
+    { "type": "buildStarted", "enabled": true },
+    { "type": "changesLoaded", "enabled": true },
+    { "type": "buildInterrupted", "enabled": true },
+    { "type": "beforeBuildFinish", "enabled": true },
+    { "type": "buildFinished", "enabled": true },
+    { "type": "buildSuccessful", "enabled": true },
+    { "type": "buildFailed", "enabled": true },
+    { "type": "responsibilityChanged", "enabled": true }
+  ],
+  "buildTypes": {
+    "allEnabled": false,
+    "subProjectsEnabled": false,
+    "id": [
+      "TcPlugins_TcWebHooksOnQuimby"
+    ]
+  },
+  "parameters": {
+    "count": 2,
+    "parameter": [
+      {
+        "id": "1",
+        "name": "color",
+        "value": "red",
+        "secure": false,
+        "includedInLegacyPayloads": true,
+        "templateEngine": "STANDARD",
+        "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters/id:1"
+      },
+      {
+        "id": "2",
+        "name": "notify",
+        "value": "1",
+        "secure": false,
+        "includedInLegacyPayloads": true,
+        "templateEngine": "STANDARD",
+        "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters/id:2"
+      }
+    ],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters"
+  },
+  "filters": {
+    "count": 2,
+    "filter": [
+      {
+        "id": 1,
+        "value": "${branchDisplayName}",
+        "regex": "^master$",
+        "enabled": true,
+        "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters/id:1"
+      },
+      {
+        "id": 2,
+        "value": "${buildInternalTypeId}",
+        "regex": "^bt\\d$",
+        "enabled": true,
+        "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters/id:2"
+      }
+    ],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters"
+  },
+  "headers": {
+    "count": 1,
+    "header": [
+      {
+        "id": 1,
+        "name": "my-header-showing-build-name",
+        "value": "${buildName}",
+        "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/headers/id:1"
+      }
+    ],
+    "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/headers"
   }
 };
