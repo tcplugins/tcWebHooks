@@ -38,6 +38,7 @@ public class DeleteWebHookParameterTest extends WebHookAbstractSpringAwareJersey
     	newParameter.setName("A test parameter");
     	newParameter.setSecure(true);
     	newParameter.setIncludedInLegacyPayloads(true);
+    	newParameter.setForceResolveTeamCityVariable(true);
     	newParameter.setValue("Some value");
 
     	webResource.path(rootProjectPath).accept(MediaType.APPLICATION_JSON_TYPE).post(newParameter);
@@ -70,6 +71,7 @@ public class DeleteWebHookParameterTest extends WebHookAbstractSpringAwareJersey
     	newParameter.setName("A test parameter");
     	newParameter.setSecure(true);
     	newParameter.setIncludedInLegacyPayloads(true);
+    	newParameter.setForceResolveTeamCityVariable(true);
     	newParameter.setValue("Some value");
     	
     	webResource.path(rootProjectPath).accept(MediaType.APPLICATION_XML_TYPE).post(newParameter);
