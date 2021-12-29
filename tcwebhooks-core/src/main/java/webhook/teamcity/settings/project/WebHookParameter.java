@@ -16,6 +16,8 @@ public interface WebHookParameter {
 	
 	public Boolean getIncludedInLegacyPayloads();
 	public void setIncludedInLegacyPayloads(Boolean isIncluded);
+	public Boolean getForceResolveTeamCityVariable();
+	public void setForceResolveTeamCityVariable(Boolean isForceResolved);
 	
 	public String getTemplateEngine();
 	

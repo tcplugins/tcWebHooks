@@ -125,6 +125,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
@@ -140,6 +141,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
@@ -155,6 +157,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
@@ -170,6 +173,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
@@ -185,6 +189,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
@@ -208,6 +213,7 @@ public class WebHookContentBuilder {
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				wh.setPayload(payloadFormat.buildFinished(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
@@ -219,6 +225,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, state, extraParameters, whc.getEnabledTemplates(), username, comment);
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
@@ -234,6 +241,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, state, extraParameters, whc.getEnabledTemplates(), username, comment);
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());

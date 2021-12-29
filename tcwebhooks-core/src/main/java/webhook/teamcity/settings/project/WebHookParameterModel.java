@@ -13,5 +13,6 @@ public class WebHookParameterModel implements WebHookParameter {
 	private String value;
 	private Boolean secure;
 	private Boolean includedInLegacyPayloads;
+	private Boolean forceResolveTeamCityVariable;
 	private String templateEngine;
 }
