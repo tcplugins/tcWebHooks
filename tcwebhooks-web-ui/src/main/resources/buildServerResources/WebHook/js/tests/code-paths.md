@@ -24,3 +24,9 @@
             - WebHooksPlugin.updateSelectedBuildTypes();
             - WebHooksPlugin.renderPreviewOnChange(); // Empty the div if no build selected.
     - EditDialog.highlightRow($j("#viewRow_" + data.webhookId), this);
+
+### Save New Webhook
+
+- 
+
+### Save Edited Webhook

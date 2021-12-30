@@ -54,6 +54,7 @@
       mocha.checkLeaks();
     </script>
 	<%@ include file="jsp-includes/editWebHookDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookParameterDialog.jsp" %>
     <script type="module" type=text/javascript src="../..${jspHome}WebHook/js/tests/editWebhookConfiguration.tests.js"></script>
     
     <script class="mocha-exec">

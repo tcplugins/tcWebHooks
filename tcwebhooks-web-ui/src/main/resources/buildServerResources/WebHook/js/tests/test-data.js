@@ -970,7 +970,7 @@ var webHook04 = {
     "allEnabled": false,
     "subProjectsEnabled": false,
     "id": [
-      "TcPlugins_TcWebHooksOnQuimby"
+      "Project_MyBuildId02"
     ]
   },
   "parameters": {
@@ -989,16 +989,16 @@ var webHook04 = {
         "id": "2",
         "name": "notify",
         "value": "1",
-        "secure": false,
-        "includedInLegacyPayloads": true,
-        "templateEngine": "STANDARD",
+        "secure": true,
+        "includedInLegacyPayloads": false,
+        "templateEngine": "VELOCITY",
         "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters/id:2"
       }
     ],
     "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters"
   },
   "filters": {
-    "count": 2,
+    "count": 3,
     "filter": [
       {
         "id": 1,
@@ -1013,6 +1013,13 @@ var webHook04 = {
         "regex": "^bt\\d$",
         "enabled": true,
         "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters/id:2"
+      },
+      {
+        "id": 3,
+        "value": "${foo}",
+        "regex": "^bar$",
+        "enabled": true,
+        "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters/id:3"
       }
     ],
     "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters"
