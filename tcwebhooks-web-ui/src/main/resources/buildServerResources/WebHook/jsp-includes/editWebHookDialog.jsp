@@ -1,6 +1,6 @@
     <bs:dialog dialogId="editWebHookDialog"
                dialogClass="editWebHookDialog"
-               title="Edit Build Event Template"
+               title="Edit Web Hook"
                closeCommand="WebHooksPlugin.Configurations.EditDialog.cancelDialog()">
 		  <forms:multipartForm id="editWebHookForm"
                              action="ajaxEdit.html?projectId=${projectId}"

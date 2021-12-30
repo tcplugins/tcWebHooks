@@ -1,5 +1,6 @@
 package webhook.teamcity.extension;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,8 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookJavascriptTestsController extends BaseController {
@@ -31,7 +34,18 @@ public class WebHookJavascriptTestsController extends BaseController {
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HashMap<String,Object> params = new HashMap<>();
         params.put("jspHome", myPluginDescriptor.getPluginResourcesPath());
+        params.put("buildList", Arrays.asList(
+        		new BuildInfo("Project_MyBuildId01", "My Build 01"), 
+        		new BuildInfo("Project_MyBuildId02", "My Build 02"), 
+        		new BuildInfo("Project_MyBuildId03", "My Build 03")));
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/webhookJavascriptTests.jsp", params);
+    }
+    
+    @Data
+    @AllArgsConstructor
+    public static class BuildInfo {
+        private String externalId;
+        private String name;
     }
 
 }

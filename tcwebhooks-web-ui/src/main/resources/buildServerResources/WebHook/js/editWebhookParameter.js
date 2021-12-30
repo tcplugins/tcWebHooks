@@ -30,7 +30,8 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
         },
 
 		afterShow: function() {
-			this.formElement().setAttribute("onsubmit", "return WebHooksPlugin.Parameters.EditDialog.doPost()");
+			alert ("Parameter.EditDialog after show");
+			$(this.formElement()).setAttribute("onsubmit", "xxxxreturn WebHooksPlugin.Parameters.EditDialog.doPost()");
         },
 
         showDialog: function (title, action, data) {
@@ -40,7 +41,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
             $j("input[id='parameterProjectId']").val(data.projectId);
             $j("input[id='WebHookParameteraction']").val(action);
 			$j("input[id='parameterAction']").val(action);
-            $j(".dialogTitle").text(title);
+            $j("div#editWebHookParameterDialog h3.dialogTitle").text(title);
             $j("#editWebHookParameterDialogSubmit").val(action === "addWebhookParameter" ? "Add Parameter" : "Edit Parameter");
             this.resetAndShow(data);
             this.getWebHookParameterData(data.projectId, data.parameterId, action);
@@ -131,8 +132,8 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			myJson.projectId = $j('#editWebHookParameterForm #parameterProjectId').val();
 			myJson.href = $j('#editWebHookParameterForm #parameterHref').val();
 			myJson.secure = $j("#editWebHookParameterForm #parameterDialogType").val() === "password";
-			myJson.name = $j("#editWebHookParameterForm #parameterDialogTypeName").val();
-			myJson.value = $j("#editWebHookParameterForm #parameterDialogTypeValue").val();
+			myJson.name = $j("#editWebHookParameterForm #parameterDialogName").val();
+			myJson.value = $j("#editWebHookParameterForm #parameterDialogValue").val();
 			myJson.includedInLegacyPayloads = $j("#editWebHookParameterForm #parameterDialogVisibility").val() === "legacy";
 			myJson.forceResolveTeamCityVariable = $j("#editWebHookParameterForm #parameterDialogResolve").val() == "forced";
 			myJson.templateEngine = $j("#editWebHookParameterForm #parameterDialogTemplateEngine").val();
@@ -173,11 +174,12 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 		    }
 		},
 		populateForm: function (action, myJson) {
+			$j('#editWebHookParameterForm #parameterAction').val(action);
 			$j('#editWebHookParameterForm #parameterId').val(myJson.id);
 			$j('#editWebHookParameterForm #parameterHref').val(myJson.href);
 			$j("#editWebHookParameterForm #parameterDialogType").val(myJson.secure ? "password" : "text");
-			$j("#editWebHookParameterForm #parameterDialogTypeName").val(myJson.name);
-			$j("#editWebHookParameterForm #parameterDialogTypeValue").val(myJson.value);
+			$j("#editWebHookParameterForm #parameterDialogName").val(myJson.name);
+			$j("#editWebHookParameterForm #parameterDialogValue").val(myJson.value);
 			$j("#editWebHookParameterForm #parameterDialogVisibility").val(myJson.includedInLegacyPayloads ? "legacy" : "template");
 			$j("#editWebHookParameterForm #parameterDialogResolve").val(myJson.forceResolveTeamCityVariable ? "forced" : "unforced");
 			$j("#editWebHookParameterForm #parameterDialogTemplateEngine").val(myJson.templateEngine);
@@ -245,6 +247,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			this.updateEditor();
 		},
 		doPost: function() {
+			this.afterShow();
 			if (this.getStore().myJson.id == '_new' || this.getStore().myJson.id == '_copy') {
 				this.postWebHookParameterData();
 			} else {
@@ -280,7 +283,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 
     	showDialog: function (title, action, data) {
     		$j("#deleteWebHookParameterForm input[id='WebHookParameteraction']").val(action);
-    		$j(".dialogTitle").text(title);
+    		$j("div#deleteWebHookParameterDialog h3.dialogTitle").text(title);
     		this.cleanFields(data);
     		this.cleanErrors();
     		this.showCentered();
@@ -362,7 +365,6 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 					WebHooksPlugin.handleAjaxError(dialog, response);
 				}
 			});
-
     		return false;
     	}
     }))

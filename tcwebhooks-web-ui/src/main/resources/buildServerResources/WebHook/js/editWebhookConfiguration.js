@@ -14,6 +14,9 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
     showEditParameterDialog: function (data) {
         this.EditParameterDialog.showDialog("Edit Web Hook Parameter", 'updateWebhookParameter', data);
     },
+    showDeleteParameterDialog: function (data) {
+        this.DeleteParameterDialog.showDialog("Confirm Web Hook Parameter Deletion", 'deleteWebhookParameter', data);
+    },
 
     DeleteDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
@@ -27,7 +30,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         showDialog: function (title, action, data) {
             $j("#editWebHookForm input[id='webHookId']").val("none"); // Unset the edit id, so that it doesn't get animated by delete.
             $j("input[id='webHookaction']").val(action);
-            $j(".dialogTitle").text(title);
+            //$j(".dialogTitle").text(title);
             this.cleanFields(data);
             this.cleanErrors();
             this.showCentered();
@@ -137,7 +140,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 
             $j("input[id='webhookProjectId']").val(data.projectId);
             $j("input[id='WebHookaction']").val(action);
-            $j(".dialogTitle").text(title);
+            $j("div#editWebHookDialog h3.dialogTitle").text(title);
             $j("#editWebHookDialogSubmit").val(action === "addWebhook" ? "Add WebHook" : "Edit WebHook");
             this.resetAndShow(data);
             this.getWebHookData(data.projectId, data.webhookId, action);
@@ -214,11 +217,8 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             $j("#editWebHookForm input.buildState").prop("disabled", false);
         },
         updateJsonDataFromForm: function () {
-            var myJson = {};
-            myJson.id = this.getStore().myJson.id;
-            myJson.projectId = this.getStore().myJson.projectId;
-            myJson.href = this.getStore().myJson.href;
-            this.getStore().myJson = convertFormToWebHook(myJson);
+            let myWebHook = this.getStore().myJson;
+            this.getStore().myJson = convertFormToWebHook(myWebHook);
         },
         getData: function (projectId, webhookId, action) {
             var dialog = this;
@@ -381,33 +381,113 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
             return WebHooksPlugin.Configurations.localStore;
         },
-
         getContainer: function () {
             return $('editWebHookParameterDialog');
         },
-
         formElement: function () {
             return $('editWebHookParameterForm');
         },
+        getWebHookParameterData: function(projectId, parameterId, action) {
+            let dialog = this;
+            let webhook = this.getStore().myJson;
+            let param = null;
+            if (projectId === webhook.projectId) {
+                webhook.parameters.parameter.each(function(item) {
+                    console.log(item);
+                    if (item.id === parameterId) {
+                        param = item;
+                        dialog.populateForm(action, param);
+                    }
+                });
+            }
+            return param;
+        },
+
         afterShow: function () {
-            this.formElement().setAttribute("onsubmit", "return WebHooksPlugin.Configurations.EditParameterDialog.doPost()");
+            // Update the form, so that the submit button calls 
+            // the doPost method on this dialog, not the base dialog.
+            $(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.EditParameterDialog.doPost()");
         },
         doPost: function () {
+            let dialog = this;
             if ($j("input[id='parameterAction']").val() == 'addWebhookParameter') {
                 WebHooksPlugin.isDebug() && console.debug("doPost: Add new parameter");
                 this.addWebHookParameterDataToWebHook();
             } else {
-                WebHooksPlugin.isDebug() && console.debug("doPost: Save exisitng parameter");
-                this.saveWebHookParameterDataToWebHook();
+                WebHooksPlugin.isDebug() && console.debug("doPost: Update exisitng parameter");
+                this.updateWebHookParameterDataInWebHook();
             }
+            populateWebHookParametersExtrasPane(this.getStore().myJson);
+            dialog.close();
             return false;
         },
+
+        populateJsonDataFromForm: function() {
+            let parameter = {
+                id: $j('#editWebHookParameterForm #parameterId').val(),
+                secure: this.convertTypeToSecure($j('#editWebHookParameterForm #parameterDialogType').val()),
+                name: $j('#editWebHookParameterForm #parameterDialogName').val(),
+                value: $j('#editWebHookParameterForm #parameterDialogValue').val(),
+                includedInLegacyPayloads: this.convertVibilityToLegacyPayload($j('#editWebHookParameterForm #parameterDialogVisibility').val()),
+                templateEngine: this.convertTemplateToTemplateType($j('#editWebHookParameterForm #parameterDialogTemplateEngine').val())
+            };
+            return parameter;
+        },
+
+        convertTypeToSecure: function(option) {
+            return option === "password";
+        },
+        convertVibilityToLegacyPayload: function(option) {
+            return option === "legacy";
+        },
+        convertTemplateToTemplateType: function(option) {
+            return option === "VELOCITY" ? option : "STANDARD";
+        },
+
         addWebHookParameterDataToWebHook: function () {
-            var myJson = this.populateJsonDataFromForm();
-            this.getStore().parameters.add(myJson);
+            let myParam = this.populateJsonDataFromForm();
+            this.getStore().parameters.add(myParam);
+            this.getStore().parameters.count = this.getStore().parameters.parameter.length;
+        },
+        updateWebHookParameterDataInWebHook: function () {
+            let myParam = this.populateJsonDataFromForm();
+            let webhook = this.getStore().myJson;
+            let index = -1;
+            webhook.parameters.parameter.each(function(item, idx) {
+                console.log(item);
+                if (item.id === myParam.id) {
+                    index = idx;
+                }
+            });
+            if (index != -1) {
+                webhook.parameters.parameter[index] = myParam;
+            }
+            return myParam;
         }
 
+    }),
+
+    DeleteParameterDialog: OO.extend(WebHooksPlugin.Parameters.DeleteDialog, {
+        getStore: function () {
+            WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
+            return WebHooksPlugin.Configurations.localStore;
+        },
+        getContainer: function () {
+            return $('deleteWebHookParameterDialog');
+        },
+        formElement: function () {
+            return $('deleteWebHookParameterForm');
+        },
+        afterShow: function() {
+            // Update the form, so that the submit button calls 
+            // the doPost method on this dialog, not the base dialog.
+			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteParameterDialog.doPost()");
+        },
+        doPost: function() {
+            alert("No doing delete");
+        }
     })
+
 
 });
 
@@ -492,10 +572,13 @@ function updateSelectedBuildTypes() {
         subText = " & sub-projects";
     }
 
+    // The number of checked buildTypes is equal to the number of buildTypes, then all buildTypes are enabled.
     if ($j('#webHookFormContents input.buildType_single:checked').length == $j('#webHookFormContents input.buildType_single').length) {
+        // If so check the "All Project Builds" and update the tab name.
         $j('input.buildType_all').prop('checked', true);
         $j('span#selectedBuildCount').text("all" + subText);
-    } else {
+    } else { 
+        // Otherwise uncheck the "All Project Builds" and update the tab name.
         $j('input.buildType_all').prop('checked', false);
         $j('span#selectedBuildCount').text($j('#webHookFormContents input.buildType_single:checked').length + subText);
     }
@@ -528,7 +611,10 @@ function populateWebHookParametersExtrasPane(webhook) {
         $j('#webhookParameters > thead').hide();
     } else {
         webhook.parameters.parameter.each(function (parameter) {
-            $j('#webhookParameters > tbody').append('<tr><td>' + parameter.name + '</td><td style="width:40%;">' + parameter.value + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+            let data = "{'projectId':'"+ webhook.projectId + "', 'parameterId':'" + parameter.id +"', 'parameterName':'" + parameter.name + "'}";
+            $j('#webhookParameters > tbody').append('<tr data-id="' + parameter.id +'"><td>' + parameter.name + '</td><td style="width:40%;">' + parameter.value + '</td>'
+              + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showEditParameterDialog('+ data + ');" href="javascript://">edit</a></td>'
+              + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showDeleteParameterDialog('+ data + ');" href="javascript://">delete</a></td></tr>');
         });
         $j('#webhookParameters > thead').show();
     }
@@ -540,7 +626,7 @@ function populateWebHookHeadersExtrasPane(webhook) {
         $j('#webhookHeaders > thead').hide();
     } else {
         webhook.headers.header.each(function (header) {
-            $j('#webhookHeaders > tbody').append('<tr><td>' + header.name + '</td><td style="width:40%;">' + header.value + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+            $j('#webhookHeaders > tbody').append('<tr data-id="' + header.id +'"><td>' + header.name + '</td><td style="width:40%;">' + header.value + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
         });
         $j('#webhookHeaders > thead').show();
     }
@@ -552,7 +638,7 @@ function populateWebHookFiltersExtrasPane(webhook) {
         $j('#webhookFilters > thead').hide();
     } else {
         webhook.filters.filter.each(function (filter) {
-            $j('#webhookFilters > tbody').append('<tr><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+            $j('#webhookFilters > tbody').append('<tr data-id="' + filter.id +'"><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
         });
         $j('#webhookFilters > thead').show();
     }
@@ -619,21 +705,28 @@ function populateWebHookDialog(webhook) {
 
     $j('#buildTypeAll').prop('checked', webhook.buildTypes.allEnabled);
     $j('#buildTypeSubProjects').prop('checked', webhook.buildTypes.subProjectsEnabled);
-    $j.each(webhook.builds, function () {
-        var isChecked = '';
-        if (this.enabled) {
-            isChecked = ' checked';
-        }
-        var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
-        var label = $j('<label></label>');
-        label.text(this.buildTypeName);
-        label.prepend(cbox);
-        var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
-        container.append(label);
-        $j('#buildList').append(container);
+    toggleAllBuildTypesSelected(); // Toggle all builds on or off based on All Builds setting
+    $j.each(webhook.buildTypes.id, function (idx, buildId) {
+        // For now, assume that the list of builds has been populated by the JSP.
+        // We'll need to rethink this when we are on the search page, as each webhook 
+        // might belong to a different project.
+
+        // If build found in buildTypes list, we're in the loop, so set the checkbox as checked.
+        $j('input[type=checkbox][value=' + buildId + ']').prop("checked", true);
+
+        // var isChecked = '';
+        // if (this.enabled) {
+        //     isChecked = ' checked';
+        // }
+        // var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
+        // var label = $j('<label></label>');
+        // label.text(this.buildTypeName);
+        // label.prepend(cbox);
+        // var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
+        // container.append(label);
+        // $j('#buildList').append(container);
     });
 
-    toggleAllBuildTypesSelected();
     populateWebHookAuthExtrasPane(webhook);
     populateWebHookParametersExtrasPane(webhook);
     populateWebHookHeadersExtrasPane(webhook);
@@ -802,26 +895,32 @@ function convertFormToWebHook(myJson) {
     };
 
     if (!webhook.buildTypes.allEnabled) {
-        $j.each($j('.buildType_single'), function () {
-            if ($j(this).prop('checked')) {
-                webhook.buildTypes.id.add(this.id);
+        $j.each($j('.buildType_single'), function (idx, build) {
+            if ($j(build).prop('checked')) {
+                webhook.buildTypes.id.push(build.value);
             }
         });
     }
 
-    $j.each(webhook.buildTypes, function () {
-        var isChecked = '';
-        if (this.enabled) {
-            isChecked = ' checked';
-        }
-        var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
-        var label = $j('<label></label>');
-        label.text(this.buildTypeName);
-        label.prepend(cbox);
-        var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
-        container.append(label);
-        $j('#buildList').append(container);
-    });
+    // Just copy from the store instance.
+    // When the parameter/header/filter dialog was closed the store was updated.
+    webhook.parameters = myJson.parameters;
+    webhook.headers = myJson.headers;
+    webhook.filters = myJson.filters;
+
+    // $j.each(webhook.buildTypes, function () {
+    //     var isChecked = '';
+    //     if (this.enabled) {
+    //         isChecked = ' checked';
+    //     }
+    //     var cbox = $j('<input' + isChecked + ' onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" name="buildTypeId" value="' + this.buildTypeId + '"class="buildType_single">');
+    //     var label = $j('<label></label>');
+    //     label.text(this.buildTypeName);
+    //     label.prepend(cbox);
+    //     var container = $j('<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"></p>');
+    //     container.append(label);
+    //     $j('#buildList').append(container);
+    // });
     return webhook;
 };
 
