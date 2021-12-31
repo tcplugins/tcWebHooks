@@ -17,6 +17,24 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
     showDeleteParameterDialog: function (data) {
         this.DeleteParameterDialog.showDialog("Confirm Web Hook Parameter Deletion", 'deleteWebhookParameter', data);
     },
+    showAddHeaderDialog: function (data) {
+        this.EditHeaderDialog.showDialog("Add Web Hook Header", 'addWebhookHeader', data);
+    },
+    showEditHeaderDialog: function (data) {
+        this.EditHeaderDialog.showDialog("Edit Web Hook Header", 'updateWebhookHeader', data);
+    },
+    showDeleteHeaderDialog: function (data) {
+        this.DeleteHeaderDialog.showDialog("Confirm Web Hook Header Deletion", 'deleteWebhookHeader', data);
+    },
+    showAddFilterDialog: function (data) {
+        this.EditFilterDialog.showDialog("Add Web Hook Filter", 'addWebhookFilter', data);
+    },
+    showEditFilterDialog: function (data) {
+        this.EditFilterDialog.showDialog("Edit Web Hook Filter", 'updateWebhookFilter', data);
+    },
+    showDeleteFilterDialog: function (data) {
+        this.DeleteFilterDialog.showDialog("Confirm Web Hook Filter Deletion", 'deleteWebhookFilter', data);
+    },
 
     DeleteDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
@@ -486,6 +504,188 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         doPost: function() {
             alert("No doing delete");
         }
+    }),
+
+    EditHeaderDialog: OO.extend(WebHooksPlugin.Headers.EditDialog, {
+
+        getStore: function () {
+            WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
+            return WebHooksPlugin.Configurations.localStore;
+        },
+        getContainer: function () {
+            return $('editWebHookHeaderDialog');
+        },
+        formElement: function () {
+            return $('editWebHookHeaderForm');
+        },
+        getWebHookHeaderData: function(projectId, headerId, action) {
+            let dialog = this;
+            let webhook = this.getStore().myJson;
+            let header = null;
+            if (projectId === webhook.projectId) {
+                webhook.headers.header.each(function(item) {
+                    console.log(item);
+                    if (item.id === parseInt(headerId)) {
+                        header = item;
+                        dialog.populateForm(action, header);
+                    }
+                });
+            }
+            return header;
+        },
+
+        afterShow: function () {
+            // Update the form, so that the submit button calls 
+            // the doPost method on this dialog, not the base dialog.
+            $(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.EditHeaderDialog.doPost()");
+        },
+        doPost: function () {
+            let dialog = this;
+            if ($j("input[id='headerAction']").val() == 'addWebhookHeader') {
+                WebHooksPlugin.Header && console.debug("doPost: Add new header");
+                this.addWebHookHeaderDataToWebHook();
+            } else {
+                WebHooksPlugin.isDebug() && console.debug("doPost: Update exisitng header");
+                this.updateWebHookHeaderDataInWebHook();
+            }
+            populateWebHookHeadersExtrasPane(this.getStore().myJson);
+            dialog.close();
+            return false;
+        },
+
+        addWebHookHeaderDataToWebHook: function () {
+            let myHeader = this.populateJsonDataFromForm();
+            this.getStore().headers.add(myHeader);
+            this.getStore().headers.count = this.getStore().headers.header.length;
+        },
+        updateWebHookHeaderDataInWebHook: function () {
+            let myHeader = this.populateJsonDataFromForm();
+            let webhook = this.getStore().myJson;
+            let index = -1;
+            webhook.headers.header.each(function(item, idx) {
+                console.log(item);
+                if (item.id === myHeader.id) {
+                    index = idx;
+                }
+            });
+            if (index != -1) {
+                webhook.headers.header[index] = myHeader;
+            }
+            return myHeader;
+        }
+
+    }),
+
+    DeleteHeaderDialog: OO.extend(WebHooksPlugin.Headers.DeleteDialog, {
+        getStore: function () {
+            WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
+            return WebHooksPlugin.Configurations.localStore;
+        },
+        getContainer: function () {
+            return $('deleteWebHookParameterDialog');
+        },
+        formElement: function () {
+            return $('deleteWebHookParameterForm');
+        },
+        afterShow: function() {
+            // Update the form, so that the submit button calls 
+            // the doPost method on this dialog, not the base dialog.
+			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteHeaderDialog.doPost()");
+        },
+        doPost: function() {
+            alert("No doing delete");
+        }
+    }),
+
+    EditFilterDialog: OO.extend(WebHooksPlugin.Filters.EditDialog, {
+
+        getStore: function () {
+            WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
+            return WebHooksPlugin.Configurations.localStore;
+        },
+        getContainer: function () {
+            return $('editWebHookFilterDialog');
+        },
+        formElement: function () {
+            return $('editWebHookFilterForm');
+        },
+        getWebHookFilterData: function(projectId, filterId, action) {
+            let dialog = this;
+            let webhook = this.getStore().myJson;
+            let filter = null;
+            if (projectId === webhook.projectId) {
+                webhook.filters.filter.each(function(item) {
+                    console.log(item);
+                    if (item.id === parseInt(filterId)) {
+                        filter = item;
+                        dialog.populateForm(action, filter);
+                    }
+                });
+            }
+            return filter;
+        },
+
+        afterShow: function () {
+            // Update the form, so that the submit button calls 
+            // the doPost method on this dialog, not the base dialog.
+            $(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.EditFilterDialog.doPost()");
+        },
+        doPost: function () {
+            let dialog = this;
+            if ($j("input[id='filterAction']").val() == 'addWebhookFilter') {
+                WebHooksPlugin.Filter && console.debug("doPost: Add new filter");
+                this.addWebHookFilterDataToWebHook();
+            } else {
+                WebHooksPlugin.isDebug() && console.debug("doPost: Update exisitng filter");
+                this.updateWebHookFilterDataInWebHook();
+            }
+            populateWebHookFiltersExtrasPane(this.getStore().myJson);
+            dialog.close();
+            return false;
+        },
+
+        addWebHookFilterDataToWebHook: function () {
+            let myFilter = this.populateJsonDataFromForm();
+            this.getStore().filters.add(myFilter);
+            this.getStore().filters.count = this.getStore().filters.filter.length;
+        },
+        updateWebHookFilterDataInWebHook: function () {
+            let myFilter = this.populateJsonDataFromForm();
+            let webhook = this.getStore().myJson;
+            let index = -1;
+            webhook.filters.filter.each(function(item, idx) {
+                console.log(item);
+                if (item.id === myFilter.id) {
+                    index = idx;
+                }
+            });
+            if (index != -1) {
+                webhook.filters.filter[index] = myFilter;
+            }
+            return myFilter;
+        }
+
+    }),
+
+    DeleteFilterDialog: OO.extend(WebHooksPlugin.Filters.DeleteDialog, {
+        getStore: function () {
+            WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
+            return WebHooksPlugin.Configurations.localStore;
+        },
+        getContainer: function () {
+            return $('deleteWebHookParameterDialog');
+        },
+        formElement: function () {
+            return $('deleteWebHookParameterForm');
+        },
+        afterShow: function() {
+            // Update the form, so that the submit button calls 
+            // the doPost method on this dialog, not the base dialog.
+			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteParameterDialog.doPost()");
+        },
+        doPost: function() {
+            alert("No doing delete");
+        }
     })
 
 
@@ -638,7 +838,10 @@ function populateWebHookFiltersExtrasPane(webhook) {
         $j('#webhookFilters > thead').hide();
     } else {
         webhook.filters.filter.each(function (filter) {
-            $j('#webhookFilters > tbody').append('<tr data-id="' + filter.id +'"><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+            let data = "{'projectId':'"+ webhook.projectId + "', 'filterId':'" + filter.id +"', 'filterValue':'" + filter.value + "'}";
+            $j('#webhookFilters > tbody').append('<tr data-id="' + filter.id +'"><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td>'
+            + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showEditFilterDialog('+ data + ');" href="javascript://">edit</a></td>'
+            + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showDeleteFilterDialog('+ data + ');" href="javascript://">delete</a></td></tr>');
         });
         $j('#webhookFilters > thead').show();
     }
