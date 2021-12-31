@@ -1018,7 +1018,7 @@ var webHook04 = {
         "id": 3,
         "value": "${foo}",
         "regex": "^bar$",
-        "enabled": true,
+        "enabled": false,
         "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/filters/id:3"
       }
     ],

@@ -31,6 +31,8 @@
       ${jspHome}WebHook/js/tests/test-data.js
       ${jspHome}WebHook/js/editWebhookCommon.js
       ${jspHome}WebHook/js/editWebhookParameter.js
+      ${jspHome}WebHook/js/editWebhookHeader.js
+      ${jspHome}WebHook/js/editWebhookFilter.js
       ${jspHome}WebHook/js/editWebhookConfiguration.js
       ${jspHome}WebHook/js/noRestApi.js
     </bs:linkScript>
@@ -55,6 +57,8 @@
     </script>
 	<%@ include file="jsp-includes/editWebHookDialog.jsp" %>
 	<%@ include file="jsp-includes/editWebHookParameterDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookHeaderDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookFilterDialog.jsp" %>
     <script type="module" type=text/javascript src="../..${jspHome}WebHook/js/tests/editWebhookConfiguration.tests.js"></script>
     
     <script class="mocha-exec">

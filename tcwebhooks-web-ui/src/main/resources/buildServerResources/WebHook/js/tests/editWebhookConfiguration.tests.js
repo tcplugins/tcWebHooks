@@ -381,7 +381,6 @@ describe('Populate from Form and then POST WebHook - Webhook (04)', function () 
     loadTemplatesIntoFormatHolder();
 
     var xhr, requests, body;
-    //dialog.showCentered();
 
     beforeEach('Load Store with mocked data from webHook04', function () {
         dialog.getStore().myJson = webHook04;
@@ -449,7 +448,6 @@ describe('Populate from Form and then POST WebHook - Webhook (03)', function () 
     loadTemplatesIntoFormatHolder();
 
     var xhr, requests, body;
-    //dialog.showCentered();
 
     beforeEach('Load Store with mocked data from webHook03', function () {
         dialog.getStore().myJson = webHook03;
@@ -500,7 +498,6 @@ describe('Populate from Form and then POST WebHook - Webhook (03)', function () 
 
 describe('Edit Parameters on existing Webhook (04)', function () {
     var dialog = WebHooksPlugin.Configurations.EditParameterDialog;
-    dialog.showCentered();
 
     beforeEach('Load Store with mocked data from webHook04', function () {
         dialog.getStore().myJson = webHook04;
@@ -512,7 +509,6 @@ describe('Edit Parameters on existing Webhook (04)', function () {
     
     it('Populate Parameter 1 in Form from Webhook', function () {
         let parameter = dialog.getWebHookParameterData('TcPlugins', "1", 'updateWebhookParameter');
-        console.log(parameter);
         expect(parameter.id).to.equal("1");
         dialog.populateForm('updateWebhookParameter', parameter);
         expectEqual('#editWebHookParameterForm #parameterId', "1");
@@ -525,7 +521,6 @@ describe('Edit Parameters on existing Webhook (04)', function () {
 
     it('Populate Parameter 2 in Form from Webhook', function () {
         let parameter = dialog.getWebHookParameterData('TcPlugins', "2", 'updateWebhookParameter');
-        console.log(parameter);
         expect(parameter.id).to.equal("2");
         dialog.populateForm('updateWebhookParameter', parameter);
         expectEqual('#editWebHookParameterForm #parameterId', "2");
@@ -538,7 +533,6 @@ describe('Edit Parameters on existing Webhook (04)', function () {
 
     it('Populate Parameter 1 in Form and read back out', function () {
         let parameter = dialog.getWebHookParameterData('TcPlugins', "1", 'updateWebhookParameter');
-        console.log(parameter);
         expect(parameter.id).to.equal("1");
         dialog.populateForm('updateWebhookParameter', parameter);
         let paramFromForm = dialog.populateJsonDataFromForm();
@@ -547,7 +541,6 @@ describe('Edit Parameters on existing Webhook (04)', function () {
 
     it('Populate Parameter 1 in Form, change it, and read back out', function () {
         let parameter = dialog.getWebHookParameterData('TcPlugins', "1", 'updateWebhookParameter');
-        console.log(parameter);
         expect(parameter.id).to.equal("1");
         dialog.populateForm('updateWebhookParameter', parameter);
         $j('#editWebHookParameterForm #parameterDialogName').val("test01")
@@ -562,6 +555,123 @@ describe('Edit Parameters on existing Webhook (04)', function () {
         expect(paramFromForm.secure).to.equal(true);
         expect(paramFromForm.includedInLegacyPayloads).to.equal(false);
         expect(paramFromForm.templateEngine).to.equal("VELOCITY");
+    })
+
+})
+
+describe('Edit Headers on existing Webhook (04)', function () {
+    var dialog = WebHooksPlugin.Configurations.EditHeaderDialog;
+
+    beforeEach('Load Store with mocked data from webHook04', function () {
+        dialog.getStore().myJson = webHook04;
+    });
+
+    afterEach('Clear Store and Form', function () {
+        dialog.getStore().myJson = {};
+    });
+    
+    it('Populate Header 1 in Form from Webhook', function () {
+        let header = dialog.getWebHookHeaderData('TcPlugins', "1", 'updateWebhookHeader');
+        expect(header.id).to.equal(1);
+        dialog.populateForm('updateWebhookHeader', header);
+        expectEqual('#editWebHookHeaderForm #headerId', "1");
+        expectEqual('#editWebHookHeaderForm #headerDialogName', "my-header-showing-build-name");
+        expectEqual('#editWebHookHeaderForm #headerDialogValue', "${buildName}");
+    })
+
+    it('Populate Header 1 in Form and read back out', function () {
+        let header = dialog.getWebHookHeaderData('TcPlugins', "1", 'updateWebhookHeader');
+        expect(header.id).to.equal(1);
+        dialog.populateForm('updateWebhookHeader', header);
+        let headerFromForm = dialog.populateJsonDataFromForm();
+        expect(headerFromForm.id).to.equal("1");
+    })
+
+    it('Populate Header 1 in Form, change it, and read back out', function () {
+        let header = dialog.getWebHookHeaderData('TcPlugins', "1", 'updateWebhookHeader');
+        expect(header.id).to.equal(1);
+        dialog.populateForm('updateWebhookHeader', header);
+        $j('#editWebHookHeaderForm #headerDialogName').val("foo")
+        $j('#editWebHookHeaderForm #headerDialogValue').val("${bar}")
+ 
+        expectEqual('#editWebHookHeaderForm #headerId', "1");
+        expectEqual('#editWebHookHeaderForm #headerDialogName', "foo");
+        expectEqual('#editWebHookHeaderForm #headerDialogValue', "${bar}");
+        let headerFromForm = dialog.populateJsonDataFromForm();
+        expect(headerFromForm.id).to.equal("1");
+        expect(headerFromForm.name).to.equal("foo");
+        expect(headerFromForm.value).to.equal("${bar}");
+    })
+
+})
+
+describe('Edit Filters on existing Webhook (04)', function () {
+    var dialog = WebHooksPlugin.Configurations.EditFilterDialog;
+
+    beforeEach('Load Store with mocked data from webHook04', function () {
+        dialog.getStore().myJson = webHook04;
+    });
+
+    afterEach('Clear Store and Form', function () {
+        dialog.getStore().myJson = {};
+    });
+    
+    it('Populate Filter 1 in Form from Webhook', function () {
+        let filter = dialog.getWebHookFilterData('TcPlugins', "1", 'updateWebhookFilter');
+        expect(filter.id).to.equal(1);
+        dialog.populateForm('updateWebhookFilter', filter);
+        expectEqual('#editWebHookFilterForm #filterId', "1");
+        expectEqual('#editWebHookFilterForm #filterDialogValue', "${branchDisplayName}");
+        expectEqual('#editWebHookFilterForm #filterDialogRegex', "^master$");
+        expectIsChecked('#editWebHookFilterForm #filterDialogEnabled');
+    })
+
+    it('Populate Filter 2 in Form from Webhook', function () {
+        let filter = dialog.getWebHookFilterData('TcPlugins', "2", 'updateWebhookParameter');
+        expect(filter.id).to.equal(2);
+        dialog.populateForm('updateWebhookFilter', filter);
+        expectEqual('#editWebHookFilterForm #filterId', "2");
+        expectEqual('#editWebHookFilterForm #filterDialogValue', "${buildInternalTypeId}");
+        expectEqual('#editWebHookFilterForm #filterDialogRegex', "^bt\\d$");
+        expectIsChecked('#editWebHookFilterForm #filterDialogEnabled');
+    })
+
+    it('Populate Filter 3 in Form from Webhook', function () {
+        let filter = dialog.getWebHookFilterData('TcPlugins', "3", 'updateWebhookParameter');
+        expect(filter.id).to.equal(3);
+        dialog.populateForm('updateWebhookFilter', filter);
+        expectEqual('#editWebHookFilterForm #filterId', "3");
+        expectEqual('#editWebHookFilterForm #filterDialogValue', "${foo}");
+        expectEqual('#editWebHookFilterForm #filterDialogRegex', "^bar$");
+        expectIsUnChecked('#editWebHookFilterForm #filterDialogEnabled');
+    })
+
+    it('Populate Filter 1 in Form and read back out', function () {
+        let filter = dialog.getWebHookFilterData('TcPlugins', "1", 'updateWebhookParameter');
+        expect(filter.id).to.equal(1);
+        dialog.populateForm('updateWebhookFilter', filter);
+        let filterFromForm = dialog.populateJsonDataFromForm();
+        expect(filterFromForm.id).to.equal("1");
+    })
+
+    it('Populate Filter 1 in Form, change it, and read back out', function () {
+        let filter = dialog.getWebHookFilterData('TcPlugins', "1", 'updateWebhookParameter');
+        console.log(filter);
+        expect(filter.id).to.equal(1);
+        dialog.populateForm('updateWebhookFilter', filter);
+        $j('#editWebHookFilterForm #filterDialogValue').val("${test02}")
+        $j('#editWebHookFilterForm #filterDialogRegex').val("^password$")
+        $j('#editWebHookFilterForm #filterDialogEnabled').prop('checked', false);
+ 
+        expectEqual('#editWebHookFilterForm #filterId', "1");
+        expectEqual('#editWebHookFilterForm #filterDialogValue', "${test02}");
+        expectEqual('#editWebHookFilterForm #filterDialogRegex', "^password$");
+        expectIsUnChecked('#editWebHookFilterForm #filterDialogEnabled');
+        let filterFromForm = dialog.populateJsonDataFromForm();
+        expect(filterFromForm.id).to.equal("1");
+        expect(filterFromForm.value).to.equal("${test02}");
+        expect(filterFromForm.regex).to.equal("^password$");
+        expect(filterFromForm.enabled).to.equal(false);
     })
 
 })
