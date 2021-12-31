@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
-import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @Getter @Setter @NoArgsConstructor
