@@ -48,6 +48,7 @@ public class WebHookConfig {
 	private static final String ATTR_ID = "id";
 	private static final String ATTR_TEMPLATE_ENGINE = "template-engine";
 	private static final String ATTR_INCLUDED_IN_LEGACY_PAYLOADS = "included-in-legacy-payloads";
+	private static final String ATTR_FORCE_RESOLVE_TEAMCITY_VARIABLE = "force-resolve-teamcity-variable";
 	private static final String ATTR_SECURE = "secure";
 	private static final String EL_TRIGGER_FILTERS = "trigger-filters";
 	private static final String EL_HEADERS = "headers";
@@ -205,6 +206,7 @@ public class WebHookConfig {
 							eParam.getAttributeValue(ATTR_VALUE),
 							Boolean.valueOf(eParam.getAttributeValue(ATTR_SECURE, Boolean.toString(false))),
 							Boolean.valueOf(eParam.getAttributeValue(ATTR_INCLUDED_IN_LEGACY_PAYLOADS, Boolean.toString(true))),
+							Boolean.valueOf(eParam.getAttributeValue(ATTR_FORCE_RESOLVE_TEAMCITY_VARIABLE, Boolean.toString(false))),
 							eParam.getAttributeValue(ATTR_TEMPLATE_ENGINE, PayloadTemplateEngineType.STANDARD.toString())
 						);
 					
@@ -384,6 +386,7 @@ public class WebHookConfig {
 		e.setAttribute(ATTR_VALUE, i.getValue());
 		e.setAttribute(ATTR_SECURE, String.valueOf(i.getSecure()));
 		e.setAttribute(ATTR_INCLUDED_IN_LEGACY_PAYLOADS, String.valueOf(i.getIncludedInLegacyPayloads()));
+		e.setAttribute(ATTR_FORCE_RESOLVE_TEAMCITY_VARIABLE, String.valueOf(i.getForceResolveTeamCityVariable()));
 		e.setAttribute(ATTR_TEMPLATE_ENGINE, i.getTemplateEngine());
 		return e;
 	}
