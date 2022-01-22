@@ -20,7 +20,7 @@ public interface WebHookSettingsManager {
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
 			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig,
-			ExtraParameters extraParameters, boolean hideSecureValues);
+			ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues);
 
 	public WebHookUpdateResult deleteWebHook(String webHookId, String projectId);
 
