@@ -197,7 +197,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
 			    							WebHookUpdateResult result = mySettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
-			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, hideSecureValues);
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, hideSecureValues); // TODO: Support Parameters, Filters and Headers
 			    							if(result.isUpdated()){
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='new' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
@@ -207,7 +207,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							WebHookUpdateResult result = mySettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
-			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, null, hideSecureValues);
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, null, hideSecureValues, null); // TODO: Support Parameters, Filters and Headers
 			    							if(result.isUpdated()){
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='update' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
