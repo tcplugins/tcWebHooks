@@ -932,7 +932,7 @@ var webHook03 = {
     "id": []
   },
   "parameters": {
-    "count": 1,
+    "count": 0,
     "parameter": [],
     "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784/parameters"
   },

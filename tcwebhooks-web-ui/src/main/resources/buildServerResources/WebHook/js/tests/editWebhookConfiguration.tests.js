@@ -442,60 +442,6 @@ describe('Populate from Form and then POST WebHook - Webhook (04)', function () 
     })
 })
 
-describe('Populate from Form and then POST WebHook - Webhook (03)', function () {
-
-    var dialog = WebHooksPlugin.Configurations.EditDialog;
-    loadTemplatesIntoFormatHolder();
-
-    var xhr, requests, body;
-
-    beforeEach('Load Store with mocked data from webHook03', function () {
-        dialog.getStore().myJson = webHook03;
-        dialog.handleGetSuccess('edit');
-
-        xhr = sinon.useFakeXMLHttpRequest();
-        requests = [];
-        xhr.onCreate = function (req) {
-            requests.push(req);
-        };
-
-        dialog.doPost();
-        expect(requests.length).to.equal(1);
-        console.log(requests[0]);
-        body = JSON.parse(requests[0].requestBody);
-    });
-
-    afterEach('Clear Store and Form', function () {
-        dialog.getStore().myJson = {};
-        dialog.disableAndClearCheckboxes();
-        dialog.cleanFields({ 'projectId': "unsetProject", 'webhookId': 'unsetWebhookId' });
-        body = {};
-        xhr.restore();
-    });
-
-    it('URL is set correctly', function () {
-        expectEqual('#webHookUrl', 'http://localhost:8111/webhooks/endpoint.html');
-    })
-    it('href is set correctly', function () {
-        expectEqual('#webHookUrl', 'http://localhost:8111/webhooks/endpoint.html');
-        expect(dialog.getStore().myJson.href).to.equal('/app/rest/webhooks/configurations/TcPlugins/id:500198784');
-    })
-    it('POST Payload contains webhook href.', function () {
-        expect(requests[0].url).to.contain("/app/rest/webhooks/configurations/TcPlugins/id:500198784");
-    })
-    it('POST Payload contains webhook buildTypes.', function () {
-        expect(body.buildTypes.allEnabled).to.equal(true);
-        expect(body.buildTypes.subProjectsEnabled).to.equal(true);
-        expect(body.buildTypes.id.length).to.equal(0);
-    })
-    it('POST Payload contains webhook enabled.', function () {
-        expect(body.enabled).to.equal(true);
-    })
-    it('POST Payload contains webhook template.', function () {
-        expect(body.template).to.equal("test01");
-    })
-})
-
 describe('Edit Parameters on existing Webhook (04)', function () {
     var dialog = WebHooksPlugin.Configurations.EditParameterDialog;
 
@@ -584,7 +530,7 @@ describe('Edit Headers on existing Webhook (04)', function () {
         expect(header.id).to.equal(1);
         dialog.populateForm('updateWebhookHeader', header);
         let headerFromForm = dialog.populateJsonDataFromForm();
-        expect(headerFromForm.id).to.equal("1");
+        expect(headerFromForm.id).to.equal(1);
     })
 
     it('Populate Header 1 in Form, change it, and read back out', function () {
@@ -594,11 +540,11 @@ describe('Edit Headers on existing Webhook (04)', function () {
         $j('#editWebHookHeaderForm #headerDialogName').val("foo")
         $j('#editWebHookHeaderForm #headerDialogValue').val("${bar}")
  
-        expectEqual('#editWebHookHeaderForm #headerId', "1");
+        expectEqual('#editWebHookHeaderForm #headerId', "1"); // A text field
         expectEqual('#editWebHookHeaderForm #headerDialogName', "foo");
         expectEqual('#editWebHookHeaderForm #headerDialogValue', "${bar}");
         let headerFromForm = dialog.populateJsonDataFromForm();
-        expect(headerFromForm.id).to.equal("1");
+        expect(headerFromForm.id).to.equal(1); // Int because it's parsed when read from the form.
         expect(headerFromForm.name).to.equal("foo");
         expect(headerFromForm.value).to.equal("${bar}");
     })
@@ -651,7 +597,7 @@ describe('Edit Filters on existing Webhook (04)', function () {
         expect(filter.id).to.equal(1);
         dialog.populateForm('updateWebhookFilter', filter);
         let filterFromForm = dialog.populateJsonDataFromForm();
-        expect(filterFromForm.id).to.equal("1");
+        expect(filterFromForm.id).to.equal(1);
     })
 
     it('Populate Filter 1 in Form, change it, and read back out', function () {
@@ -668,10 +614,330 @@ describe('Edit Filters on existing Webhook (04)', function () {
         expectEqual('#editWebHookFilterForm #filterDialogRegex', "^password$");
         expectIsUnChecked('#editWebHookFilterForm #filterDialogEnabled');
         let filterFromForm = dialog.populateJsonDataFromForm();
-        expect(filterFromForm.id).to.equal("1");
+        expect(filterFromForm.id).to.equal(1);
         expect(filterFromForm.value).to.equal("${test02}");
         expect(filterFromForm.regex).to.equal("^password$");
         expect(filterFromForm.enabled).to.equal(false);
+    })
+})
+
+describe('Populate from Form, Edit and then POST WebHook - Webhook (04)', function () {
+
+    var dialog = WebHooksPlugin.Configurations.EditDialog;
+    loadTemplatesIntoFormatHolder();
+
+    var xhr, requests, body;
+
+    beforeEach('Load Store with mocked data from webHook04', function () {
+
+    });
+
+    afterEach('Clear Store and Form', function () {
+        dialog.getStore().myJson = {};
+        dialog.disableAndClearCheckboxes();
+        dialog.cleanFields({ 'projectId': "unsetProject", 'webhookId': 'unsetWebhookId' });
+        body = {};
+        xhr.restore();
+    });
+
+    it('Edit Parameter data', function() {
+        dialog.getStore().myJson = webHook04;
+        dialog.handleGetSuccess('edit');
+
+        var paramDialog = WebHooksPlugin.Configurations.EditParameterDialog;
+        paramDialog.populateForm('updateWebhookParameter', dialog.getStore().myJson.parameters.parameter[0]);
+        
+        $j('#editWebHookParameterForm #parameterDialogName').val("testName")
+        $j('#editWebHookParameterForm #parameterDialogValue').val("testValue")
+        $j('#editWebHookParameterForm #parameterDialogVisibility').val("template")
+        $j('#editWebHookParameterForm #parameterDialogTemplateEngine').val("VELOCITY")
+        $j('#editWebHookParameterForm #parameterDialogType').val("password")
+
+        paramDialog.updateWebHookParameterDataInWebHook();
+
+        xhr = sinon.useFakeXMLHttpRequest();
+        requests = [];
+        xhr.onCreate = function (req) {
+            requests.push(req);
+        };
+
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+
+        let parameter = body.parameters.parameter[0];
+        expect(parameter.name).to.equal("testName");
+        expect(parameter.value).to.equal("testValue");
+        expect(parameter.includedInLegacyPayloads).to.equal(false);
+        expect(parameter.secure).to.equal(true);
+
+    })
+
+    it('Edit Header data', function() {
+        dialog.getStore().myJson = webHook04;
+        dialog.handleGetSuccess('edit');
+
+        var headerDialog = WebHooksPlugin.Configurations.EditHeaderDialog;
+        headerDialog.populateForm('updateWebhookHeader', dialog.getStore().myJson.headers.header[0]);
+        $j('#editWebHookHeaderForm #headerDialogName').val("testName")
+        $j('#editWebHookHeaderForm #headerDialogValue').val("testValue")
+
+        headerDialog.doPost();
+
+        xhr = sinon.useFakeXMLHttpRequest();
+        requests = [];
+        xhr.onCreate = function (req) {
+            requests.push(req);
+        };
+
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+
+        let header = body.headers.header[0];
+        expect(header.name).to.equal("testName");
+        expect(header.value).to.equal("testValue");
+
+    })
+
+    it('Edit Filter data', function() {
+        dialog.getStore().myJson = webHook04;
+        dialog.handleGetSuccess('edit');
+
+        var filterDialog = WebHooksPlugin.Configurations.EditFilterDialog;
+        filterDialog.populateForm('updateWebhookFilter', dialog.getStore().myJson.filters.filter[0]);
+        $j('#editWebHookFilterForm #filterDialogValue').val("testValue")
+        $j('#editWebHookFilterForm #filterDialogRegex').val("testRegex")
+        $j('#editWebHookFilterForm #filterDialogEnabled').prop('checked', false);
+
+        filterDialog.doPost();
+
+        xhr = sinon.useFakeXMLHttpRequest();
+        requests = [];
+        xhr.onCreate = function (req) {
+            requests.push(req);
+        };
+
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+
+        let filter = body.filters.filter[0];
+        expect(filter.value).to.equal("testValue");
+        expect(filter.regex).to.equal("testRegex");
+        expect(filter.enabled).to.equal(false);
+
+    })
+})
+
+
+describe('Add Parameter, Filter, Header and then POST WebHook - Webhook (03)', function () {
+
+    var dialog = WebHooksPlugin.Configurations.EditDialog;
+    loadTemplatesIntoFormatHolder();
+
+    var xhr, requests, body;
+    //dialog.showCentered();
+
+    beforeEach('Load Store with mocked data from webHook03', function () {
+        dialog.getStore().myJson = webHook03;
+        dialog.handleGetSuccess('edit');
+
+        xhr = sinon.useFakeXMLHttpRequest();
+        requests = [];
+        xhr.onCreate = function (req) {
+            requests.push(req);
+        };
+
+    });
+
+    afterEach('Clear Store and Form', function () {
+        dialog.getStore().myJson = {};
+        dialog.disableAndClearCheckboxes();
+        dialog.cleanFields({ 'projectId': "unsetProject", 'webhookId': 'unsetWebhookId' });
+        body = {};
+        xhr.restore();
+    });
+
+    it('Add Filter to empty filter set', function() {
+        var filterDialog = WebHooksPlugin.Configurations.EditFilterDialog;
+
+        filterDialog.showDialog("TcPlugins", "addWebhookFilter", {});
+        $j('#editWebHookFilterForm #filterDialogValue').val("testValue")
+        $j('#editWebHookFilterForm #filterDialogRegex').val("testRegex")
+
+        filterDialog.doPost();
+        
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+        
+        expect(body.filters.filter.length).to.equal(1);
+        expect(body.filters.count).to.equal(1);
+        
+        let filter = body.filters.filter[0];
+        expect(filter.id).to.equal(1);
+        expect(filter.value).to.equal("testValue");
+        expect(filter.regex).to.equal("testRegex");
+        expect(filter.enabled).to.equal(true); // expected to default to enabled.
+        filterDialog.close();
+    })
+
+    it('Add Header to empty header set', function() {
+        var headerDialog = WebHooksPlugin.Configurations.EditHeaderDialog;
+
+        headerDialog.showDialog("TcPlugins", "addWebhookHeader", {});
+        $j('#editWebHookHeaderForm #headerDialogName').val("testName")
+        $j('#editWebHookHeaderForm #headerDialogValue').val("testValue")
+
+        headerDialog.doPost();
+        
+        dialog.doPost();
+        
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+        
+        expect(body.headers.header.length).to.equal(1);
+        expect(body.headers.count).to.equal(1);
+        
+        let header = body.headers.header[0];
+        expect(header.id).to.equal(1);
+        expect(header.name).to.equal("testName");
+        expect(header.value).to.equal("testValue");
+        headerDialog.close();
+    })
+
+    it('Add Parameter to empty parameter set', function() {
+        var parameterDialog = WebHooksPlugin.Configurations.EditParameterDialog;
+
+        parameterDialog.showDialog("TcPlugins", "addWebhookParameter", {});
+        $j('#editWebHookParameterForm #parameterDialogName').val("testName")
+        $j('#editWebHookParameterForm #parameterDialogValue').val("testValue")
+
+        parameterDialog.doPost();
+        
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+        
+        expect(body.parameters.parameter.length).to.equal(1);
+        expect(body.parameters.count).to.equal(1);
+        
+        let parameter = body.parameters.parameter[0];
+        expect(parameter.id).to.equal("1");
+        expect(parameter.name).to.equal("testName");
+        expect(parameter.value).to.equal("testValue");
+        parameterDialog.close();
+    })
+
+})
+
+describe('Add Parameter, Filter, Header and then POST WebHook - Webhook (04)', function () {
+
+    var dialog = WebHooksPlugin.Configurations.EditDialog;
+    loadTemplatesIntoFormatHolder();
+
+    var xhr, requests, body;
+    //dialog.showCentered();
+
+    beforeEach('Load Store with mocked data from webHook04', function () {
+        dialog.getStore().myJson = webHook04;
+        dialog.handleGetSuccess('edit');
+
+        xhr = sinon.useFakeXMLHttpRequest();
+        requests = [];
+        xhr.onCreate = function (req) {
+            requests.push(req);
+        };
+
+    });
+
+    afterEach('Clear Store and Form', function () {
+        dialog.getStore().myJson = {};
+        dialog.disableAndClearCheckboxes();
+        dialog.cleanFields({ 'projectId': "unsetProject", 'webhookId': 'unsetWebhookId' });
+        body = {};
+        xhr.restore();
+    });
+
+    it('Add Filter to empty filter set', function() {
+        var filterDialog = WebHooksPlugin.Configurations.EditFilterDialog;
+
+        filterDialog.showDialog("TcPlugins", "addWebhookFilter", {});
+        $j('#editWebHookFilterForm #filterDialogValue').val("testValue")
+        $j('#editWebHookFilterForm #filterDialogRegex').val("testRegex")
+
+        filterDialog.doPost();
+        
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+        
+        expect(body.filters.filter.length).to.equal(4);
+        expect(body.filters.count).to.equal(4);
+        
+        let filter = body.filters.filter[3];
+        expect(filter.id).to.equal(4);
+        expect(filter.value).to.equal("testValue");
+        expect(filter.regex).to.equal("testRegex");
+        expect(filter.enabled).to.equal(true); // expected to default to enabled.
+        filterDialog.close();
+    })
+
+    it('Add Header to empty header set', function() {
+        var headerDialog = WebHooksPlugin.Configurations.EditHeaderDialog;
+
+        headerDialog.showDialog("TcPlugins", "addWebhookHeader", {});
+        $j('#editWebHookHeaderForm #headerDialogName').val("testName")
+        $j('#editWebHookHeaderForm #headerDialogValue').val("testValue")
+
+        headerDialog.doPost();
+        
+        dialog.doPost();
+        
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+        
+        expect(body.headers.header.length).to.equal(2);
+        expect(body.headers.count).to.equal(2);
+        
+        let header = body.headers.header[1];
+        expect(header.id).to.equal(2);
+        expect(header.name).to.equal("testName");
+        expect(header.value).to.equal("testValue");
+        headerDialog.close();
+    })
+
+    it('Add Parameter to empty parameter set', function() {
+        var parameterDialog = WebHooksPlugin.Configurations.EditParameterDialog;
+
+        parameterDialog.showDialog("TcPlugins", "addWebhookParameter", {});
+        $j('#editWebHookParameterForm #parameterDialogName').val("testName")
+        $j('#editWebHookParameterForm #parameterDialogValue').val("testValue")
+
+        parameterDialog.doPost();
+        
+        dialog.doPost();
+        expect(requests.length).to.equal(1);
+        console.log(requests[0]);
+        body = JSON.parse(requests[0].requestBody);
+        
+        expect(body.parameters.parameter.length).to.equal(3);
+        expect(body.parameters.count).to.equal(3);
+        
+        let parameter = body.parameters.parameter[2];
+        expect(parameter.id).to.equal("3");
+        expect(parameter.name).to.equal("testName");
+        expect(parameter.value).to.equal("testValue");
+        parameterDialog.close();
     })
 
 })

@@ -1,5 +1,5 @@
 WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
-    EditDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    EditDialog: OO.extend(WebHooksPlugin.EditDialog, {
         getContainer: function () {
             return $('editWebHookFilterDialog');
         },
@@ -14,8 +14,8 @@ WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
         },
 
         showDialog: function (title, action, data) {
-			this.getStore().loading[filterId] = data.projectId;
-			this.getStore().loading[action] = action;
+			this.getStore().loading['filterId'] = data.filterId;
+			this.getStore().loading['action'] = action;
 
             $j("input[id='filterProjectId']").val(data.projectId);
             $j("input[id='WebHookFilteraction']").val(action);
@@ -23,22 +23,17 @@ WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
             $j("div#editWebHookFilterDialog h3.dialogTitle").text(title);
             $j("#editWebHookFilterDialogSubmit").val(action === "addWebhookFilter" ? "Add Filter" : "Edit Filter");
             this.resetAndShow(data);
-            this.getWebHookFilterData(data.projectId, data.filterId, action);
-			$j("#viewRow_" + data.filterId).animate({
-	            backgroundColor: "#ffffcc"
-	    	}, 1000 );
+            let filter = this.getWebHookFilterData(data.projectId, data.filterId, action);
+			this.populateForm(action, filter);
+			this.highlightRow($j("tr[data-filter-id='" + data.filterId + "']"), this);
 			this.afterShow();
         },
         
         cancelDialog: function () {
-        	this.close();
-	        $j("#viewRow_" + $j("#editWebHookFilterForm input[id='filterId']").val()).animate({
-	            backgroundColor: "#ffffff"
-	        }, 500 );
+			this.closeCancel($j("tr[data-filter-id='" + this.getStore().loading['filterId'] + "']"), this);
         },
 
         resetAndShow: function (data) {
-			this.disableAndClearCheckboxes();
             this.cleanFields(data);
             this.showCentered();
         },
@@ -87,7 +82,7 @@ WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
 		},
         populateJsonDataFromForm: function() {
             let filter = {
-                id: $j('#editWebHookFilterForm #filterId').val(),
+                id: parseInt($j('#editWebHookFilterForm #filterId').val()),
                 enabled: $j('#editWebHookFilterForm #filterDialogEnabled').is(':checked'),
                 value: $j('#editWebHookFilterForm #filterDialogValue').val(),
                 regex: $j('#editWebHookFilterForm #filterDialogRegex').val(),
@@ -99,12 +94,16 @@ WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
 			$j('#editWebHookFilterForm #filterAction').val(action);
 			$j('#editWebHookFilterForm #filterId').val(myFilter.id);
 			$j('#editWebHookFilterForm #filterHref').val(myFilter.href);
-			$j("#editWebHookFilterForm #filterDialogEnabled").prop('checked', myFilter.enabled);
+			if (action === 'addWebhookFilter') {
+				$j("#editWebHookFilterForm #filterDialogEnabled").prop('checked', true);
+			} else {
+				$j("#editWebHookFilterForm #filterDialogEnabled").prop('checked', myFilter.enabled);
+			}
 			$j("#editWebHookFilterForm #filterDialogValue").val(myFilter.value);
 			$j("#editWebHookFilterForm #filterDialogRegex").val(myFilter.regex);
 		}
 
-    })),
+    }),
 
     NoRestApiDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {

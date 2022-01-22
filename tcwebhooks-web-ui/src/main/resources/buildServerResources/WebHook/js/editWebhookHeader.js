@@ -1,5 +1,5 @@
 WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
-    EditDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    EditDialog: OO.extend(WebHooksPlugin.EditDialog, {
         getContainer: function () {
             return $('editWebHookHeaderDialog');
         },
@@ -14,8 +14,8 @@ WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
         },
 
         showDialog: function (title, action, data) {
-			this.getStore().loading[headerId] = data.projectId;
-			this.getStore().loading[action] = action;
+			this.getStore().loading['headerId'] = data.headerId;
+			this.getStore().loading['action'] = action;
 
             $j("input[id='headerProjectId']").val(data.projectId);
             $j("input[id='WebHookHeaderaction']").val(action);
@@ -23,22 +23,17 @@ WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
             $j("div#editWebHookHeaderDialog h3.dialogTitle").text(title);
             $j("#editWebHookHeaderDialogSubmit").val(action === "addWebhookHeader" ? "Add Header" : "Edit Header");
             this.resetAndShow(data);
-            this.getWebHookHeaderData(data.projectId, data.headerId, action);
-			$j("#viewRow_" + data.headerId).animate({
-	            backgroundColor: "#ffffcc"
-	    	}, 1000 );
+            let header =this.getWebHookHeaderData(data.projectId, data.headerId, action);
+			this.populateForm(action, header);
+			this.highlightRow($j("tr[data-header-id='" + data.headerId + "']"), this);
 			this.afterShow();
         },
         
         cancelDialog: function () {
-        	this.close();
-	        $j("#viewRow_" + $j("#editWebHookHeaderForm input[id='headerId']").val()).animate({
-	            backgroundColor: "#ffffff"
-	        }, 500 );
+			this.closeCancel($j("tr[data-header-id='" + this.getStore().loading['headerId'] + "']"), this);
         },
 
         resetAndShow: function (data) {
-			this.disableAndClearCheckboxes();
             this.cleanFields(data);
             this.showCentered();
         },
@@ -87,7 +82,7 @@ WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
 		},
         populateJsonDataFromForm: function() {
             let header = {
-                id: $j('#editWebHookHeaderForm #headerId').val(),
+                id: parseInt($j('#editWebHookHeaderForm #headerId').val()),
                 name: $j('#editWebHookHeaderForm #headerDialogName').val(),
                 value: $j('#editWebHookHeaderForm #headerDialogValue').val(),
             };
@@ -102,7 +97,7 @@ WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
 			$j("#editWebHookHeaderForm #headerDialogValue").val(myHeader.value);
 		}
 
-    })),
+    }),
 
     NoRestApiDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {

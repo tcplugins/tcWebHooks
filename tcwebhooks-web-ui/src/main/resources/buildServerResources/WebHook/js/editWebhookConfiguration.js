@@ -279,7 +279,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     'Accept': 'application/json'
                 },
                 success: function (response) {
-                    this.closeSuccess($j("#viewRow_" + response.id), dialog);
+                    dialog.closeSuccess($j("#viewRow_" + response.id), dialog);
                 },
                 error: function (response) {
                     console.log(response);
@@ -405,7 +405,20 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         formElement: function () {
             return $('editWebHookParameterForm');
         },
+
+        closeSuccess: function (row, dialog) {
+			dialog.close();
+            row
+				.css({backgroundColor: '#cceecc'})
+				.animate({
+					backgroundColor: "#ffffff"
+				}, 2500 );
+		},
+
         getWebHookParameterData: function(projectId, parameterId, action) {
+            if (action === 'addWebhookParameter') {
+                return { "id": "_new", "projectId": projectId};
+            }
             let dialog = this;
             let webhook = this.getStore().myJson;
             let param = null;
@@ -428,15 +441,19 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
         doPost: function () {
             let dialog = this;
+            let parameterId = 0;
             if ($j("input[id='parameterAction']").val() == 'addWebhookParameter') {
                 WebHooksPlugin.isDebug() && console.debug("doPost: Add new parameter");
-                this.addWebHookParameterDataToWebHook();
+                let param = this.addWebHookParameterDataToWebHook();
+                parameterId = param.id;
             } else {
                 WebHooksPlugin.isDebug() && console.debug("doPost: Update exisitng parameter");
-                this.updateWebHookParameterDataInWebHook();
+                let param = this.updateWebHookParameterDataInWebHook();
+                parameterId = param.id;
             }
             populateWebHookParametersExtrasPane(this.getStore().myJson);
-            dialog.close();
+            dialog.closeSuccess($j("tr[data-parameter-id='" + parameterId + "']"), dialog);
+
             return false;
         },
 
@@ -464,8 +481,12 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 
         addWebHookParameterDataToWebHook: function () {
             let myParam = this.populateJsonDataFromForm();
-            this.getStore().parameters.add(myParam);
-            this.getStore().parameters.count = this.getStore().parameters.parameter.length;
+            let webhook = this.getStore().myJson;
+
+            myParam.id = this.getNextId(webhook.parameters.parameter)
+            webhook.parameters.parameter.push(myParam);
+            webhook.parameters.count = webhook.parameters.parameter.length;
+            return myParam;
         },
         updateWebHookParameterDataInWebHook: function () {
             let myParam = this.populateJsonDataFromForm();
@@ -499,6 +520,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         afterShow: function() {
             // Update the form, so that the submit button calls 
             // the doPost method on this dialog, not the base dialog.
+            alert("foo");
 			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteParameterDialog.doPost()");
         },
         doPost: function() {
@@ -518,8 +540,19 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         formElement: function () {
             return $('editWebHookHeaderForm');
         },
+        closeSuccess: function (row, dialog) {
+			dialog.close();
+            row
+				.css({backgroundColor: '#cceecc'})
+				.animate({
+					backgroundColor: "#ffffff"
+				}, 2500 );
+		},
         getWebHookHeaderData: function(projectId, headerId, action) {
-            let dialog = this;
+            if (action === 'addWebhookHeader') {
+                return { "id": "_new", "projectId": projectId};
+            }
+            //let dialog = this;
             let webhook = this.getStore().myJson;
             let header = null;
             if (projectId === webhook.projectId) {
@@ -527,7 +560,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     console.log(item);
                     if (item.id === parseInt(headerId)) {
                         header = item;
-                        dialog.populateForm(action, header);
+                        //dialog.populateForm(action, header);
                     }
                 });
             }
@@ -541,22 +574,28 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
         doPost: function () {
             let dialog = this;
+            let headerId = 0;
             if ($j("input[id='headerAction']").val() == 'addWebhookHeader') {
                 WebHooksPlugin.Header && console.debug("doPost: Add new header");
-                this.addWebHookHeaderDataToWebHook();
+                let header = this.addWebHookHeaderDataToWebHook();
+                headerId = header.id;
             } else {
                 WebHooksPlugin.isDebug() && console.debug("doPost: Update exisitng header");
-                this.updateWebHookHeaderDataInWebHook();
+                let header = this.updateWebHookHeaderDataInWebHook();
+                headerId = header.id;
             }
             populateWebHookHeadersExtrasPane(this.getStore().myJson);
-            dialog.close();
+            dialog.closeSuccess($j("tr[data-header-id='" + headerId + "']"), dialog);
             return false;
         },
 
         addWebHookHeaderDataToWebHook: function () {
             let myHeader = this.populateJsonDataFromForm();
-            this.getStore().headers.add(myHeader);
-            this.getStore().headers.count = this.getStore().headers.header.length;
+            let webhook = this.getStore().myJson;
+            myHeader.id = webhook.headers.header.length + 1;
+            webhook.headers.header.push(myHeader);
+            webhook.headers.count = webhook.headers.header.length;
+            return myHeader;
         },
         updateWebHookHeaderDataInWebHook: function () {
             let myHeader = this.populateJsonDataFromForm();
@@ -588,6 +627,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             return $('deleteWebHookParameterForm');
         },
         afterShow: function() {
+            alert('here');
             // Update the form, so that the submit button calls 
             // the doPost method on this dialog, not the base dialog.
 			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteHeaderDialog.doPost()");
@@ -609,8 +649,19 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         formElement: function () {
             return $('editWebHookFilterForm');
         },
+        closeSuccess: function (row, dialog) {
+			dialog.close();
+            row
+				.css({backgroundColor: '#cceecc'})
+				.animate({
+					backgroundColor: "#ffffff"
+				}, 2500 );
+		},
         getWebHookFilterData: function(projectId, filterId, action) {
-            let dialog = this;
+            if (action === 'addWebhookFilter') {
+                return { "id": "_new", "projectId": projectId};
+            }
+            //let dialog = this;
             let webhook = this.getStore().myJson;
             let filter = null;
             if (projectId === webhook.projectId) {
@@ -618,7 +669,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     console.log(item);
                     if (item.id === parseInt(filterId)) {
                         filter = item;
-                        dialog.populateForm(action, filter);
+                        //dialog.populateForm(action, filter);
                     }
                 });
             }
@@ -632,22 +683,28 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
         doPost: function () {
             let dialog = this;
+            let filterId = 0;
             if ($j("input[id='filterAction']").val() == 'addWebhookFilter') {
                 WebHooksPlugin.Filter && console.debug("doPost: Add new filter");
-                this.addWebHookFilterDataToWebHook();
+                let filter = this.addWebHookFilterDataToWebHook();
+                filterId = filter.id;
             } else {
                 WebHooksPlugin.isDebug() && console.debug("doPost: Update exisitng filter");
-                this.updateWebHookFilterDataInWebHook();
+                let filter = this.updateWebHookFilterDataInWebHook();
+                filterId = filter.id;
             }
             populateWebHookFiltersExtrasPane(this.getStore().myJson);
-            dialog.close();
+            dialog.closeSuccess($j("tr[data-filter-id='" + filterId + "']"), dialog);
             return false;
         },
 
         addWebHookFilterDataToWebHook: function () {
             let myFilter = this.populateJsonDataFromForm();
-            this.getStore().filters.add(myFilter);
-            this.getStore().filters.count = this.getStore().filters.filter.length;
+            let webhook = this.getStore().myJson;
+            myFilter.id = webhook.filters.filter.length + 1;
+            webhook.filters.filter.push(myFilter);
+            webhook.filters.count = webhook.filters.filter.length;
+            return myFilter;
         },
         updateWebHookFilterDataInWebHook: function () {
             let myFilter = this.populateJsonDataFromForm();
@@ -812,7 +869,7 @@ function populateWebHookParametersExtrasPane(webhook) {
     } else {
         webhook.parameters.parameter.each(function (parameter) {
             let data = "{'projectId':'"+ webhook.projectId + "', 'parameterId':'" + parameter.id +"', 'parameterName':'" + parameter.name + "'}";
-            $j('#webhookParameters > tbody').append('<tr data-id="' + parameter.id +'"><td>' + parameter.name + '</td><td style="width:40%;">' + parameter.value + '</td>'
+            $j('#webhookParameters > tbody').append('<tr data-parameter-id="' + parameter.id +'"><td>' + parameter.name + '</td><td style="width:40%;">' + parameter.value + '</td>'
               + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showEditParameterDialog('+ data + ');" href="javascript://">edit</a></td>'
               + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showDeleteParameterDialog('+ data + ');" href="javascript://">delete</a></td></tr>');
         });
@@ -826,7 +883,10 @@ function populateWebHookHeadersExtrasPane(webhook) {
         $j('#webhookHeaders > thead').hide();
     } else {
         webhook.headers.header.each(function (header) {
-            $j('#webhookHeaders > tbody').append('<tr data-id="' + header.id +'"><td>' + header.name + '</td><td style="width:40%;">' + header.value + '</td><td class="actionCell">edit</td><td class="actionCell">delete</td></tr>');
+            let data = "{'projectId':'"+ webhook.projectId + "', 'headerId':'" + header.id +"', 'headerName':'" + header.name + "'}";
+            $j('#webhookHeaders > tbody').append('<tr data-header-id="' + header.id +'"><td>' + header.name + '</td><td style="width:40%;">' + header.value + '</td>'
+            + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showEditHeaderDialog('+ data + ');" href="javascript://">edit</a></td>'
+            + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showDeleteHeaderDialog('+ data + ');" href="javascript://">delete</a></td></tr>');
         });
         $j('#webhookHeaders > thead').show();
     }
@@ -839,7 +899,7 @@ function populateWebHookFiltersExtrasPane(webhook) {
     } else {
         webhook.filters.filter.each(function (filter) {
             let data = "{'projectId':'"+ webhook.projectId + "', 'filterId':'" + filter.id +"', 'filterValue':'" + filter.value + "'}";
-            $j('#webhookFilters > tbody').append('<tr data-id="' + filter.id +'"><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td>'
+            $j('#webhookFilters > tbody').append('<tr data-filter-id="' + filter.id +'"><td>' + filter.value + '</td><td style="width:40%;">' + filter.regex + '</td>'
             + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showEditFilterDialog('+ data + ');" href="javascript://">edit</a></td>'
             + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showDeleteFilterDialog('+ data + ');" href="javascript://">delete</a></td></tr>');
         });
