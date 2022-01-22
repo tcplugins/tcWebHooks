@@ -20,7 +20,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
     		WebHooksPlugin.Parameters.DeleteDialog.showDialog("Delete WebHook Parameter", 'deleteWebhookParameter', data);
     	}
     },
-    EditDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+    EditDialog: OO.extend(WebHooksPlugin.EditDialog, {
         getContainer: function () {
             return $('editWebHookParameterDialog');
         },
@@ -35,8 +35,8 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
         },
 
         showDialog: function (title, action, data) {
-			this.getStore().loading[parameterId] = data.projectId;
-			this.getStore().loading[action] = action;
+			this.getStore().loading['parameterId'] = data.parameterId;
+			this.getStore().loading['action'] = action;
 
             $j("input[id='parameterProjectId']").val(data.projectId);
             $j("input[id='WebHookParameteraction']").val(action);
@@ -44,18 +44,15 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
             $j("div#editWebHookParameterDialog h3.dialogTitle").text(title);
             $j("#editWebHookParameterDialogSubmit").val(action === "addWebhookParameter" ? "Add Parameter" : "Edit Parameter");
             this.resetAndShow(data);
-            this.getWebHookParameterData(data.projectId, data.parameterId, action);
-			$j("#viewRow_" + data.parameterId).animate({
-	            backgroundColor: "#ffffcc"
-	    	}, 1000 );
+            let parameter = this.getWebHookParameterData(data.projectId, data.parameterId, action);
+			this.populateForm(action, parameter);
+
+			this.highlightRow($j("tr[data-parameter-id='" + data.parameterId + "']"), this);
 			this.afterShow();
         },
         
         cancelDialog: function () {
-        	this.close();
-	        $j("#viewRow_" + $j("#editWebHookParameterForm input[id='parameterId']").val()).animate({
-	            backgroundColor: "#ffffff"
-	        }, 500 );
+			this.closeCancel($j("tr[data-parameter-id='" + this.getStore().loading['parameterId'] + "']"), this);
         },
 
         resetAndShow: function (data) {
@@ -96,7 +93,6 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
         },
 
 		getStore: function () {
-			debugLog("getStore: Getting WebHooksPlugin.Paramters.localStore");
 			return WebHooksPlugin.Parameters.localStore;
 		},
 
@@ -182,7 +178,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			$j("#editWebHookParameterForm #parameterDialogValue").val(myJson.value);
 			$j("#editWebHookParameterForm #parameterDialogVisibility").val(myJson.includedInLegacyPayloads ? "legacy" : "template");
 			$j("#editWebHookParameterForm #parameterDialogResolve").val(myJson.forceResolveTeamCityVariable ? "forced" : "unforced");
-			$j("#editWebHookParameterForm #parameterDialogTemplateEngine").val(myJson.templateEngine);
+			$j("#editWebHookParameterForm #parameterDialogTemplateEngine").val(myJson.templateEngine === "VELOCITY" ? myJson.templateEngine : "STANDARD");
 			this.toggleHidden();
 		},
 		putParameterData: function () {
@@ -254,9 +250,18 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 				this.putWebHookParameterData();
 			}
 			return false;
+		},
+		getNextId: function(items) {
+			let maxId = 0;
+			items.each(function(item, idx) {
+				if (parseInt(item.id) > maxId) {
+					maxId = parseInt(item.id);
+				}
+			});
+			return (maxId + 1).toString();
 		}
 
-    })),
+    }),
 
     NoRestApiDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
     	getContainer: function () {
