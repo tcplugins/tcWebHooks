@@ -197,7 +197,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
 			    							WebHookUpdateResult result = mySettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
-			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, hideSecureValues); // TODO: Support Parameters, Filters and Headers
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, null, null, hideSecureValues); // TODO: Support Parameters, Filters and Headers
 			    							if(result.isUpdated()){
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='new' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {

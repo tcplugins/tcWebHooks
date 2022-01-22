@@ -92,12 +92,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
 			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig,
-			ExtraParameters extraParameters, boolean hideSecureValues) {
+			ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
 												projectInternalId, projectExternalId, url,
 												enabled, buildState, template, buildTypeAll,
 												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, 
-												extraParameters, hideSecureValues
+												extraParameters,
+												filters, headers, hideSecureValues
 											);
 		if (result.updated) {
 			if (persist(projectInternalId, "Added new WebHook")) {

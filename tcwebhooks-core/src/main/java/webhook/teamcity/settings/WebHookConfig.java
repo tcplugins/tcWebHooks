@@ -344,7 +344,7 @@ public class WebHookConfig {
 	 * @param enabledBuildTypes
 	 * @param webHookAuthConfig
 	 */
-	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, boolean hideSecureValues){
+	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues){
 		this.uniqueKey = "id_" + getRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
@@ -375,6 +375,12 @@ public class WebHookConfig {
 		}
 		if (extraParameters != null && !extraParameters.isEmpty()) {
 			this.extraParameters.putAll(ExtraParameters.WEBHOOK, extraParameters.asMap());
+		}
+		if (filters != null && !filters.isEmpty()) {
+			this.filters.addAll(filters);
+		}
+		if (headers != null && !headers.isEmpty()) {
+			this.headers.addAll(headers);
 		}
 		this.hideSecureValues = hideSecureValues;
 	}
