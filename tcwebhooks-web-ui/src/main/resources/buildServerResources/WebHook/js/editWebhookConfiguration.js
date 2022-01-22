@@ -127,7 +127,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                         });
                 },
                 error: function (response) {
-                    WebHooksPlugin.handleAjaxError(dialog, response);
+                    dialog.handleAjaxError(dialog, response);
                 }
             });
 
@@ -252,7 +252,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                 },
                 error: function (response) {
                     console.log(response);
-                    WebHooksPlugin.Configurations.handleAjaxError(dialog, response);
+                    dialog.handleAjaxError(dialog, response);
                 }
             });
         },
@@ -283,7 +283,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                 },
                 error: function (response) {
                     console.log(response);
-                    WebHooksPlugin.Configurations.handleAjaxError(dialog, response);
+                    dialog.handleAjaxError(dialog, response);
                 }
             });
         },
@@ -301,11 +301,11 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     'Accept': 'application/json'
                 },
                 success: function (response) {
-                    this.closeSuccess($j("#viewRow_" + response.id), dialog);
+                    dialog.closeSuccess($j("#viewRow_" + response.id), dialog);
                 },
                 error: function (response) {
                     console.log(response);
-                    this.handleAjaxError(dialog, response);
+                    dialog.handleAjaxError(dialog, response);
                 }
             });
         },
