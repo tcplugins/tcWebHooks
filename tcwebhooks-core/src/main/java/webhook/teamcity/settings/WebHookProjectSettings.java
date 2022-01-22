@@ -150,6 +150,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     			webHookConfig.getAuthenticationConfig(),
     			webHookConfig.getParams(),
 				webHookConfig.getTriggerFilters(),
+				webHookConfig.getHeaders(),
 				webHookConfig.isHideSecureValues()
     		);
     }
@@ -157,7 +158,8 @@ public class WebHookProjectSettings implements ProjectSettings {
 											 BuildState buildState, String template, boolean buildTypeAll, 
 											 boolean buildSubProjects, Set<String> buildTypesEnabled, 
 											 WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters,
-											 List<WebHookFilterConfig> filters, boolean hideSecureValues) {
+											 List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, 
+											 boolean hideSecureValues) {
 		boolean updateSuccess = false;
 		WebHookConfig configToUpdate = null;
         if(this.webHooksConfigs != null)
@@ -195,6 +197,9 @@ public class WebHookProjectSettings implements ProjectSettings {
             		if (filters != null) {
             			whc.setTriggerFilters(filters);
 					}
+            		if (headers != null) {
+            			whc.setHeaders(headers);
+            		}
                 	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + projectId + " with URL " + whc.getUrl());
                    	updateSuccess = true;
                    	configToUpdate = whc;

@@ -27,7 +27,7 @@ public interface WebHookSettingsManager {
 	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters,
-											 List<WebHookFilterConfig> filters, boolean hideSecureValues);
+			List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues);
 	
 
 	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter);
