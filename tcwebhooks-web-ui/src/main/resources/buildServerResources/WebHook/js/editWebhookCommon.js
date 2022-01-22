@@ -47,6 +47,9 @@ const WebHooksPlugin = {
 				backgroundColor: "#ffffff"
 			}, 500 );
 		},
+		handleAjaxError: function(dialog, response) {
+			WebHooksPlugin.handleAjaxError(dialog, response);
+		},
 		closeSuccess: function (row, dialog) {
 			dialog.close();
 			dialog.getRefreshContainer().refresh(function() {
