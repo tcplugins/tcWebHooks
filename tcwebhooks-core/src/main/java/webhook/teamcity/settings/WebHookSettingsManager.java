@@ -17,13 +17,16 @@ public interface WebHookSettingsManager {
 	
 	public List<WebHookConfig> getWebHooksConfigs(String projectInternalId);
 
+	public WebHookUpdateResult addNewWebHook(String projectInternalId, WebHookConfig config);
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
 			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig,
 			ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues);
 
 	public WebHookUpdateResult deleteWebHook(String webHookId, String projectId);
+	public WebHookUpdateResult deleteWebHook(String projectInternalId, WebHookConfig config);
 
+	public WebHookUpdateResult updateWebHook(String projectInternalId, WebHookConfig config);
 	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters,

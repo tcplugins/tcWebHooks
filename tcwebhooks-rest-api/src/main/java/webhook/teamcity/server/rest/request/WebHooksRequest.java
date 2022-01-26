@@ -165,21 +165,17 @@ public class WebHooksRequest {
 	@Path("/{projectId}")
 	@Consumes({ "application/xml", "application/json" })
 	@Produces({ "application/xml", "application/json" })
-	public ProjectWebhook createWebHook(@PathParam("projectId") String projectExternalId, @PathParam("webhookLocator") String webhookLocator, ProjectWebhook webhook, @QueryParam("fields") String fields) {
+	public ProjectWebhook createWebHook(@PathParam("projectId") String projectExternalId, ProjectWebhook webhook, @QueryParam("fields") String fields) {
 		SProject sProject  = resolveProject(projectExternalId);
 		checkWebHookWritePermission(sProject.getProjectId());
-		WebHookConfig existingWebhookConfig = this.myDataProvider.getWebHookFinder().getWebHookConfigById(projectExternalId, webhookLocator);
 		
-		if (existingWebhookConfig != null) {
-			throw new NotFoundException(EXISTING_WEBHOOK_FOUND_BY_THAT_ID);
-		}
-		ErrorResult validationResult = myWebHookValidator.validateUpdatedWebHook(projectExternalId, webhook, new ErrorResult());
+		ErrorResult validationResult = myWebHookValidator.validateNewWebHook(projectExternalId, webhook, new ErrorResult());
 
 		if (validationResult.isErrored()) {
 			throw new UnprocessableEntityException(WEBHOOK_CONTAINED_INVALID_DATA, validationResult);
 		}
 		WebHookConfig config = webhook.toWebHookConfig(this.myDataProvider.getProjectIdResolver(), this.myDataProvider.getBuildTypeIdResolver());
-		WebHookUpdateResult result = myDataProvider.getWebHookFinder().getWebHookProjectSettings(projectExternalId).addNewWebHook(config);
+		WebHookUpdateResult result = myDataProvider.getWebHookFinder().addWebHookToProjectSettings(sProject.getProjectId(), config);
 		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookFinder().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
 	}
 	
@@ -205,7 +201,7 @@ public class WebHooksRequest {
 			throw new UnprocessableEntityException(WEBHOOK_CONTAINED_INVALID_DATA, validationResult);
 		}
 		WebHookConfig config = webhook.toWebHookConfig(this.myDataProvider.getProjectIdResolver(), this.myDataProvider.getBuildTypeIdResolver());
-		WebHookUpdateResult result = myDataProvider.getWebHookFinder().getWebHookProjectSettings(projectExternalId).updateWebHook(config);
+		WebHookUpdateResult result = myDataProvider.getWebHookFinder().updateWebHookInProjectSettings(sProject.getProjectId(), config);
 		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookFinder().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
 	}
 	
@@ -222,7 +218,7 @@ public class WebHooksRequest {
 			throw new NotFoundException(NO_WEBHOOK_FOUND_BY_THAT_ID);
 		}
 		
-		WebHookUpdateResult result = myDataProvider.getWebHookFinder().getWebHookProjectSettings(projectExternalId).deleteWebHook(existingWebhookConfig.getUniqueKey(), existingWebhookConfig.getProjectExternalId());
+		WebHookUpdateResult result = myDataProvider.getWebHookFinder().deleteWebHookFromProjectSettings(sProject.getProjectId(), existingWebhookConfig);
 		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookFinder().getBuildTypeExternalIds(result.getWebHookConfig().getEnabledBuildTypesSet()));
 	}
 	

@@ -109,7 +109,20 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			}
 		}
 		return result;
-
+	}
+	
+	@Override
+	public WebHookUpdateResult addNewWebHook(String projectInternalId, WebHookConfig config) {
+		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(config);
+		if (result.updated) {
+			if (persist(projectInternalId, "Added new WebHook")) {
+				result.updated = true;
+				rebuildWebHooksEnhanced(projectInternalId);
+			} else {
+				result.updated = false;
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -125,18 +138,48 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		}
 		return result;
 	}
+	
+	@Override
+	public WebHookUpdateResult deleteWebHook(String projectInternalId, WebHookConfig config) {
+		WebHookUpdateResult result = getSettings(projectInternalId).deleteWebHook(config.getUniqueKey(), projectInternalId);
+		if (result.updated) {
+			if (persist(projectInternalId, "Deleted existing WebHook")) {
+				result.updated = true;
+				rebuildWebHooksEnhanced(projectInternalId);
+			} else {
+				result.updated = false;
+			}
+		}
+		return result;
+	}
+	
+	
 
+	@Override
+	public WebHookUpdateResult updateWebHook(String projectInternalId, WebHookConfig config) {
+		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(config);
+		if (result.updated) {
+			if (persist(projectInternalId, "Edited existing WebHook")) {
+				result.updated = true;
+				rebuildWebHooksEnhanced(projectInternalId);
+			} else {
+				result.updated = false;
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public WebHookUpdateResult updateWebHook(String projectInternalId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, 
 			List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(
-													projectInternalId, webHookId, url, enabled,
-													buildState, template, buildTypeAll, buildSubProjects,
-													buildTypesEnabled,  webHookAuthConfig, extraParameters,
-													filters, headers, hideSecureValues
-												);
+				projectInternalId, webHookId, url, enabled,
+				buildState, template, buildTypeAll, buildSubProjects,
+				buildTypesEnabled,  webHookAuthConfig, extraParameters,
+				filters, headers, hideSecureValues
+				);
 		if (result.updated) {
 			if (persist(projectInternalId, "Edited existing WebHook")) {
 				result.updated = true;
