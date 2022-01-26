@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.model.Fields;
@@ -172,7 +173,7 @@ public class ProjectWebhook {
 				.states(toBuildState(buildStates))
 				.subProjectsEnabled(Objects.nonNull(buildTypes) ? Boolean.TRUE.equals(buildTypes.getSubProjectsEnabled()) : Boolean.FALSE)
 				.templates(toCustomTemplates(customTemplates))
-				.uniqueKey(id)
+				.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? null : id) // If empty or "_new", set the key to null, and let the builder call getRandomKey()
 				.url(url)
 				.build();
 	}
