@@ -74,7 +74,7 @@ public class WebHookConfig {
 	private static final String LOG_PREFIX_WEB_HOOK_CONFIG = "WebHookConfig :: ";
 	private ExtraParameters extraParameters;
 	@Builder.Default private Boolean enabled = true;
-	@Builder.Default private String uniqueKey = "";
+	@Builder.Default private String uniqueKey = getRandomKey();
 	private String url;
 	@Builder.Default private String payloadFormat = null;
 	@Builder.Default private String payloadTemplate = "none";
@@ -320,11 +320,11 @@ public class WebHookConfig {
 
 	}
 
-	private String getRandomKey() {
+	private static String getRandomKey() {
 		int min = 1000000;
 		int max = 1000000000;
 		Integer rand = min + new Random().nextInt((max - min) + 1);
-		return rand.toString();
+		return "id_" + rand.toString();
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class WebHookConfig {
 	 * @param webHookAuthConfig
 	 */
 	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues){
-		this.uniqueKey = "id_" + getRandomKey();
+		this.uniqueKey =  getRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
 		this.extraParameters = new ExtraParameters();

@@ -22,6 +22,7 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSearchFilter;
 import webhook.teamcity.settings.WebHookSearchResult;
 import webhook.teamcity.settings.WebHookSettingsManager;
+import webhook.teamcity.settings.WebHookUpdateResult;
 
 public class WebHookFinder {
 
@@ -127,5 +128,15 @@ public class WebHookFinder {
 			}
 		}
 		return externalExternalIds;
+	}
+
+	public WebHookUpdateResult addWebHookToProjectSettings(String projectInternalId, WebHookConfig config) {
+		return this.webhookSettingsManager.addNewWebHook(projectInternalId, config);
+	}
+	public WebHookUpdateResult updateWebHookInProjectSettings(String projectInternalId, WebHookConfig config) {
+		return this.webhookSettingsManager.updateWebHook(projectInternalId, config);
+	}
+	public WebHookUpdateResult deleteWebHookFromProjectSettings(String projectInternalId, WebHookConfig config) {
+		return this.webhookSettingsManager.deleteWebHook(projectInternalId, config);
 	}
 }
