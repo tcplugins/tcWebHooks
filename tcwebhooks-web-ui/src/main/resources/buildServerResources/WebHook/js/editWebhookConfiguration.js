@@ -1,6 +1,6 @@
 WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
     showAddDialog: function (data, tab) {
-        this.EditDialog.showDialog("Add Web Hook", 'addWebHook', 'new', data, tab);
+        this.EditDialog.showDialog("Add Web Hook", 'addWebHook', data, tab);
     },
     showEditDialog: function (data, tab) {
         this.EditDialog.showDialog("Edit Web Hook", 'updateWebHook', data, tab);
