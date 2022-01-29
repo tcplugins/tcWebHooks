@@ -28,7 +28,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateDataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
-import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.data.WebHookManager;
 import webhook.teamcity.server.rest.data.WebHookParameterFinder;
 import webhook.teamcity.server.rest.request.Constants;
 import webhook.teamcity.test.springmock.MockProjectManager;
@@ -42,7 +42,7 @@ public class TemplateDataProviderTestContextProvider implements InjectableProvid
   private TemplateFinder templateFinder;
   private WebHookPayloadManager payloadManager;
   @Context WebHookTemplateManager templateManager;
-  private WebHookFinder webHookFinder;
+  private WebHookManager webHookManager;
   private WebHookParameterFinder webHookParameterFinder;
   private final ProjectIdResolver projectIdResolver;
   private final SecurityContextEx securityContext;
@@ -79,11 +79,11 @@ public class TemplateDataProviderTestContextProvider implements InjectableProvid
 	  }
 	  payloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
-	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
+	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
 	  webHookParameterFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookParameterFinder.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
-	  dataProvider = new TemplateDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookFinder, projectIdResolver, securityContext);
+	  dataProvider = new TemplateDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, projectIdResolver, securityContext);
 	  return dataProvider;
   }
   

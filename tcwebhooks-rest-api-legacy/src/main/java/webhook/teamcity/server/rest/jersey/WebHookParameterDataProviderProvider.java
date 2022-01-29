@@ -20,7 +20,7 @@ import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateFinder;
-import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.data.WebHookManager;
 import webhook.teamcity.server.rest.data.WebHookParameterDataProvider;
 import webhook.teamcity.server.rest.data.WebHookParameterFinder;
 
@@ -36,7 +36,7 @@ public class WebHookParameterDataProviderProvider implements InjectableProvider<
 			@NotNull final TemplateFinder templateFinder,
 			@NotNull final WebHookTemplateManager templateManager,
 			@NotNull final ProjectManager projectManager,
-			@NotNull final WebHookFinder webHookFinder,
+			@NotNull final WebHookManager webHookManager,
 			@NotNull final ProjectIdResolver projectIdResolver,
 			@NotNull final WebHookParameterFinder webHookParameterFinder,
 			@NotNull final SecurityContext securityContext
