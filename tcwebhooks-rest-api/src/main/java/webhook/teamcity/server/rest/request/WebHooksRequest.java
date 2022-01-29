@@ -143,7 +143,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookManager().getWebHookList(projectExternalId, new Fields(fields), myBeanContext);
+		return this.myDataProvider.getWebHookFinder().getWebHookList(projectExternalId, new Fields(fields), myBeanContext);
 	}
 	
 	@GET

@@ -1,8 +1,8 @@
 package webhook.teamcity.test.jerseyprovider;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 
 import java.lang.reflect.Type;
 
@@ -31,8 +31,6 @@ import webhook.teamcity.server.rest.data.WebHookFinder;
 import webhook.teamcity.server.rest.data.WebHookParameterDataProvider;
 import webhook.teamcity.server.rest.data.WebHookParameterFinder;
 import webhook.teamcity.server.rest.request.Constants;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
-import webhook.teamcity.test.springmock.MockProjectManager;
 
 @Provider
 public class WebHookParameterDataProviderTestContextProvider implements InjectableProvider<Context, Type>, Injectable<WebHookParameterDataProvider> {
@@ -43,7 +41,6 @@ public class WebHookParameterDataProviderTestContextProvider implements Injectab
   private TemplateFinder templateFinder;
   private WebHookPayloadManager payloadManager;
   @Context WebHookTemplateManager templateManager;
-  private WebHookManager webHookManager;
   private WebHookFinder webHookFinder;
   private WebHookParameterFinder webHookParameterFinder;
   private final ProjectIdResolver projectIdResolver;
@@ -79,7 +76,6 @@ public class WebHookParameterDataProviderTestContextProvider implements Injectab
 	  }
 	  payloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
-	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
 	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
 	  webHookParameterFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookParameterFinder.class);
 	  projectManager = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectManager.class);
