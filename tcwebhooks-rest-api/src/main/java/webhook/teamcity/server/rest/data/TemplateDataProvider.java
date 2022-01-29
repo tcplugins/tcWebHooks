@@ -21,7 +21,7 @@ public class TemplateDataProvider extends DataProvider {
 	@NotNull private final WebHookTemplateManager myTemplateManager;
 	@NotNull private final WebHookPayloadManager myPayloadManager;
 	@NotNull private final TemplateFinder myTemplateFinder;
-	@NotNull private final WebHookFinder myWebHookFinder;
+	@NotNull private final WebHookManager myWebHookManager;
 	
 	public TemplateDataProvider(SBuildServer server, 
 			RootUrlHolder rootUrlHolder,
@@ -30,14 +30,14 @@ public class TemplateDataProvider extends DataProvider {
 			WebHookTemplateManager templateManager, 
 			TemplateFinder templateFinder, 
 			ProjectManager projectManager,
-			WebHookFinder webHookFinder, 
+			WebHookManager webHookManager, 
 			ProjectIdResolver projectIdResolver,
 			SecurityContext securityContext) {
 		
 		super(server, rootUrlHolder, permissionChecker, projectManager,
 				projectIdResolver, securityContext);
 		
-		this.myWebHookFinder = webHookFinder;
+		this.myWebHookManager = webHookManager;
 		this.myTemplateManager = templateManager;
 		this.myPayloadManager = payloadManager;
 		this.myTemplateFinder = templateFinder;
@@ -56,8 +56,8 @@ public class TemplateDataProvider extends DataProvider {
 		return templates;
 	}
 	
-	public WebHookFinder getWebHookFinder() {
-		return myWebHookFinder;
+	public WebHookManager getWebHookManager() {
+		return myWebHookManager;
 	}
 	public WebHookTemplateConfig getWebHookTemplate(String id){
 		return this.myTemplateManager.getTemplate(id).getAsConfig();

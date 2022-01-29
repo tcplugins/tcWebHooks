@@ -26,12 +26,12 @@ import webhook.teamcity.settings.WebHookSearchResult;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.WebHookUpdateResult;
 
-public class WebHookFinder {
+public class WebHookManager {
 
 	@NotNull private final ProjectManager projectManager;
 	@NotNull private final WebHookSettingsManager webhookSettingsManager;
 	
-	public WebHookFinder(
+	public WebHookManager(
 			@NotNull final ProjectManager projectManager,
 			@NotNull final WebHookSettingsManager projectSettingsManager)
 	{

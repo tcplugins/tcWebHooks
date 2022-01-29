@@ -22,7 +22,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateDataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
-import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.data.WebHookManager;
 
 @Provider
 @SuppressWarnings("squid:S1191")
@@ -37,12 +37,12 @@ public class TemplateDataProviderProvider implements InjectableProvider<Context,
 			@NotNull final TemplateFinder templateFinder,
 			@NotNull final WebHookTemplateManager templateManager,
 			@NotNull final ProjectManager projectManager,
-			@NotNull final WebHookFinder webHookFinder,
+			@NotNull final WebHookManager webHookManager,
 			@NotNull final ProjectIdResolver projectIdResolver,
 			@NotNull final SecurityContext securityContext
 	) 
   {
-	  dataProvider = new TemplateDataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookFinder, projectIdResolver, securityContext);
+	  dataProvider = new TemplateDataProvider(sBuildServer, rootUrlHolder, permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, projectIdResolver, securityContext);
   }
 
   public ComponentScope getScope() {

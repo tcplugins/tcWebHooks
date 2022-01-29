@@ -10,14 +10,14 @@ import webhook.teamcity.ProjectIdResolver;
 
 public class WebHookDataProvider extends DataProvider {
 
-	private final WebHookFinder myWebHookFinder;
+	private final WebHookManager myWebHookManager;
 	private final BuildTypeIdResolver myBuildTypeIdResolver;
 	
 	public WebHookDataProvider(SBuildServer server, 
 			RootUrlHolder rootUrlHolder,
 			PermissionChecker permissionChecker, 
 			ProjectManager projectManager,
-			WebHookFinder webHookFinder, 
+			WebHookManager webHookManager, 
 			ProjectIdResolver projectIdResolver,
 			BuildTypeIdResolver buildTypeIdResolver,
 			SecurityContext securityContext) {
@@ -25,12 +25,12 @@ public class WebHookDataProvider extends DataProvider {
 		super(server, rootUrlHolder, permissionChecker, projectManager,
 				projectIdResolver, securityContext);
 		
-		this.myWebHookFinder = webHookFinder;
+		this.myWebHookManager = webHookManager;
 		this.myBuildTypeIdResolver = buildTypeIdResolver;
 	}
 
-	public WebHookFinder getWebHookFinder() {
-		return myWebHookFinder;
+	public WebHookManager getWebHookManager() {
+		return myWebHookManager;
 	}
 
 	
