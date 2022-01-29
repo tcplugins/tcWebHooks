@@ -21,7 +21,6 @@ import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookFinder;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 
 @Provider
 @SuppressWarnings("squid:S1191")
@@ -34,13 +33,12 @@ public class WebHookDataProviderProvider implements InjectableProvider<Context, 
 			@NotNull final PermissionChecker permissionChecker,
 			@NotNull final ProjectManager projectManager,
 			@NotNull final WebHookFinder webHookFinder,
-			@NotNull final WebHookManager webHookManager,
 			@NotNull final ProjectIdResolver projectIdResolver,
 			@NotNull final BuildTypeIdResolver buildTypeIdResolver,
 			@NotNull final SecurityContext securityContext
 	) 
   {
-	  dataProvider = new WebHookDataProvider(sBuildServer, rootUrlHolder, permissionChecker, projectManager, webHookFinder, webHookManager, projectIdResolver, buildTypeIdResolver, securityContext);
+	  dataProvider = new WebHookDataProvider(sBuildServer, rootUrlHolder, permissionChecker, projectManager, webHookFinder, projectIdResolver, buildTypeIdResolver, securityContext);
   }
 
   public ComponentScope getScope() {

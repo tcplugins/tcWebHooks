@@ -11,11 +11,13 @@ import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
+import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
+import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -128,6 +130,22 @@ public class WebHookFinder {
 			}
 		}
 		return externalExternalIds;
+	}
+	
+	public ProjectWebhooks build(WebHookProjectSettings webHookProjectSettings, final String projectExternalId, final @NotNull Fields fields, @NotNull final BeanContext beanContext){
+		ProjectWebhooks projectWebhooks = new ProjectWebhooks();
+		projectWebhooks.setEnabled(webHookProjectSettings.isEnabled());
+		projectWebhooks.setProjectId(projectExternalId);
+		for (WebHookConfig config : webHookProjectSettings.getWebHooksConfigs()) {
+			projectWebhooks.addWebhook(new ProjectWebhook(config, projectExternalId, fields, beanContext, getBuildTypeExternalIds(config.getEnabledBuildTypesSet())));
+		}
+		projectWebhooks.setCount(ValueWithDefault.decideIncludeByDefault(fields.isIncluded("count"), webHookProjectSettings.getWebHooksConfigs().size()));
+		return projectWebhooks;
+	}
+	
+	public ProjectWebhooks getWebHookList(final String projectExternalId, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+		WebHookProjectSettings webHookProjectSettings = getWebHookProjectSettings(projectExternalId);
+		return build(webHookProjectSettings, projectExternalId, fields, beanContext);
 	}
 
 	public WebHookUpdateResult addWebHookToProjectSettings(String projectInternalId, WebHookConfig config) {

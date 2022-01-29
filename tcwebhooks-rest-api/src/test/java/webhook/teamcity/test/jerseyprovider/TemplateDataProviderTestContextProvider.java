@@ -31,7 +31,6 @@ import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookFinder;
 import webhook.teamcity.server.rest.data.WebHookParameterFinder;
 import webhook.teamcity.server.rest.request.Constants;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 import webhook.teamcity.test.springmock.MockProjectManager;
 
 @Provider
@@ -43,7 +42,6 @@ public class TemplateDataProviderTestContextProvider implements InjectableProvid
   private TemplateFinder templateFinder;
   private WebHookPayloadManager payloadManager;
   @Context WebHookTemplateManager templateManager;
-  private WebHookManager webHookManager;
   private WebHookFinder webHookFinder;
   private WebHookParameterFinder webHookParameterFinder;
   private final ProjectIdResolver projectIdResolver;
@@ -81,7 +79,6 @@ public class TemplateDataProviderTestContextProvider implements InjectableProvid
 	  }
 	  payloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
-	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
 	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
 	  webHookParameterFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookParameterFinder.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
