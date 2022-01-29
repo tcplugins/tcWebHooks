@@ -3,14 +3,11 @@ package webhook.teamcity.server.rest;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.PathTransformer;
-import jetbrains.buildServer.server.rest.util.ValueWithDefault.Value;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.server.rest.request.TemplateRequest;
 import webhook.teamcity.server.rest.request.WebHookParametersRequest;
 import webhook.teamcity.server.rest.request.WebHooksRequest;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 import webhook.teamcity.settings.WebHookConfig;
-import webhook.teamcity.settings.WebHookFilterConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.project.WebHookParameter;
 

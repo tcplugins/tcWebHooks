@@ -7,12 +7,10 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
-import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 
 public class WebHookDataProvider extends DataProvider {
 
 	private final WebHookFinder myWebHookFinder;
-	private final WebHookManager myWebHookManager;
 	private final BuildTypeIdResolver myBuildTypeIdResolver;
 	
 	public WebHookDataProvider(SBuildServer server, 
@@ -20,7 +18,6 @@ public class WebHookDataProvider extends DataProvider {
 			PermissionChecker permissionChecker, 
 			ProjectManager projectManager,
 			WebHookFinder webHookFinder, 
-			WebHookManager webHookManager,
 			ProjectIdResolver projectIdResolver,
 			BuildTypeIdResolver buildTypeIdResolver,
 			SecurityContext securityContext) {
@@ -29,7 +26,6 @@ public class WebHookDataProvider extends DataProvider {
 				projectIdResolver, securityContext);
 		
 		this.myWebHookFinder = webHookFinder;
-		this.myWebHookManager = webHookManager;
 		this.myBuildTypeIdResolver = buildTypeIdResolver;
 	}
 
@@ -37,9 +33,6 @@ public class WebHookDataProvider extends DataProvider {
 		return myWebHookFinder;
 	}
 
-	public WebHookManager getWebHookManager() {
-		return myWebHookManager;
-	}
 	
 	public BuildTypeIdResolver getBuildTypeIdResolver() {
 		return myBuildTypeIdResolver;

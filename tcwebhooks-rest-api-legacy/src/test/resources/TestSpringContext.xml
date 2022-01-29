@@ -32,7 +32,7 @@
 	<bean id="dataProvider" class="webhook.teamcity.server.rest.data.DataProvider"/>
 	<bean id="dataProviderProvider" class="webhook.teamcity.server.rest.jersey.TemplateDataProviderProvider"/>
 	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
-	<bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/>
+	<!--bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/-->
 	<bean id="webHookFinder" class="webhook.teamcity.server.rest.data.WebHookFinder"/>
 	<bean id="webHookParameterFinder" class="webhook.teamcity.server.rest.data.WebHookParameterFinder"/>
 	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
