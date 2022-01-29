@@ -27,7 +27,7 @@ import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateFinder;
-import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.data.WebHookManager;
 import webhook.teamcity.server.rest.data.WebHookParameterDataProvider;
 import webhook.teamcity.server.rest.data.WebHookParameterFinder;
 import webhook.teamcity.server.rest.request.Constants;
@@ -41,7 +41,7 @@ public class WebHookParameterDataProviderTestContextProvider implements Injectab
   private TemplateFinder templateFinder;
   private WebHookPayloadManager payloadManager;
   @Context WebHookTemplateManager templateManager;
-  private WebHookFinder webHookFinder;
+  private WebHookManager webHookManager;
   private WebHookParameterFinder webHookParameterFinder;
   private final ProjectIdResolver projectIdResolver;
   private final SecurityContextEx securityContext;
@@ -76,7 +76,7 @@ public class WebHookParameterDataProviderTestContextProvider implements Injectab
 	  }
 	  payloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 	  templateFinder = ContextLoader.getCurrentWebApplicationContext().getBean(TemplateFinder.class);
-	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
+	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
 	  webHookParameterFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookParameterFinder.class);
 	  projectManager = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectManager.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);

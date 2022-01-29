@@ -279,7 +279,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 			  if (webHookTemplateConfigWrapper.getStatus().isStateUnknown()) {
 				  throw new OperationException("You cannot relocate a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
 			  }
-			  int templateUsageCount = myDataProvider.getWebHookFinder().getTemplateUsageCount(webHookTemplateConfigWrapper.getTemplateConfig().getId());
+			  int templateUsageCount = myDataProvider.getWebHookManager().getTemplateUsageCount(webHookTemplateConfigWrapper.getTemplateConfig().getId());
 			  if (webHookTemplateConfigWrapper.getStatus().equals(TemplateState.USER_DEFINED) &&  templateUsageCount > 0) {
 				  throw new TemplateInUseException(
 						  "Cannot relocate template with associated webhooks",
@@ -482,7 +482,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  if (webHookTemplateConfigWrapper.getStatus().isStateUnknown()) {
 		  throw new OperationException("You cannot delete a tcWebHooks template in an unknown state. Please report this as a bug against the tcPlugins/tcWebHooks project on GitHub.");
 	  }
-	  int templateUsageCount = myDataProvider.getWebHookFinder().getTemplateUsageCount(webHookTemplateConfigWrapper.getTemplateConfig().getId());
+	  int templateUsageCount = myDataProvider.getWebHookManager().getTemplateUsageCount(webHookTemplateConfigWrapper.getTemplateConfig().getId());
 	  if (webHookTemplateConfigWrapper.getStatus().equals(TemplateState.USER_DEFINED) &&  templateUsageCount > 0) {
 		  throw new TemplateInUseException(
 				  "Cannot delete template with associated webhooks",

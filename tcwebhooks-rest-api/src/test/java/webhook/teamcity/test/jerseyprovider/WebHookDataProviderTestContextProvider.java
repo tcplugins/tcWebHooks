@@ -27,7 +27,7 @@ import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
-import webhook.teamcity.server.rest.data.WebHookFinder;
+import webhook.teamcity.server.rest.data.WebHookManager;
 import webhook.teamcity.server.rest.request.Constants;
 import webhook.teamcity.test.springmock.MockProjectManager;
 
@@ -38,7 +38,7 @@ public class WebHookDataProviderTestContextProvider implements InjectableProvide
   private final PermissionChecker permissionChecker;
   private final ProjectManager projectManager;
   @Context WebHookTemplateManager templateManager;
-  private WebHookFinder webHookFinder;
+  private WebHookManager webHookManager;
   private final ProjectIdResolver projectIdResolver;
   private final BuildTypeIdResolver buildTypeIdResolver;
   private final SecurityContextEx securityContext;
@@ -74,10 +74,10 @@ public class WebHookDataProviderTestContextProvider implements InjectableProvide
 	  if (dataProvider != null){
 		  return dataProvider;
 	  }
-	  webHookFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookFinder.class);
+	  webHookManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookManager.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
-	  dataProvider = new WebHookDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, webHookFinder, projectIdResolver, buildTypeIdResolver, securityContext);
+	  dataProvider = new WebHookDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, webHookManager, projectIdResolver, buildTypeIdResolver, securityContext);
 	  return dataProvider;
   }
   
