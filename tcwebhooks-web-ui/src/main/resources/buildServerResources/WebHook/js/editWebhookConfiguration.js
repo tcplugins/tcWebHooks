@@ -463,6 +463,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                 secure: this.convertTypeToSecure($j('#editWebHookParameterForm #parameterDialogType').val()),
                 name: $j('#editWebHookParameterForm #parameterDialogName').val(),
                 value: $j('#editWebHookParameterForm #parameterDialogValue').val(),
+                forceResolveTeamCityVariable: this.convertForcedResolveToBoolean($j('#editWebHookParameterForm #parameterDialogResolve').val()),
                 includedInLegacyPayloads: this.convertVibilityToLegacyPayload($j('#editWebHookParameterForm #parameterDialogVisibility').val()),
                 templateEngine: this.convertTemplateToTemplateType($j('#editWebHookParameterForm #parameterDialogTemplateEngine').val())
             };
@@ -474,6 +475,9 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
         convertVibilityToLegacyPayload: function(option) {
             return option === "legacy";
+        },
+        convertForcedResolveToBoolean: function(option) {
+            return option === "forced";
         },
         convertTemplateToTemplateType: function(option) {
             return option === "VELOCITY" ? option : "STANDARD";
