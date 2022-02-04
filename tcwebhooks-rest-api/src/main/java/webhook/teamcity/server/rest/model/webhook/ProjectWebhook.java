@@ -32,6 +32,7 @@ import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookConfig.WebHookConfigBuilder;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 /*
@@ -123,7 +124,8 @@ public class ProjectWebhook {
 		if (Boolean.TRUE.equals(fields.isIncluded("states", false, true))) {
 			buildStates = new ArrayList<>();
 			for (BuildStateEnum state : config.getBuildStates().getStateSet()) {
-				if (config.getBuildStates().enabled(state)) {
+				// Only add enabled states. Skip FINISHED as it's not a configurable state.
+				if (!BuildStateEnum.BUILD_FINISHED.equals(state) && config.getBuildStates().enabled(state)) {
 					ProjectWebhookState webhookState = new ProjectWebhookState();
 					webhookState.enabled = true;
 					webhookState.type=state.getShortName();
@@ -155,28 +157,50 @@ public class ProjectWebhook {
 			params = new ArrayList<>();
 			params.addAll(parameters.getParameters());
 		}
-		return WebHookConfig
-				.builder()
-				.allBuildTypesEnabled(Objects.nonNull(buildTypes) ? Boolean.TRUE.equals(buildTypes.getAllEnabled()) : false)
-				.authEnabled(this.authentication != null)
-				.authParameters(this.authentication != null ? this.authentication.getParameters() : null)
-				.authPreemptive(this.authentication != null && this.authentication.getPreemptive())
-				.authType(this.authentication != null ? this.authentication.getType() : null)
-				.enabled(getEnabled())
-				.enabledBuildTypesSet(buildTypeIdResolver.getInternalBuildTypeIds(this.buildTypes.getEnabledBuildTypes()))
-				.extraParameters(Objects.nonNull(params) ? new ExtraParameters().putAll(ExtraParameters.WEBHOOK, params) : null)
-				.filters(Objects.nonNull(filters) ? filters.getFilterConfigs() : null)
-				.headers(Objects.nonNull(headers) ? headers.getHeaderConfigs() : null)
-				.payloadTemplate(template)
-				.projectExternalId(this.projectId)
-				.projectInternalId(projectIdResolver.getInternalProjectId(this.projectId))
-				.states(toBuildState(buildStates))
-				.subProjectsEnabled(Objects.nonNull(buildTypes) ? Boolean.TRUE.equals(buildTypes.getSubProjectsEnabled()) : Boolean.FALSE)
-				.templates(toCustomTemplates(customTemplates))
-				.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? null : id) // If empty or "_new", set the key to null, and let the builder call getRandomKey()
-				.url(url)
-				.build();
+		WebHookConfigBuilder builder = WebHookConfig.builder();
+		
+		builder.allBuildTypesEnabled(Boolean.TRUE.equals(buildTypes.getAllEnabled()));
+		
+		if (this.authentication != null) {
+			builder.authEnabled(true)
+				.authParameters(this.authentication.getParameters())
+				.authPreemptive(this.authentication.getPreemptive())
+				.authType(this.authentication.getType());
+		}
+		builder.enabled(getEnabled());
+			
+		builder.enabledBuildTypesSet(buildTypeIdResolver.getInternalBuildTypeIds(this.buildTypes.getEnabledBuildTypes()));
+		
+		if (params != null) {
+			builder.extraParameters(new ExtraParameters().putAll(ExtraParameters.WEBHOOK, params));
+		}
+		
+		if (filters != null) {
+			builder.filters(filters.getFilterConfigs());
+		}
+		
+		if (headers != null) {
+			builder.headers(headers.getHeaderConfigs());
+		}
+		
+		builder.payloadTemplate(template);
+		builder.projectExternalId(this.projectId);
+		builder.projectInternalId(projectIdResolver.getInternalProjectId(this.projectId));
+		builder.states(toBuildState(buildStates));
+		
+		if (buildTypes != null) {
+			builder.subProjectsEnabled(Boolean.TRUE.equals(buildTypes.getSubProjectsEnabled()));
+		}
+		
+		if (customTemplates != null) {
+			builder.templates(toCustomTemplates(customTemplates));
+		}
+		
+		builder.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? WebHookConfig.getRandomKey() : id); // If empty or "_new", set the key to a generated one
+		builder.url(url);
+		return builder.build();
 	}
+	
 
 	private SortedMap<String, CustomMessageTemplate> toCustomTemplates(List<CustomTemplate> customTemplates) {
 		if (Objects.isNull(customTemplates)) {
@@ -194,6 +218,9 @@ public class ProjectWebhook {
 		for (ProjectWebhookState state : states) {
 			if (Objects.nonNull(BuildStateEnum.findBuildState(state.type))) {
 				buildState.setEnabled(BuildStateEnum.findBuildState(state.type), state.enabled);
+				if (BuildStateEnum.isAnEnabledFinishedState(state.type, state.enabled)) {
+					buildState.setEnabled(BuildStateEnum.BUILD_FINISHED, true);
+				}
 			}
 		}
 		return buildState;

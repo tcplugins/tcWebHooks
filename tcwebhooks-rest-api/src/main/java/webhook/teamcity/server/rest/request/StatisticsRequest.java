@@ -7,7 +7,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.LocalDate;
 
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;

@@ -320,7 +320,7 @@ public class WebHookConfig {
 
 	}
 
-	private static String getRandomKey() {
+	public static String getRandomKey() {
 		int min = 1000000;
 		int max = 1000000000;
 		Integer rand = min + new Random().nextInt((max - min) + 1);
@@ -450,7 +450,7 @@ public class WebHookConfig {
 			el.addContent(paramsEl);
 		}
 
-		if (this.templates.size() > 0){
+		if (this.templates != null && this.templates.size() > 0){
 			Element templatesEl = new Element(EL_CUSTOM_TEMPLATES);
 			for (CustomMessageTemplate t : this.templates.values()){
 				templatesEl.addContent(t.getAsElement());
@@ -536,6 +536,10 @@ public class WebHookConfig {
 	}
 
 	public String getUniqueKey() {
+		if (this.uniqueKey == null) {
+			this.uniqueKey = getRandomKey();
+		}
+		
 		return uniqueKey;
 	}
 
