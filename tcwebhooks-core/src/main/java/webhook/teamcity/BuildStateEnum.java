@@ -1,5 +1,8 @@
 package webhook.teamcity;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum BuildStateEnum {
     BUILD_ADDED_TO_QUEUE	("buildAddedToQueue",		"been added to the build queue",		"Build Added to Queue", 			"Queued"),                
     BUILD_REMOVED_FROM_QUEUE("buildRemovedFromQueue",	"been removed from the build queue",	"Build Removed from Queue by User", "De-queued"),                
@@ -22,6 +25,7 @@ public enum BuildStateEnum {
     private final String descriptionSuffix;
     private final String shortDescription;
     private final String buildStatusDescription;
+    private static final List<BuildStateEnum>finishedStates = Arrays.asList(BUILD_SUCCESSFUL, BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN);
     
     private BuildStateEnum(String shortname, String descriptionSuffix, String shortDescription, String buildStatusDescription){
     	this.shortName = shortname;
@@ -88,5 +92,13 @@ public enum BuildStateEnum {
 				CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, 
 				BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED, 
 				BUILD_PINNED, BUILD_UNPINNED, SERVICE_MESSAGE_RECEIVED };
+	}
+	
+	public static boolean isAFinishedState(String state) {
+		return finishedStates.contains(findBuildState(state));
+	}
+	
+	public static boolean isAnEnabledFinishedState(String state, boolean isEnabled) {
+		return isEnabled && finishedStates.contains(findBuildState(state));
 	}
 }
