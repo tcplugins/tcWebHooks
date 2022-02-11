@@ -52,10 +52,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		}
 		return map.entrySet();
 	}
-	
-	public ExtraParameters addAll(String key, Map<String,String> paramsMap) {
-		return addAll(key, paramsMap, INCLUDED_IN_LEGACY_PAYLOADS, FORCE_RESOLVE_TEAMCITY_VARIABLE);
-	}
+
 	public ExtraParameters addAll(String context, Map<String,String> paramsMap, boolean includeInLegacyPayload, boolean forceResolveTeamCityVariable) {
 		for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
 			add(new WebHookParameterModel(
