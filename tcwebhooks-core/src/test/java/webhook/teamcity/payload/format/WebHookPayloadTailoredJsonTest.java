@@ -102,8 +102,8 @@ public class WebHookPayloadTailoredJsonTest {
 		WebHookPayloadTailoredJson whp = new WebHookPayloadTailoredJson(null, variableResolverManager);
 		
 		ExtraParameters extraParameters = new ExtraParameters();
-		extraParameters.addAll("params", new TreeMap<String,String>());
-		extraParameters.addAll("teamcity", new TreeMap<String,String>());
+		extraParameters.addAll("params", new TreeMap<String,String>(), false, false);
+		extraParameters.addAll("teamcity", new TreeMap<String,String>(), false, false);
 		Map<String,String> templates = new TreeMap<>();
 		templates.put(WebHookPayloadDefaultTemplates.HTML_BUILDSTATUS_TEMPLATE, "test template");
 		
@@ -128,7 +128,7 @@ public class WebHookPayloadTailoredJsonTest {
 		
 		WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
 		VariableResolverFactory variableResolverFactory = variableResolverManager.getVariableResolverFactory(PayloadTemplateEngineType.LEGACY);
-		extraParameters.addAll("teamcity", framework.getRunningBuild().getParametersProvider().getAll());
+		extraParameters.addAll("teamcity", framework.getRunningBuild().getParametersProvider().getAll(), false, false);
 
 		
 		WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, framework.getServer(), framework.getRunningBuild(), sFinishedBuild, BuildStateEnum.BUILD_FINISHED, extraParameters, templates);
