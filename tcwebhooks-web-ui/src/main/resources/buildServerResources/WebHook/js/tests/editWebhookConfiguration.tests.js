@@ -454,41 +454,43 @@ describe('Edit Parameters on existing Webhook (04)', function () {
     });
     
     it('Populate Parameter 1 in Form from Webhook', function () {
-        let parameter = dialog.getWebHookParameterData('TcPlugins', "1", 'updateWebhookParameter');
-        expect(parameter.id).to.equal("1");
-        dialog.populateForm('updateWebhookParameter', parameter);
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter');
+        //expect(parameter.id).to.equal("1");
+        //dialog.populateForm('updateWebhookParameter', parameter);
         expectEqual('#editWebHookParameterForm #parameterId', "1");
         expectEqual('#editWebHookParameterForm #parameterDialogName', "color");
         expectEqual('#editWebHookParameterForm #parameterDialogValue', "red");
         expectEqual('#editWebHookParameterForm #parameterDialogVisibility', "legacy");
+        expectEqual('#editWebHookParameterForm #parameterDialogResolve', "forced");
         expectEqual('#editWebHookParameterForm #parameterDialogTemplateEngine', "STANDARD");
         expectEqual('#editWebHookParameterForm #parameterDialogType', "text");
     })
-
+    
     it('Populate Parameter 2 in Form from Webhook', function () {
-        let parameter = dialog.getWebHookParameterData('TcPlugins', "2", 'updateWebhookParameter');
-        expect(parameter.id).to.equal("2");
-        dialog.populateForm('updateWebhookParameter', parameter);
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "2", 'updateWebhookParameter');
+        //expect(parameter.id).to.equal("2");
+        //dialog.populateForm('updateWebhookParameter', parameter);
         expectEqual('#editWebHookParameterForm #parameterId', "2");
         expectEqual('#editWebHookParameterForm #parameterDialogName', "notify");
         expectEqual('#editWebHookParameterForm #parameterDialogValue', "1");
         expectEqual('#editWebHookParameterForm #parameterDialogVisibility', "template");
+        expectEqual('#editWebHookParameterForm #parameterDialogResolve', "unforced");
         expectEqual('#editWebHookParameterForm #parameterDialogTemplateEngine', "VELOCITY");
         expectEqual('#editWebHookParameterForm #parameterDialogType', "password");
     })
 
     it('Populate Parameter 1 in Form and read back out', function () {
-        let parameter = dialog.getWebHookParameterData('TcPlugins', "1", 'updateWebhookParameter');
-        expect(parameter.id).to.equal("1");
-        dialog.populateForm('updateWebhookParameter', parameter);
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter');
+        //expect(parameter.id).to.equal("1");
+        //dialog.populateForm('updateWebhookParameter', parameter);
         let paramFromForm = dialog.populateJsonDataFromForm();
         expect(paramFromForm.id).to.equal("1");
     })
 
     it('Populate Parameter 1 in Form, change it, and read back out', function () {
-        let parameter = dialog.getWebHookParameterData('TcPlugins', "1", 'updateWebhookParameter');
-        expect(parameter.id).to.equal("1");
-        dialog.populateForm('updateWebhookParameter', parameter);
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter');
+        //expect(parameter.id).to.equal("1");
+        //dialog.populateForm('updateWebhookParameter', parameter);
         $j('#editWebHookParameterForm #parameterDialogName').val("test01")
         $j('#editWebHookParameterForm #parameterDialogValue').val("test02")
         $j('#editWebHookParameterForm #parameterDialogVisibility').val("template")

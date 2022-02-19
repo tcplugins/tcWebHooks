@@ -30,8 +30,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
         },
 
 		afterShow: function() {
-			alert ("Parameter.EditDialog after show");
-			$(this.formElement()).setAttribute("onsubmit", "xxxxreturn WebHooksPlugin.Parameters.EditDialog.doPost()");
+			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Parameters.EditDialog.doPost()");
         },
 
         showDialog: function (title, action, data) {
@@ -44,8 +43,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
             $j("div#editWebHookParameterDialog h3.dialogTitle").text(title);
             $j("#editWebHookParameterDialogSubmit").val(action === "addWebhookParameter" ? "Add Parameter" : "Edit Parameter");
             this.resetAndShow(data);
-            let parameter = this.getWebHookParameterData(data.projectId, data.parameterId, action);
-			this.populateForm(action, parameter);
+            this.getWebHookParameterDataThenPopulateForm(data.projectId, data.parameterId, action);
 
 			this.highlightRow($j("tr[data-parameter-id='" + data.parameterId + "']"), this);
 			this.afterShow();
@@ -96,9 +94,11 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			return WebHooksPlugin.Parameters.localStore;
 		},
 
-		getWebHookParameterData: function (projectId, parameterId, action) {
+		getWebHookParameterDataThenPopulateForm: function (projectId, parameterId, action) {
 			if (action === 'addWebhookParameter') {
-				this.getStore().myJson = { "id": "_new", "projectId": projectId};
+				let param = { "id": "_new", "projectId": projectId};
+				dialog.getStore().myJson = param;
+				dialog.populateForm(action, param);
 			} else {
 				this.getParameterData(projectId, parameterId, action);
 			}
@@ -131,7 +131,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			myJson.name = $j("#editWebHookParameterForm #parameterDialogName").val();
 			myJson.value = $j("#editWebHookParameterForm #parameterDialogValue").val();
 			myJson.includedInLegacyPayloads = $j("#editWebHookParameterForm #parameterDialogVisibility").val() === "legacy";
-			myJson.forceResolveTeamCityVariable = $j("#editWebHookParameterForm #parameterDialogResolve").val() == "forced";
+			myJson.forceResolveTeamCityVariable = $j("#editWebHookParameterForm #parameterDialogResolve").val() === "forced";
 			myJson.templateEngine = $j("#editWebHookParameterForm #parameterDialogTemplateEngine").val();
 			return myJson;
 		},
