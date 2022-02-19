@@ -58,6 +58,7 @@ const WebHooksPlugin = {
 				.animate({
 					backgroundColor: "#ffffff"
 				}, 2500 );
+				console.debug(dialog);
 		})}
 	}))
 };

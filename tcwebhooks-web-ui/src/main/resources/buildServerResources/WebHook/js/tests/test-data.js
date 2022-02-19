@@ -982,6 +982,7 @@ var webHook04 = {
         "value": "red",
         "secure": false,
         "includedInLegacyPayloads": true,
+        "forceResolveTeamCityVariable" : true,
         "templateEngine": "STANDARD",
         "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters/id:1"
       },

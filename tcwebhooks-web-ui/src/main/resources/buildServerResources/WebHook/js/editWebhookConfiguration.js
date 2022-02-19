@@ -415,9 +415,11 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 				}, 2500 );
 		},
 
-        getWebHookParameterData: function(projectId, parameterId, action) {
+        getWebHookParameterDataThenPopulateForm: function(projectId, parameterId, action) {
             if (action === 'addWebhookParameter') {
-                return { "id": "_new", "projectId": projectId};
+                let param = { "id": "_new", "projectId": projectId};
+                dialog.populateForm(action, param);
+                return;
             }
             let dialog = this;
             let webhook = this.getStore().myJson;
@@ -431,7 +433,6 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     }
                 });
             }
-            return param;
         },
 
         afterShow: function () {
@@ -455,32 +456,6 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             dialog.closeSuccess($j("tr[data-parameter-id='" + parameterId + "']"), dialog);
 
             return false;
-        },
-
-        populateJsonDataFromForm: function() {
-            let parameter = {
-                id: $j('#editWebHookParameterForm #parameterId').val(),
-                secure: this.convertTypeToSecure($j('#editWebHookParameterForm #parameterDialogType').val()),
-                name: $j('#editWebHookParameterForm #parameterDialogName').val(),
-                value: $j('#editWebHookParameterForm #parameterDialogValue').val(),
-                forceResolveTeamCityVariable: this.convertForcedResolveToBoolean($j('#editWebHookParameterForm #parameterDialogResolve').val()),
-                includedInLegacyPayloads: this.convertVibilityToLegacyPayload($j('#editWebHookParameterForm #parameterDialogVisibility').val()),
-                templateEngine: this.convertTemplateToTemplateType($j('#editWebHookParameterForm #parameterDialogTemplateEngine').val())
-            };
-            return parameter;
-        },
-
-        convertTypeToSecure: function(option) {
-            return option === "password";
-        },
-        convertVibilityToLegacyPayload: function(option) {
-            return option === "legacy";
-        },
-        convertForcedResolveToBoolean: function(option) {
-            return option === "forced";
-        },
-        convertTemplateToTemplateType: function(option) {
-            return option === "VELOCITY" ? option : "STANDARD";
         },
 
         addWebHookParameterDataToWebHook: function () {
