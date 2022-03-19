@@ -20,7 +20,7 @@
 					The following chart shows statistics of the status returned by webhook executions over the past 60 days.
 					Statistics are assembled hourly, and persisted across TeamCity restarts.
 					<canvas id="historyChart"></canvas>
-					
+
 					<h2>WebHook Execution History Details</h2>
 					The following data is assembled from the in-memory execution results. Results are cleared when TeamCity is restarted.
 					<p>Since the last TeamCity restart, there have been:</p>
@@ -58,7 +58,7 @@
 					<td><c:out value="${historyItem.webHookExecutionStats.url}"/></td>
 					<td><c:out value="${historyItem.webHookExecutionStats.buildState.shortDescription}">undefined</c:out></td>
 					<td title="x-tcwebhooks-request-id: ${historyItem.webHookExecutionStats.trackingId}">${historyItem.webHookExecutionStats.statusCode} :: <c:out value="${historyItem.webHookExecutionStats.statusReason}"/></td>
-						 </tr>
+						</tr>
 
 					</c:forEach>
 
@@ -84,7 +84,10 @@
 						}
 					} ],
 					yAxes : [ {
-						stacked : true
+						stacked : true,
+						ticks: {
+							beginAtZero: true
+						}
 					} ]
 				},
 				legend: {
