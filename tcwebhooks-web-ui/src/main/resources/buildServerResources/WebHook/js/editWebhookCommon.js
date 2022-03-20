@@ -1,5 +1,8 @@
-Object.defineProperty(this, "log", {get: function () {
-	return WebHooksPlugin.isDebug() ? console.log.bind(window.console, '[DEBUG]') 
+Object.defineProperty(this, "log", { get: function () {
+	return console.debug.bind(window.console);
+}});
+Object.defineProperty(this, "logDebug", { get: function () {
+	return WebHooksPlugin.isDebug() ? console.debug.bind(window.console) 
 				 : function(){};}
   });
 const queryStringParams = new URLSearchParams(window.location.search);
@@ -10,9 +13,6 @@ const WebHooksPlugin = {
 	},
 	isDebug: function() {
 		return queryStringParams.has('debug') && queryStringParams.get('debug') != "false";
-	},
-	logDebug: function(logObject) {
-		this.isDebug() && console.debug(logObject);
 	},
 	handleAjaxError: function(dialog, response) {
 		dialog.cleanErrors();

@@ -149,8 +149,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
 
         getStore: function () {
-            log("getStore: Getting WebHooksPlugin.Configurations.localStore");
-            log(WebHooksPlugin.Configurations.localStore);
+            logDebug("getStore: Getting WebHooksPlugin.Configurations.localStore", WebHooksPlugin.Configurations.localStore);
             return WebHooksPlugin.Configurations.localStore;
         },
 
@@ -259,16 +258,14 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 
         handleGetSuccess: function (action) {
             var myJson = this.getStore().myJson;
-            log(myJson);
-            log(this.getStore().myJson);
+            logDebug("JSON loaded from server contains...", myJson);
             //$j('#editWebHookForm #parameterId').val(myJson.id);
             //$j('#editWebHookForm #parameterHref').val(myJson.href);
-            populateWebHookDialog(this.getStore().myJson);
+            populateWebHookDialog(myJson);
         },
         putData: function () {
             var dialog = this;
-            log(this.getStore().myJson.href);
-            log(this.getStore().myJson);
+            logDebug("PUTing to '" + this.getStore().myJson.href + "' with payload: ", this.getStore().myJson);
             $j.ajax({
                 url: window['base_uri'] + dialog.getStore().myJson.href,
                 type: "PUT",
@@ -396,7 +393,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
     EditParameterDialog: OO.extend(WebHooksPlugin.Parameters.EditDialog, {
 
         getStore: function () {
-            WebHooksPlugin.isDebug() && console.debug("getStore: Getting WebHooksPlugin.Configurations.localStore");
+            logDebug("getStore: Getting WebHooksPlugin.Configurations.localStore. ", WebHooksPlugin.Configurations.localStore);
             return WebHooksPlugin.Configurations.localStore;
         },
         getContainer: function () {
@@ -416,12 +413,12 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 		},
 
         getWebHookParameterDataThenPopulateForm: function(projectId, parameterId, action) {
+            let dialog = this;
             if (action === 'addWebhookParameter') {
                 let param = { "id": "_new", "projectId": projectId};
                 dialog.populateForm(action, param);
                 return;
             }
-            let dialog = this;
             let webhook = this.getStore().myJson;
             let param = null;
             if (projectId === webhook.projectId) {
