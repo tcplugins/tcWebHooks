@@ -72,7 +72,15 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 		} catch (WebHookExecutionException ex){
 			webhook.getExecutionStats().setErrored(true);
 			webhook.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-			Loggers.SERVER.error(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+			Loggers.SERVER.error(
+					String.format("%s trackingId: %s :: projectId: %s :: webhookId: %s :: templateId: %s, errorCode: %s, errorMessage: %s", 
+							CLASS_NAME, 
+							webhook.getExecutionStats().getTrackingIdAsString(),
+							whc.getProjectExternalId(),
+							whc.getUniqueKey(),
+							whc.getPayloadTemplate(),
+							ex.getErrorCode(),
+							ex.getMessage()));
 			Loggers.SERVER.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
 			this.webHookHistoryItem = buildWebHookHistoryItem(new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()));
 			webHookHistoryRepository.addHistoryItem(webHookHistoryItem);
@@ -81,8 +89,15 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 		} catch (Exception ex){
 			webhook.getExecutionStats().setErrored(true);
 			webhook.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-			Loggers.SERVER.error(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-			Loggers.SERVER.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
+			Loggers.SERVER.error(
+					String.format("%s trackingId: %s :: projectId: %s :: webhookId: %s :: templateId: %s, errorCode: %s, errorMessage: %s", 
+							CLASS_NAME, 
+							webhook.getExecutionStats().getTrackingIdAsString(),
+							whc.getProjectExternalId(),
+							whc.getUniqueKey(),
+							whc.getPayloadTemplate(),
+							WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE,
+							ex.getMessage()));			Loggers.SERVER.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
 			this.webHookHistoryItem = buildWebHookHistoryItem(new WebHookErrorStatus(ex, ex.getMessage(), 
 					WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE));
 			webHookHistoryRepository.addHistoryItem(this.webHookHistoryItem);

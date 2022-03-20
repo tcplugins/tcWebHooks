@@ -18,6 +18,7 @@ public class WebHookExecutionException extends RuntimeException {
 	public static final int    WEBHOOK_PAYLOAD_CONTENT_ASSEMBLY_EXCEPTION_ERROR_CODE = 904;
 	public static final int    WEBHOOK_CONFIGURATION_NOT_FOUND_EXCEPTION_ERROR_CODE = 905;
 	public static final int    WEBHOOK_VARIABLE_RESOLVER_NOT_FOUND_EXCEPTION_ERROR_CODE = 906;
+	public static final int    WEBHOOK_TEMPLATE_PARSING_EXCEPTION_ERROR_CODE = 907;
 
 	public static final String WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE = "Unexpected exception. Please log a bug on GitHub tcplugins/tcWebHooks. Exception was: ";
 	public static final int    WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE = 999;

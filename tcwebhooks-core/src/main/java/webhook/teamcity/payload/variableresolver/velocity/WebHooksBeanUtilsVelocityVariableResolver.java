@@ -94,17 +94,17 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 	}
 
 	@Override
-	public boolean containsKey(Object key) {
+	public boolean containsKey(String key) {
 		return this.velocityContext.containsKey(key);
 	}
 
 	@Override
-	public Object[] getKeys() {
+	public String[] getKeys() {
 		return this.velocityContext.getKeys();
 	}
 
 	@Override
-	public Object remove(Object key) {
+	public Object remove(String key) {
 		return this.velocityContext.remove(key);
 	}
 
