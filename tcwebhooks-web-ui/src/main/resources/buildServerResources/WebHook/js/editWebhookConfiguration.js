@@ -286,12 +286,14 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
         postData: function () {
             var dialog = this;
-            // For creating, the ID must be empty
-            this.getStore().myJson.id = "";
+            // For creating, the ID must be empty, so make a copy 
+            let webhook = JSON.parse(JSON.stringify(this.getStore().myJson));
+            // and then empty it.
+            webhook.id = "";
             $j.ajax({
-                url: window['base_uri'] + '/app/rest/webhooks/configurations/' + dialog.getStore().myJson.projectId,
+                url: window['base_uri'] + '/app/rest/webhooks/configurations/' + webhook.projectId,
                 type: "POST",
-                data: JSON.stringify(dialog.getStore().myJson),
+                data: JSON.stringify(webhook),
                 dataType: 'json',
                 headers: {
                     'Content-Type': 'application/json',
