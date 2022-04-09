@@ -69,7 +69,7 @@ WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
         },
 
 		getStore: function () {
-			logDebug("getStore: Getting WebHooksPlugin.Configurations.localStore", WebHooksPlugin.Configurations.localStor);
+			logDebug("getStore: Getting WebHooksPlugin.Configurations.localStore", WebHooksPlugin.Configurations.localStore);
 			return WebHooksPlugin.Configurations.localStore;
 		},
 
