@@ -108,6 +108,7 @@ ul.commalist li:last-child:after {
 						</tr>
 					</tfoot>
 				</table>
+				<script>WebHooksPlugin.afterRefresh();</script>
 		</bs:refreshable>
 		<p>
 			<h3>WebHook Parameters available to WebHooks in this Project</h3>
@@ -224,7 +225,7 @@ ul.commalist li:last-child:after {
 	<%@ include file="jsp-includes/editWebHookFilterDialog.jsp" %>
 	<%@ include file="jsp-includes/noRestApiDialog.jsp" %>
 	
-	<<script type="text/javascript">
+	<script type="text/javascript">
 		var restApiDetected = ${isRestApiInstalled};
 		var ProjectBuilds = ${projectWebHooksAsJson};
 	</script>

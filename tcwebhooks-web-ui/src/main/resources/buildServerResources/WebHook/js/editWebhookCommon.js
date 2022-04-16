@@ -9,6 +9,7 @@ const queryStringParams = new URLSearchParams(window.location.search);
 const WebHooksPlugin = {
 	localStore: {
 		loading: {},
+		afterRefresh: null,
 		myJson: {}
 	},
 	isDebug: function() {
@@ -32,6 +33,17 @@ const WebHooksPlugin = {
 			alert("An unexpected error occured. Please see your browser's javascript console.");
 		}
 	},
+	afterRefresh: function() {
+		if (this.localStore.afterRefresh !== null) {
+			this.localStore.afterRefresh
+			.css({backgroundColor: '#cceecc'})
+			.animate({
+				backgroundColor: "#ffffff"
+			}, 2500 );
+			this.localStore.afterRefresh = null;
+			//alert("dkjdlkjdlf");
+		}
+	},
 	EditDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
 		getRefreshContainer: function () {
 			alert("Please override 'getRefreshContainer' function in your own dialog instance");
@@ -51,14 +63,9 @@ const WebHooksPlugin = {
 			WebHooksPlugin.handleAjaxError(dialog, response);
 		},
 		closeSuccess: function (row, dialog) {
+			WebHooksPlugin.localStore.afterRefresh = row;
 			dialog.close();
-			dialog.getRefreshContainer().refresh(function() {
-				row
-				.css({backgroundColor: '#cceecc'})
-				.animate({
-					backgroundColor: "#ffffff"
-				}, 2500 );
-				console.debug(dialog);
-		})}
+			dialog.getRefreshContainer().refresh();
+		}
 	}))
 };
