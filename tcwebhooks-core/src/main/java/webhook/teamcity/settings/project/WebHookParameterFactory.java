@@ -28,8 +28,8 @@ public class WebHookParameterFactory {
 		model.setId(id);
 		model.setSecure(Boolean.valueOf(parameters.get(SECURE_KEY)));
 		model.setName(parameters.get(NAME_KEY));
-		if (Boolean.TRUE.equals(model.getSecure()) && parameters.get(VALUE_KEY).startsWith(SECURE_PROPERTY_PREFIX)) {
-			model.setValue(parameters.get(VALUE_KEY).substring(SECURE_PROPERTY_PREFIX.length()));
+		if (Boolean.TRUE.equals(model.getSecure()) && parameters.containsKey(SECURE_PROPERTY_PREFIX + VALUE_KEY)) {
+			model.setValue(parameters.get(SECURE_PROPERTY_PREFIX + VALUE_KEY));
 		} else {
 			model.setValue(parameters.get(VALUE_KEY));
 		}
@@ -44,7 +44,7 @@ public class WebHookParameterFactory {
 		
 		properties.put(NAME_KEY, model.getName());
 		if (Boolean.TRUE.equals(model.getSecure())) {
-			properties.put(VALUE_KEY, SECURE_PROPERTY_PREFIX + model.getValue());
+			properties.put(SECURE_PROPERTY_PREFIX + VALUE_KEY, model.getValue());
 		} else {
 			properties.put(VALUE_KEY, model.getValue());
 		}
