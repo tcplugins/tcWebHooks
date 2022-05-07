@@ -1,5 +1,6 @@
 package webhook.teamcity.payload.variableresolver.velocity;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,8 +33,10 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 	private static final String SUFFIX = ")";
 	private Object bean;
 	private VelocityContext velocityContext = new VelocityContext();
+	private Map<String,String> nameMappings = new HashMap<>();
 	private SProject sProject;
 	private WebHookSecretResolver webHookSecretResolver;
+	private ExtraParameters extraParameters;
 	
 	public WebHooksBeanUtilsVelocityVariableResolver(
 			SProject sProject,
@@ -44,9 +47,12 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 		this.sProject = sProject;
 		this.bean = javaBean;
 		this.webHookSecretResolver = webHookSecretResolver;
+		this.extraParameters = extraAndTeamCityProperties;
 		
 		for (Map.Entry<String,String> entry : extraAndTeamCityProperties.asMap().entrySet()) {
-			velocityContext.put(entry.getKey().replaceAll("\\.", "_"), entry.getValue());
+			String newKey = entry.getKey().replace(".", "_");
+			velocityContext.put(newKey, entry.getValue());
+			nameMappings.put(newKey, entry.getKey());
 		}
 		
 		try {
@@ -90,6 +96,12 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 
 	@Override
 	public Object get(String key) {
+		Loggers.SERVER.debug(String.format("WebHooksBeanUtilsVelocityVariableResolver :: Value requested from Velocity context. 'key=%s'", key));
+		if (nameMappings.containsKey(key)) {
+			// Call extraParameters.get(), so that accessing secure parameters is logged.
+			// Resolve any underscore names to dot names via the nameMappings.
+			extraParameters.get(nameMappings.get(key));  
+		}
 		return this.velocityContext.get(key);
 	}
 

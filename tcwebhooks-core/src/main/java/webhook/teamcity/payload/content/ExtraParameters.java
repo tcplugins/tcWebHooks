@@ -25,6 +25,8 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 	protected static final boolean FORCE_RESOLVE_TEAMCITY_VARIABLE = false;
 	protected static final String TEMPLATE_ENGINE_TYPE = PayloadTemplateEngineType.STANDARD.toString();
 	private static final long serialVersionUID = -2947332186712049416L;
+	
+	private boolean secureValueAccessed = false;
 
 	public ExtraParameters() {
 		super();
@@ -148,6 +150,10 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		} else {
 			for (WebHookParameter param : this) {
 				if (key.equals(param.getName())) {
+					if (Boolean.TRUE.equals(param.getSecure())) {
+						this.secureValueAccessed = true;
+						Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", "no_context", key));
+					}
 					return param.getValue();
 				}
 			}
@@ -171,6 +177,10 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		for (WebHookParameterModel webHookParameter : this) {
 			if (webHookParameter.getContext().equalsIgnoreCase(context) 
 					&& webHookParameter.getName().equals(key)) {
+				if (Boolean.TRUE.equals(webHookParameter.getSecure())) {
+					this.secureValueAccessed = true;
+					Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", context, key));
+				}
 				return webHookParameter.getValue();
 			}
 		}
@@ -246,5 +256,9 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 			}
 		}
 		return variablesToResolve;
+	}
+	
+	public boolean wasSecureValueAccessed() {
+		return this.secureValueAccessed;
 	}
 }

@@ -101,7 +101,12 @@
 					</c:if>
 					
 					<c:if test="${afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">
-						<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
+						<c:if test="${not historyItem.webHookExecutionStats.secureValueAccessed}">
+							<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
+						</c:if>
+						<c:if test="${historyItem.webHookExecutionStats.secureValueAccessed}">
+							<td><span title="Full URL hidden. A secure value was used to build the WebHook URL or payload">** <c:out value="${historyItem.url}"/></span></td>
+						</c:if>
 					</c:if>
 					
 					<c:if test="${not afn:permissionGrantedForProjectWithId(historyItem.webHookConfig.projectInternalId, 'EDIT_PROJECT')}">

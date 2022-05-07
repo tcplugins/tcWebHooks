@@ -75,6 +75,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_REMOVED_FROM_QUEUE) ){
 			wh.setEnabledForBuildState(state, overrideIsEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(state)));
@@ -90,6 +91,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		}
 		return wh;
@@ -135,6 +137,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.CHANGES_LOADED)){
 			wh.setEnabledForBuildState(BuildStateEnum.CHANGES_LOADED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.CHANGES_LOADED)));
@@ -151,6 +154,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.SERVICE_MESSAGE_RECEIVED)){
 			wh.setEnabledForBuildState(BuildStateEnum.SERVICE_MESSAGE_RECEIVED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.SERVICE_MESSAGE_RECEIVED)));
@@ -167,6 +171,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_INTERRUPTED)){
 			wh.setEnabledForBuildState(BuildStateEnum.BUILD_INTERRUPTED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BUILD_INTERRUPTED)));
@@ -183,6 +188,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.BEFORE_BUILD_FINISHED)){
 			wh.setEnabledForBuildState(BuildStateEnum.BEFORE_BUILD_FINISHED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(BuildStateEnum.BEFORE_BUILD_FINISHED)));
@@ -199,6 +205,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_FINISHED) || state.equals(BuildStateEnum.BUILD_SUCCESSFUL) || state.equals(BuildStateEnum.BUILD_FAILED) || state.equals(BuildStateEnum.BUILD_FIXED) || state.equals(BuildStateEnum.BUILD_BROKEN)){
 			wh.setEnabledForBuildState(BuildStateEnum.BUILD_FINISHED, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(
@@ -219,6 +226,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_PINNED)) {
 			wh.setEnabledForBuildState(state, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(state)));
@@ -235,6 +243,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		} else if (state.equals(BuildStateEnum.BUILD_UNPINNED)) {
 			wh.setEnabledForBuildState(state, isOverrideEnabled || (whc.isEnabledForBuildType(sBuild.getBuildType()) && wh.getBuildStates().enabled(state)));
@@ -251,6 +260,7 @@ public class WebHookContentBuilder {
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
 				wh.resolveHeaders(builder);
+				wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 			}
 		}
 		return wh;
@@ -278,6 +288,7 @@ public class WebHookContentBuilder {
 			wh.setUrl(builder.build(whc.getUrl()));
 			wh.checkFilters(builder);
 			wh.resolveHeaders(builder);
+			wh.getExecutionStats().setSecureValueAccessed(extraParameters.wasSecureValueAccessed());
 		}
 		return wh;
 	}

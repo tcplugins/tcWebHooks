@@ -28,6 +28,7 @@ public class WebHookExecutionStats {
 	boolean errored = false;
 	boolean enabled = true;
 	BuildStateEnum buildState;
+	boolean secureValueAccessed = false;
 	
 	public WebHookExecutionStats(String url) {
 		this.url = url;

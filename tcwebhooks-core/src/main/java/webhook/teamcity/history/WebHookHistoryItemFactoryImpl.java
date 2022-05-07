@@ -90,8 +90,13 @@ public class WebHookHistoryItemFactoryImpl implements WebHookHistoryItemFactory 
 	
 	private void addGeneralisedWebAddress(WebHookConfig whc, WebHookHistoryItem item) {
 		try {
-			URL url = new URL(whc.getUrl());
-			item.setGeneralisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(url));
+			if (item.getWebHookExecutionStats().getUrl() != null) {
+				URL url = new URL(item.getWebHookExecutionStats().getUrl());
+				item.setGeneralisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(url));
+			} else {
+				URL url = new URL(whc.getUrl());
+				item.setGeneralisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(url));
+			}
 		} catch (MalformedURLException ex) {
 			item.setGeneralisedWebAddress(null);
 		}
