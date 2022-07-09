@@ -136,7 +136,7 @@
 						<c:if test="${not historyItem.webHookExecutionStats.secureValueAccessed}">
 							<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
 						</c:if>
-						<c:if test="${historyItem.webHookExecutionStats.secureValueAccessed}">
+						<c:if test="${historyItem.webHookExecutionStats.secureValueAccessed && not historyItem.webHookConfig.hideSecureValues}">
 							<td><span title="Full URL hidden. A secure value was used to build the WebHook URL or payload">** <c:out value="${historyItem.url}"/></span></td>
 						</c:if>
 					</c:if>

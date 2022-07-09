@@ -135,7 +135,7 @@ public class WebHookProjectSettings implements ProjectSettings {
         return new WebHookUpdateResult(updateSuccess, configToDelete);
     }
 
-	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+	public WebHookUpdateResult updateWebHook(String projectId, String webHookId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
 		boolean updateSuccess = false;
 		WebHookConfig configToUpdate = null;
         if(this.webHooksConfigs != null)
@@ -145,6 +145,7 @@ public class WebHookProjectSettings implements ProjectSettings {
                 if (whc.getUniqueKey().equals(webHookId)){
                 	whc.setEnabled(enabled);
                 	whc.setUrl(url);
+                	whc.setHideSecureValues(hideSecureValues);
                 	whc.setBuildStates(buildState);
                 	whc.setPayloadTemplate(template);
                 	whc.enableForSubProjects(buildSubProjects);
@@ -175,12 +176,12 @@ public class WebHookProjectSettings implements ProjectSettings {
         return new WebHookUpdateResult(updateSuccess, configToUpdate);
 	}
 
-	public void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled) {
-		addNewWebHook(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null);
+	public void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, boolean hideSecureValues) {
+		addNewWebHook(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null, hideSecureValues);
 	}
 	
-	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
-		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig); 
+	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
+		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, hideSecureValues); 
 		this.webHooksConfigs.add(newWebHook);
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
 		return new WebHookUpdateResult(true, newWebHook);

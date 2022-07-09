@@ -35,7 +35,7 @@ public class WebHookProjectSettingsTest {
 		WebHookConfig config = settings.getWebHooksConfigs().get(0);
 		assertTrue("Auth should be enabled", config.getAuthEnabled());
 		
-		settings.updateWebHook("project01", config.getUniqueKey(), config.getUrl(), config.getEnabled(), new BuildState(), config.getPayloadTemplate(), config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), null, null);
+		settings.updateWebHook("project01", config.getUniqueKey(), config.getUrl(), config.getEnabled(), new BuildState(), config.getPayloadTemplate(), config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), null, null, true);
 		
 		WebHookConfig config2 = settings.getWebHooksConfigs().get(0);
 		assertFalse("Auth should now be disabled", config2.getAuthEnabled());
@@ -56,7 +56,7 @@ public class WebHookProjectSettingsTest {
 		authConfig.setPreemptive(true);
 		authConfig.getParameters().put("username", "usernamey");
 		
-		settings.updateWebHook("project01", config.getUniqueKey(), config.getUrl(), config.getEnabled(), new BuildState(), config.getPayloadTemplate(), config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), null, authConfig);
+		settings.updateWebHook("project01", config.getUniqueKey(), config.getUrl(), config.getEnabled(), new BuildState(), config.getPayloadTemplate(), config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), null, authConfig, true);
 		
 		WebHookConfig config2 = settings.getWebHooksConfigs().get(0);
 		assertTrue("Auth should now be enabled", config2.getAuthEnabled());

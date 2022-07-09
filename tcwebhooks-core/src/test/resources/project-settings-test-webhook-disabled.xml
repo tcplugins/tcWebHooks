@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <webhooks enabled="true">
-    <webhook url="http://localhost/test" enabled="false" format="nvpairs">
+    <webhook url="http://localhost/test" enabled="false" format="nvpairs" hide-secure-values="true">
       <states>
         <state type="buildStarted" enabled="false" />
         <state type="beforeBuildFinish" enabled="false" />

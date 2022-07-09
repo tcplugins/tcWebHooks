@@ -2,8 +2,12 @@ tr.onCompletionDisabled td {
 	color: #ccc;
 }
 
-tr.onCompletion td, tr.onDuring td {
+tr.onCompletion td, tr.onDuring td, tr.hideSecureValues td {
 	padding-top: 1.5em;
+}
+
+tr.sectionSeparator {
+	padding-top: 2.5em;
 }
 
 td.buildStateDisabled {

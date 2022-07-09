@@ -45,11 +45,13 @@ public class WebhookConfigAndBuildTypeListHolder {
 	private WebhookAuthenticationConfigBean authConfig = null;
 	private GeneralisedWebAddress generalisedWebAddress;
 	private Set<String> tags = new LinkedHashSet<>();
+	private boolean hideSecureValues;
 
 	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList) {
 		url = config.getUrl();
 		uniqueKey = config.getUniqueKey();
 		enabled = config.getEnabled();
+		hideSecureValues = config.isHideSecureValues();
 		payloadTemplate = config.getPayloadTemplate();
 		enabledBuildIds = config.getEnabledBuildTypesSet();
 		setEnabledEventsListForWeb(config.getEnabledListAsString());

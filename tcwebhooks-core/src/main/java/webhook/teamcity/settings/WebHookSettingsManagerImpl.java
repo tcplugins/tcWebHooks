@@ -90,11 +90,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	@Override
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
-			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
 												projectInternalId, projectExternalId, url,
 												enabled, buildState, template, buildTypeAll,
-												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig
+												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, hideSecureValues
 											);
 		if (result.updated) {
 			if (persist(projectInternalId, "Added new WebHook")) {
@@ -125,11 +125,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	@Override
 	public WebHookUpdateResult updateWebHook(String projectInternalId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
-			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(
 													projectInternalId, webHookId, url, enabled,
 													buildState, template, buildTypeAll, buildSubProjects,
-													buildTypesEnabled,  webHookAuthConfig
+													buildTypesEnabled,  webHookAuthConfig, hideSecureValues
 												);
 		if (result.updated) {
 			if (persist(projectInternalId, "Edited existing WebHook")) {
