@@ -106,11 +106,11 @@ public class WebHookPayloadContent {
 		 * @param customTemplates (legacy, eg buildStatusHtmlTemplate)
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum buildState, ExtraParameters extraParameters, Map<String,String> templates) {
-			populateCommonContent(variableResolverFactory, server, responsibilityHolder, buildState, templates);
 			this.extraParameters =  new ExtraParameters(extraParameters);
 			if (responsibilityHolder.getSBuildType() != null) {
 				this.teamcityProperties =  new ExtraParameters(responsibilityHolder.getSBuildType().getParametersProvider().getAll());
 			}
+			populateCommonContent(variableResolverFactory, server, responsibilityHolder, buildState, templates);
 		}
 		
 		/**
@@ -122,6 +122,8 @@ public class WebHookPayloadContent {
 		 */
 		public WebHookPayloadContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SQueuedBuild sQueuedBuild, 
 				BuildStateEnum buildState, ExtraParameters extraParameters, Map<String,String> templates, String user, String comment) {
+			this.extraParameters =  extraParameters;
+			this.teamcityProperties =  extraParameters.getTeamcityParameters();
 			populateCommonContent(variableResolverFactory, server, sQueuedBuild.getBuildType(), buildState, templates);
 			setBuildId(String.valueOf(sQueuedBuild.getBuildPromotion().getId()));
 			setTriggeredBy(sQueuedBuild.getTriggeredBy().getAsString());
@@ -199,6 +201,20 @@ public class WebHookPayloadContent {
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum state, Map<String,String> templates) {
 
+			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
+			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
+				try {
+					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
+				} 
+				catch (NullPointerException | IllegalArgumentException ex){}
+				
+			} else if (extraParameters.containsKey("preferredDateFormat")){
+				try {
+					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
+				} 
+				catch (NullPointerException | IllegalArgumentException ex) {}
+			}
+			setCurrentTime(format.format(new Date()));
 			setAdditionalContext(null, responsibilityHolder.getSBuildType(), responsibilityHolder.getSProject());
 			setResponsibilityInfo(responsibilityHolder);
 			setNotifyType(state.getShortName());
@@ -278,6 +294,21 @@ public class WebHookPayloadContent {
 		 * @param state
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
+
+			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
+			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
+				try {
+					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
+				} 
+				catch (NullPointerException | IllegalArgumentException ex){}
+				
+			} else if (extraParameters.containsKey("preferredDateFormat")){
+				try {
+					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
+				} 
+				catch (NullPointerException | IllegalArgumentException ex) {}
+			}
+			setCurrentTime(format.format(new Date()));
 
 			setAdditionalContext(null, buildType, buildType.getProject());
 			setNotifyType(state.getShortName());
