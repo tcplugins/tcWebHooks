@@ -307,6 +307,7 @@ public class WebHookHistoryRepositoryImplTest {
 		private String url;
 		private Integer status;
 		private WebHookExecutionStats stats;
+		private boolean hideSecureValues;
 		
 		public SimpleMockedWebHook(WebHookExecutionStats stats) {
 			this.stats = stats;
@@ -576,6 +577,21 @@ public class WebHookHistoryRepositoryImplTest {
 		@Override
 		public void setVariableResolverFactory(VariableResolverFactory variableResolverFactory) {
 			notImplemented();
+		}
+
+		@Override
+		public boolean shouldHideSecureData() {
+			return false;
+		}
+
+		@Override
+		public boolean isHideSecureValues() {
+			return this.hideSecureValues;
+		}
+
+		@Override
+		public void setHideSecureValues(boolean hideSecureValues) {
+			this.hideSecureValues = hideSecureValues;
 		}
 
 	}

@@ -22,6 +22,7 @@ public class MockWebHook extends WebHookImpl implements WebHook, Mocked {
 		this.setUrl(webHookConfig.getUrl());
 		this.setEnabled(webHookConfig.getEnabled());
 		this.setBuildStates(webHookConfig.getBuildStates());
+		this.setHideSecureValues(webHookConfig.isHideSecureValues());
 	}
 
 	@Override

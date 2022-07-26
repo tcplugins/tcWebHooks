@@ -408,6 +408,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 						.build();
 				configEnhanced.addTag(templateFormat)
 						.addTag(Boolean.TRUE.equals(c.getEnabled()) ? "enabled" : "disabled")
+						.addTag(Boolean.TRUE.equals(c.isHideSecureValues()) ? "hideSecure" : "showSecure")
 						.addTag(c.getPayloadTemplate())
 						.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress());
 				if (c.getAuthenticationConfig() != null) {

@@ -124,6 +124,11 @@ public interface WebHook {
 	
 	public abstract void setVariableResolverFactory(VariableResolverFactory variableResolverFactory);
 
+	public abstract boolean shouldHideSecureData();
+
+	public abstract boolean isHideSecureValues();
+	public abstract void setHideSecureValues(boolean hideSecureValues);
+
 
 
 }

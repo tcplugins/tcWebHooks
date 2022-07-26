@@ -71,6 +71,7 @@ public class WebHookImpl implements WebHook {
 	@Getter
 	private UUID requestId = UUID.randomUUID();
 	private VariableResolverFactory variableResolverFactory;
+	private boolean hideSecureValues;
 	
 	
 	public WebHookImpl (String url, WebHookProxyConfig proxyConfig, HttpClient client){
@@ -480,6 +481,22 @@ public class WebHookImpl implements WebHook {
 	@Override
 	public void setVariableResolverFactory(VariableResolverFactory variableResolverFactory) {
 		this.variableResolverFactory = variableResolverFactory;		
+	}
+
+	@Override
+	public boolean shouldHideSecureData() {
+		return this.hideSecureValues && this.getExecutionStats().isSecureValueAccessed();
+	}
+
+	@Override
+	public boolean isHideSecureValues() {
+		return this.hideSecureValues;
+	}
+
+	@Override
+	public void setHideSecureValues(boolean hideSecureValues) {
+		this.hideSecureValues = hideSecureValues;
+		
 	}
 	
 }
