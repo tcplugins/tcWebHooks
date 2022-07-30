@@ -18,6 +18,9 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.openapi.buildType.BuildTypeTab;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
+import webhook.teamcity.extension.util.WebHookSecureValuesHelperService;
+import webhook.teamcity.history.PagedList;
+import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -31,7 +34,8 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 	private final String myPluginPath;
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebHookPayloadManager myPayloadManager;
-	private final WebHookTemplateResolver myTemplateResolver;	
+	private final WebHookTemplateResolver myTemplateResolver;
+	private final WebHookSecureValuesHelperService myWebHookSecureValuesHelperService;	
 
 	public WebHookBuildTypeTabExtension(
 			@NotNull ProjectManager projectManager, 
@@ -40,13 +44,15 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
 			@NotNull PluginDescriptor pluginDescriptor,
 			@NotNull WebHookHistoryRepository webHookHistoryRepository,
 			@NotNull WebHookPayloadManager webhookPayloadManager,
-			@NotNull WebHookTemplateResolver webHookTemplateResolver) {
+			@NotNull WebHookTemplateResolver webHookTemplateResolver,
+			@NotNull WebHookSecureValuesHelperService webHookSecureValuesHelperService) {
 		super("webHooks", "WebHooks", manager, projectManager);
 		myWebHookSettingsManager = webHookSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		myWebHookHistoryRepository = webHookHistoryRepository;
 		myPayloadManager = webhookPayloadManager;
 		myTemplateResolver = webHookTemplateResolver;
+		myWebHookSecureValuesHelperService = webHookSecureValuesHelperService;
 		addCssFile(myPluginPath+ "WebHook/css/styles.css");
 	}
 
@@ -92,7 +98,10 @@ public class WebHookBuildTypeTabExtension extends BuildTypeTab {
     	model.put("buildTypeId", buildType.getBuildTypeId());
     	model.put("buildExternalId", TeamCityIdResolver.getExternalBuildId(buildType));
     	model.put("buildName", buildType.getName());
-    	model.put("items", myWebHookHistoryRepository.findHistoryItemsForBuildType(buildType.getBuildTypeId(), 1, 50));
+    	PagedList<WebHookHistoryItem> historyItems = myWebHookHistoryRepository.findHistoryItemsForBuildType(buildType.getBuildTypeId(), 1, 50); 
+    	model.put("items", historyItems);
+		model.put("webhookSecureEnabledMap", myWebHookSecureValuesHelperService.assembleWebHookSecureValues(historyItems));
+
 	}
 
 	@Override

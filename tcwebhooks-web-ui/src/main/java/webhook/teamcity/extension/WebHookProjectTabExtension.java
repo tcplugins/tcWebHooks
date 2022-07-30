@@ -15,6 +15,9 @@ import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.project.ProjectTab;
 import webhook.teamcity.extension.bean.ProjectWebHooksBean;
+import webhook.teamcity.extension.util.WebHookSecureValuesHelperService;
+import webhook.teamcity.history.PagedList;
+import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
@@ -28,6 +31,7 @@ public class WebHookProjectTabExtension extends ProjectTab {
 	private final WebHookHistoryRepository myWebHookHistoryRepository;
 	private final WebHookPayloadManager myPayloadManager;
 	private final WebHookTemplateResolver myTemplateResolver;
+	private final WebHookSecureValuesHelperService myWebHookSecureValuesHelperService;
 
 	public WebHookProjectTabExtension(
 			@NotNull PagePlaces pagePlaces,
@@ -36,13 +40,15 @@ public class WebHookProjectTabExtension extends ProjectTab {
 			@NotNull PluginDescriptor pluginDescriptor,
 			@NotNull WebHookHistoryRepository webHookHistoryRepository,
 			@NotNull WebHookPayloadManager webhookPayloadManager,
-			@NotNull WebHookTemplateResolver webHookTemplateResolver) {
+			@NotNull WebHookTemplateResolver webHookTemplateResolver,
+			@NotNull WebHookSecureValuesHelperService webHookSecureValuesHelperService) {
 		super("webHooks", "WebHooks", pagePlaces, projectManager);
 		myWebHookSettingsManager = webHookSettingsManager;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		myWebHookHistoryRepository = webHookHistoryRepository;
 		myPayloadManager = webhookPayloadManager;
 		myTemplateResolver = webHookTemplateResolver;
+		myWebHookSecureValuesHelperService = webHookSecureValuesHelperService;
 		addCssFile(myPluginPath+ "WebHook/css/styles.css");
 	}
 
@@ -68,7 +74,10 @@ public class WebHookProjectTabExtension extends ProjectTab {
 		model.put("projectAndParents", projectWebHooks);
 
 		model.put("project", currentProject);
-		model.put("items", myWebHookHistoryRepository.findHistoryItemsForProject(currentProject.getProjectId(), 1, 50));
+		PagedList<WebHookHistoryItem> historyItems = myWebHookHistoryRepository.findHistoryItemsForProject(currentProject.getProjectId(), 1, 50);
+		model.put("items", historyItems);
+		model.put("webhookSecureEnabledMap", myWebHookSecureValuesHelperService.assembleWebHookSecureValues(historyItems));
+
 	}
 
 	@Override

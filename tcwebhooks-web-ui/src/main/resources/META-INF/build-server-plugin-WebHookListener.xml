@@ -39,6 +39,10 @@
         class="webhook.teamcity.history.WebHookHistoryRepositoryImpl"
         />
         
+	<bean id="webHookSecureValuesHelperService"
+        class="webhook.teamcity.extension.util.WebHookSecureValuesHelperService"
+        />
+        
 	<bean id="webHookAdminPage"
         class="webhook.teamcity.extension.admin.WebHookAdminPage"
         init-method="register" 

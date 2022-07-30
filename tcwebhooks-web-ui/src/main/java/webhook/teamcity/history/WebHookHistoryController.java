@@ -14,6 +14,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.util.Pager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import webhook.teamcity.extension.util.WebHookSecureValuesHelperService;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookHistoryController extends BaseController {
@@ -25,17 +26,20 @@ public class WebHookHistoryController extends BaseController {
 	private static final String MY_URL = "/webhooks/history.html";
 	private String myPluginPath;
 	private WebHookHistoryRepository myWebHookHistoryRepository;
+	private WebHookSecureValuesHelperService webHookSecureValuesHelperService;
 	
 	public WebHookHistoryController(
 			@NotNull SBuildServer server,
 			@NotNull PluginDescriptor pluginDescriptor, 
 			@NotNull WebControllerManager webControllerManager,
-			@NotNull WebHookHistoryRepository webHookHistoryRepository
+			@NotNull WebHookHistoryRepository webHookHistoryRepository,
+			@NotNull WebHookSecureValuesHelperService webHookSecureValuesHelperService
 		) 
 	{
 		super(server);
 		this.myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		this.myWebHookHistoryRepository = webHookHistoryRepository;
+		this.webHookSecureValuesHelperService = webHookSecureValuesHelperService;
 		webControllerManager.registerController(MY_URL, this);
 		
 	}
@@ -105,6 +109,7 @@ public class WebHookHistoryController extends BaseController {
 			pager.setRecordsPerPage(pageSize);
 			pager.setCurrentPage(pageNumber);
 			params.put("historyPager", pager);
+			params.put("webhookSecureEnabledMap", this.webHookSecureValuesHelperService.assembleWebHookSecureValues(pagedList));
 		}
 		
 		return new ModelAndView(myPluginPath + "WebHook/viewHistory.jsp", params); 

@@ -32,7 +32,7 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
-public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
+public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer {
 
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ConfigActionFactory myConfigActionFactory;
@@ -452,6 +452,22 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		if (map != null && !map.isEmpty()) {
 			config.addTag(tagName);
 		}
+	}
+
+	@Override
+	public boolean isHideSecureValuesEnabled(String webhookId) {
+		if (webhookId == null) {
+			return true;
+		}
+		for ( WebHookProjectSettings settings : this.projectSettingsMap.values()) {
+			for (WebHookConfig config: settings.getWebHooksConfigs()) {
+				if (webhookId.equals(config.getUniqueKey())) {
+					return config.isHideSecureValues();
+				}
+			}
+			
+		}
+		return true;
 	}
 
 }

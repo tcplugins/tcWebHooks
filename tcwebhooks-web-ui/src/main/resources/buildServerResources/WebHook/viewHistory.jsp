@@ -105,7 +105,7 @@
 							<c:when test="${not historyItem.webHookExecutionStats.secureValueAccessed}">
 								<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
 							</c:when>
-							<c:when test="${historyItem.webHookExecutionStats.secureValueAccessed && not historyItem.webHookConfig.hideSecureValues}">
+							<c:when test="${historyItem.webHookExecutionStats.secureValueAccessed && not webhookSecureEnabledMap.get(historyItem.webHookConfig.uniqueKey)}">
 								<td><span title="Webhook from project '<c:out value="${historyItem.webHookConfig.projectExternalId}"/>'"><c:out value="${historyItem.webHookExecutionStats.url}"/></span></td>
 							</c:when>
 							<c:otherwise>
