@@ -118,7 +118,10 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 
 			    		if (whc.getUniqueKey().equals(webHookConfigUniqueId)) {
 							if (myWebHookTemplateManager.isRegisteredTemplate(whc.getPayloadTemplate())){
-								return whc.copy();
+								WebHookConfig whconfig = whc.copy();
+								whconfig.setProjectExternalId(myProject.getExternalId());
+								whconfig.setProjectInternalId(myProject.getProjectId());
+								return whconfig;
 							} else {
 								throw new WebHookConfigNotFoundException("No registered Template " + whc.getPayloadTemplate());
 							}
