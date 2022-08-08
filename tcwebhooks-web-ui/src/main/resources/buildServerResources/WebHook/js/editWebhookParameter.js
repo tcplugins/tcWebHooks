@@ -43,7 +43,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
             $j("div#editWebHookParameterDialog h3.dialogTitle").text(title);
             $j("#editWebHookParameterDialogSubmit").val(action === "addWebhookParameter" ? "Add Parameter" : "Edit Parameter");
             this.resetAndShow(data);
-            this.getWebHookParameterDataThenPopulateForm(data.projectId, data.parameterId, action);
+            this.getWebHookParameterDataThenPopulateForm(data.projectId, data.parameterId, action, data);
 
 			this.highlightRow($j("tr[data-parameter-id='" + data.parameterId + "']"), this);
 			this.afterShow();
@@ -94,13 +94,13 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			return WebHooksPlugin.Parameters.localStore;
 		},
 
-		getWebHookParameterDataThenPopulateForm: function (projectId, parameterId, action) {
+		getWebHookParameterDataThenPopulateForm: function (projectId, parameterId, action, data) {
 			if (action === 'addWebhookParameter') {
 				let param = { "id": "_new", "projectId": projectId};
-				dialog.getStore().myJson = param;
-				dialog.populateForm(action, param);
+				this.getStore().myJson = param;
+				this.populateForm(action, param, data);
 			} else {
-				this.getParameterData(projectId, parameterId, action);
+				this.getParameterData(projectId, parameterId, action, data);
 			}
 		},
 		putWebHookParameterData: function () {
@@ -135,7 +135,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			myJson.templateEngine = $j("#editWebHookParameterForm #parameterDialogTemplateEngine").val();
 			return myJson;
 		},
-		getParameterData: function (projectId, parameterId, action) {
+		getParameterData: function (projectId, parameterId, action, data) {
 			var dialog = this;
     		$j.ajax ({
     			url: window['base_uri'] + '/app/rest/webhooks/parameters/' + projectId + '/id:' + parameterId + '?fields=**',
@@ -145,7 +145,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
     		    },
     		    success: function (response) {
     				dialog.getStore().myJson = response;
-    				dialog.populateForm(action, response);
+    				dialog.populateForm(action, response, data);
     		    },
 				error: function (response) {
 					console.log(response);
@@ -169,11 +169,17 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 		        }
 		    }
 		},
-		populateForm: function (action, myJson) {
+		populateForm: function (action, myJson, data) {
 			$j('#editWebHookParameterForm #parameterAction').val(action);
 			$j('#editWebHookParameterForm #parameterId').val(myJson.id);
 			$j('#editWebHookParameterForm #parameterHref').val(myJson.href);
-			$j("#editWebHookParameterForm #parameterDialogType").val(myJson.secure ? "password" : "text");
+			if (data.enableSecure === true) {
+				$j("#editWebHookParameterForm #parameterDialogType option[value='password']").attr("enabled", "enabled");
+				$j("#editWebHookParameterForm #parameterDialogType").val(myJson.secure ? "password" : "text");
+			} else {
+				$j("#editWebHookParameterForm #parameterDialogType").val("text");
+				$j("#editWebHookParameterForm #parameterDialogType option[value='password']").attr("disabled", "disabled");
+			}
 			$j("#editWebHookParameterForm #parameterDialogName").val(myJson.name);
 			$j("#editWebHookParameterForm #parameterDialogValue").val(myJson.value);
 			$j("#editWebHookParameterForm #parameterDialogVisibility").val(myJson.includedInLegacyPayloads ? "legacy" : "template");

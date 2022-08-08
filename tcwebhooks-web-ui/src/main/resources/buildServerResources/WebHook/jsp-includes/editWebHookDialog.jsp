@@ -171,7 +171,7 @@
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddParameterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Parameter for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddParameterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}', 'enableSecure': false});">Click to create new Parameter for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>

@@ -454,7 +454,7 @@ describe('Edit Parameters on existing Webhook (04)', function () {
     });
     
     it('Populate Parameter 1 in Form from Webhook', function () {
-        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter');
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter', {'enableSecure':false});
         //expect(parameter.id).to.equal("1");
         //dialog.populateForm('updateWebhookParameter', parameter);
         expectEqual('#editWebHookParameterForm #parameterId', "1");
@@ -467,7 +467,7 @@ describe('Edit Parameters on existing Webhook (04)', function () {
     })
     
     it('Populate Parameter 2 in Form from Webhook', function () {
-        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "2", 'updateWebhookParameter');
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "2", 'updateWebhookParameter', {'enableSecure':false});
         //expect(parameter.id).to.equal("2");
         //dialog.populateForm('updateWebhookParameter', parameter);
         expectEqual('#editWebHookParameterForm #parameterId', "2");
@@ -476,11 +476,11 @@ describe('Edit Parameters on existing Webhook (04)', function () {
         expectEqual('#editWebHookParameterForm #parameterDialogVisibility', "template");
         expectEqual('#editWebHookParameterForm #parameterDialogResolve', "unforced");
         expectEqual('#editWebHookParameterForm #parameterDialogTemplateEngine', "VELOCITY");
-        expectEqual('#editWebHookParameterForm #parameterDialogType', "password");
+        expectEqual('#editWebHookParameterForm #parameterDialogType', "text");
     })
 
     it('Populate Parameter 1 in Form and read back out', function () {
-        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter');
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter', {'enableSecure':false});
         //expect(parameter.id).to.equal("1");
         //dialog.populateForm('updateWebhookParameter', parameter);
         let paramFromForm = dialog.populateJsonDataFromForm();
@@ -488,19 +488,19 @@ describe('Edit Parameters on existing Webhook (04)', function () {
     })
 
     it('Populate Parameter 1 in Form, change it, and read back out', function () {
-        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter');
+        dialog.getWebHookParameterDataThenPopulateForm('TcPlugins', "1", 'updateWebhookParameter', {'enableSecure':false});
         //expect(parameter.id).to.equal("1");
         //dialog.populateForm('updateWebhookParameter', parameter);
         $j('#editWebHookParameterForm #parameterDialogName').val("test01")
         $j('#editWebHookParameterForm #parameterDialogValue').val("test02")
         $j('#editWebHookParameterForm #parameterDialogVisibility').val("template")
         $j('#editWebHookParameterForm #parameterDialogTemplateEngine').val("VELOCITY")
-        $j('#editWebHookParameterForm #parameterDialogType').val("password")
+        $j('#editWebHookParameterForm #parameterDialogType').val("text")
         let paramFromForm = dialog.populateJsonDataFromForm();
         expect(paramFromForm.id).to.equal("1");
         expect(paramFromForm.name).to.equal("test01");
         expect(paramFromForm.value).to.equal("test02");
-        expect(paramFromForm.secure).to.equal(true);
+        expect(paramFromForm.secure).to.equal(false);
         expect(paramFromForm.includedInLegacyPayloads).to.equal(false);
         expect(paramFromForm.templateEngine).to.equal("VELOCITY");
     })
@@ -647,13 +647,13 @@ describe('Populate from Form, Edit and then POST WebHook - Webhook (04)', functi
         dialog.handleGetSuccess('edit');
 
         var paramDialog = WebHooksPlugin.Configurations.EditParameterDialog;
-        paramDialog.populateForm('updateWebhookParameter', dialog.getStore().myJson.parameters.parameter[0]);
+        paramDialog.populateForm('updateWebhookParameter', dialog.getStore().myJson.parameters.parameter[0], {'enableSecure':false});
         
         $j('#editWebHookParameterForm #parameterDialogName').val("testName")
         $j('#editWebHookParameterForm #parameterDialogValue').val("testValue")
         $j('#editWebHookParameterForm #parameterDialogVisibility').val("template")
         $j('#editWebHookParameterForm #parameterDialogTemplateEngine').val("VELOCITY")
-        $j('#editWebHookParameterForm #parameterDialogType').val("password")
+        $j('#editWebHookParameterForm #parameterDialogType').val("text")
 
         paramDialog.updateWebHookParameterDataInWebHook();
 
@@ -672,7 +672,7 @@ describe('Populate from Form, Edit and then POST WebHook - Webhook (04)', functi
         expect(parameter.name).to.equal("testName");
         expect(parameter.value).to.equal("testValue");
         expect(parameter.includedInLegacyPayloads).to.equal(false);
-        expect(parameter.secure).to.equal(true);
+        expect(parameter.secure).to.equal(false);
 
     })
 

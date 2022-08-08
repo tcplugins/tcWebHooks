@@ -35,13 +35,17 @@ const WebHooksPlugin = {
 	},
 	afterRefresh: function() {
 		if (this.localStore.afterRefresh !== null) {
-			this.localStore.afterRefresh
-			.css({backgroundColor: '#cceecc'})
-			.animate({
-				backgroundColor: "#ffffff"
-			}, 2500 );
+			$j.each(this.localStore.afterRefresh, function(idx, row){
+				// fetch the row from the DOM again since it will
+				// have a new object after the dom reloaded
+				// apply the CSS and animations to that new object.
+				$j('#'+row.id)
+					.css({ backgroundColor: '#cceecc' })
+					.animate({
+						backgroundColor: "#ffffff"
+					}, 2500);
+				});
 			this.localStore.afterRefresh = null;
-			//alert("dkjdlkjdlf");
 		}
 	},
 	EditDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {

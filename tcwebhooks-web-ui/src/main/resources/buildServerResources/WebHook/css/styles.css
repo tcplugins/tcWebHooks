@@ -802,7 +802,7 @@ span.webhookEditProjectLink {
 }
 
 .editWebHookParameterDialog select, .editWebHookParameterDialog select option,
-input#parameterDialogTypeName, input#parameterDialogTypeValue {
+input#parameterDialogName, input#parameterDialogValue {
 	width: 28em;
 }
 

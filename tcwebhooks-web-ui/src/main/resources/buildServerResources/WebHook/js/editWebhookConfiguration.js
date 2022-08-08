@@ -300,7 +300,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     'Accept': 'application/json'
                 },
                 success: function (response) {
-                    dialog.closeSuccess($j("#viewRow_" + response.id), dialog);
+                    dialog.closeSuccess([{ id: 'viewRow_' + response.id }], dialog);
                 },
                 error: function (response) {
                     console.log(response);
@@ -414,11 +414,11 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 				}, 2500 );
 		},
 
-        getWebHookParameterDataThenPopulateForm: function(projectId, parameterId, action) {
+        getWebHookParameterDataThenPopulateForm: function(projectId, parameterId, action, data) {
             let dialog = this;
             if (action === 'addWebhookParameter') {
                 let param = { "id": "_new", "projectId": projectId};
-                dialog.populateForm(action, param);
+                dialog.populateForm(action, param, data);
                 return;
             }
             let webhook = this.getStore().myJson;
@@ -428,7 +428,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                     console.log(item);
                     if (item.id === parameterId) {
                         param = item;
-                        dialog.populateForm(action, param);
+                        dialog.populateForm(action, param, data);
                     }
                 });
             }
@@ -846,7 +846,7 @@ function populateWebHookParametersExtrasPane(webhook) {
         $j('#webhookParameters > thead').hide();
     } else {
         webhook.parameters.parameter.each(function (parameter) {
-            let data = "{'projectId':'"+ webhook.projectId + "', 'parameterId':'" + parameter.id +"', 'parameterName':'" + parameter.name + "'}";
+            let data = "{'projectId':'"+ webhook.projectId + "', 'parameterId':'" + parameter.id +"', 'parameterName':'" + parameter.name + "', 'enableSecure':false}";
             $j('#webhookParameters > tbody').append('<tr data-parameter-id="' + parameter.id +'"><td>' + parameter.name + '</td><td style="width:40%;">' + parameter.value + '</td>'
               + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showEditParameterDialog('+ data + ');" href="javascript://">edit</a></td>'
               + '<td class="actionCell"><a onclick="WebHooksPlugin.Configurations.showDeleteParameterDialog('+ data + ');" href="javascript://">delete</a></td></tr>');

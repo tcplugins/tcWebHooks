@@ -990,7 +990,7 @@ var webHook04 = {
         "id": "2",
         "name": "notify",
         "value": "1",
-        "secure": true,
+        "secure": false,
         "includedInLegacyPayloads": false,
         "templateEngine": "VELOCITY",
         "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139/parameters/id:2"
