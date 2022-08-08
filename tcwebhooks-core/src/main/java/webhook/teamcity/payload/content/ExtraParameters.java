@@ -25,6 +25,8 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 	protected static final boolean FORCE_RESOLVE_TEAMCITY_VARIABLE = false;
 	protected static final String TEMPLATE_ENGINE_TYPE = PayloadTemplateEngineType.STANDARD.toString();
 	private static final long serialVersionUID = -2947332186712049416L;
+	
+	private boolean secureValueAccessed = false;
 
 	public ExtraParameters() {
 		super();
@@ -80,7 +82,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		WebHookParameterModel previous = getActual(context, key);
 		if (previous != null) {
 			this.remove(previous);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName() + " : " + previous.getValue());
+			Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 		}
 		WebHookParameterModel newHookParameterModel = new WebHookParameterModel(context,
 				context,
@@ -91,7 +93,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 				FORCE_RESOLVE_TEAMCITY_VARIABLE,
 				TEMPLATE_ENGINE_TYPE);
 		add(newHookParameterModel);
-		Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName() + " : " + newHookParameterModel.getValue());
+		Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
 	}
 
 	public void putAll(String context, Map<String, String> paramMap) {
@@ -105,7 +107,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 			WebHookParameterModel previous = getActual(context, parameter.getName());
 			if (previous != null) {
 				this.remove(previous);
-				Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName() + " : " + previous.getValue());
+				Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 			}
 			WebHookParameterModel newHookParameterModel = new WebHookParameterModel(context,
 					context,
@@ -116,7 +118,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 					parameter.getForceResolveTeamCityVariable(),
 					parameter.getTemplateEngine());
 			add(newHookParameterModel);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.toString());
+			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 		}
 	}
 	
@@ -148,6 +150,10 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		} else {
 			for (WebHookParameter param : this) {
 				if (key.equals(param.getName())) {
+					if (Boolean.TRUE.equals(param.getSecure())) {
+						this.secureValueAccessed = true;
+						Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", "no_context", key));
+					}
 					return param.getValue();
 				}
 			}
@@ -171,6 +177,10 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		for (WebHookParameterModel webHookParameter : this) {
 			if (webHookParameter.getContext().equalsIgnoreCase(context) 
 					&& webHookParameter.getName().equals(key)) {
+				if (Boolean.TRUE.equals(webHookParameter.getSecure())) {
+					this.secureValueAccessed = true;
+					Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", context, key));
+				}
 				return webHookParameter.getValue();
 			}
 		}
@@ -246,5 +256,9 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 			}
 		}
 		return variablesToResolve;
+	}
+	
+	public boolean wasSecureValueAccessed() {
+		return this.secureValueAccessed;
 	}
 }

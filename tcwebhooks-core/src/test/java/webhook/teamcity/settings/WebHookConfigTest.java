@@ -58,6 +58,7 @@ public class WebHookConfigTest {
 		WebHookConfig whc = new WebHookConfig(e);
 		assertTrue(whc.getParams().containsKey("color"));
 		assertTrue(whc.getParams().containsKey("notify"));
+		assertTrue(whc.isHideSecureValues());
 	}
 
 	@Test
@@ -214,5 +215,16 @@ public class WebHookConfigTest {
 	public void testWebHookWithoutStatsIsDisabledForStats(){
 		assertTrue(webhookWithoutStats.getEnabled());
 		assertFalse(webhookWithoutStats.getBuildStates().enabled(BuildStateEnum.REPORT_STATISTICS));
+	}
+	
+	@Test
+	public void testWebHookHideSecureValuesDefaultsToTrue(){
+		assertTrue(webhookAllEnabled.isHideSecureValues());
+		assertTrue(webhookDisabled.isHideSecureValues());
+	}
+	
+	@Test
+	public void testThatHideSecureValueIsFalseWhenSet() {
+		assertFalse(webhookAllDisabled.isHideSecureValues());
 	}
 }

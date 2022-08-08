@@ -534,6 +534,7 @@ function populateWebHookDialog(id){
 			$j("#editWebHookForm input[id='webHookId']").val(webhook.uniqueKey);
 			$j('#webHookUrl').val(webhook.url);
 		    $j('#webHooksEnabled').prop('checked', webhook.enabled);
+		    $j('#hideSecureValues').prop('checked', webhook.hideSecureValues);
 		    $j.each(webhook.states, function(name, value){
 		    	$j('#' + value.buildStateName).prop('checked', value.enabled);
 		    });

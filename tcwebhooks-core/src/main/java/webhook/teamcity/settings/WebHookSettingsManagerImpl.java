@@ -32,7 +32,7 @@ import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
-public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
+public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer {
 
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ConfigActionFactory myConfigActionFactory;
@@ -90,11 +90,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	@Override
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url,
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
-			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
 												projectInternalId, projectExternalId, url,
 												enabled, buildState, template, buildTypeAll,
-												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig
+												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, hideSecureValues
 											);
 		if (result.updated) {
 			if (persist(projectInternalId, "Added new WebHook")) {
@@ -125,11 +125,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 	@Override
 	public WebHookUpdateResult updateWebHook(String projectInternalId, String webHookId, String url, Boolean enabled,
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
-			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig) {
+			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues) {
 		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(
 													projectInternalId, webHookId, url, enabled,
 													buildState, template, buildTypeAll, buildSubProjects,
-													buildTypesEnabled,  webHookAuthConfig
+													buildTypesEnabled,  webHookAuthConfig, hideSecureValues
 												);
 		if (result.updated) {
 			if (persist(projectInternalId, "Edited existing WebHook")) {
@@ -408,6 +408,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 						.build();
 				configEnhanced.addTag(templateFormat)
 						.addTag(Boolean.TRUE.equals(c.getEnabled()) ? "enabled" : "disabled")
+						.addTag(Boolean.TRUE.equals(c.isHideSecureValues()) ? "hideSecure" : "showSecure")
 						.addTag(c.getPayloadTemplate())
 						.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress());
 				if (c.getAuthenticationConfig() != null) {
@@ -451,6 +452,22 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager {
 		if (map != null && !map.isEmpty()) {
 			config.addTag(tagName);
 		}
+	}
+
+	@Override
+	public boolean isHideSecureValuesEnabled(String webhookId) {
+		if (webhookId == null) {
+			return true;
+		}
+		for ( WebHookProjectSettings settings : this.projectSettingsMap.values()) {
+			for (WebHookConfig config: settings.getWebHooksConfigs()) {
+				if (webhookId.equals(config.getUniqueKey())) {
+					return config.isHideSecureValues();
+				}
+			}
+			
+		}
+		return true;
 	}
 
 }

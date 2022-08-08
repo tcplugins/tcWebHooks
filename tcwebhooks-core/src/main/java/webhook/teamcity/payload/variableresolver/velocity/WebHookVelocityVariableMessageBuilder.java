@@ -4,8 +4,11 @@ import java.io.StringWriter;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
+import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.slf4j.impl.SimpleLoggerFactory;
 
+import webhook.teamcity.WebHookTemplateParsingException;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.settings.secure.WebHookSecretResolver;
 
@@ -19,7 +22,7 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 		WebHookVelocityVariableMessageBuilder builder = new WebHookVelocityVariableMessageBuilder();
 		builder.ve = new VelocityEngine();
 		
-		builder.ve.setProperty("userdirective", PACKAGE + "VelocitySanitiseDirective, "
+		builder.ve.setProperty(RuntimeConstants.CUSTOM_DIRECTIVES, PACKAGE + "VelocitySanitiseDirective, "
 											  + PACKAGE + "VelocitySanitizeDirective, "
 											  + PACKAGE + "VelocityEscapeJsonDirective, "
 											  + PACKAGE + "VelocityCapitaliseDirective, "
@@ -29,12 +32,10 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 											  + PACKAGE + "VelocityToJsonDirective,"
 											  + PACKAGE + "VelocitySecureDirective");
 		
-		builder.ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-	    	      "org.apache.velocity.runtime.log.Log4JLogChute" );
 
-	    builder.ve.setProperty("runtime.log.logsystem.log4j.logger", "webhook.teamcity.Loggers");
-	    builder.ve.setApplicationAttribute("webhook.teamcity.settings.secure.WebHookSecretResolver", webHookSecretResolver);
-	    
+		builder.ve.setProperty(RuntimeConstants.RUNTIME_LOG_INSTANCE, new SimpleLoggerFactory().getLogger("jetbrains.buildServer.SERVER"));
+		builder.ve.setApplicationAttribute("webhook.teamcity.settings.secure.WebHookSecretResolver", webHookSecretResolver);
+		
 		builder.ve.init();
 		builder.resolver = resolver;
 		return builder;
@@ -42,11 +43,15 @@ public class WebHookVelocityVariableMessageBuilder implements VariableMessageBui
 
 	@Override
 	public String build(String template) {
-		StringWriter swParse1 =  new StringWriter();
-		this.ve.evaluate(resolver, swParse1, "WebHookVelocityVariableMessageBuilder", template);
-		StringWriter swParse2 =  new StringWriter();
-		this.ve.evaluate(resolver, swParse2, "WebHookVelocityVariableMessageBuilder", swParse1.toString());
-		return swParse2.toString();
+		try {
+			StringWriter swParse1 =  new StringWriter();
+			this.ve.evaluate(resolver, swParse1, "WebHookVelocityVariableMessageBuilder", template);
+			StringWriter swParse2 =  new StringWriter();
+			this.ve.evaluate(resolver, swParse2, "WebHookVelocityVariableMessageBuilder", swParse1.toString());
+			return swParse2.toString();
+		} catch (ParseErrorException ex) {
+			throw new WebHookTemplateParsingException(ex.getMessage());
+		}
 	}
 
 }

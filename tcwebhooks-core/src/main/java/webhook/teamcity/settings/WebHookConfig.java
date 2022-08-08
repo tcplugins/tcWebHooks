@@ -55,6 +55,7 @@ public class WebHookConfig {
 	private static final String ATTR_TEMPLATE = "template";
 	private static final String ATTR_FORMAT = "format";
 	private static final String ATTR_ENABLED = "enabled";
+	private static final String ATTR_HIDE_SECURE = "hide-secure-values";
 	private static final String EL_STATES = "states";
 	private static final String EL_BUILD_TYPES = "build-types";
 	private static final String ATTR_ENABLED_FOR_ALL = "enabled-for-all";
@@ -79,6 +80,7 @@ public class WebHookConfig {
 	private List<WebHookHeaderConfig> headers;
 	@Builder.Default private String projectInternalId = null;
 	@Builder.Default private String projectExternalId = null;
+	@Builder.Default private boolean hideSecureValues = true;
 
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -96,6 +98,7 @@ public class WebHookConfig {
 		this.authPreemptive = true;
 		this.filters = new ArrayList<>();
 		this.headers = new ArrayList<>();
+		this.hideSecureValues = true;
 
 		if (e.getAttribute("url") != null){
 			this.setUrl(e.getAttributeValue("url"));
@@ -122,6 +125,10 @@ public class WebHookConfig {
 
 		if (e.getAttribute(ATTR_TEMPLATE) != null){
 			this.setPayloadTemplate(e.getAttributeValue(ATTR_TEMPLATE));
+		}
+		
+		if (e.getAttribute(ATTR_HIDE_SECURE) != null){
+			this.setHideSecureValues(Boolean.parseBoolean(e.getAttributeValue(ATTR_HIDE_SECURE)));
 		}
 
 		// Transform payload and template to template.
@@ -315,7 +322,7 @@ public class WebHookConfig {
 	 * @param enabledBuildTypes
 	 * @param webHookAuthConfig
 	 */
-	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig){
+	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, boolean hideSecureValues){
 		this.uniqueKey = "id_" + getRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
@@ -344,6 +351,7 @@ public class WebHookConfig {
 			this.authEnabled = true;
 			this.authParameters.putAll(webHookAuthConfig.getParameters());
 		}
+		this.hideSecureValues = hideSecureValues;
 	}
 
 	private Element getKeyAndValueAsElement(Map<String,String> map, String key, String elementName){
@@ -361,6 +369,7 @@ public class WebHookConfig {
 		el.setAttribute(ATTR_ENABLED, String.valueOf(this.enabled));
 		//el.setAttribute(ATTR_FORMAT, String.valueOf(this.payloadFormat).toLowerCase());
 		el.setAttribute(ATTR_TEMPLATE, String.valueOf(this.payloadTemplate));
+		el.setAttribute(ATTR_HIDE_SECURE, String.valueOf(this.hideSecureValues));
 
 		Element statesEl = new Element(EL_STATES);
 		for (BuildStateEnum state : states.getStateSet()){
@@ -731,5 +740,13 @@ public class WebHookConfig {
 
 	public void setProjectExternalId(String projectExternalId) {
 		this.projectExternalId = projectExternalId;
+	}
+
+	public boolean isHideSecureValues() {
+		return hideSecureValues;
+	}
+
+	public void setHideSecureValues(boolean hideSecureValues) {
+		this.hideSecureValues = hideSecureValues;
 	}
 }

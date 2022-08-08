@@ -242,6 +242,15 @@
 														</tbody></table>
 													</td>
 												</tr>
+												<tr class="sectionSeparator"><td colspan=3>&nbsp;</td></tr>
+												<tr style="border:none;" class="hideSecureValues"><td><label for="hideSecureValues" style="padding:0; margin:0; left: 0px;">Secure Values:</label></td>
+													<td style="padding-left:2px;" colspan=2>
+														<input class="hideSecureValues" id="hideSecureValues" name="hideSecureValues" type=checkbox style="margin-left:0.5em; padding-left:0.5em;">
+														<label for="hideSecureValues" style="padding:0; margin:0; left: 0px;">
+															 Show simplified URL in UI and prevent payload from logging secure values.
+														</label>
+													</td>
+												</tr>
 					    					</table>
 
 					    			</div><!--hookPane -->

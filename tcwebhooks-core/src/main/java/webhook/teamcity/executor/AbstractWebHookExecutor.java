@@ -72,7 +72,15 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 		} catch (WebHookExecutionException ex){
 			webhook.getExecutionStats().setErrored(true);
 			webhook.getExecutionStats().setRequestCompleted(ex.getErrorCode(), ex.getMessage());
-			Loggers.SERVER.error(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
+			Loggers.SERVER.error(
+					String.format("%s trackingId: %s :: projectId: %s :: webhookId: %s :: templateId: %s, errorCode: %s, errorMessage: %s", 
+							CLASS_NAME, 
+							webhook.getExecutionStats().getTrackingIdAsString(),
+							whc.getProjectExternalId(),
+							whc.getUniqueKey(),
+							whc.getPayloadTemplate(),
+							ex.getErrorCode(),
+							ex.getMessage()));
 			Loggers.SERVER.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
 			this.webHookHistoryItem = buildWebHookHistoryItem(new WebHookErrorStatus(ex, ex.getMessage(), ex.getErrorCode()));
 			webHookHistoryRepository.addHistoryItem(webHookHistoryItem);
@@ -81,8 +89,15 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 		} catch (Exception ex){
 			webhook.getExecutionStats().setErrored(true);
 			webhook.getExecutionStats().setRequestCompleted(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_MESSAGE + ex.getMessage());
-			Loggers.SERVER.error(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: " + ex.getMessage());
-			Loggers.SERVER.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
+			Loggers.SERVER.error(
+					String.format("%s trackingId: %s :: projectId: %s :: webhookId: %s :: templateId: %s, errorCode: %s, errorMessage: %s", 
+							CLASS_NAME, 
+							webhook.getExecutionStats().getTrackingIdAsString(),
+							whc.getProjectExternalId(),
+							whc.getUniqueKey(),
+							whc.getPayloadTemplate(),
+							WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE,
+							ex.getMessage()));			Loggers.SERVER.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
 			this.webHookHistoryItem = buildWebHookHistoryItem(new WebHookErrorStatus(ex, ex.getMessage(), 
 					WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE));
 			webHookHistoryRepository.addHistoryItem(this.webHookHistoryItem);
@@ -102,40 +117,53 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	 * @param payloadTemplate
 	 */
 	public static void doPost(WebHook wh, String payloadTemplate) {
+		boolean shouldHideSecureData = wh.shouldHideSecureData();
 		try {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				wh.post();
 				Loggers.SERVER.info(CLASS_NAME + " :: WebHook triggered : " 
-						+ wh.getUrl() + " using template " + payloadTemplate 
+						+ determineSecureUrl(wh, shouldHideSecureData) + " using template " + payloadTemplate 
 						+ " returned " + wh.getStatus() 
-						+ " " + wh.getErrorReason());	
-				Loggers.SERVER.debug(CLASS_NAME + ":doPost :: content dump: " + wh.getPayload());
-				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
+						+ " " + wh.getErrorReason());
+				if (Loggers.SERVER.isDebugEnabled()) {
+					if (shouldHideSecureData) {
+						Loggers.SERVER.debug(CLASS_NAME + ":doPost :: Hiding content payload because it may contain secured values. To log content to this log file uncheck 'Secure Values' in the WebHook edit dialog.");
+					} else if (wh.getExecutionStats().isSecureValueAccessed()) {
+						Loggers.SERVER.debug(CLASS_NAME + ":doPost :: Logging content payload even though it may contain secured values. To hide content in this log file check 'Secure Values' in the WebHook edit dialog.\n--- begin webhook payload ---\n" + wh.getPayload() + "\n--- end webhook payload ---");
+						Loggers.SERVER.debug("WebHook execution stats: " + wh.getExecutionStats().toString());
+					} else {
+						Loggers.SERVER.debug(CLASS_NAME + ":doPost :: Logging content payload because it contains no secured values.\n--- begin webhook payload ---\n" + wh.getPayload() + "\n--- end webhook payload ---");
+					}
+				}
 				if (Boolean.TRUE.equals(wh.isErrored())){
 					Loggers.SERVER.error(wh.getErrorReason());
 				}
 				if (wh.getStatus() == null) {
-					Loggers.SERVER.warn(CLASS_NAME + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
+					Loggers.SERVER.warn(CLASS_NAME + wh.getParam("projectId") + " WebHook (url: " + determineSecureUrl(wh, shouldHideSecureData) + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
 					throw new WebHookHttpExecutionException("WebHook endpoint returned null response code");
 				} else if (wh.getStatus() < HttpStatus.SC_OK || wh.getStatus() >= HttpStatus.SC_MULTIPLE_CHOICES) {
-					Loggers.SERVER.warn(CLASS_NAME + wh.getParam("projectId") + " WebHook (url: " + wh.getUrl() + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
+					Loggers.SERVER.warn(CLASS_NAME + wh.getParam("projectId") + " WebHook (url: " + determineSecureUrl(wh, shouldHideSecureData) + " proxy: " + wh.getProxyHost() + ":" + wh.getProxyPort()+") returned HTTP status " + wh.getStatus().toString());
 					throw new WebHookHttpResponseException("WebHook endpoint returned non-2xx response (" + EnglishReasonPhraseCatalog.INSTANCE.getReason(wh.getStatus(), null) +")", wh.getStatus());
 				}
 			} else {
-				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + wh.getUrl());	
+				if (Loggers.SERVER.isDebugEnabled()) Loggers.SERVER.debug("WebHook NOT triggered: " + wh.getDisabledReason() + " " +  wh.getParam("buildStatus") + " " + determineSecureUrl(wh, shouldHideSecureData));	
 			}
 		} catch (FileNotFoundException e) {
 			Loggers.SERVER.warn(CLASS_NAME + ":doPost :: " 
-					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
+					+ "A FileNotFoundException occurred while attempting to execute WebHook (" + determineSecureUrl(wh, shouldHideSecureData) + "). See the following debug stacktrace");
 			Loggers.SERVER.debug(e);
-			throw new WebHookHttpExecutionException("A FileNotFoundException occurred while attempting to execute WebHook (" + wh.getUrl() + ")", e);
+			throw new WebHookHttpExecutionException("A FileNotFoundException occurred while attempting to execute WebHook (" + determineSecureUrl(wh, shouldHideSecureData) + ")", e);
 		} catch (IOException e) {
 			Loggers.SERVER.warn(CLASS_NAME + ":doPost :: " 
-					+ "An IOException occurred while attempting to execute WebHook (" + wh.getUrl() + "). See the following debug stacktrace");
+					+ "An IOException occurred while attempting to execute WebHook (" + determineSecureUrl(wh, shouldHideSecureData) + "). See the following debug stacktrace");
 			Loggers.SERVER.debug(e);
 			throw new WebHookHttpExecutionException("Error " + e.getMessage() + " occurred while attempting to execute WebHook.", e);
 		}
 		
+	}
+
+	private static String determineSecureUrl(WebHook wh, boolean shouldHideSecureData) {
+		return shouldHideSecureData ? "********" : wh.getUrl();
 	}
 	protected abstract WebHook getWebHookContent();
 	protected abstract WebHookHistoryItem buildWebHookHistoryItem(WebHookErrorStatus errorStatus);

@@ -124,6 +124,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						Boolean enabled = false;
 			    						Boolean buildTypeAll = false;
 			    						Boolean buildTypeSubProjects = false;
+			    						Boolean hideSecureValues = false;
 			    						Set<String> buildTypes = new HashSet<String>();
 			    						if ((request.getParameter("webHooksEnabled") != null )
 			    								&& (request.getParameter("webHooksEnabled").equalsIgnoreCase("on"))){
@@ -150,6 +151,9 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						
 			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){
 			    							buildTypeSubProjects = true;
+			    						}
+			    						if ((request.getParameter("hideSecureValues") != null ) && (request.getParameter("hideSecureValues").equalsIgnoreCase("on"))){
+			    							hideSecureValues = true;
 			    						}
 			    						if ((request.getParameter("buildTypeAll") != null ) && (request.getParameter("buildTypeAll").equalsIgnoreCase("on"))){
 			    							buildTypeAll = true;
@@ -193,7 +197,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						if (noErrors && request.getParameter("webHookId").equals("new")){
 			    							WebHookUpdateResult result = mySettings.addNewWebHook(myProject.getProjectId(), myProject.getExternalId(), request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
-			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, hideSecureValues);
 			    							if(result.isUpdated()){
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='new' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
@@ -203,7 +207,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							WebHookUpdateResult result = mySettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
-			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig);
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, hideSecureValues);
 			    							if(result.isUpdated()){
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='update' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
