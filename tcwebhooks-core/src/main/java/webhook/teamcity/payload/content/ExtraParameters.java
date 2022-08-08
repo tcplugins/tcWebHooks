@@ -82,7 +82,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		WebHookParameterModel previous = getActual(context, key);
 		if (previous != null) {
 			this.remove(previous);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName() + " : " + previous.getValue());
+			Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 		}
 		WebHookParameterModel newHookParameterModel = new WebHookParameterModel(context,
 				context,
@@ -93,7 +93,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 				FORCE_RESOLVE_TEAMCITY_VARIABLE,
 				TEMPLATE_ENGINE_TYPE);
 		add(newHookParameterModel);
-		Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName() + " : " + newHookParameterModel.getValue());
+		Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
 	}
 
 	public void putAll(String context, Map<String, String> paramMap) {
@@ -107,7 +107,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 			WebHookParameterModel previous = getActual(context, parameter.getName());
 			if (previous != null) {
 				this.remove(previous);
-				Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName() + " : " + previous.getValue());
+				Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 			}
 			WebHookParameterModel newHookParameterModel = new WebHookParameterModel(context,
 					context,
@@ -118,7 +118,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 					parameter.getForceResolveTeamCityVariable(),
 					parameter.getTemplateEngine());
 			add(newHookParameterModel);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.toString());
+			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 		}
 	}
 	
