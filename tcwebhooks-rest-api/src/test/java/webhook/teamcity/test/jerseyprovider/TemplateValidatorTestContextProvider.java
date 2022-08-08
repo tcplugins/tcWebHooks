@@ -18,7 +18,6 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.TemplateValidator;
-import webhook.teamcity.server.rest.jersey.TemplateValidatorProvider;
 
 @Provider
 public class TemplateValidatorTestContextProvider implements InjectableProvider<Context, Type>, Injectable<TemplateValidator> {

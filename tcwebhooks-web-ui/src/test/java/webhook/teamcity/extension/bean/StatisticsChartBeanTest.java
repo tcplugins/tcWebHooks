@@ -10,8 +10,6 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableMap;
-
 import webhook.teamcity.extension.bean.StatisticsChartBean.Data;
 import webhook.teamcity.extension.bean.StatisticsChartBean.Dataset;
 import webhook.teamcity.statistics.StatisticsEntity;
