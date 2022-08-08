@@ -1,8 +1,8 @@
 package webhook.teamcity.test.jerseyprovider;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 
 import java.lang.reflect.Type;
 
@@ -24,12 +24,9 @@ import jetbrains.buildServer.serverSide.SecurityContextEx;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.ProjectIdResolver;
-import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookFinder;
-import webhook.teamcity.server.rest.data.WebHookParameterFinder;
 import webhook.teamcity.server.rest.request.Constants;
 import webhook.teamcity.server.rest.util.webhook.WebHookManager;
 import webhook.teamcity.test.springmock.MockProjectManager;
