@@ -207,7 +207,7 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    							WebHookUpdateResult result = mySettings.updateWebHook(myProject.getProjectId(),request.getParameter("webHookId"), 
 			    														request.getParameter("URL"), enabled, 
 			    														states, request.getParameter("payloadTemplate"), 
-			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, null, hideSecureValues, null); // TODO: Support Parameters, Filters and Headers
+			    														buildTypeAll, buildTypeSubProjects, buildTypes, webHookAuthConfig, null, null, null, hideSecureValues); // TODO: Support Parameters, Filters and Headers
 			    							if(result.isUpdated()){
 			    	    						params.put(PARAMS_MESSAGES_KEY, "<errors /><webhook action='update' id='" + result.getWebHookConfig().getUniqueKey() + "'/>");
 			    							} else {
