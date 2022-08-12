@@ -116,7 +116,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 					parameter.getForceResolveTeamCityVariable(),
 					parameter.getTemplateEngine());
 			add(newHookParameterModel);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + previous.getContext() + " : " + previous.getName());
+			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
 		}
 		return this;
 	}
@@ -161,15 +161,15 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 	}
 	
 	public ExtraParameters getTeamcityParameters() {
-		return getProperties(TEAMCITY);
+		return getParameters(TEAMCITY);
 	}
 	
 	public ExtraParameters getWebHookParameters() {
-		return getProperties(WEBHOOK);
+		return getParameters(WEBHOOK);
 	}
 	
 	public ExtraParameters getProjectParameters() {
-		return getProperties(PROJECT);
+		return getParameters(PROJECT);
 	}
 	
 	public String getParameter(String context, String key) {
@@ -185,7 +185,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		}
 		return null;
 	}
-	public ExtraParameters getProperties(String context) {
+	public ExtraParameters getParameters(String context) {
 		ExtraParameters parameters = new ExtraParameters();
 		for (WebHookParameterModel webHookParameter : this) {
 			if (webHookParameter.getContext().equalsIgnoreCase(context)) {
