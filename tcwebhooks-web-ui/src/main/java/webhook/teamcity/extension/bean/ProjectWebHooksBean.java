@@ -81,7 +81,7 @@ public class ProjectWebHooksBean {
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
 
 		/* Create a "new" config with blank stuff so that clicking the "new" button has a bunch of defaults to load in */
-		WebHookConfig newBlankConfig = new WebHookConfig(project.getProjectId(), project.getExternalId(), "", true, new BuildState().setAllEnabled(), null, false, false, enabledBuildTypes, null, null, null);
+		WebHookConfig newBlankConfig = new WebHookConfig(project.getProjectId(), project.getExternalId(), "", true, new BuildState().setAllEnabled(), null, false, false, enabledBuildTypes, null, null, null, null, true);
 		newBlankConfig.setUniqueKey("new");
 		/* And add it to the list */
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads, templateList);
