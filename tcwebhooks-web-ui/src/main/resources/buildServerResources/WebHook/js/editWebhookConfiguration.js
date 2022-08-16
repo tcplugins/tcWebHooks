@@ -1108,10 +1108,12 @@ function convertFormToWebHook(myJson) {
         url: $j('#webHookUrl').val(),
         enabled: $j('#editWebHookForm :input#webHooksEnabled').is(':checked'),
         template: $j('#editWebHookForm select#payloadFormatHolder').val(),
-        authType: lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
-        authEnabled: lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
-        authPreemptive: $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
-        authParameters: lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
+        authentication: {
+            type: lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
+            enabled: lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
+            preemptive: $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
+            parameters: lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
+        },
         buildTypes: {
             allEnabled: $j('input#buildTypeAll').is(':checked'),
             subProjectsEnabled: $j('input#buildTypeSubProjects').is(':checked'),
