@@ -28,4 +28,11 @@ public class ProjectWebHookAuthConfig {
 	private Boolean preemptive = true;
 	private Map<String,String> parameters = new HashMap<>();
 	
+	public WebHookAuthConfig toWebHookAuthConfig() {
+		WebHookAuthConfig webHookAuthConfig = new WebHookAuthConfig();
+		webHookAuthConfig.setType(getType());
+		webHookAuthConfig.setPreemptive(getPreemptive());
+		webHookAuthConfig.setParameters(getParameters());
+		return webHookAuthConfig;
+	}
 }

@@ -5,7 +5,9 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
+import webhook.teamcity.server.rest.model.webhook.ProjectWebHookAuthConfig;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 
@@ -13,12 +15,17 @@ import java.util.Objects;
 
 public class WebHookConfigurationValidator {
 	private static final String PROJECT_ID_KEY = "projectId";
+	private static final String AUTHENTICATION_TYPE_KEY = "authenticationType";
+	private static final String AUTHENTICATION_PARAMS_KEY = "authenticationParams";
 	private final PermissionChecker myPermissionChecker;
 	private final ProjectManager myProjectManager;
+	private final WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
 	
-	public WebHookConfigurationValidator(PermissionChecker permissionChecker, ProjectManager projectManager) {
+	public WebHookConfigurationValidator(PermissionChecker permissionChecker, ProjectManager projectManager,
+			WebHookAuthenticatorProvider webHookAuthenticatorProvider) {
 		this.myPermissionChecker = permissionChecker;
 		this.myProjectManager = projectManager;
+		this.myWebHookAuthenticatorProvider = webHookAuthenticatorProvider;
 	}
 
 	public ErrorResult validateNewWebHook(String projectId, ProjectWebhook newWebHook, ErrorResult result) {
@@ -61,6 +68,8 @@ public class WebHookConfigurationValidator {
 		}
 		
 		validateProjectId(externalId, result);
+		validateAuthentication(updatedWebHook.getAuthentication(), result);
+		
 		
 		if (Objects.nonNull(updatedWebHook.getFilters())) {
 			for (ProjectWebHookFilter f : updatedWebHook.getFilters().getFilters()) {
@@ -92,4 +101,17 @@ public class WebHookConfigurationValidator {
 		return result;
 	}
 	
+	private ErrorResult validateAuthentication(ProjectWebHookAuthConfig projectWebHookAuthConfig, ErrorResult result) {
+		if (projectWebHookAuthConfig != null) {
+			if (!this.myWebHookAuthenticatorProvider.getRegisteredTypes().contains(projectWebHookAuthConfig.getType())) {
+				result.addError(AUTHENTICATION_TYPE_KEY, "The authentication type is unknown");
+			}
+			
+			if (!this.myWebHookAuthenticatorProvider.areAllRequiredParametersPresent(projectWebHookAuthConfig.toWebHookAuthConfig())) {
+				result.addError(AUTHENTICATION_PARAMS_KEY, "The authentication configuration is missing required parameters");
+			}
+			
+		}
+		return result;
+	}
 }
