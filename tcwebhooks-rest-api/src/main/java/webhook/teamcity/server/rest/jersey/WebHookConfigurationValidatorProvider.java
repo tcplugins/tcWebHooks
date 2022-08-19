@@ -14,15 +14,15 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.server.rest.data.WebHookConfigurationValidator;
-import webhook.teamcity.server.rest.data.WebHookParameterValidator;
 
 @Provider
 public class WebHookConfigurationValidatorProvider implements InjectableProvider<Context, Type>, Injectable<WebHookConfigurationValidator> {
 	private final WebHookConfigurationValidator webhookValidator;
 
-	public WebHookConfigurationValidatorProvider(@NotNull final PermissionChecker permissionChecker, @NotNull final ProjectManager projectManager) {
-		this.webhookValidator = new WebHookConfigurationValidator(permissionChecker, projectManager);
+	public WebHookConfigurationValidatorProvider(@NotNull final PermissionChecker permissionChecker, @NotNull final ProjectManager projectManager, @NotNull final WebHookAuthenticatorProvider webHookAuthenticatorProvider) {
+		this.webhookValidator = new WebHookConfigurationValidator(permissionChecker, projectManager, webHookAuthenticatorProvider);
 	}
 
 	public ComponentScope getScope() {
