@@ -101,17 +101,18 @@
 									<td style="width:8%" onclick="WebHooksPlugin.Parameters.editParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}'});" class="highlight">No</td>
 								</c:otherwise>
 							</c:choose>
-							<td onclick="WebHooksPlugin.Parameters.editParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}'});"><a href="javascript://" class="highlight">edit</a></td>
+							<td onclick="WebHooksPlugin.Parameters.editParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}', 'enableSecure':true });"><a href="javascript://" class="highlight">edit</a></td>
 							<td onclick="WebHooksPlugin.Parameters.deleteParameter({'parameterId':'${myParam.parameter.id}','projectId':'${myParam.sproject.externalId}', 'parameterName': '<c:out value="${myParam.parameter.name}" />'});" class="highlight"><a href="javascript://">delete</a></td>
 						</tr>
 					</c:forEach>
 					</tbody>
 					<tfoot>
 						<tr class="newWebHookRow webHookRow">
-							<td colspan="5" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.Parameters.addParameter({'parameterId':'_new','projectId':'${projectExternalId}', 'enableSecure':true });" class="addNew">Click to create a new Parameter for this project</p></td>
+							<td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.Parameters.addParameter({'parameterId':'_new','projectId':'${projectExternalId}', 'enableSecure':true });" class="addNew">Click to create a new Parameter for this project</p></td>
 						</tr>
 					</tfoot>
 				</table>
+				<script>WebHooksPlugin.afterRefresh();</script>
 		</bs:refreshable>
 		<p>
 
