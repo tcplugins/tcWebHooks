@@ -155,16 +155,17 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 		},
 
 		toggleHidden: function () {
+			var value = $j("#editWebHookParameterForm #parameterDialogValue").val();
 			var type = $j("#editWebHookParameterForm #parameterDialogType").val();
 		    switch (type) {
 		        case 'password':
 		        {
-		            $j("#editWebHookParameterForm #parameterDialogTypeValue").attr('type', 'password');
+					$j("#editWebHookParameterForm #parameterDialogValue").replaceWith('<input type="password" value="'+value+'" id="parameterDialogValue" class="editWebHookParameterFormField" name="parameterDialogValue">');
 		            return;
 		        }
 		        case 'text':
 		        {
-		            $j("#editWebHookParameterForm #parameterDialogTypeValue").attr('type', 'text');
+					$j("#editWebHookParameterForm #parameterDialogValue").replaceWith('<input type="text" value="'+value+'" id="parameterDialogValue" class="editWebHookParameterFormField" name="parameterDialogValue">');
 		            return;
 		        }
 		    }
@@ -174,11 +175,11 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 			$j('#editWebHookParameterForm #parameterId').val(myJson.id);
 			$j('#editWebHookParameterForm #parameterHref').val(myJson.href);
 			if (data.enableSecure === true) {
-				$j("#editWebHookParameterForm #parameterDialogType option[value='password']").attr("enabled", "enabled");
+				$j("#editWebHookParameterForm #parameterDialogType option[value='password']").prop('disabled', false);
 				$j("#editWebHookParameterForm #parameterDialogType").val(myJson.secure ? "password" : "text");
 			} else {
 				$j("#editWebHookParameterForm #parameterDialogType").val("text");
-				$j("#editWebHookParameterForm #parameterDialogType option[value='password']").attr("disabled", "disabled");
+				$j("#editWebHookParameterForm #parameterDialogType option[value='password']").prop('disabled',true);
 			}
 			$j("#editWebHookParameterForm #parameterDialogName").val(myJson.name);
 			$j("#editWebHookParameterForm #parameterDialogValue").val(myJson.value);
