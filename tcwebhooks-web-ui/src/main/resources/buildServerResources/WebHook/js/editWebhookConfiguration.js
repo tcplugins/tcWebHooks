@@ -1020,6 +1020,18 @@ function lookupFormat(templateId) {
     return name;
 }
 
+function lookupAuthentication() {
+    if (!lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val())) {
+        return null;
+    } else {
+        return {
+            type: lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
+            preemptive: $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
+            parameters: lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
+        };
+    }
+}
+
 function lookupAuthType(authTypeValue) {
     if (authTypeValue) {
         return authTypeValue;
@@ -1108,12 +1120,7 @@ function convertFormToWebHook(myJson) {
         url: $j('#webHookUrl').val(),
         enabled: $j('#editWebHookForm :input#webHooksEnabled').is(':checked'),
         template: $j('#editWebHookForm select#payloadFormatHolder').val(),
-        authentication: {
-            type: lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
-            enabled: lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
-            preemptive: $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
-            parameters: lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
-        },
+        authentication: lookupAuthentication(),
         buildTypes: {
             allEnabled: $j('input#buildTypeAll').is(':checked'),
             subProjectsEnabled: $j('input#buildTypeSubProjects').is(':checked'),
@@ -1202,7 +1209,6 @@ function renderPreviewOnChange() {
                     "templateId": lookupTemplate($j('#payloadFormatHolder').val()),
                     "payloadFormat": lookupFormat($j('#payloadFormatHolder').val()),
                     "authType": lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
-                    "authEnabled": lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
                     "authPreemptive": $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
                     "authParameters": lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
                     "configBuildStates": {
