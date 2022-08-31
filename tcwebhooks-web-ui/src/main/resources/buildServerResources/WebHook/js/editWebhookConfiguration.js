@@ -162,6 +162,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             this.resetAndShow(data);
             this.getWebHookData(data.projectId, data.webhookId, action);
             this.highlightRow($j("#viewRow_" + data.webhookId), this);
+            this.afterShow();
         },
 
         cancelDialog: function () {

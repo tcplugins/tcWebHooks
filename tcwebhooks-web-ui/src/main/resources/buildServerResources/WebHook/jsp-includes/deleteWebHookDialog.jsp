@@ -1,11 +1,11 @@
     <bs:dialog dialogId="deleteWebHookDialog"
                dialogClass="deleteWebHookDialog"
                title="Confirm Webhook deletion"
-               closeCommand="WebHooksPlugin.Configurations.DeleteDialog.cancelDialog()">
+               closeCommand="${dialogScope}.DeleteDialog.cancelDialog()">
         <forms:multipartForm id="deleteWebHookForm"
                              action="ajaxEdit.html?projectId=${projectId}"
                              targetIframe="hidden-iframe"
-                             onsubmit="return WebHooksPlugin.Configurations.DeleteDialog.doPost();">
+                             onsubmit="return ${dialogScope}.DeleteDialog.doPost();">
 
             <table class="runnerFormTable">
                 <tr><td id="deleteWebHookWarningMessage">Are you sure you want to delete this Webhook?
@@ -16,7 +16,7 @@
             <input type="hidden" id="projectId" name="projectId"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="deleteWebHookDialogSubmit" label="Delete Web Hook"/>
-                <forms:cancel onclick="WebHooksPlugin.Configurations.DeleteDialog.cancelDialog()"/>
+                <forms:cancel onclick="${dialogScope}.DeleteDialog.cancelDialog()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>
