@@ -1,5 +1,8 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ include file="/include.jsp" %>
 <c:set var="pageTitle" value="Edit WebHooks" scope="request"/>
+<c:set var="dialogScope" value="WebHooksPlugin.Configurations.WithoutRestApi" scope="request"/>
 <bs:page>
 
     <jsp:attribute name="head_include">
@@ -26,12 +29,12 @@
         /js/bs/editBuildType.js
         /js/bs/editProject.js
         /js/bs/adminActions.js
-      ${jspHome}WebHook/js/editWebhook.jsxxxx
       ${jspHome}WebHook/js/editWebhookCommon.js
       ${jspHome}WebHook/js/editWebhookParameter.js
       ${jspHome}WebHook/js/editWebhookFilter.js
       ${jspHome}WebHook/js/editWebhookHeader.js
       ${jspHome}WebHook/js/editWebhookConfiguration.js
+      ${jspHome}WebHook/js/editWebhookConfigurationWithoutRestApi.js
       ${jspHome}WebHook/js/noRestApi.js
       </bs:linkScript>
 
@@ -56,142 +59,46 @@
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/moment-2.22.2.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
 
-	<script type="text/javascript">
-	var webhookDialogWidth = -1;
-	var webhookDialogHeight = -1;
-	var templatePaneOuterHeight = -1;
-	$j(document).ready( function() {
-		$j('#tab-container').easytabs({
-			  animate: false,
-			  updateHash: false
-		});
-		
-		$j('#payloadFormatHolder').change(function() {
-			var templateId = $j(this).val();
-				$j.each(ProjectBuilds.templatesAndWebhooks.registeredTemplates.templateList, function(templateKey, template){
-				if (templateId === templateKey){
-					$j("#hookPane .buildState").each(function(thing, state){
-						if (($j.inArray(state.id, template.supportedStates) >= 0) &&
-							($j.inArray(state.id, template.supportedBranchStates) >= 0))
-						{
-								$j("td." + state.id).removeClass('buildStateDisabled');
-								$j("input#" + state.id).prop('disabled', false);
-								$j("#webhookPreviewBuildEvent option[value=" + state.id + "]").prop('disabled', false);
-						} else {
-								$j("td." + state.id).addClass('buildStateDisabled');
-								$j("input#" + state.id).prop('disabled', 'disabled');
-								$j("#webhookPreviewBuildEvent option[value=" + state.id + "]").prop('disabled', 'disabled');
-						}
-					});
-					return false;
-				}
-			});
-		});
-		
-		$j('#extraAuthType').empty();
-		$j('#extraAuthType').append($j("<option />").val("").text("No Authentication"));
-		$j.each(ProjectBuilds.templatesAndWebhooks.registeredAuthTypes, function(key, authType){
-			$j('#extraAuthType').append($j("<option />").val(key).text(authType.description));
-		});
-			
-		$j('select.templateAjaxRefresh').change(function() {
-			renderPreviewOnChange()
-		});		
-		
-	});
-	
-	var restApiDetected = true;
-	
-	function populateBuildHistory() {
-		
-		<c:if test="${not haveBuild && haveProject}"> 
-			populateBuildHistoryAjax("project:${projectExternalId},");
-		</c:if>
-		<c:if test="${haveBuild}">				
-			populateBuildHistoryAjax("buildType:${buildExternalId},");
-		</c:if>
-	}
-	
-	function renderPreviewOnChange() {
-		if ($j('#payloadFormatHolder').val()) {
-			$j('#currentTemplateName').text(lookupTemplateName($j('#payloadFormatHolder').val()));
-		} else {
-			$j('#currentTemplateName').html("&nbsp;");
-		}
-		
-		if (
-				$j("#webhookPreviewBuildEvent").val() &&
-				$j("#webhookPreviewBuildId").val() &&
-				$j("#payloadFormatHolder").val()
-			)
-		{
-		
-			var selectedBuildState = $j('#webhookPreviewBuildEvent').val();
-			var selectedBuildId = $j('#webhookPreviewBuildId').val();
-			if (selectedBuildId === "") {
-				$j('#webhookPreviewRendered').html("");
-			} else {
-				$j.ajax ({
-					url: "testWebHook.html?action=preview",
-					type: "POST",
-					dataType: 'json',
-					headers : {
-						'Content-Type' : 'application/json',
-						'Accept' : 'text/html'
-					},    				
-					data: JSON.stringify({
-									"url": $j('#webHookUrl').val(),
-									"projectExternalId": $j("#editWebHookForm input[id='projectExternalId']").val(),
-									"uniqueKey": $j("#editWebHookForm input[id='webHookId']").val(),
-									"testBuildState": selectedBuildState,
-									"buildId": selectedBuildId,
-									"templateId": lookupTemplate($j('#payloadFormatHolder').val()),
-									"payloadFormat": lookupFormat($j('#payloadFormatHolder').val()),
-									"authType" : lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
-									"authEnabled" : lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
-									"authPreemptive" : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
-									"authParameters" : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
-									"configBuildStates" : {
-										"BUILD_SUCCESSFUL" : true, 
-										"CHANGES_LOADED" : false, 
-									    "BUILD_FAILED" : true,
-									    "BUILD_BROKEN" : true,
-									    "BUILD_STARTED" : false,
-									    "BUILD_ADDED_TO_QUEUE" : false,
-									    "BUILD_REMOVED_FROM_QUEUE" : false,
-									    "BEFORE_BUILD_FINISHED" : false,
-									    "RESPONSIBILITY_CHANGED" : false,
-										"BUILD_FIXED" : true,
-									    "BUILD_INTERRUPTED" : false,
-									    "BUILD_PINNED" : false,
-									    "BUILD_UNPINNED" : false,
-									    "SERVICE_MESSAGE_RECEIVED" : false
-								    }
-								}),
-					success:(function(data){
-									if(data.errored) {
-										$j('#webhookPreviewRendered').html(
-												"<b>An error occured building the payload preview</b><br>").append(
-												$j("<div style='padding:1em;'></div>").text(data.exception.detailMessage));
-									} else {
-										$j('#webhookPreviewRendered').html(data.html);
-										
-										$j('#webhookPreviewRendered pre code').each(function(i, block) {
-										    hljs.highlightBlock(block);
-										});
-									}
-								})
-				});
-			}
-		} else {
-			$j('#webhookPreviewRendered').html();
-		}
-		
-	}
-
-	</script>
-
     <div class="editBuildPageGeneral" style="background-color:white; float:left; margin:0; padding:0; width:70%;">
+    
+    		${permissionError}
+		
+		<c:if test="${fn:length(projectWebHooksAndTemplates) > 0}" >
+			<h3>WebHooks and Templates in parent Projects</h3>
+			WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.
+			Parent projects have the following webhooks and templates:
+			<table class="highlightable parametersTable webhooktable">
+				<thead>
+				<tr><th class="name" style="width:40%">Project Name</th><th style="width:20%">WebHook Count</th><th style="width:20%">Template Count</th><th style="width:20%">Parameter Count</th></tr>
+				</thead>
+				<tbody>
+			<c:forEach items="${projectWebHooksAndTemplates}" var="parent">
+				<tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
+					<td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
+					<td>${fn:length(parent.templates.templateList)} templates available</td>
+					<td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
+				</tr>
+			</c:forEach>
+			</tbody>
+			</table>
+			<p><p>
+		</c:if>
+
+		<c:choose>
+			<c:when test="${projectExternalId == '_Root'}">
+				<h3>WebHooks configured for every TeamCity build (_Root project)</h3>
+			</c:when>
+			<c:otherwise>
+				<h3>WebHooks configured for <c:out value="${project.fullName}"/></h3>
+			</c:otherwise>
+		</c:choose>
+		
+		<%@ include file="jsp-includes/projectWebHooksTable.jsp" %>
+
+		<p>
+    
+    	<%@ include file="jsp-includes/projectParametersTable.jsp" %>
+
     
         <c:choose>  
     		<c:when test="${haveBuild}"> 
@@ -214,7 +121,7 @@
 			<c:otherwise>
 				<c:choose>
 					<c:when test="${hasPermission}">
-					<%@ include file="webHookInclude.jsp" %>
+						Permission granted.
 					</c:when>
 					<c:otherwise>
 						<c:choose>
@@ -271,22 +178,17 @@
       </div>
     </div>
 
-    <script type=text/javascript>
-	        $('systemParams').updateContainer = function() {
-        <c:choose>  
-    		<c:when test="${haveBuild}"> 
-	          	$j.get("settingsList.html?buildTypeId=<c:out value="${buildExternalId}"/>", function(data) {
-         	</c:when>  
-         	<c:otherwise>  
-	          	$j.get("settingsList.html?projectId=<c:out value="${projectId}"/>", function(data) {
-         	</c:otherwise>  
-		</c:choose>  	        
-	          		ProjectBuilds = data;
-	          		$j('#webHookTable .webHookRow').remove();
-	          		addWebHooksFromJsonCallback();
-				});
-	        }
+	<%@ include file="jsp-includes/editWebHookDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookParameterDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookParameterDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookHeaderDialog.jsp" %>
+	<%@ include file="jsp-includes/editWebHookFilterDialog.jsp" %>
+	<%@ include file="jsp-includes/noRestApiDialog.jsp" %>
+	
+	<script type="text/javascript">
+		var restApiDetected = ${isRestApiInstalled};
+		var ProjectBuilds = ${projectWebHooksAsJson};
 	</script>
-    	
     </jsp:attribute>
 </bs:page>

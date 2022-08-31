@@ -1,11 +1,11 @@
     <bs:dialog dialogId="editWebHookDialog"
                dialogClass="editWebHookDialog"
                title="Edit Web Hook"
-               closeCommand="WebHooksPlugin.Configurations.EditDialog.cancelDialog()">
+               closeCommand="${dialogScope}.EditDialog.cancelDialog()">
 		  <forms:multipartForm id="editWebHookForm"
-                             action="ajaxEdit.html?projectId=${projectId}"
+                             action="save.html"
                              targetIframe="hidden-iframe"
-          					 onsubmit="return WebHooksPlugin.Configurations.EditDialog.doPost();">
+          					 onsubmit="return ${dialogScope}.EditDialog.doPost();">
             <div id='webHookFormContents'>
 
             		<div id="tab-container" class="tab-container">
@@ -171,7 +171,7 @@
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddParameterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}', 'enableSecure': false});">Click to create new Parameter for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="${dialogScope}.showAddParameterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}', 'enableSecure': false});">Click to create new Parameter for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>
@@ -185,7 +185,7 @@
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddHeaderDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Header for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="${dialogScope}.showAddHeaderDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Header for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>
@@ -199,7 +199,7 @@
 												<tbody>
 												</tbody>
 												<tfoot>
-													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="WebHooksPlugin.Configurations.showAddFilterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Filter for this WebHook</p></td></tr>
+													<tr class="webHookRow"><td class="highlight newWebHookRow" colspan="4"><p onclick="${dialogScope}.showAddFilterDialog({'projectId':'${projectExternalId}', 'webhookId':'${hook.uniqueKey}'});">Click to create new Filter for this WebHook</p></td></tr>
 												</tfoot>
 												</table>
 											</div>
@@ -233,7 +233,7 @@
 								            	</td></tr></table>
 											</div>
 						            		<div id="webhookPreviewRendered"></div>
-						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return WebHooksPlugin.Configurations.EditDialog.executeWebHook();">Send Test WebHook for Build Event</button>
+						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return ${dialogScope}.EditDialog.executeWebHook();">Send Test WebHook for Build Event</button>
 						            		<span class="testingLimitations"><a rel="noopener noreferrer" target="_blank" href="https://github.com/tcplugins/tcWebHooks/wiki/Testing-a-WebHook#limitations-with-webhook-testing">Testing limitations (opens in new window)</a></span>
 											<div id="webhookTestProgress">
 												<forms:progressRing progressTitle="Sending test webhook..."/>
@@ -257,7 +257,7 @@
             <div id="ajaxWebHookEditResult"></div>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="editTemplateItemDialogSubmit" label="Save Web Hook"/>
-                <forms:cancel onclick="WebHooksPlugin.Configurations.EditDialog.cancelDialog()"/>
+                <forms:cancel onclick="${dialogScope}.EditDialog.cancelDialog()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>
