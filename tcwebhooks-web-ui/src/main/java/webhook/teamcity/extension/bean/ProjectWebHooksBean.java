@@ -15,7 +15,6 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
-import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookProjectSettings;

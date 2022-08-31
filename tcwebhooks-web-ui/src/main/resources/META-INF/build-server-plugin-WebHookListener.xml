@@ -72,6 +72,14 @@
      	class="webhook.teamcity.extension.WebHookSearchController" 
      	/>
      	
+    <bean id="webHookEditController"
+     	class="webhook.teamcity.extension.WebHookEditController" 
+     	/>
+     	
+    <bean id="webHookConfigurationValidator"
+     	class="webhook.teamcity.extension.util.WebHookConfigurationValidator" 
+     	/>
+     	
     <bean id="webHookTemplateListPageController" 
      	class="webhook.teamcity.extension.WebHookTemplateListPageController" 
      	init-method="register" 
