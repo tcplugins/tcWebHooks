@@ -1,12 +1,24 @@
 WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
     showAddDialog: function (data, tab) {
-        this.EditDialog.showDialog("Add Web Hook", 'addWebHook', data, tab);
+        if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
+    	} else {
+            this.EditDialog.showDialog("Add Web Hook", 'addWebHook', data, tab);
+        }
     },
     showEditDialog: function (data, tab) {
-        this.EditDialog.showDialog("Edit Web Hook", 'updateWebHook', data, tab);
+        if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
+    	} else {
+            this.EditDialog.showDialog("Edit Web Hook", 'updateWebHook', data, tab);
+        }
     },
     showDeleteDialog: function (data) {
-        this.DeleteDialog.showDialog("Delete Web Hook", 'deleteWebHook', data);
+        if (!restApiDetected) {
+    		WebHooksPlugin.NoRestApi.NoRestApiDialog.showDialog();
+    	} else {
+            this.DeleteDialog.showDialog("Delete Web Hook", 'deleteWebHook', data);
+        }
     },
     showAddParameterDialog: function (data) {
         this.EditParameterDialog.showDialog("Add Web Hook Parameter", 'addWebhookParameter', data);
@@ -600,10 +612,10 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             return WebHooksPlugin.Configurations.localStore;
         },
         getContainer: function () {
-            return $('deleteWebHookParameterDialog');
+            return $('deleteWebHookHeaderDialog');
         },
         formElement: function () {
-            return $('deleteWebHookParameterForm');
+            return $('deleteWebHookHeaderForm');
         },
         afterShow: function() {
             alert('here');
@@ -709,15 +721,15 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             return WebHooksPlugin.Configurations.localStore;
         },
         getContainer: function () {
-            return $('deleteWebHookParameterDialog');
+            return $('deleteWebHookFilterDialog');
         },
         formElement: function () {
-            return $('deleteWebHookParameterForm');
+            return $('deleteWebHookFilterForm');
         },
         afterShow: function() {
             // Update the form, so that the submit button calls 
             // the doPost method on this dialog, not the base dialog.
-			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteParameterDialog.doPost()");
+			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteFilterDialog.doPost()");
         },
         doPost: function() {
             alert("No doing delete");

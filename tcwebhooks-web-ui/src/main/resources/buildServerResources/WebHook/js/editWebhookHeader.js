@@ -128,14 +128,15 @@ WebHooksPlugin.Headers = OO.extend(WebHooksPlugin, {
     		this.cleanFields(data);
     		this.cleanErrors();
     		this.showCentered();
-			$j("#viewRow_" + data.headerId).animate({
+			$j("tr[data-header-id='" + data.headerId + "']").animate({
 	            backgroundColor: "#ffffcc"
 	    	}, 1000 );
     	},
 
         cancelDialog: function () {
         	this.close();
-	        $j("#viewRow_" + $j("#deleteWebHookHeaderForm input[id='headerId']").val()).animate({
+			let headerId = $j("#deleteWebHookHeaderForm input[id='headerId']").val();
+			$j("tr[data-header-id='" + headerId + "']").animate({
 	            backgroundColor: "#ffffff"
 	        }, 500 );
         },

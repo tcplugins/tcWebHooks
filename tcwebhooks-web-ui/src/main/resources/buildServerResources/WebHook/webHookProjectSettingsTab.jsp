@@ -2,6 +2,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
 <%@ include file="/include-internal.jsp" %>
+<c:set var="webhookConfigDialogScope" value="WebHooksPlugin.Configurations" scope="request"/>
+<c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
 
 <style>
 ul.commalist {

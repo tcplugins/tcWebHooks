@@ -35,6 +35,15 @@ tr.webHookRow:hover, tr.webHookRowTemplate:hover, tr.newWebHookRow:hover {
 	background-color: rgb(250, 250, 250);
 }
 
+td.newWebHookRow {
+	padding: 0px;
+}
+
+td.newWebHookRow p {
+	padding: 1em;
+	margin:0px;
+}
+
 .webHookRowTemplate {
 	display:none;
 }
@@ -367,7 +376,8 @@ tr.templateHeading {
 	background-color: rgb(245, 245, 245);
 }
 
-#deleteWebHookDialogSubmit, #repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit, #deleteWebHookParameterDialogSubmit {
+#deleteWebHookDialogSubmit, #repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit, #deleteWebHookParameterDialogSubmit,
+#deleteWebHookFilterDialogSubmit, #deleteWebHookHeaderDialogSubmit   {
 	background-color: red;
 	background-image: linear-gradient(to bottom, #e06667, #e50000);
 }

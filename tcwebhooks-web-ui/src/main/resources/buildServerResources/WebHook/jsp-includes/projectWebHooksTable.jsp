@@ -27,14 +27,14 @@
                 </c:choose>
                 <td><c:out value="${hook.enabledEventsListForWeb}"/></td>
                 <td title="${hook.buildTypeCountAsToolTip}"><c:out value="${hook.buildTypeCountAsFriendlyString}"/></td>
-                <td><a onclick="WebHooksPlugin.Configurations.showEditDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'}, '#hookPane');" href="javascript://">edit</a></td>
-                <td><a onclick="WebHooksPlugin.Configurations.showDeleteDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'});" href="javascript://">delete</a></td>
+                <td><a onclick="${webhookConfigDialogScope}.showEditDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'}, '#hookPane');" href="javascript://">edit</a></td>
+                <td><a onclick="${webhookConfigDialogScope}.showDeleteDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'});" href="javascript://">delete</a></td>
             </tr>
         </c:forEach>
         </tbody>
         <tfoot>
             <tr class="newWebHookRow">
-                <td colspan="6" class="highlight newWebHookRow"><p onclick="WebHooksPlugin.Configurations.showAddDialog({'projectId':'${projectExternalId}'}, '#hookPane');" class="addNew">Click to create new WebHook for this project</p></td>
+                <td colspan="6" class="highlight newWebHookRow"><p onclick="${webhookConfigDialogScope}.showAddDialog({'projectId':'${projectExternalId}'}, '#hookPane');" class="addNew">Click to create new WebHook for this project</p></td>
             </tr>
         </tfoot>
     </table>
