@@ -134,14 +134,15 @@ WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
     		this.cleanFields(data);
     		this.cleanErrors();
     		this.showCentered();
-			$j("#viewRow_" + data.filterId).animate({
+			$j("tr[data-filter-id='" + data.filterId + "']").animate({
 	            backgroundColor: "#ffffcc"
 	    	}, 1000 );
     	},
 
         cancelDialog: function () {
         	this.close();
-	        $j("#viewRow_" + $j("#deleteWebHookFilterForm input[id='filterId']").val()).animate({
+			let filterId = $j("#deleteWebHookFilterForm input[id='filterId']").val();
+			$j("tr[data-filter-id='" + filterId + "']").animate({
 	            backgroundColor: "#ffffff"
 	        }, 500 );
         },
@@ -149,7 +150,7 @@ WebHooksPlugin.Filters = OO.extend(WebHooksPlugin, {
     	cleanFields: function (data) {
     		$j("#deleteWebHookFilterForm input[id='projectId']").val(data.projectId);
     		$j("#deleteWebHookFilterForm input[id='filterId']").val(data.filterId);
-    		$j("#deleteWebHookFilterForm #confirmationWebHookFilterName").text(data.filterName);
+    		$j("#deleteWebHookFilterForm #confirmationWebHookFilterValue").text(data.filterValue);
     		
     		this.cleanErrors();
     	},

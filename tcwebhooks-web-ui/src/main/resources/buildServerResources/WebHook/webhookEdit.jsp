@@ -2,7 +2,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ include file="/include.jsp" %>
 <c:set var="pageTitle" value="Edit WebHooks" scope="request"/>
-<c:set var="dialogScope" value="WebHooksPlugin.Configurations.WithoutRestApi" scope="request"/>
+<c:set var="webhookConfigDialogScope" value="WebHooksPlugin.Configurations.WithoutRestApi" scope="request"/>
+<c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
 <bs:page>
 
     <jsp:attribute name="head_include">
@@ -183,7 +184,9 @@
 	<%@ include file="jsp-includes/editWebHookParameterDialog.jsp" %>
 	<%@ include file="jsp-includes/deleteWebHookParameterDialog.jsp" %>
 	<%@ include file="jsp-includes/editWebHookHeaderDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookHeaderDialog.jsp" %>
 	<%@ include file="jsp-includes/editWebHookFilterDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookFilterDialog.jsp" %>
 	<%@ include file="jsp-includes/noRestApiDialog.jsp" %>
 	
 	<script type="text/javascript">

@@ -1,11 +1,11 @@
     <bs:dialog dialogId="editWebHookParameterDialog"
                dialogClass="editWebHookParameterDialog"
                title="Edit WebHook Parameter"
-               closeCommand="WebHooksPlugin.Parameters.EditDialog.cancelDialog()">
+               closeCommand="${parameterConfigDialogScope}.EditDialog.cancelDialog()">
         <forms:multipartForm id="editWebHookParameterForm"
                              action="ajaxEdit.html?projectId=${projectId}"
                              targetIframe="hidden-iframe"
-                             onsubmit="return WebHooksPlugin.Parameters.EditDialog.doPost();">
+                             onsubmit="return ${parameterConfigDialogScope}.EditDialog.doPost();">
 
             <table class="runnerFormTable">
             	
@@ -23,7 +23,7 @@
             <input type="hidden" class="editWebHookParameterFormField" id="parameterProjectId" name="parameterProjectId"/>
             <div class="popupSaveButtonsBlock">
                 <forms:submit id="editWebHookParameterDialogSubmit" label="Edit Parameter"/>
-                <forms:cancel onclick="WebHooksPlugin.Parameters.EditDialog.cancelDialog()"/>
+                <forms:cancel onclick="${parameterConfigDialogScope}.EditDialog.cancelDialog()"/>
             </div>
         </forms:multipartForm>
     </bs:dialog>
