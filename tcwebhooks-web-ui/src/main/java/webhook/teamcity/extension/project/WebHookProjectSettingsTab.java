@@ -83,6 +83,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookHeader.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookFilter.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookConfiguration.js"));
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/noRestApi.js"));
 
 	}
 

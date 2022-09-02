@@ -68,6 +68,8 @@ public class WebHookEditController extends BaseController {
 						.filter(whc -> request.getParameter("webHookId").equals(whc.getUniqueKey()))
 						.findFirst().orElse(null);
 				if (webHookConfig != null) {
+					webHookConfig.setProjectInternalId(this.myProjectIdResolver.getInternalProjectId(request.getParameter("projectId")));
+					webHookConfig.setProjectExternalId(request.getParameter("projectId"));
 					params.put(CONTENT, gson.toJson(WebHookConfigurationJson.fromWebHookConfig(webHookConfig, myProjectIdResolver, myBuildTypeIdResolver)));
 					return new ModelAndView(myPluginPath + EDIT_WEB_HOOK_JSP, params);
 				}
@@ -81,6 +83,8 @@ public class WebHookEditController extends BaseController {
 			
 			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("add")) {
 				myWebHookConfigurationValidator.validateNewWebHook(webHookSaveRequest.getProjectId(), webHookSaveRequest, result);
+			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("delete")) {
+				myWebHookConfigurationValidator.validateDeleteWebHook(request.getParameter("projectId"), request.getParameter("webHookId"), result);
 			} else {
 				myWebHookConfigurationValidator.validateUpdatedWebHook(webHookSaveRequest.getProjectId(), webHookSaveRequest, result);
 			}
@@ -91,14 +95,15 @@ public class WebHookEditController extends BaseController {
 			}
 
 			
-			WebHookConfig webHookConfig = webHookSaveRequest.toWebHookConfig(myProjectIdResolver, myBuildTypeIdResolver);
 			WebHookUpdateResult saveResult = null;
-			
 			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("delete")) {
-				saveResult = this.myWebHookSettingsManager.deleteWebHook(this.myProjectIdResolver.getInternalProjectId(webHookSaveRequest.getProjectId()), webHookConfig);
+				saveResult = this.myWebHookSettingsManager.deleteWebHook( request.getParameter("webHookId"), this.myProjectIdResolver.getInternalProjectId(request.getParameter("projectId")));
+			
 			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("add")) {
+				WebHookConfig webHookConfig = webHookSaveRequest.toWebHookConfig(myProjectIdResolver, myBuildTypeIdResolver);
 				saveResult = this.myWebHookSettingsManager.addNewWebHook(this.myProjectIdResolver.getInternalProjectId(webHookSaveRequest.getProjectId()), webHookConfig);
 			} else {
+				WebHookConfig webHookConfig = webHookSaveRequest.toWebHookConfig(myProjectIdResolver, myBuildTypeIdResolver);
 				saveResult = this.myWebHookSettingsManager.updateWebHook(this.myProjectIdResolver.getInternalProjectId(webHookSaveRequest.getProjectId()), webHookConfig);
 			}
 

@@ -2,13 +2,12 @@ package webhook.teamcity.json;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import webhook.teamcity.settings.project.WebHookParameter;
 
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class WebHookParameterJson extends WebHookConfigurationListWrapper {
 	private List<Parameter> parameter;
@@ -43,5 +42,12 @@ public class WebHookParameterJson extends WebHookConfigurationListWrapper {
 			p.setTemplateEngine(webHookParameter.getTemplateEngine());
 			return p;
 		}
+	}
+
+	public static WebHookParameterJson create(List<Parameter> parameters) {
+		WebHookParameterJson webHookParameter = new WebHookParameterJson();
+		webHookParameter.setParameter(parameters);
+		webHookParameter.setCount(parameters.size());
+		return webHookParameter;
 	}
 }

@@ -33,7 +33,7 @@ public class WebAddressTransformerImpl implements WebAddressTransformer {
 			return GeneralisedWebAddress.build(host, GeneralisedWebAddressType.HOST_ADDRESS);
 		}
 
-		return null;
+		return GeneralisedWebAddress.build("invalidUrl", GeneralisedWebAddressType.HOST_ADDRESS);
 	}
 
 	@Override

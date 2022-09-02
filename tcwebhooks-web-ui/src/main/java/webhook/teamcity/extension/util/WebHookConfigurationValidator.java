@@ -40,6 +40,16 @@ public class WebHookConfigurationValidator {
 		return result;
 		
 	}
+	
+	public ErrorResult validateDeleteWebHook(String projectId, String webHookId, ErrorResult result) {
+		
+		if (webHookId == null) {
+			result.addError("id-delete", "The webhook id is required for deletion.");
+		}
+		validateProjectId(projectId, result);
+		return result;
+		
+	}
 
 	public ErrorResult validateUpdatedWebHook(String externalId, WebHookConfigurationJson updatedWebHook, ErrorResult result) {
 		

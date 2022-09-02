@@ -730,11 +730,14 @@ public class WebHookConfig {
 	}
 
 	public void setAuthParameters(Map<String, String> authParameters) {
+		this.authParameters = new LinkedHashMap<>();
 		this.authParameters.putAll(authParameters);
 	}
 
 	public void clearAuthParameters() {
-		this.authParameters.clear();
+		if (this.authParameters != null) {
+			this.authParameters.clear();
+		}
 	}
 
 	public void setAuthType(String authType) {

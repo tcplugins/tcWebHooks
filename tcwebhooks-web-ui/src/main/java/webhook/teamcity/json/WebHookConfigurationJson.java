@@ -90,10 +90,11 @@ public class WebHookConfigurationJson {
 	
 	private static WebHookHeaderJson fromHeaders(List<WebHookHeaderConfig> configHeaders) {
 		List<Header> headers = new ArrayList<>();
+		int count = 0;
 		for (WebHookHeaderConfig webHookHeaderConfig : configHeaders) {
-			headers.add(new Header(webHookHeaderConfig.getName(), webHookHeaderConfig.getValue()));
+			headers.add(new Header(++count, webHookHeaderConfig.getName(), webHookHeaderConfig.getValue()));
 		}
-		return new WebHookHeaderJson(headers);
+		return WebHookHeaderJson.create(headers);
 	}
 
 	private static WebHookFilterJson fromFilters(List<WebHookFilterConfig> triggerFilters) {
@@ -102,11 +103,11 @@ public class WebHookConfigurationJson {
 		for (WebHookFilterConfig webHookFilterConfig : triggerFilters) {
 			filters.add(new Filter(++count, webHookFilterConfig.getValue(), webHookFilterConfig.getRegex(), webHookFilterConfig.isEnabled()));
 		}
-		return new WebHookFilterJson(filters);
+		return WebHookFilterJson.create(filters);
 	}
 
 	private static WebHookParameterJson fromExtraParamaters(ExtraParameters params) {
-		return new WebHookParameterJson(
+		return WebHookParameterJson.create(
 				params.getWebHookParameters().getAll()
 					.stream().map(p -> Parameter.create(p)).collect(Collectors.toList()));
 	}
