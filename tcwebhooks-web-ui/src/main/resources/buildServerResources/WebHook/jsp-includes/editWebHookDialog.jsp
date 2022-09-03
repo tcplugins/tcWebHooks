@@ -189,7 +189,14 @@
 												</tfoot>
 												</table>
 											</div>
+											<div style="float:right"><a href="#" data-dropdown="#dropdown-quick-filters">Quick Filters</a></div>
 											<h3>Filters</h3>
+											<div class="dropdown-menu dropdown-anchor-top-left dropdown-has-anchor" id="dropdown-quick-filters">
+												<ul>
+													<li><a href="#" onclick="WebHooksPlugin.Configurations.addFilter('\$\{branchIsDefault\}', 'true');">Default VCS Branch only</a></li>
+													<li><a href="#" onclick="WebHooksPlugin.Configurations.addFilter('\$\{buildIsPersonal\}', 'false');">Non-Personal Builds Only</a></li>
+												</ul>
+											</div>
 											<div class="extraFiltersWrapper">
 												<div class="error" id="error_filter"></div>
 												<table class="parametersTable settings webhooktable" id="webhookFilters">

@@ -1,7 +1,7 @@
     <bs:dialog dialogId="noRestApiDialog"
                dialogClass="noRestApiDialog"
                title="No WebHoooks REST API Plugin detected"
-               closeCommand="WebHooksPlugin.NoRestApiDialog.close()">
+               closeCommand="WebHooksPlugin.NoRestApi.NoRestApiDialog.close()">
         <forms:multipartForm id="noRestApiForm"
                              targetIframe="hidden-iframe"
                              onsubmit="return WebHooksPlugin.NoRestApi.NoRestApiDialog.doPost();">

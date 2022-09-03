@@ -47,6 +47,9 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
     showDeleteFilterDialog: function (data) {
         this.DeleteFilterDialog.showDialog("Confirm Web Hook Filter Deletion", 'deleteWebhookFilter', data);
     },
+    addFilter: function (value, regex) {
+        this.EditDialog.addFilter(value, regex);
+    },
 
     DeleteDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
         getContainer: function () {
@@ -401,6 +404,16 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                 "headers": { "count": 0, "header": [] },
                 "filters": { "count": 0, "filter": [] },
             };
+        },
+
+        addFilter: function (value, regex) {
+            let myFilter = { "id": 0, "value": value, "regex": regex, "enabled": true };
+            let webhook = this.getStore().myJson;
+            myFilter.id = webhook.filters.filter.length + 1;
+            webhook.filters.filter.push(myFilter);
+            webhook.filters.count = webhook.filters.filter.length;
+            this.getStore().myJson = webhook;
+            populateWebHookFiltersExtrasPane(webhook);
         }
 
     }),
@@ -511,11 +524,18 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         afterShow: function() {
             // Update the form, so that the submit button calls 
             // the doPost method on this dialog, not the base dialog.
-            alert("foo");
 			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteParameterDialog.doPost()");
         },
         doPost: function() {
-            alert("No doing delete");
+            let webhook = this.getStore().myJson;
+            let parameterId = $j("#deleteWebHookParameterForm input[id='parameterId']").val();
+            let updatedParameters = webhook.parameters.parameter.filter(function(p){return p.id !== parameterId;});
+            webhook.parameters.parameter = updatedParameters;
+            webhook.parameters.count = updatedParameters.length;
+            this.getStore().myJson = webhook;
+            populateWebHookParametersExtrasPane(webhook);
+            this.close();
+            return false;
         }
     }),
 
@@ -624,7 +644,15 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteHeaderDialog.doPost()");
         },
         doPost: function() {
-            alert("No doing delete");
+            let webhook = this.getStore().myJson;
+            let headerId = parseInt($j("#deleteWebHookHeaderForm input[id='headerId']").val());
+            let updatedHeaders = webhook.headers.header.filter(function(h){return h.id !== headerId;});
+            webhook.headers.header = updatedHeaders;
+            webhook.headers.count = updatedHeaders.length;
+            this.getStore().myJson = webhook;
+            populateWebHookHeadersExtrasPane(webhook);
+            this.close();
+            return false;
         }
     }),
 
@@ -732,11 +760,17 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 			$(this.formElement()).setAttribute("onsubmit", "return WebHooksPlugin.Configurations.DeleteFilterDialog.doPost()");
         },
         doPost: function() {
-            alert("No doing delete");
+            let webhook = this.getStore().myJson;
+            let filterId = parseInt($j("#deleteWebHookFilterForm input[id='filterId']").val());
+            let updatedFilters = webhook.filters.filter.filter(function(f){return f.id !== filterId;});
+            webhook.filters.filter = updatedFilters;
+            webhook.filters.count = updatedFilters.length;
+            this.getStore().myJson = webhook;
+            populateWebHookFiltersExtrasPane(webhook);
+            this.close();
+            return false;
         }
     })
-
-
 });
 
 function populateBuildHistoryAjax(locator) {

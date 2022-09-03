@@ -4,6 +4,7 @@
 <%@ include file="/include-internal.jsp" %>
 <c:set var="webhookConfigDialogScope" value="WebHooksPlugin.Configurations" scope="request"/>
 <c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
+<c:set var="showEditLinks" value="true" scope="request"/>
 
 <style>
 ul.commalist {
