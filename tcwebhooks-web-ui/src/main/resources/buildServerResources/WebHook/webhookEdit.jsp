@@ -21,7 +21,7 @@
     
     ${jspHome}WebHook/css/styles.css
     ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
-    ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.css
+    ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.css
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -39,7 +39,7 @@
       ${jspHome}WebHook/js/editWebhookConfiguration.js
       ${jspHome}WebHook/js/editWebhookConfigurationWithoutRestApi.js
       ${jspHome}WebHook/js/noRestApi.js
-	  ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.js
+	  ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.js
       </bs:linkScript>
 
       <script type="text/javascript">
