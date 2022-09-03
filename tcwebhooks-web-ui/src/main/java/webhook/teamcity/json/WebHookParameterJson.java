@@ -18,18 +18,9 @@ public class WebHookParameterJson extends WebHookConfigurationListWrapper {
 		private String name;
 		private String value;
 		private Boolean secure;
-		private Boolean includedInLegacyPayload;
+		private Boolean includedInLegacyPayloads;
 		private Boolean forceResolveTeamCityVariable;
 		private String templateEngine;
-		
-		@Override
-		public Boolean getIncludedInLegacyPayloads() {
-			return this.includedInLegacyPayload;
-		}
-		@Override
-		public void setIncludedInLegacyPayloads(Boolean isIncluded) {
-			this.includedInLegacyPayload = isIncluded;
-		}
 		
 		public static Parameter create(WebHookParameter webHookParameter) {
 			Parameter p = new Parameter();
@@ -37,7 +28,7 @@ public class WebHookParameterJson extends WebHookConfigurationListWrapper {
 			p.setName(webHookParameter.getName());
 			p.setValue(webHookParameter.getValue());
 			p.setSecure(webHookParameter.getSecure());
-			p.setIncludedInLegacyPayload(webHookParameter.getIncludedInLegacyPayloads());
+			p.setIncludedInLegacyPayloads(webHookParameter.getIncludedInLegacyPayloads());
 			p.setForceResolveTeamCityVariable(webHookParameter.getForceResolveTeamCityVariable());
 			p.setTemplateEngine(webHookParameter.getTemplateEngine());
 			return p;
