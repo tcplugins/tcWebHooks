@@ -189,12 +189,12 @@
 												</tfoot>
 												</table>
 											</div>
-											<div style="float:right"><a href="#" data-dropdown="#dropdown-quick-filters">Quick Filters</a></div>
+											<div style="float:right"><a href="#" data-dropdown="#dropdownQuickFilters">Quick Filters</a></div>
 											<h3>Filters</h3>
-											<div class="dropdown-menu dropdown-anchor-top-left dropdown-has-anchor" id="dropdown-quick-filters">
+											<div class="dropdown-menu dropdown-anchor-top-left" data-add-y="-5" id="dropdownQuickFilters">
 												<ul>
 													<li><a href="#" onclick="WebHooksPlugin.Configurations.addFilter('\$\{branchIsDefault\}', 'true');">Default VCS Branch only</a></li>
-													<li><a href="#" onclick="WebHooksPlugin.Configurations.addFilter('\$\{buildIsPersonal\}', 'false');">Non-Personal Builds Only</a></li>
+													<li><a href="#" onclick="WebHooksPlugin.Configurations.addFilter('\$\{buildIsPersonal\}', 'false');">Non-Personal Builds only</a></li>
 												</ul>
 											</div>
 											<div class="extraFiltersWrapper">
