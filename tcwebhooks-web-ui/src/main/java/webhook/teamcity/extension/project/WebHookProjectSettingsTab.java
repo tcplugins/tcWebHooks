@@ -84,7 +84,8 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookFilter.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookConfiguration.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/noRestApi.js"));
-
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.js"));
+		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.css"));
 	}
 
 	@NotNull
