@@ -4,6 +4,7 @@
 <c:set var="pageTitle" value="Edit WebHooks" scope="request"/>
 <c:set var="webhookConfigDialogScope" value="WebHooksPlugin.Configurations.WithoutRestApi" scope="request"/>
 <c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
+<c:set var="showEditLinks" value="false" scope="request"/>
 <bs:page>
 
     <jsp:attribute name="head_include">
@@ -20,6 +21,7 @@
     
     ${jspHome}WebHook/css/styles.css
     ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
+    ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.css
         
       </bs:linkCSS>
       <bs:linkScript>
@@ -37,6 +39,7 @@
       ${jspHome}WebHook/js/editWebhookConfiguration.js
       ${jspHome}WebHook/js/editWebhookConfigurationWithoutRestApi.js
       ${jspHome}WebHook/js/noRestApi.js
+	  ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.js
       </bs:linkScript>
 
       <script type="text/javascript">

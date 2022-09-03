@@ -71,5 +71,19 @@ const WebHooksPlugin = {
 			dialog.close();
 			dialog.getRefreshContainer().refresh();
 		}
+	})),
+
+	DeleteDialog: OO.extend(BS.AbstractWebForm, OO.extend(BS.AbstractModalDialog, {
+		highlightRow: function(row, dialog) {
+			row.animate({
+				backgroundColor: "#ffffcc"
+			}, 1000 );
+		},
+		closeCancel: function(row, dialog) {
+			dialog.close();
+			row.animate({
+				backgroundColor: "#ffffff"
+			}, 500 );
+		}
 	}))
 };

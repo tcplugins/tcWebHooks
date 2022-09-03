@@ -3,7 +3,9 @@
         <div><strong>WARNING: Webhook processing is currently disabled for this project</strong></div>
     </c:if>
     <p>There are <strong>${fn:length(projectBean.webHookList)}</strong> WebHooks configured for all builds in this project.
-        <a href="../webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.</p>
+        <c:if test="${showEditLinks}">
+            <a href="../webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.</p>
+        </c:if>
     <table id="webHookTable" class="parametersTable settings webhooktable">
         <thead>
             <tr>

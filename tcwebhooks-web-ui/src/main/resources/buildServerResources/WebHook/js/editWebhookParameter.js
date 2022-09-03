@@ -299,18 +299,26 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
     		this.cleanFields(data);
     		this.cleanErrors();
     		this.showCentered();
-			$j("#viewRow_" + data.parameterId).animate({
-	            backgroundColor: "#ffffcc"
-	    	}, 1000 );
+			this.highlightRow($j("tr[data-parameter-id='" + data.parameterId + "']"), this);
+			this.afterShow();
     	},
 
         cancelDialog: function () {
-        	this.close();
-	        $j("#viewRow_" + $j("#deleteWebHookParameterForm input[id='parameterId']").val()).animate({
-	            backgroundColor: "#ffffff"
-	        }, 500 );
+			let parameterId = $j("#deleteWebHookParameterForm input[id='parameterId']").val();
+        	this.closeCancel($j("tr[data-parameter-id='" + parameterId), this);
         },
         
+		highlightRow: function(row, dialog) {
+			row.animate({
+				backgroundColor: "#ffffcc"
+			}, 1000 );
+		},
+		closeCancel: function(row, dialog) {
+			dialog.close();
+			row.animate({
+				backgroundColor: "#ffffff"
+			}, 500 );
+		},
     	cleanFields: function (data) {
     		$j("#deleteWebHookParameterForm input[id='projectId']").val(data.projectId);
     		$j("#deleteWebHookParameterForm input[id='parameterId']").val(data.parameterId);
