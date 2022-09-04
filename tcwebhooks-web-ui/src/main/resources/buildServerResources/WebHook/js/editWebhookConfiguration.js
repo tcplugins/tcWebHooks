@@ -180,6 +180,10 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             this.afterShow();
         },
 
+        afterShow: function () {
+            // no-op for normal operation.
+        }
+
         cancelDialog: function () {
             var row = $j("#viewRow_" + $j("#editWebHookForm input[id='webhookId']").val());
             this.closeCancel(row, this);
