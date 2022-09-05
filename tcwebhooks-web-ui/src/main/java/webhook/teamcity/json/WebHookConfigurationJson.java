@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import lombok.Data;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.json.WebHookFilterJson.Filter;
@@ -121,7 +122,12 @@ public class WebHookConfigurationJson {
 
 	private BuildState buildBuildState(List<WebHookBuildStateJson> buildStates) {
 		BuildState buildStateNew = new BuildState();
-		buildStates.forEach(state -> buildStateNew.setEnabled(state.getType(),state.isEnabled()));
+		buildStates.forEach(state -> {
+			buildStateNew.setEnabled(state.getType(),state.isEnabled());
+			if (BuildStateEnum.isAnEnabledFinishedState(state.getType().toString(), state.isEnabled())) {
+				buildStateNew.setEnabled(BuildStateEnum.BUILD_FINISHED, true);
+			}
+		});
 		return buildStateNew;
 	}
 
