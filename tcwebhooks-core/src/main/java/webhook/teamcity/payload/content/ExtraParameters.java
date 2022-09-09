@@ -118,7 +118,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 					parameter.getForceResolveTeamCityVariable(),
 					parameter.getTemplateEngine());
 			add(newHookParameterModel);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + previous.getContext() + " : " + previous.getName());
+			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
 		}
 	}
 	
