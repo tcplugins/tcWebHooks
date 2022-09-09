@@ -116,18 +116,21 @@ public class WebHookConfigurationJson {
 	private static List<WebHookBuildStateJson> fromBuildState(BuildState buildStates) {
 		return buildStates.getStateSet()
 					.stream()
+					.filter(s -> !s.getShortName().equalsIgnoreCase("buildFinished")) // don't include finished since it's a pseudo state.
 					.map(s -> new WebHookBuildStateJson(s, buildStates.enabled(s)))
 					.collect(Collectors.toList());
 	}
 
 	private BuildState buildBuildState(List<WebHookBuildStateJson> buildStates) {
 		BuildState buildStateNew = new BuildState();
-		buildStates.forEach(state -> {
-			buildStateNew.setEnabled(state.getType(),state.isEnabled());
-			if (BuildStateEnum.isAnEnabledFinishedState(state.getType().toString(), state.isEnabled())) {
-				buildStateNew.setEnabled(BuildStateEnum.BUILD_FINISHED, true);
+		for (WebHookBuildStateJson state : buildStates) {
+			if (!state.getType().equals(BuildStateEnum.BUILD_FINISHED)) {
+				buildStateNew.setEnabled(state.getType(),state.isEnabled());
+				if (BuildStateEnum.isAnEnabledFinishedState(state.getType().getShortName(), state.isEnabled())) {
+					buildStateNew.setEnabled(BuildStateEnum.BUILD_FINISHED, true);
+				}
 			}
-		});
+		}
 		return buildStateNew;
 	}
 

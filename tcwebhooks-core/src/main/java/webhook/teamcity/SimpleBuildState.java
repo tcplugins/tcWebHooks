@@ -35,5 +35,10 @@ public class SimpleBuildState implements BuildStateInterface {
 	public void disable() {
 		this.enabled = false;
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(isEnabled());
+	}
 
 }
