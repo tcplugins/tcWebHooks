@@ -189,7 +189,7 @@ public class BuildState {
 				}
 				continue;
 			}
-			areAllEnbled = areAllEnbled && state.getValue().isEnabled();  
+			areAllEnbled = areAllEnbled && state.getValue().isEnabled();
 		}
 		return areAllEnbled;
 	}
