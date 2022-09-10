@@ -131,6 +131,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (result.updated) {
 			if (persist(projectInternalId, "Deleted existing WebHook")) {
 				result.updated = true;
+				this.webhooksEnhanced.remove(webHookId);
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
 				result.updated = false;
@@ -145,6 +146,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (result.updated) {
 			if (persist(projectInternalId, "Deleted existing WebHook")) {
 				result.updated = true;
+				this.webhooksEnhanced.remove(config.getUniqueKey());
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
 				result.updated = false;
