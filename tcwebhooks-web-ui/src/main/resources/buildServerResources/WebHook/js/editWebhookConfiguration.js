@@ -1223,7 +1223,7 @@ function convertFormToWebHook(myJson) {
     //     $j('#buildList').append(container);
     // });
     return webhook;
-};
+}
 
 function renderPreviewOnChange() {
     if ($j('#payloadFormatHolder').val()) {

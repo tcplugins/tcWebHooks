@@ -4,7 +4,9 @@
 <c:set var="pageTitle" value="Edit WebHooks" scope="request"/>
 <c:set var="webhookConfigDialogScope" value="WebHooksPlugin.Configurations.WithoutRestApi" scope="request"/>
 <c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
-<c:set var="showEditLinks" value="false" scope="request"/>
+<c:set var="showLinksToOldEditPage" value="false" scope="request"/>
+<c:set var="showLinksForInlineEditingIfRestApiMissing" value="true" scope="request"/>
+<c:set var="showEditButton" value="${showLinksForInlineEditingIfRestApiMissing}" scope="request"/>
 <bs:page>
 
     <jsp:attribute name="head_include">
@@ -63,12 +65,12 @@
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/moment-2.22.2.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
 
-    <div class="editBuildPageGeneral" style="background-color:white; float:left; margin:0; padding:0; width:70%;">
+    <div class="editBuildPageGeneral webhookContainer" style="background-color:white; float:left; margin:0; padding:0; width:70%;">
     
     		${permissionError}
 		
 		<c:if test="${fn:length(projectWebHooksAndTemplates) > 0}" >
-			<h3>WebHooks and Templates in parent Projects</h3>
+			<h2 class="webhookHeading">WebHooks and Templates in parent Projects</h2>
 			WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.
 			Parent projects have the following webhooks and templates:
 			<table class="highlightable parametersTable webhooktable">
@@ -77,7 +79,7 @@
 				</thead>
 				<tbody>
 			<c:forEach items="${projectWebHooksAndTemplates}" var="parent">
-				<tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
+				<tr><td><a href="../admin/editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
 					<td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
 					<td>${fn:length(parent.templates.templateList)} templates available</td>
 					<td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
@@ -89,11 +91,15 @@
 		</c:if>
 
 		<c:choose>
+			<c:when test="${haveBuild}"> 
+				<h2 class="webhookHeading">WebHooks applicable to build <c:out value="${buildName}"/></h2>
+				To edit all webhooks for builds in the project <a href="index.html?projectId=${projectExternalId}">edit Project webhooks</a>.
+			</c:when>
 			<c:when test="${projectExternalId == '_Root'}">
-				<h3>WebHooks configured for every TeamCity build (_Root project)</h3>
+				<h2 class="webhookHeading">WebHooks configured for every TeamCity build (_Root project)</h2>
 			</c:when>
 			<c:otherwise>
-				<h3>WebHooks configured for <c:out value="${project.fullName}"/></h3>
+				<h2 class="webhookHeading">WebHooks configured for the <i><c:out value="${project.fullName}"/></i> project</h2>
 			</c:otherwise>
 		</c:choose>
 		
@@ -102,18 +108,8 @@
 		<p>
     
     	<%@ include file="jsp-includes/projectParametersTable.jsp" %>
-
-    
-        <c:choose>  
-    		<c:when test="${haveBuild}"> 
-			    <h2 class="noBorder">WebHooks applicable to build <c:out value="${buildName}"/></h2>
-			    To edit all webhooks for builds in the project <a href="index.html?projectId=${projectExternalId}">edit Project webhooks</a>.
-         	</c:when>  
-         	<c:otherwise>  
-			    <h2 class="noBorder">WebHooks configured for project <c:out value="${projectName}"/></h2>
-         	</c:otherwise>  
-		</c:choose>  
-
+		<p>
+		<%@ include file="jsp-includes/projectTemplatesTable.jsp" %>
 
   		<div id="messageArea"></div>
 	    <div id="systemParams"><!--  begin systemParams div -->
@@ -123,11 +119,7 @@
 				<strong>${errorReason}</strong><br/>Please access this page via the WebHooks tab on a project or build overview page. 
 			</c:when>
 			<c:otherwise>
-				<c:choose>
-					<c:when test="${hasPermission}">
-						Permission granted.
-					</c:when>
-					<c:otherwise>
+					<c:if test="${not hasPermission}">
 						<c:choose>
 							<c:when test="${projectName == '_Root'}">
 								<strong>You must have System Administrator permission to edit _Root WebHooks</strong>
@@ -136,8 +128,7 @@
 								<strong>You must have Project Administrator permission to edit WebHooks</strong>
 							</c:otherwise>
 						</c:choose>
-					</c:otherwise>
-				</c:choose>
+					</c:if>
 			</c:otherwise>
 		</c:choose>
 
@@ -145,7 +136,7 @@
       </div>
     <div id=sidebarAdmin>
       <div class=configurationSection>
-      	<h2>WebHook Information</h2>
+      	<h2 class="webhookHeading">WebHook Information</h2>
           <p>WebHooks are simply HTTP POST requests or "callbacks" triggered by events. They allow one web application (in this case TeamCity) to notify another web app of events.</p>
           <p>When an event occurs, the tcWebHooks plugin will submit an HTTP POST to the URL configured. The receiving webapp is then able to use the information for any purpose. It could be used to light a lava lamp, or post a message on an IRC channel.</p>
 
@@ -170,14 +161,14 @@
 				</c:when>
 			</c:choose>
 			
-		  <h2>WebHook Templates</h2>
+		  <h2 class="webhookHeading">WebHook Templates</h2>
 		  <p><a href="templates.html">WebHook Templates</a> are a way of packaging up a set of payloads together. The template can then be re-used by any number of webhooks.</p>
 		  
 		  
-		  <h2>Testing Endpoint</h2>	
+		  <h2 class="webhookHeading">Testing Endpoint</h2>	
 		  <p>It is possible to test webhooks by posting them back to the tcWebHooks plugin inside TeamCity. See <a href="endpoint-viewer.html"/>here for details</a>.</p>
 		  
-		  <h2>Plugin Information</h2>	
+		  <h2 class="webhookHeading">Plugin Information</h2>	
 		  <p>tcWebHooks version: <strong>${pluginVersion}</strong></p>
       </div>
     </div>

@@ -115,7 +115,6 @@ table.settings td.nowrap {
 table#webHookTemplateTable th {
 	text-align:left;
 	padding-left: 1em;
-	font-size: 90%;
 	font-weight: bold;
 }
 
@@ -782,7 +781,6 @@ table.webhooktable tbody tr td {
 	padding-right: 10px;
 	padding-bottom: 5px;
 	padding-left: 10px;
-	padding: 0.5em;
 }
 
 table.webhooktable tbody tr td.actionCell {
@@ -818,4 +816,29 @@ input#parameterDialogName, input#parameterDialogValue {
 
 #extrasPane h3 {
 	font-weight: bold;
+}
+
+.tagsContainer {
+	margin-top: 2em;
+	vertical-align: bottom;
+	font-size: small;
+	font-weight: normal;
+	text-indent: -2.75em; 
+	padding-left: 4em;
+}
+
+.tagsLabel {
+	font-style: italic;
+	font-weight: bold;
+}
+
+h2.webhookHeading {
+	font-weight: bold;
+	padding-top: 1.5em;
+	padding-bottom: 0;
+}
+
+div.webhookContainer p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 }
