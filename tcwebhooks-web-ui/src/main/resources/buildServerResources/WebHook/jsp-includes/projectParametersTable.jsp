@@ -62,7 +62,7 @@
     <c:if test="${showEditButton}">
         <tfoot>
             <tr class="newWebHookRow">
-                <td colspan="6" class="highlight newWebHookRow"><p onclick="${parameterConfigDialogScope}.addParameter({'projectId':'${projectExternalId}','enableSecure': true}, '#hookPane');" class="addNew">Click to create new WebHook Parameter for this project</p></td>
+                <td colspan="6" class="highlight newWebHookRow"><p onclick="${parameterConfigDialogScope}.addParameter({'projectId':'${projectExternalId}','enableSecure': true}, '#hookPane');" class="addNew">Click to create a new WebHook Parameter for this project</p></td>
             </tr>
         </tfoot>
     </c:if>

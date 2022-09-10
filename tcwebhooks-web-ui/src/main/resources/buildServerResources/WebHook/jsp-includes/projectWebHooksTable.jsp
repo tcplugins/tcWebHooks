@@ -53,7 +53,7 @@
         <c:if test="${showEditButton}">
             <tfoot>
                 <tr class="newWebHookRow">
-                    <td colspan="6" class="highlight newWebHookRow"><p onclick="${webhookConfigDialogScope}.showAddDialog({'projectId':'${projectExternalId}'}, '#hookPane');" class="addNew">Click to create new WebHook for this project</p></td>
+                    <td colspan="6" class="highlight newWebHookRow"><p onclick="${webhookConfigDialogScope}.showAddDialog({'projectId':'${projectExternalId}'}, '#hookPane');" class="addNew">Click to create a new WebHook for this project</p></td>
                 </tr>
             </tfoot>
         </c:if>
