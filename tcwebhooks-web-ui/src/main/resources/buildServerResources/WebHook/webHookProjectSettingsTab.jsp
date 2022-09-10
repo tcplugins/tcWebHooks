@@ -4,18 +4,20 @@
 <%@ include file="/include-internal.jsp" %>
 <c:set var="webhookConfigDialogScope" value="WebHooksPlugin.Configurations" scope="request"/>
 <c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
-<c:set var="showEditLinks" value="true" scope="request"/>
+<c:set var="showLinksToOldEditPage" value="true" scope="request"/>
+<c:set var="showLinksForInlineEditingIfRestApiMissing" value="false" scope="request"/>
+
 
 <style>
-ul.commalist {
-  display: inline;
-  list-style: none;
-  padding:0;
+	ul.commalist {
+		display: inline;
+		list-style: none;
+		padding:0;
 
-}
-
-ul.commalist li {
-  display: inline;
+	}
+	
+	ul.commalist li {
+		display: inline;
   white-space:nowrap;
 }
 
@@ -24,23 +26,26 @@ ul.commalist li:after {
 }
 
 ul.commalist li:last-child:after {
-    content: "";
+	content: "";
 }
 </style>
-	<div>
-		<h2>WebHooks and Templates</h2>
-		<c:if test="${not isRestApiInstalled}">
-			<div class="icon_before icon16 attentionRed">The <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> is not installed. Experimental support for modifying webhooks and parameters will be disabled.</div>
-		</c:if>
-		<c:if test="${isRestApiInstalled}">
-			<div class="icon_before icon16 attentionRed">The WebHooks REST API plugin is installed. Experimental support for modifying webhooks and parameters on this page is enabled.</div>
-		</c:if>
-		
-		${permissionError}
+<div class="webhookContainer">
+	<h2 class="webhookHeading" style="padding-top: 0">WebHooks and Templates</h2>
+	
+	<c:if test="${not isRestApiInstalled}">
+		<c:set var="showEditButton" value="${showLinksForInlineEditingIfRestApiMissing}" scope="request"/>
+		<div class="icon_before icon16 attentionRed">The <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API plugin</a> is not installed. Experimental support for modifying webhooks and parameters will be disabled.</div>
+	</c:if>
+	<c:if test="${isRestApiInstalled}">
+		<c:set var="showEditButton" value="${isRestApiInstalled}" scope="request"/>
+		<div class="icon_before icon16 attentionRed">The WebHooks REST API plugin is installed. Experimental support for modifying webhooks and parameters on this page is enabled.</div>
+	</c:if>
+	
+	${permissionError}
 		
 		<c:if test="${fn:length(projectWebHooksAndTemplates) > 0}" >
-			<h3>WebHooks and Templates in parent Projects</h3>
-			WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.
+			<h2 class="webhookHeading">WebHooks and Templates in parent Projects</h2>
+			<p>WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.</p>
 			Parent projects have the following webhooks and templates:
 			<table class="highlightable parametersTable webhooktable">
 				<thead>
@@ -61,10 +66,10 @@ ul.commalist li:last-child:after {
 
 		<c:choose>
 			<c:when test="${projectExternalId == '_Root'}">
-				<h3>WebHooks configured for every TeamCity build (_Root project)</h3>
+				<h2 class="webhookHeading">WebHooks configured for every TeamCity build (_Root project)</h2>
 			</c:when>
 			<c:otherwise>
-				<h3>WebHooks configured for <c:out value="${project.fullName}"/></h3>
+				<h2 class="webhookHeading">WebHooks configured for the <i><c:out value="${project.fullName}"/></i> project</h2>
 			</c:otherwise>
 		</c:choose>
 		
@@ -72,65 +77,9 @@ ul.commalist li:last-child:after {
 		<p>
 		<%@ include file="jsp-includes/projectParametersTable.jsp" %>
 		<p>
+		<%@ include file="jsp-includes/projectTemplatesTable.jsp" %>
+		<p>
 		
-		<c:choose>
-			<c:when test="${projectExternalId == '_Root'}">
-				<h3>WebHook Templates available for every TeamCity build (_Root project)</h3>
-			</c:when>
-			<c:otherwise>
-				<h3>WebHook Templates available for <c:out value="${project.fullName}"/> and sub-projects</h3>
-			</c:otherwise>
-		</c:choose>
-
-		<c:if test="${fn:length(webHookTemplates) == 0}" >
-				<p>There are no Templates associated with this project.</p>
-				To associate a template with this project, 
-				<a href="../webhooks/templates.html">View WebHook Templates</a> and either select this project
-				when creating a new	template, or edit an existing template and change the associated project.
-		</c:if>
-		<c:if test="${fn:length(webHookTemplates) > 0}" >
-				<p>There are <strong>${fn:length(webHookTemplates)}</strong> Templates associated with this project.
-					<a href="../webhooks/templates.html?projectId=${projectExternalId}">View project Templates</a>.</p>
-			    <table id="webHookTemplateTable" class="settings">
-					<thead>
-					<tr style="background-color: rgb(245, 245, 245);">
-					<th class="">Description</th>
-					<th class="">Payload Format</th>
-					<th class="">Supported Build Events</th>
-					<th class="">Type</th>
-					<th class="value" colspan="3" style="width:20%;">Usage</th>
-					</tr>
-					</thead>
-					<tbody>
-					    <c:forEach items="${webHookTemplates}" var="template">
-						  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
-							<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)"><c:out value="${template.templateDescription}" /></td>
-							<td class="nowrap">${template.formatDescription}</td>
-							<td>
-								<ul class="commalist">
-								<c:forEach items="${template.supportedBuildEnumStates}" var="state">	
-									<li>${state.shortDescription}</li>
-								</c:forEach>
-								</ul>
-							</td>
-							<td class="nowrap">${template.templateState.description}</td>
-							
-							<td><a href="../webhooks/search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
-			
-					<c:choose>  
-			    		<c:when test="${template.templateDescription == 'Legacy Webhook'}"> 		
-							<td>No template available</td>
-						</c:when>
-						<c:otherwise>  		
-							<td><a href="../webhooks/template.html?template=${template.templateId}">View</a></td>
-						</c:otherwise>  
-					</c:choose>
-					
-						  </tr>	
-					    </c:forEach>
-					</tbody>
-				</table>
-		</c:if>		
 		
 	</div>
 	<%@ include file="jsp-includes/editWebHookDialog.jsp" %>
