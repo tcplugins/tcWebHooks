@@ -73,8 +73,14 @@ WebHooksPlugin.Configurations.WithoutRestApi = OO.extend(WebHooksPlugin.Configur
                     'Accept': 'application/json'
                 },
                 success: function (response) {
-                    dialog.getStore().myJson = response;
-                    dialog.handleGetSuccess(action);
+                    if (response.errors) {
+                        $j.each(response.errors, function(index, errorMsg){
+                            dialog.ajaxError(errorMsg)
+                        });
+                    } else {
+                        dialog.getStore().myJson = response;
+                        dialog.handleGetSuccess(action);
+                    }
                 },
                 error: function (response) {
                     console.log(response);
