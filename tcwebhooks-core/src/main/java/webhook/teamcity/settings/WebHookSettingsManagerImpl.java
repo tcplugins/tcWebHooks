@@ -254,6 +254,17 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	}
 	
 	@Override
+	public List<WebHookConfigEnhanced> getWebHooksForProject(SProject project) {
+		List<WebHookConfigEnhanced> webhookConfigs = new ArrayList<>();
+		for (WebHookConfigEnhanced wh : this.webhooksEnhanced.values()) {
+			if (project.getExternalId().equals(wh.getProjectExternalId())) {
+				webhookConfigs.add(wh);
+			}
+		}
+		return webhookConfigs;
+	}
+	
+	@Override
 	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForProjects(List<SProject> sProjects) {
 		Map<SProject,List<WebHookConfigEnhanced>> projectGroupedResults = new LinkedHashMap<>();
 		for (SProject project : sProjects) {
