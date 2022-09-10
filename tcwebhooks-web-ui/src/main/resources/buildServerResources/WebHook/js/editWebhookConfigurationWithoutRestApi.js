@@ -1,4 +1,4 @@
-// A version of WebHooksPlugin.Configurations that talks to webhooks/save.html
+// A version of WebHooksPlugin.Configurations that talks to webhooks/edit.html
 WebHooksPlugin.Configurations.WithoutRestApi = OO.extend(WebHooksPlugin.Configurations, {
     showAddDialog: function (data, tab) {
         this.EditDialog.showDialog("Add Web Hook", 'addWebHook', data, tab);
@@ -87,7 +87,7 @@ WebHooksPlugin.Configurations.WithoutRestApi = OO.extend(WebHooksPlugin.Configur
             var dialog = this;
             // make a copy and send it 
             let webhook = JSON.parse(JSON.stringify(this.getStore().myJson));
-            let url = webhook.id === "_new" ? window['base_uri'] + '/webhooks/edit.html?action=add' : window['base_uri'] + '/webhooks/edit.html'
+            let url = webhook.id === "_new" ? window['base_uri'] + '/webhooks/edit.html?action=add' : window['base_uri'] + '/webhooks/edit.html';
             $j.ajax({
                 url: url,
                 type: "POST",
@@ -112,6 +112,6 @@ WebHooksPlugin.Configurations.WithoutRestApi = OO.extend(WebHooksPlugin.Configur
                     dialog.handleAjaxError(dialog, response);
                 }
             });
-        },
-    }
-)});
+        }
+    })
+});

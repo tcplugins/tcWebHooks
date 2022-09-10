@@ -41,29 +41,30 @@
       ${jspHome}WebHook/js/editWebhookConfiguration.js
       ${jspHome}WebHook/js/editWebhookConfigurationWithoutRestApi.js
       ${jspHome}WebHook/js/noRestApi.js
-	  ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.js
-      </bs:linkScript>
-
-      <script type="text/javascript">
-        BS.Navigation.items = [
-		  {title: "Projects", url: '<c:url value="/overview.html"/>'},
-		  <c:if test="${haveProject}"> 
-		  	{title: "<c:out value="${projectName}"/>", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
-		  </c:if>
-		  <c:if test="${haveBuild}"> 
-		  	{title: "<c:out value="${buildName}"/>", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
-		  </c:if>
-          {title: "${pageTitle}", selected:true}
+	</bs:linkScript>
+	
+	<script type="text/javascript">
+		BS.Navigation.items = [
+		{title: "Projects", url: '<c:url value="/overview.html"/>'},
+		<c:if test="${haveProject}"> 
+			{title: "<c:out value="${projectName}"/>", url: '<c:url value="/project.html?projectId=${projectExternalId}"/>'},
+		</c:if>
+		<c:if test="${haveBuild}"> 
+			{title: "<c:out value="${buildName}"/>", url: '<c:url value="/viewType.html?buildTypeId=${buildExternalId}"/>'},
+		</c:if>
+		{title: "${pageTitle}", selected:true}
         ];
-    
-      </script>
-    </jsp:attribute> 
-      
-    <jsp:attribute name="body_include">
+		
+	</script>
+</jsp:attribute> 
+
+<jsp:attribute name="body_include">
+	
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.easytabs.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.color.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/moment-2.22.2.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.js"></script>
 
     <div class="editBuildPageGeneral webhookContainer" style="background-color:white; float:left; margin:0; padding:0; width:70%;">
     

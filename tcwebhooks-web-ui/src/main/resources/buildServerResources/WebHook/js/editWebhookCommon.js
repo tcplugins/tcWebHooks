@@ -2,9 +2,11 @@ Object.defineProperty(this, "log", { get: function () {
 	return console.debug.bind(window.console);
 }});
 Object.defineProperty(this, "logDebug", { get: function () {
-	return WebHooksPlugin.isDebug() ? console.debug.bind(window.console) 
-				 : function(){};}
-  });
+	return WebHooksPlugin.isDebug() 
+		? console.debug.bind(window.console) 
+		: function(){};
+	}
+});
 const queryStringParams = new URLSearchParams(window.location.search);
 const WebHooksPlugin = {
 	localStore: {
