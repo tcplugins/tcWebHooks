@@ -61,6 +61,7 @@ public class WebHookEditController extends BaseController {
 					WebHookConfigurationJson.class
 				);
 			HashMap<String,Object> params = new HashMap<>();
+			ErrorResult result = new ErrorResult();
 			
 			if (isGet(request) && request.getParameter("webHookId") != null && request.getParameter("projectId") != null) {
 				WebHookConfig webHookConfig = this.myWebHookSettingsManager.getSettings(this.myProjectIdResolver.getInternalProjectId(request.getParameter("projectId")))
@@ -71,13 +72,15 @@ public class WebHookEditController extends BaseController {
 					webHookConfig.setProjectInternalId(this.myProjectIdResolver.getInternalProjectId(request.getParameter("projectId")));
 					webHookConfig.setProjectExternalId(request.getParameter("projectId"));
 					params.put(CONTENT, gson.toJson(WebHookConfigurationJson.fromWebHookConfig(webHookConfig, myProjectIdResolver, myBuildTypeIdResolver)));
-					return new ModelAndView(myPluginPath + EDIT_WEB_HOOK_JSP, params);
+				} else {
+					result.addError("not-found", "A WebHook with that ID was not found in this project.");
+					params.put(CONTENT, gson.toJson(result));
 				}
+				return new ModelAndView(myPluginPath + EDIT_WEB_HOOK_JSP, params);
 			} else if (isPost(request)) {
 
 
 
-			ErrorResult result = new ErrorResult();
 
 			// Check for errors and that the user has EDIT_PROJECT permission.
 			
@@ -110,7 +113,8 @@ public class WebHookEditController extends BaseController {
 			if (saveResult.isUpdated()) {
 				params.put(CONTENT, gson.toJson(WebHookConfigurationJson.fromWebHookConfig(saveResult.getWebHookConfig(), myProjectIdResolver, myBuildTypeIdResolver)));
 			}	else {
-				params.put(CONTENT, saveResult);
+				result.addError("server-error", "An internal error occured. The WebHook was not updated.");
+				params.put(CONTENT, params.put(CONTENT, gson.toJson(result)));
 			}
 			return new ModelAndView(myPluginPath + EDIT_WEB_HOOK_JSP, params);
 		}
