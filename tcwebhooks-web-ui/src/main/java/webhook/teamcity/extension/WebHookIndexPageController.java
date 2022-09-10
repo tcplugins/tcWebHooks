@@ -148,12 +148,11 @@ public class WebHookIndexPageController extends BaseController {
 	        			Loggers.SERVER.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
 	        			if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
 
-	        				projectBean = ProjectWebHooksBean.buildWithoutNew(
-	        						this.myWebhookSettingsManager.getSettings(projectParent.getProjectId()),
-	        						currentProject,
-	        						myPayloadManager.getRegisteredFormatsAsCollection(),
-	        						myTemplateResolver.findWebHookTemplatesForProject(currentProject)
-	        					);
+	        				projectBean =  ProjectWebHooksBean.buildWithoutNew(this.myWebhookSettingsManager.getWebHooksForProject(currentProject), currentProject,
+		        					myPayloadManager.getRegisteredFormatsAsCollection(),
+		        					myTemplateResolver.findWebHookTemplatesForProject(currentProject),
+		        					myWebhookSettingsManager.iswebHooksEnabledForProject(currentProject.getProjectId())
+		        				);
 
 	        				projectTemplatesBean = RegisteredWebHookTemplateBean.build(
 	        						myWebHookTemplateManager,
