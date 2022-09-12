@@ -133,11 +133,11 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 			Loggers.SERVER.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
 			if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
 
-				projectBean = ProjectWebHooksBean.buildWithoutNew(
-						this.myWebhookSettingsManager.getSettings(projectParent.getProjectId()),
+				projectBean =  ProjectWebHooksBean.buildWithoutNew(this.myWebhookSettingsManager.getWebHooksForProject(currentProject), 
 						currentProject,
 						myPayloadManager.getRegisteredFormatsAsCollection(),
-						myTemplateResolver.findWebHookTemplatesForProject(currentProject)
+						myTemplateResolver.findWebHookTemplatesForProject(currentProject),
+						myWebhookSettingsManager.iswebHooksEnabledForProject(currentProject.getProjectId())
 					);
 
 				projectTemplatesBean = RegisteredWebHookTemplateBean.build(
