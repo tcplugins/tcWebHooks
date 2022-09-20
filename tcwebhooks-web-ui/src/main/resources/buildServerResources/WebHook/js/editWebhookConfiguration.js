@@ -185,7 +185,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         },
 
         cancelDialog: function () {
-            var row = $j("#viewRow_" + $j("#editWebHookForm input[id='webhookId']").val());
+            var row = $j("#viewRow_" + $j("#editWebHookForm input[id='webHookId']").val());
             this.closeCancel(row, this);
         },
 
@@ -198,8 +198,9 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
         cleanFields: function (data) {
             $j("#editWebHookForm input[class='editWebHookFormField']").val("");
             $j("#editWebHookForm")[0].reset();
-            $j("#editWebHookForm #webhookId").val(data.webhookId);
+            $j("#editWebHookForm #webHookId").val(data.webhookId);
             $j("#editWebHookForm #webhookProjectId").val(data.projectId);
+            $j('#webhookPreviewRendered').html("");
             //this.toggleHidden();
             this.cleanErrors();
         },
@@ -418,7 +419,86 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             webhook.filters.count = webhook.filters.filter.length;
             this.getStore().myJson = webhook;
             populateWebHookFiltersExtrasPane(webhook);
-        }
+        },
+
+        executeWebHook: function() {
+			var dialog = this;
+			if (
+					$j("#webhookPreviewBuildEvent").val() &&
+					$j("#webhookPreviewBuildId").val() &&
+					$j("#payloadFormatHolder").val()
+				)
+			{
+				var selectedBuildState = $j('#webhookPreviewBuildEvent').val();
+				var selectedBuildId = $j('#webhookPreviewBuildId').val();
+				if (selectedBuildId === "") {
+					$j("#webhookDialogAjaxResult").empty().append("Please select a Build first");
+				} else {
+					$j("#webhookDialogAjaxResult").empty();
+					$j('#webhookTestProgress').css("display","block");
+					$j.ajax ({
+						url: "testWebHook.html?action=execute",
+						type: "POST",
+						dataType: 'json',
+						headers : {
+							'Content-Type' : 'application/json',
+							'Accept' : 'application/json'
+						},
+						data: JSON.stringify({
+										"url": $j('#webHookUrl').val(),
+										"projectExternalId": $j("#editWebHookForm input[id='projectExternalId']").val(),
+										"uniqueKey": $j("#editWebHookForm input[id='webHookId']").val(),
+										"testBuildState": selectedBuildState,
+										"buildId": selectedBuildId,
+										"templateId": lookupTemplate($j('#payloadFormatHolder').val()),
+										"payloadFormat": lookupFormat($j('#payloadFormatHolder').val()),
+										"authType" : lookupAuthType($j("#editWebHookForm :input#extraAuthType").val()),
+										"authEnabled" : lookupAuthEnabled($j("#editWebHookForm :input#extraAuthType").val()),
+										"authPreemptive" : $j("#editWebHookForm :input#extraAuthPreemptive").is(':checked'),
+										"authParameters" : lookupAuthParameters($j("#editWebHookForm :input#extraAuthType").val(), $j("#editWebHookForm :input.authParameterItemValue")),
+										"configBuildStates" : {
+											"BUILD_SUCCESSFUL" : true,
+											"CHANGES_LOADED" : false,
+										    "BUILD_FAILED" : true,
+										    "BUILD_BROKEN" : true,
+										    "BUILD_STARTED" : false,
+										    "BUILD_ADDED_TO_QUEUE" : false,
+										    "BUILD_REMOVED_FROM_QUEUE" : false,
+										    "BEFORE_BUILD_FINISHED" : false,
+										    "RESPONSIBILITY_CHANGED" : false,
+											"BUILD_FIXED" : true,
+										    "BUILD_INTERRUPTED" : false,
+										    "BUILD_PINNED" : false,
+										    "BUILD_UNPINNED" : false,
+										    "SERVICE_MESSAGE_RECEIVED" : false
+									    }
+									}),
+						success:function(response){
+							$j('#webhookTestProgress').css("display","none");
+							dialog.cleanErrors();
+							var ul = $j('<ul>');
+
+							if (response.error) {
+								ul.append($j('<li/>').text("Error: " + response.error.message + " (" + response.error.errorCode + ")"));
+							} else {
+								ul.append($j('<li/>').text("Success: " + response.statusReason + " (" + response.statusCode + ")"));
+							}
+							ul.append($j('<li/>').text("URL: " + response.url));
+							ul.append($j('<li/>').text("Duration: " + response.executionTime + " @ " + moment(response.dateTime, moment.ISO_8601).format("dddd, MMMM Do YYYY, h:mm:ss a")));
+
+							$j("#webhookDialogAjaxResult").empty().append(ul);
+						},
+						error: function (response) {
+							$j('#webhookTestProgress').css("display","none");
+							WebHooksPlugin.handleAjaxError(dialog, response);
+						}
+					});
+				}
+			} else {
+				$j("#webhookDialogAjaxResult").empty().append("Please select a Build first");
+			}
+			return false;
+		}
 
     }),
 
@@ -983,11 +1063,11 @@ function populateWebHookDialog(webhook) {
     // $j.each(ProjectBuilds.templatesAndWebhooks.projectWebhookConfig.webHookList, function(webHookKey, webhook){
     // 	if (id === webHookKey){
 
-    $j("#viewRow_" + webhook.uniqueKey).animate({
+    $j("#viewRow_" + webhook.id).animate({
         backgroundColor: "#ffffcc"
     }, 1000);
 
-    $j("#editWebHookForm input[id='webHookId']").val(webhook.uniqueKey);
+    $j("#editWebHookForm input[id='webHookId']").val(webhook.id);
     $j('#webHookUrl').val(webhook.url);
     $j('#webHooksEnabled').prop('checked', webhook.enabled);
     $j.each(webhook.buildState, function (name, value) {
@@ -1031,6 +1111,7 @@ function populateWebHookDialog(webhook) {
     } else {
         $j('#currentTemplateName').html("&nbsp;");
     }
+    $j('#hideSecureValues').prop('checked', webhook.hideSecureValues);
     /*	}
     }); */
     updateSelectedBuildTypes();
