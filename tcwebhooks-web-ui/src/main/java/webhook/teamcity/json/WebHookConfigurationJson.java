@@ -73,6 +73,7 @@ public class WebHookConfigurationJson {
 		json.setId(webHookConfig.getUniqueKey());
 		json.setProjectId(projectIdResolver.getExternalProjectId(webHookConfig.getProjectInternalId()));
 		json.setEnabled(webHookConfig.getEnabled());
+		json.setHideSecureValues(webHookConfig.isHideSecureValues());
 		json.setTemplate(webHookConfig.getPayloadTemplate());
 		json.setBuildState(fromBuildState(webHookConfig.getBuildStates()));
 		json.setBuildTypes(
