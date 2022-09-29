@@ -168,6 +168,7 @@ public class ProjectWebhook {
 				.authType(this.authentication.getType());
 		}
 		builder.enabled(getEnabled());
+		builder.hideSecureValues(this.hideSecureValues);
 			
 		builder.enabledBuildTypesSet(buildTypeIdResolver.getInternalBuildTypeIds(this.buildTypes.getEnabledBuildTypes()));
 		
