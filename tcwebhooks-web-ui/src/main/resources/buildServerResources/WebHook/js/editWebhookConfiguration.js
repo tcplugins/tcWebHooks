@@ -347,6 +347,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                 "id": "_new",
                 "projectId": projectId,
                 "enabled": true,
+                "hideSecureValues": true,
                 "buildTypes": {
                     "allEnabled": true,
                     "subProjectsEnabled": true,
@@ -1252,6 +1253,7 @@ function convertFormToWebHook(myJson) {
         url: $j('#webHookUrl').val(),
         enabled: $j('#editWebHookForm :input#webHooksEnabled').is(':checked'),
         template: $j('#editWebHookForm select#payloadFormatHolder').val(),
+        hideSecureValues: $j('#hideSecureValues').is(':checked'),
         authentication: lookupAuthentication(),
         buildTypes: {
             allEnabled: $j('input#buildTypeAll').is(':checked'),
@@ -1325,7 +1327,7 @@ function renderPreviewOnChange() {
             $j('#webhookPreviewRendered').html("");
         } else {
             $j.ajax({
-                url: "testWebHook.html?action=preview",
+                url: "../webhooks/testWebHook.html?action=preview",
                 type: "POST",
                 dataType: 'json',
                 headers: {
