@@ -52,7 +52,7 @@
 
 
     <script class="mocha-init">
-      mocha.setup('bdd');
+      mocha.setup({ ui: 'bdd', globals: ['ConicGradient'] });
       mocha.checkLeaks();
     </script>
 	<%@ include file="jsp-includes/editWebHookDialog.jsp" %>

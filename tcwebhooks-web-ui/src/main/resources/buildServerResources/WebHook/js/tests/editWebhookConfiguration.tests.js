@@ -222,6 +222,9 @@ describe('Populate WebHook Form when Editing an existing Webhook (02)', function
     it('buildBroken is checked', function () {
         expectIsChecked('#buildBroken');
     })
+    it('The hideSecureValuesCheckbox is not checked', function () {
+    expectIsUnChecked('#hideSecureValues');
+    })
 })
 
 describe('Populate WebHook Form when Editing an existing Webhook (03)', function () {
@@ -241,6 +244,10 @@ describe('Populate WebHook Form when Editing an existing Webhook (03)', function
     it('URL is set correctly', function () {
         expectEqual('#webHookUrl', 'http://localhost:8111/webhooks/endpoint.html');
     })
+    it('The hideSecureValuesCheckbox is checked', function () {
+        expectIsUnChecked('#hideSecureValues');
+    })
+
 })
 
 describe('Build WebHook response object from Form when Editing an existing Webhook (03)', function () {
@@ -270,6 +277,10 @@ describe('Build WebHook response object from Form when Editing an existing Webho
         expect(json.buildTypes.subProjectsEnabled).to.equal(webhook.buildTypes.subProjectsEnabled);
         expect(json.projectId).to.equal(webhook.projectId);
     })
+    it('The hideSecureValuesCheckbox is checked', function () {
+        expectIsUnChecked('#hideSecureValues');
+    })
+
 });
 
 describe('Populate from Form and then POST WebHook - Webhook (03)', function () {
@@ -319,12 +330,19 @@ describe('Populate from Form and then POST WebHook - Webhook (03)', function () 
         expect(body.buildTypes.subProjectsEnabled).to.equal(true);
         expect(body.buildTypes.id.length).to.equal(0);
     })
+    it('POST Payload contains webhook hideSecureValues.', function () {
+        expect(body.hideSecureValues).to.equal(false);
+    })
     it('POST Payload contains webhook enabled.', function () {
         expect(body.enabled).to.equal(true);
     })
     it('POST Payload contains webhook template.', function () {
         expect(body.template).to.equal("test01");
     })
+    it('The hideSecureValuesCheckbox is checked', function () {
+        expectIsUnChecked('#hideSecureValues');
+    })
+
 })
 
 describe('Populate WebHook Form when Editing an existing Webhook (04)', function () {
@@ -371,6 +389,10 @@ describe('Populate WebHook Form when Editing an existing Webhook (04)', function
         expectIsUnChecked('input[type=checkbox][value=Project_MyBuildId01]');
         expectIsUnChecked('input[type=checkbox][value=Project_MyBuildId02]');
         expectIsUnChecked('input[type=checkbox][value=Project_MyBuildId03]');
+    })
+
+    it('The hideSecureValuesCheckbox is checked', function () {
+        expectIsChecked('#hideSecureValues');
     })
 
 })
@@ -421,6 +443,9 @@ describe('Populate from Form and then POST WebHook - Webhook (04)', function () 
         expect(body.buildTypes.subProjectsEnabled).to.equal(false);
         expect(body.buildTypes.id.length).to.equal(1);
         expect(body.buildTypes.id).to.contain("Project_MyBuildId02");
+    })
+    it('POST Payload contains webhook hideSecureValues.', function () {
+        expect(body.hideSecureValues).to.equal(true);
     })
     it('POST Payload contains webhook enabled.', function () {
         expect(body.enabled).to.equal(true);
@@ -757,6 +782,7 @@ describe('Add Parameter, Filter, Header and then POST WebHook - Webhook (03)', f
     });
 
     afterEach('Clear Store and Form', function () {
+        dialog.close();
         dialog.getStore().myJson = {};
         dialog.disableAndClearCheckboxes();
         dialog.cleanFields({ 'projectId': "unsetProject", 'webhookId': 'unsetWebhookId' });
@@ -787,6 +813,7 @@ describe('Add Parameter, Filter, Header and then POST WebHook - Webhook (03)', f
         expect(filter.regex).to.equal("testRegex");
         expect(filter.enabled).to.equal(true); // expected to default to enabled.
         filterDialog.close();
+        dialog.close();
     })
 
     it('Add Header to empty header set', function() {
@@ -871,7 +898,7 @@ describe('Add Parameter, Filter, Header and then POST WebHook - Webhook (04)', f
     it('Add Filter to empty filter set', function() {
         var filterDialog = WebHooksPlugin.Configurations.EditFilterDialog;
 
-        filterDialog.showDialog("TcPlugins", "addWebhookFilter", {});
+        //filterDialog.showDialog("TcPlugins", "addWebhookFilter", {});
         $j('#editWebHookFilterForm #filterDialogValue').val("testValue")
         $j('#editWebHookFilterForm #filterDialogRegex').val("testRegex")
 

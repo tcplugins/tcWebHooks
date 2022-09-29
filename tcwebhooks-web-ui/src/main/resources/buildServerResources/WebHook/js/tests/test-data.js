@@ -792,6 +792,7 @@ var webHook01 = {
   "template": "test01",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198782",
+  "hideSecureValues" : true,
   "buildState": [
     {
       "type": "buildAddedToQueue",
@@ -876,6 +877,7 @@ var webHook02 = {
   "template": "test01",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198783",
+  "hideSecureValues" : false,
   "buildState": [
     {
       "type": "buildBroken",
@@ -916,6 +918,7 @@ var webHook03 = {
   "template": "test01",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:500198784",
+  "hideSecureValues" : false,
   "buildState": [
     {
       "type": "buildBroken",
@@ -956,6 +959,7 @@ var webHook04 = {
   "template": "legacy-json",
   "webUrl": "http://localhost:8111/webhooks/index.html?projectId=TcPlugins",
   "href": "/app/rest/webhooks/configurations/TcPlugins/id:306243139",
+  "hideSecureValues" : true,
   "buildState": [
     { "type": "buildStarted", "enabled": true },
     { "type": "changesLoaded", "enabled": true },
