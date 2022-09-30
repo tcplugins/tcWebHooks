@@ -18,8 +18,8 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import webhook.teamcity.ProjectIdResolver;
-import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookStatisticsDataProvider;
+import webhook.teamcity.statistics.StatisticsManager;
 import webhook.teamcity.statistics.StatisticsReportAssembler;
 
 @Provider
@@ -34,10 +34,11 @@ public class StatisticsDataProviderProvider implements InjectableProvider<Contex
 			@NotNull final ProjectManager projectManager,
 			@NotNull final ProjectIdResolver projectIdResolver,
 			@NotNull final SecurityContext securityContext,
+			@NotNull final StatisticsManager statisticsManager,
 			@NotNull final StatisticsReportAssembler statisticsReportAssembler
 	) 
   {
-	  dataProvider = new WebHookStatisticsDataProvider(sBuildServer, rootUrlHolder, permissionChecker, projectManager, projectIdResolver, securityContext, statisticsReportAssembler);
+	  dataProvider = new WebHookStatisticsDataProvider(sBuildServer, rootUrlHolder, permissionChecker, projectManager, projectIdResolver, securityContext, statisticsManager, statisticsReportAssembler);
   }
 
   public ComponentScope getScope() {

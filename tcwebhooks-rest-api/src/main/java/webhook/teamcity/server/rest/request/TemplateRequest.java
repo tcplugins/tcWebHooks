@@ -1110,7 +1110,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 		try {
 			myDataProvider.getSecurityContext().getAuthorityHolder().isPermissionGrantedForAnyProject(Permission.EDIT_PROJECT);
 		} catch (AuthorizationFailedException e) {
-			throw new TemplatePermissionException("Reading Project templates requires permission 'VIEW_PROJECT' on any project project");
+			throw new TemplatePermissionException("Reading Project templates requires permission 'EDIT_PROJECT' on any project project");
 		}
 	}
 	

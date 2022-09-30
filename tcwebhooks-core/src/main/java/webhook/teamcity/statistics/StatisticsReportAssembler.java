@@ -16,7 +16,7 @@ public interface StatisticsReportAssembler {
 	 * @param toDate - End date (non-inclusive) for statistics.
 	 * @return A {@link StatisticsReport} relevant to the dates requested.
 	 */
-	public StatisticsReport assembleStatisticsReports(ValueHasher hasher, LocalDate minusDays, LocalDate now);
+	//public StatisticsReport assembleStatisticsReports(ValueHasher hasher, LocalDate minusDays, LocalDate now);
 
 	/**
 	 * Assemble all statistics into a report.
