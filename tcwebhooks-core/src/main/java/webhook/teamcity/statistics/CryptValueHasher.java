@@ -26,6 +26,8 @@ public class CryptValueHasher implements ValueHasher {
 	public String hash(String plain) {
 		return Crypt.crypt(plain, this.salt);
 	}
+	
+	@Override
 	public String hash(String plain, String salt) {
 		return Crypt.crypt(plain, salt);
 	}

@@ -6,11 +6,13 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import webhook.teamcity.ProjectIdResolver;
+import webhook.teamcity.statistics.StatisticsManager;
 import webhook.teamcity.statistics.StatisticsReportAssembler;
 
 public class WebHookStatisticsDataProvider extends DataProvider {
 
 	private final StatisticsReportAssembler myStatisticsReportAssembler;
+	private final StatisticsManager myStatisticsManager;
 	
 	public WebHookStatisticsDataProvider(SBuildServer server, 
 			RootUrlHolder rootUrlHolder,
@@ -18,12 +20,18 @@ public class WebHookStatisticsDataProvider extends DataProvider {
 			ProjectManager projectManager,
 			ProjectIdResolver projectIdResolver,
 			SecurityContext securityContext,
+			StatisticsManager statisticsManager,
 			StatisticsReportAssembler statisticsReportAssembler) {
 		
 		super(server, rootUrlHolder, permissionChecker, projectManager,
 				projectIdResolver, securityContext);
 		
+		this.myStatisticsManager = statisticsManager;
 		this.myStatisticsReportAssembler = statisticsReportAssembler;
+	}
+	
+	public StatisticsManager getStatisticsManager() {
+		return myStatisticsManager;
 	}
 	
 	public StatisticsReportAssembler getStatisticsReportAssembler() {

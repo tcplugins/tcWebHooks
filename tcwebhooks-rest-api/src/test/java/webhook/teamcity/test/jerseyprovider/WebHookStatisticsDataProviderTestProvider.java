@@ -24,6 +24,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.server.rest.data.WebHookStatisticsDataProvider;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
+import webhook.teamcity.statistics.StatisticsManager;
 import webhook.teamcity.statistics.StatisticsReportAssembler;
 import webhook.teamcity.test.jerseyprovider.WebHookDataProviderTestContextProvider.TestUrlHolder;
 import webhook.teamcity.test.springmock.MockProjectManager;
@@ -35,6 +36,7 @@ public class WebHookStatisticsDataProviderTestProvider
 	private WebHookPayloadManager webHookPayloadManager;
 	private WebHookTemplateManager webHookTemplateManager;
 	private ProjectIdResolver projectIdResolver;
+	private StatisticsManager statisticsManager;
 	private StatisticsReportAssembler statisticsReportAssembler;
 	private SecurityContextEx securityContext;
 	private AuthorityHolder authorityHolder;
@@ -51,6 +53,7 @@ public class WebHookStatisticsDataProviderTestProvider
 		projectIdResolver = mock(ProjectIdResolver.class);
 		securityContext = mock(SecurityContextEx.class);
 		authorityHolder = mock(AuthorityHolder.class);
+		statisticsManager = mock(StatisticsManager.class);
 		statisticsReportAssembler = mock(StatisticsReportAssembler.class);
 		when(securityContext.getAuthorityHolder()).thenReturn(authorityHolder);
 	}
@@ -75,7 +78,7 @@ public class WebHookStatisticsDataProviderTestProvider
 		webHookPayloadManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookPayloadManager.class);
 		webHookTemplateManager = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookTemplateManager.class);
 		//statisticsReportAssembler = ContextLoader.getCurrentWebApplicationContext().getBean(StatisticsReportAssembler.class);
-		return new WebHookStatisticsDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, projectIdResolver, securityContext, statisticsReportAssembler);
+		return new WebHookStatisticsDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, projectIdResolver, securityContext, statisticsManager, statisticsReportAssembler);
 	}
 
 }

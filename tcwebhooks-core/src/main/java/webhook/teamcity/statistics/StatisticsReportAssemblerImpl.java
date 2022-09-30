@@ -29,14 +29,13 @@ public class StatisticsReportAssemblerImpl implements StatisticsReportAssembler 
 	
 	private final WebHookMainSettings myWebHookMainSettings;
 	private final WebHookTemplateManager myWebHookTemplateManager;
-	//private final StatisticsManager myStatisticsManager;
+//	private final StatisticsManager myStatisticsManager;
 
-	@Override
-	public StatisticsReport assembleStatisticsReports(ValueHasher hasher, LocalDate startDate, LocalDate endDate) {
-		//List<StatisticsEntity> statisticsEntities = myStatisticsManager.getUnreportedHistoricalStatisticsEntities(startDate, endDate);
-		//return assembleStatisticsReports(hasher, statisticsEntities);
-		return null;
-	}
+//	@Override
+//	public StatisticsReport assembleStatisticsReports(ValueHasher hasher, LocalDate startDate, LocalDate endDate) {
+//		List<StatisticsEntity> statisticsEntities = myStatisticsManager.getUnreportedHistoricalStatisticsEntities(startDate, endDate);
+//		return assembleStatisticsReports(hasher, statisticsEntities);
+//	}
 	@Override
 	public StatisticsReport assembleStatisticsReports(ValueHasher hasher, List<StatisticsEntity> statisticsEntities) {
 		StatisticsReport report = new StatisticsReport();
