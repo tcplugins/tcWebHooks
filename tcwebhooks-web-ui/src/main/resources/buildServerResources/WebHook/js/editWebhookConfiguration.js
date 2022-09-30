@@ -438,7 +438,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 					$j("#webhookDialogAjaxResult").empty();
 					$j('#webhookTestProgress').css("display","block");
 					$j.ajax ({
-						url: "testWebHook.html?action=execute",
+						url: "../webhooks/testWebHook.html?action=execute",
 						type: "POST",
 						dataType: 'json',
 						headers : {
