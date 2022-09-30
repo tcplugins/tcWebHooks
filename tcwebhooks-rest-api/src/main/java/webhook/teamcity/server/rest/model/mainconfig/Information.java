@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import jetbrains.buildServer.server.rest.util.BeanContext;
 import lombok.Data;
 
 /*
