@@ -42,7 +42,7 @@ public class WebHookConfigurationJson {
 	public WebHookConfig toWebHookConfig(ProjectIdResolver projectIdResolver, BuildTypeIdResolver buildTypeIdResolver) {
 		return WebHookConfig.builder()
 				.url(getUrl())
-				.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? WebHookConfig.getRandomKey() : id)
+				.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? WebHookConfig.generateRandomKey() : id)
 				.enabled(getEnabled())
 				.projectInternalId(projectIdResolver.getInternalProjectId(getProjectId()))
 				.projectExternalId(getProjectId())

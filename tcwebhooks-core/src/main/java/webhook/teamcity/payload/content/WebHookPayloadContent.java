@@ -201,19 +201,7 @@ public class WebHookPayloadContent {
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, WebHookResponsibilityHolder responsibilityHolder, BuildStateEnum state, Map<String,String> templates) {
 
-			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
-			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
-				try {
-					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
-				} 
-				catch (NullPointerException | IllegalArgumentException ex){}
-				
-			} else if (extraParameters.containsKey("preferredDateFormat")){
-				try {
-					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
-				} 
-				catch (NullPointerException | IllegalArgumentException ex) {}
-			}
+			SimpleDateFormat format = determineDateFormat();
 			setCurrentTime(format.format(new Date()));
 			setAdditionalContext(null, responsibilityHolder.getSBuildType(), responsibilityHolder.getSProject());
 			setResponsibilityInfo(responsibilityHolder);
@@ -272,6 +260,23 @@ public class WebHookPayloadContent {
 
 		}
 
+		private SimpleDateFormat determineDateFormat() {
+			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
+			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
+				try {
+					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
+				} 
+				catch (NullPointerException | IllegalArgumentException ex){}
+				
+			} else if (extraParameters.containsKey("preferredDateFormat")){
+				try {
+					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
+				} 
+				catch (NullPointerException | IllegalArgumentException ex) {}
+			}
+			return format;
+		}
+
 	private void setAdditionalContext(SBuild sBuild, SBuildType sBuildType, SProject sProject) {
 			this.setBuild(sBuild);
 			this.setBuildType(sBuildType);
@@ -295,19 +300,7 @@ public class WebHookPayloadContent {
 		 */
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuildType buildType, BuildStateEnum state, Map<String,String> templates) {
 
-			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
-			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
-				try {
-					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
-				} 
-				catch (NullPointerException | IllegalArgumentException ex){}
-				
-			} else if (extraParameters.containsKey("preferredDateFormat")){
-				try {
-					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
-				} 
-				catch (NullPointerException | IllegalArgumentException ex) {}
-			}
+			SimpleDateFormat format = determineDateFormat();
 			setCurrentTime(format.format(new Date()));
 
 			setAdditionalContext(null, buildType, buildType.getProject());
@@ -352,19 +345,7 @@ public class WebHookPayloadContent {
 		private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SBuild sBuild, SFinishedBuild previousBuild,
 				BuildStateEnum buildState, Map<String, String> templates) {
 			
-			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
-			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
-				try {
-					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
-				} 
-				catch (NullPointerException | IllegalArgumentException ex){}
-				
-			} else if (extraParameters.containsKey("preferredDateFormat")){
-				try {
-					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
-				} 
-				catch (NullPointerException | IllegalArgumentException ex) {}
-			} 
+			SimpleDateFormat format = determineDateFormat(); 
 			
 			setBuildStartTime(format.format(sBuild.getStartDate()));
 			

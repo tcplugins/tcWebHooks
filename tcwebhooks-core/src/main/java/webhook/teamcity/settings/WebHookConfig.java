@@ -74,7 +74,7 @@ public class WebHookConfig {
 	private static final String LOG_PREFIX_WEB_HOOK_CONFIG = "WebHookConfig :: ";
 	private ExtraParameters extraParameters;
 	@Builder.Default private Boolean enabled = true;
-	@Builder.Default private String uniqueKey = getRandomKey();
+	@Builder.Default private String uniqueKey = generateRandomKey();
 	private String url;
 	@Builder.Default private String payloadFormat = null;
 	@Builder.Default private String payloadTemplate = "none";
@@ -96,7 +96,7 @@ public class WebHookConfig {
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
 
-		this.uniqueKey = e.getAttributeValue(ATTR_ID, getRandomKey());
+		this.uniqueKey = e.getAttributeValue(ATTR_ID, generateRandomKey());
 		this.extraParameters = new ExtraParameters();
 		this.states = new BuildState();
 		this.templates = new TreeMap<>();
@@ -320,7 +320,7 @@ public class WebHookConfig {
 
 	}
 
-	public static String getRandomKey() {
+	public static String generateRandomKey() {
 		int min = 1000000;
 		int max = 1000000000;
 		Integer rand = min + new Random().nextInt((max - min) + 1);
@@ -345,7 +345,7 @@ public class WebHookConfig {
 	 * @param webHookAuthConfig
 	 */
 	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues){
-		this.uniqueKey =  getRandomKey();
+		this.uniqueKey =  generateRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
 		this.extraParameters = new ExtraParameters();
@@ -537,7 +537,7 @@ public class WebHookConfig {
 
 	public String getUniqueKey() {
 		if (this.uniqueKey == null) {
-			this.uniqueKey = getRandomKey();
+			this.uniqueKey = generateRandomKey();
 		}
 		
 		return uniqueKey;
