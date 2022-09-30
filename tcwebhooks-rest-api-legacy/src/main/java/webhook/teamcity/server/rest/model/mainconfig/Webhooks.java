@@ -3,10 +3,8 @@ package webhook.teamcity.server.rest.model.mainconfig;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import jetbrains.buildServer.server.rest.util.BeanContext;
 import lombok.Data;
 
 /*

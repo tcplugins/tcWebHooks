@@ -197,7 +197,7 @@ public class ProjectWebhook {
 			builder.templates(toCustomTemplates(customTemplates));
 		}
 		
-		builder.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? WebHookConfig.getRandomKey() : id); // If empty or "_new", set the key to a generated one
+		builder.uniqueKey(StringUtils.isBlank(id) || "_new".equals(id) ? WebHookConfig.generateRandomKey() : id); // If empty or "_new", set the key to a generated one
 		builder.url(url);
 		return builder.build();
 	}
