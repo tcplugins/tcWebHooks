@@ -720,6 +720,16 @@ public class WebHookConfig {
 		}
 		return mT;
 	}
+	
+	public Map<String,String> getEnabledTemplatesExcludingDefaults() {
+		Map<String,String> mT = new TreeMap<>();
+		for (CustomMessageTemplate t : templates.values()){
+			if (t.enabled){
+				mT.put(t.templateType, t.templateText);
+			}
+		}
+		return mT;
+	}
 
 	public Boolean getAuthEnabled() {
 		return authEnabled;

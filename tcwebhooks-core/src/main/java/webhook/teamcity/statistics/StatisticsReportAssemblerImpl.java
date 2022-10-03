@@ -86,8 +86,8 @@ public class StatisticsReportAssemblerImpl implements StatisticsReportAssembler 
 				if (Objects.nonNull(webHookConfigEnhanced.getWebHookConfig().getTriggerFilters())){
 					stats.addFeature("triggers", webHookConfigEnhanced.getWebHookConfig().getTriggerFilters().size());
 				}
-				if (Objects.nonNull(webHookConfigEnhanced.getWebHookConfig().getEnabledTemplates())){
-					stats.addFeature("customTemplates", webHookConfigEnhanced.getWebHookConfig().getEnabledTemplates().size());
+				if (Objects.nonNull(webHookConfigEnhanced.getWebHookConfig().getEnabledTemplatesExcludingDefaults())){
+					stats.addFeature("customTemplates", webHookConfigEnhanced.getWebHookConfig().getEnabledTemplatesExcludingDefaults().size());
 				}
 				if (Objects.nonNull(webHookConfigEnhanced.getWebHookConfig().getParams())){
 					stats.addFeature("parameters", webHookConfigEnhanced.getWebHookConfig().getParams().size());
