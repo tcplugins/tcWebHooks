@@ -160,7 +160,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"application/xml", "application/json"})
   public Template serveTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-	  checkTemplateWritePermission(wrapper.getExternalProjectId());
+	  checkTemplateReadPermission(wrapper.getExternalProjectId());
 	  return new Template(wrapper, new Fields(fields), myBeanContext);
   }
 
@@ -169,7 +169,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"application/json"})
   public Response exportTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-	  checkTemplateWritePermission(wrapper.getExternalProjectId());
+	  checkTemplateReadPermission(wrapper.getExternalProjectId());
 	  Template template = new Template(wrapper, new Fields(fields), myBeanContext);
 	  return Response.ok(template)
 			  .header("Content-Disposition", "attachment; filename=\"" + template.getId() + ".json\"")
@@ -354,7 +354,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"application/xml"})
   public WebHookTemplateEntity serveRawConfigTemplate(@PathParam("templateLocator") String templateLocator) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-	  checkTemplateWritePermission(wrapper.getExternalProjectId());
+	  checkTemplateReadPermission(wrapper.getExternalProjectId());
 	  return WebHookTemplateConfigBuilder.buildEntity(wrapper.getTemplateConfig());
   }
 
@@ -363,7 +363,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"application/xml", "application/json"})
   public WebHookTemplateConfig serveFullConfigTemplate(@PathParam("templateLocator") String templateLocator) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-	  checkTemplateWritePermission(wrapper.getExternalProjectId());
+	  checkTemplateReadPermission(wrapper.getExternalProjectId());
 	  return wrapper.getTemplateConfig();
   }
 
@@ -505,7 +505,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"text/plain"})
   public String serveTemplateContent(@PathParam("templateLocator") String templateLocator, @PathParam("templateType") String templateType) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
-	  checkTemplateWritePermission(wrapper.getExternalProjectId());
+	  checkTemplateReadPermission(wrapper.getExternalProjectId());
 	  WebHookTemplateConfig template = wrapper.getTemplateConfig();
 	  if(templateType.equals(DEFAULT_TEMPLATE)){
 		  if (template.getDefaultTemplate() == null){
