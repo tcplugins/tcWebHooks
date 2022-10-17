@@ -43,7 +43,7 @@ public class StatisticsRequest {
 	@GET
 	@Produces({ "application/json"})
 	public StatisticsReport serveStatistics(@QueryParam("fields") String fields) {
-		List<StatisticsEntity> statisticsEntities = this.myDataProvider.getStatisticsManager().getUnreportedHistoricalStatisticsEntities(LocalDate.now().minusDays(7), LocalDate.now());
+		List<StatisticsEntity> statisticsEntities = this.myDataProvider.getStatisticsManager().getHistoricalStatistics(LocalDate.now().minusDays(7), LocalDate.now());
 		return this.myDataProvider.getStatisticsReportAssembler().assembleStatisticsReports(new CryptValueHasher(), statisticsEntities);
 	}
 	
