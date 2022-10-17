@@ -10,11 +10,13 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.extension.bean.StatisticsChartBean.Data;
 import webhook.teamcity.extension.bean.StatisticsChartBean.Dataset;
 import webhook.teamcity.statistics.StatisticsEntity;
 import webhook.teamcity.statistics.StatisticsSnapshot;
 import webhook.teamcity.statistics.StatisticsSnapshot.StatisticsItem;
+import webhook.teamcity.statistics.StatisticsSnapshot.StatisticsItemStatus;
 
 public class StatisticsChartBeanTest {
 
@@ -39,16 +41,16 @@ public class StatisticsChartBeanTest {
 		
 		Map<String, StatisticsItem> urls = new HashMap<>();
 		
-		Map<Integer, Integer> statusesLocalHost = new HashMap<>();
-		statusesLocalHost.put(200, 20);
-		statusesLocalHost.put(500, 10);
-		statusesLocalHost.put(302, 10);
+		List<StatisticsItemStatus> statusesLocalHost = new ArrayList<>();
+		statusesLocalHost.add(new StatisticsItemStatus(BuildStateEnum.BUILD_STARTED,200, 20));
+		statusesLocalHost.add(new StatisticsItemStatus(BuildStateEnum.BEFORE_BUILD_FINISHED, 500, 10));
+		statusesLocalHost.add(new StatisticsItemStatus(BuildStateEnum.BUILD_ADDED_TO_QUEUE, 302, 10));
 		urls.put("localhost", new StatisticsItem("localhost", 10, statusesLocalHost));
 		
-		Map<Integer, Integer> statusesSlack = new HashMap<>();
-		statusesSlack.put(200, 50);
-		statusesSlack.put(500, 1000);
-		statusesSlack.put(302, 15);
+		List<StatisticsItemStatus> statusesSlack = new ArrayList<>();
+		statusesSlack.add(new StatisticsItemStatus(BuildStateEnum.BUILD_STARTED, 200, 50));
+		statusesSlack.add(new StatisticsItemStatus(BuildStateEnum.BEFORE_BUILD_FINISHED, 500, 1000));
+		statusesSlack.add(new StatisticsItemStatus(BuildStateEnum.BUILD_ADDED_TO_QUEUE, 302, 15));
 		urls.put("slack.com", new StatisticsItem("slack.com", 10, statusesSlack));
 		
 		StatisticsSnapshot statisticsSnapshot = new StatisticsSnapshot();

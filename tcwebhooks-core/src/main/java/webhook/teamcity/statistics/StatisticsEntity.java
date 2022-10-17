@@ -34,5 +34,5 @@ public class StatisticsEntity {
 		this.statisticsSnapshot = statisticsSnapshot;
 		return this;
 	}
-
+	
 }

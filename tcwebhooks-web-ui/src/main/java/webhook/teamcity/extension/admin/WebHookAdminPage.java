@@ -61,7 +61,7 @@ public class WebHookAdminPage extends AdminPage {
 	
 	@Override
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
-		model.put("statistics", StatisticsChartBean.assemble(LocalDate.now().minusDays(60), LocalDate.now().plusDays(1), myWebHookStatisticsManager.getHistoricalStatistics(LocalDate.now().minusDays(30), LocalDate.now().plusDays(1))).toJson());
+		model.put("statistics", StatisticsChartBean.assemble(LocalDate.now().minusDays(60), LocalDate.now().plusDays(1), myWebHookStatisticsManager.getHistoricalStatistics(LocalDate.now().minusDays(60), LocalDate.now().plusDays(1))).toJson());
 		model.put("webHooksCount", myWebHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().show("all").build()).size());
 		model.put("webHookTemplatesCount", myWebHookTemplateManager.getRegisteredTemplates().size());
 		model.put("errorCount", myWebHookHistoryRepository.getErroredCount());

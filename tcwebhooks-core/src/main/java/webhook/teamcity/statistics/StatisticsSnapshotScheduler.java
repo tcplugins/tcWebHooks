@@ -77,11 +77,14 @@ public class StatisticsSnapshotScheduler implements DeferrableService {
 					this.myStatisticsSnapshotScheduler.lastRun = now;
 					if (! this.myStatisticsSnapshotScheduler.shuttingDown) {
 						this.myStatisticsManager.reportStatistics(now);
+						this.myStatisticsManager.cleanupOldStatistics(now);
 					}
 					Loggers.SERVER.debug("StatisticsUpdaterScheduledTask :: Completed task");
-				} catch (StatisticsFileOperationException ex) {
+				} catch (Exception ex) {
 					Loggers.SERVER.warn(String.format("StatisticsUpdaterScheduledTask :: Unable to update WebHook Statistics file for date '%s'", now), ex);
 				}
+			} else {
+				Loggers.SERVER.debug(String.format("StatisticsUpdaterScheduledTask :: Completed task. No action required [isShutdownHook=%s,shuttingDown=%s]", this.isShutdownHook, this.myStatisticsSnapshotScheduler.shuttingDown));
 			}
 		}
 	}
