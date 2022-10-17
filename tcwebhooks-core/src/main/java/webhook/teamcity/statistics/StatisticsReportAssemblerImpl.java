@@ -91,7 +91,6 @@ public class StatisticsReportAssemblerImpl implements StatisticsReportAssembler 
 				}
 				if (Objects.nonNull(webHookConfigEnhanced.getWebHookConfig().getParams())){
 					stats.addFeature("parameters", webHookConfigEnhanced.getWebHookConfig().getParams().size());
-					stats.addFeature("parameters", webHookConfigEnhanced.getWebHookConfig().getParams().size());
 				}
 			} else {
 				stats.addFeature("disabled", 1);

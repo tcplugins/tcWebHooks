@@ -1,12 +1,13 @@
 package webhook.teamcity.statistics;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.statistics.StatisticsSnapshot.StatisticsItem;
 
@@ -78,10 +79,12 @@ public class StatisticsEntityBuilder {
 					addUrlStatistic(
 							this.statisticsEntity.getStatisticsSnapshot(), 
 							getGeneralisedWebAddress(item), 
+							item.getWebHookExecutionStats().getBuildState(),
 							item.getWebHookExecutionStats().getStatusCode());
 					addTemplateStatistic(
 							this.statisticsEntity.getStatisticsSnapshot(), 
 							item.getWebHookConfig().getPayloadTemplate(), 
+							item.getWebHookExecutionStats().getBuildState(),
 							item.getWebHookExecutionStats().getStatusCode());
 				}
 				
@@ -127,29 +130,26 @@ public class StatisticsEntityBuilder {
 		return "null";
 	}
 	
-	private void addUrlStatistic(StatisticsSnapshot payloadToAppendTo, String url, int status) {
+	private void addUrlStatistic(StatisticsSnapshot payloadToAppendTo, String url, BuildStateEnum buildStateEnum, int status) {
 		StatisticsItem urlStats = payloadToAppendTo.getUrls().get(url);
 		if (urlStats == null) {
-			urlStats = new StatisticsItem(url, 0, new HashMap<>());
+			urlStats = new StatisticsItem(url, 0, new ArrayList<>());
 		}
-		payloadToAppendTo.getUrls().put(url, populateStats(urlStats, url, status));
+		payloadToAppendTo.getUrls().put(url, populateStats(urlStats,  url, buildStateEnum, status));
 	}
-	private void addTemplateStatistic(StatisticsSnapshot payloadToAppendTo, String templateId, int status) {
+	private void addTemplateStatistic(StatisticsSnapshot payloadToAppendTo, String templateId, BuildStateEnum buildStateEnum, int status) {
 		StatisticsItem templateStats = payloadToAppendTo.getTemplates().get(templateId);
 		if (templateStats == null) {
-			templateStats = new StatisticsItem(templateId, 0, new HashMap<>());
+			templateStats = new StatisticsItem(templateId, 0, new ArrayList<>());
 		}
-		payloadToAppendTo.getTemplates().put(templateId, populateStats(templateStats, templateId, status));
+		payloadToAppendTo.getTemplates().put(templateId, populateStats(templateStats, templateId, buildStateEnum, status));
 	}
 
-	private StatisticsItem populateStats(StatisticsItem statsObject, String key, int status) {
-		if (!statsObject.getStatuses().containsKey(status)) {
-			statsObject.getStatuses().put(status, 0);
-		}
+	private StatisticsItem populateStats(StatisticsItem statsObject, String key, BuildStateEnum buildStateEnum, int status) {
 		statsObject.name = key;
-		int statusCount = statsObject.getStatuses().get(status);
+		int statusCount = statsObject.getStatus(buildStateEnum, status);
 		statusCount++;
-		statsObject.getStatuses().put(status, statusCount);
+		statsObject.putStatus(buildStateEnum,status, statusCount);
 		statsObject.invocations++;
 		return statsObject;
 	}

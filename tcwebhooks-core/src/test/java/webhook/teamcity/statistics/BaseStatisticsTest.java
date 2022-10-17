@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import webhook.WebHookExecutionStats;
+import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.history.GeneralisedWebAddress;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.history.WebAddressTransformerImpl;
@@ -64,6 +65,7 @@ public abstract class BaseStatisticsTest {
 		WebHookExecutionStats webHookExecutionStats = new WebHookExecutionStats();
 		webHookExecutionStats.setStatusCode(200);
 		webHookExecutionStats.setStatusReason("OK");
+		webHookExecutionStats.setBuildState(BuildStateEnum.BUILD_FAILED);
 		WebHookErrorStatus webhookErrorStatus = null;
 		GeneralisedWebAddress generalisedWebAddress = webAddressTransformer.getGeneralisedHostName(webHookConfig.getUrl());
 		WebHookHistoryItem item = new WebHookHistoryItem(projectId , projectName , buildTypeId , buildTypeName, buildTypeExternalId, buildId, webHookConfig, webHookExecutionStats, webhookErrorStatus, timestamp, generalisedWebAddress, false);

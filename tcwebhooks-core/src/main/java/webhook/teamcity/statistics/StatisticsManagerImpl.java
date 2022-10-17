@@ -2,15 +2,19 @@ package webhook.teamcity.statistics;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.BuildState;
@@ -26,6 +30,7 @@ import webhook.teamcity.settings.WebHookMainSettings;
 public class StatisticsManagerImpl implements StatisticsManager {
 	
 	private static final String YEAR_MONTH_DATE = "yyyy-MM-dd";
+	private static final Pattern STATISTICS_FILENAME_PATTERN = Pattern.compile("stats-\\d{4}-\\d{2}-\\d{2}\\.xml");
 	
 	private final WebHookHistoryRepository webHookHistoryRepository;
 	private StatisticsJaxHelper myJaxHelpher;
@@ -195,7 +200,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 				.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
 	}
 
-	private String getConfigDir() {
+	protected String getConfigDir() {
 		return new StringBuilder()
 				.append(myServerPaths.getConfigDir())
 				.append(File.separator )
@@ -210,7 +215,36 @@ public class StatisticsManagerImpl implements StatisticsManager {
 				.append(File.separator)
 				.append("stats-" )
 				.append(date.toString(YEAR_MONTH_DATE))
-				.append(".xml").toString();
+				.append(".xml")
+				.toString();
+	}
+
+
+	@Override
+	public void cleanupOldStatistics(LocalDateTime now) {
+		LocalDate oneYearAgo = now.minusYears(1).toLocalDate();
+		
+		File[] statisticsFiles = new File(getConfigDir()).listFiles();
+		List<File> filesForDeletion = new ArrayList<>();
+		for (File file : statisticsFiles) {
+			if (STATISTICS_FILENAME_PATTERN.matcher(file.getName()).find()) {
+				LocalDate fileDate = LocalDate.parse(file.getName().substring(6,16), DateTimeFormat.forPattern(YEAR_MONTH_DATE));
+				if (fileDate.isBefore(oneYearAgo)) {
+					filesForDeletion.add(file);
+					Loggers.SERVER.debug(String.format("StatisticsManagerImpl :: Added file '%s' to delete list. It is older than '%s'", 
+							file.getName(), oneYearAgo.toString()));
+				}
+			}
+		}
+		
+		for (File file : filesForDeletion) {
+			try {
+				Files.delete(file.toPath());
+				Loggers.SERVER.info(String.format("StatisticsManagerImpl :: Removed old webhook statistics file '%s'.", file.getName()));
+			} catch (IOException e) {
+				Loggers.SERVER.info("StatisticsManagerImpl :: Failed to remove old webhook statistics file.", e);
+			}
+		}
 	}
 
 }

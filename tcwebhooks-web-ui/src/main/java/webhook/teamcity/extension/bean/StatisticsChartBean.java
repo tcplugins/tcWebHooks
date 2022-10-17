@@ -89,10 +89,10 @@ public class StatisticsChartBean {
 					.collect(Collectors.toList());
 
 				items.forEach(l -> l.forEach(item -> {
-					int sum = item.getStatuses().entrySet()
+					int sum = item.getStatuses()
 							.stream()
-							.filter(e -> e.getKey().equals(statusCode))
-							.mapToInt(Map.Entry::getValue)
+							.filter(e -> e.getStatusCode().equals(statusCode))
+							.mapToInt(e -> e.getCount()) 
 							.sum();
 					data.setY(data.getY() + sum);
 				}));

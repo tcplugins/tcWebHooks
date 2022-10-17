@@ -15,5 +15,6 @@ public interface StatisticsManager {
 	public void reportStatistics(LocalDateTime now);
 	public List<StatisticsEntity> getUnreportedHistoricalStatisticsEntities(LocalDate startDate, LocalDate endDate);
 	public StatisticsEntity buildStatisticsEntity(StatisticsEntity statisticsEntity, List<WebHookHistoryItem> webHookExecutionStats, LocalDateTime dateTime);
+	public void cleanupOldStatistics(LocalDateTime now);
 
 }
