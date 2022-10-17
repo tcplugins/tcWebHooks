@@ -59,10 +59,10 @@
 	</reporting>
 
 	<repositories>
-	  <repository>
+		<repository>
 		<id>local-mvn-repo</id>
 		<url>file://${project.basedir}/local-mvn-repo</url>
-	  </repository>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -75,15 +75,15 @@
 
 		<!-- http://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
-		    <version>4.5.13</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-  			<artifactId>commons-lang3</artifactId>
-  			<version>3.4</version>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
 		</dependency>
 
 		<dependency>
@@ -114,7 +114,7 @@
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- TeamCity/webapps/WEB-INF/lib/server.jar -->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
@@ -125,33 +125,33 @@
 
 		<!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
 		<dependency>
-		    <groupId>commons-beanutils</groupId>
-		    <artifactId>commons-beanutils</artifactId>
-		    <version>1.9.4</version>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.4</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 		<dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		    <version>1.15</version>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.15</version>
 		</dependency>
 
-     	<!--Jetty dependencies start here -->
-     	<dependency>
-	         <groupId>org.eclipse.jetty</groupId>
-	         <artifactId>jetty-server</artifactId>
+		 <!--Jetty dependencies start here -->
+		 <dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
 			<version>9.4.43.v20210629</version>
 			<scope>test</scope>
-     	</dependency>
+		 </dependency>
 
-     	<dependency>
-	         <groupId>org.eclipse.jetty</groupId>
-	         <artifactId>jetty-webapp</artifactId>
+		 <dependency>
+			 <groupId>org.eclipse.jetty</groupId>
+			 <artifactId>jetty-webapp</artifactId>
 			<version>9.4.44.v20210927</version>
 			<scope>test</scope>
-	     </dependency>
-    	 <!--Jetty dependencies end here -->
+		 </dependency>
+		 <!--Jetty dependencies end here -->
 
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
@@ -193,7 +193,7 @@
 			<artifactId>velocity-engine-core</artifactId>
 			<version>2.3</version>
 		</dependency>
-		
+
 		<!--  Use same version of slf4j as velocity 2.3 uses -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -203,16 +203,16 @@
 
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
-		    <groupId>com.google.code.gson</groupId>
-		    <artifactId>gson</artifactId>
-		    <version>2.8.5</version>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>[2.8.9,)</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>
-		    <groupId>com.google.guava</groupId>
-		    <artifactId>guava</artifactId>
-		    <version>29.0-jre</version>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>29.0-jre</version>
 		</dependency>
 
 		<dependency>
@@ -223,10 +223,10 @@
 		</dependency>
 
 		<dependency>
-		  <groupId>org.awaitility</groupId>
-		  <artifactId>awaitility-proxy</artifactId>
-		  <version>3.1.6</version>
-		    <scope>test</scope>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility-proxy</artifactId>
+			<version>3.1.6</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
