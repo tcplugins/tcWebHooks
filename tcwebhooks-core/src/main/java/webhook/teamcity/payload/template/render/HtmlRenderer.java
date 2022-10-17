@@ -2,13 +2,13 @@ package webhook.teamcity.payload.template.render;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class HtmlRenderer implements WebHookStringRenderer {
 
 	@Override
 	public String render(String input) {
-		return StringEscapeUtils.escapeHtml(input);
+		return StringEscapeUtils.escapeHtml4(input);
 	}
 
 

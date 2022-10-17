@@ -32,10 +32,10 @@ public class StringUtils {
     }
     
     public static String capitaliseFirstWord(String s) {
-    	return org.apache.commons.lang.StringUtils.capitalize(s);
+    	return org.apache.commons.lang3.StringUtils.capitalize(s);
     }
     
     public static String capitaliseAllWords(String s) {
-    	return org.apache.commons.lang.WordUtils.capitalize(s);
+    	return org.apache.commons.lang3.text.WordUtils.capitalize(s);
     }
 }
