@@ -17,6 +17,7 @@ import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
+import webhook.teamcity.settings.WebHookConfigEnhanced.Tag;
 
 @Getter
 public class WebhookConfigAndBuildTypeListHolder {
@@ -44,7 +45,7 @@ public class WebhookConfigAndBuildTypeListHolder {
 	@Setter
 	private WebhookAuthenticationConfigBean authConfig = null;
 	private GeneralisedWebAddress generalisedWebAddress;
-	private Set<String> tags = new LinkedHashSet<>();
+	private Set<Tag> tags = new LinkedHashSet<>();
 	private boolean hideSecureValues;
 
 	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList) {

@@ -31,6 +31,8 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.payload.content.ExtraParameters;
+import webhook.teamcity.settings.WebHookConfigEnhanced.Tag;
+import webhook.teamcity.settings.WebHookConfigEnhanced.TagType;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
 public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer {
@@ -361,8 +363,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	private void doTagsSearch(WebHookSearchFilter filter, WebHookConfigEnhanced e, WebHookSearchResult result) {
 		if (!filter.getTags().isEmpty()) {
-			for (String tag: e.getTags()) {
-				if (filter.getTags().contains(tag.toLowerCase())) {
+			for (Tag tag: e.getTags()) {
+				if (filter.getTags().contains(tag.getName().toLowerCase())) {
 					result.addMatch(Match.TAG);
 				}
 			}
@@ -408,7 +410,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			searchField(result, filter.getTextSearch(), Match.PROJECT, e.getProjectExternalId());
 		}
 
-		if (filter.textSearch != null && e.getTags().contains(filter.textSearch.toLowerCase())) {
+		if (filter.textSearch != null && e.getTagNames().contains(filter.textSearch.toLowerCase())) {
 			result.addMatch(Match.TAG);
 		}
 	}
@@ -469,17 +471,18 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 						.webHookConfig(c)
 						.generalisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(c.getUrl()))
 						.build();
-				configEnhanced.addTag(templateFormat)
-						.addTag(Boolean.TRUE.equals(c.getEnabled()) ? "enabled" : "disabled")
-						.addTag(Boolean.TRUE.equals(c.isHideSecureValues()) ? "hideSecure" : "showSecure")
-						.addTag(c.getPayloadTemplate())
-						.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress());
+				configEnhanced.addTag(templateFormat, TagType.FORMAT)
+						.addTag(Boolean.TRUE.equals(c.getEnabled()) ? "enabled" : "disabled", TagType.WEBHOOK_ENABLED)
+						.addTag(Boolean.TRUE.equals(c.isHideSecureValues()) ? "hideSecure" : "showSecure", TagType.SHOW_SECURE)
+						.addTag(c.getPayloadTemplate(), TagType.TEMPLATE_ID)
+						.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress(), TagType.GENERALISED_URL);
 				if (c.getAuthenticationConfig() != null) {
-					configEnhanced.addTag("authenticated").addTag(c.getAuthenticationConfig().getType());
+					configEnhanced.addTag("authenticated", TagType.AUTHENTICATED)
+					              .addTag(c.getAuthenticationConfig().getType(), TagType.AUTHENTICATION_TYPE);
 				}
-				addTagIfPresent(configEnhanced, c.getHeaders(), "headers");
-				addTagIfPresent(configEnhanced, c.getTriggerFilters(), "filters");
-				addTagIfPresent(configEnhanced, c.getParams(), "parameters");
+				addTagIfPresent(configEnhanced, c.getHeaders(), "headers", TagType.HEADER);
+				addTagIfPresent(configEnhanced, c.getTriggerFilters(), "filters", TagType.FILTER);
+				addTagIfPresent(configEnhanced, c.getParams(), "parameters", TagType.PARAMETER);
 
 				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
 				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
@@ -504,16 +507,16 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void addTagIfPresent(WebHookConfigEnhanced config, Collection collection, String tagName) {
+	private void addTagIfPresent(WebHookConfigEnhanced config, Collection collection, String tagName, TagType tagType) {
 		if (collection != null && !collection.isEmpty()) {
-			config.addTag(tagName);
+			config.addTag(new Tag(tagName, tagType));
 		}
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private void addTagIfPresent(WebHookConfigEnhanced config, Map map, String tagName) {
+	private void addTagIfPresent(WebHookConfigEnhanced config, Map map, String tagName, TagType tagType) {
 		if (map != null && !map.isEmpty()) {
-			config.addTag(tagName);
+			config.addTag(new Tag(tagName, tagType));
 		}
 	}
 
