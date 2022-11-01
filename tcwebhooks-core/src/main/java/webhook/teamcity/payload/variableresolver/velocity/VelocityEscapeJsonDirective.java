@@ -24,7 +24,7 @@ public class VelocityEscapeJsonDirective extends Directive {
         if (node.jjtGetChild(0) != null) {
         	dirtyString = String.valueOf(node.jjtGetChild(0).value(context));
         }
-        //capitalise the string and write result to writer
+        //Escape the string and write result to writer
         writer.write(StringEscapeUtils.escapeJson(dirtyString));
         return true;
     }

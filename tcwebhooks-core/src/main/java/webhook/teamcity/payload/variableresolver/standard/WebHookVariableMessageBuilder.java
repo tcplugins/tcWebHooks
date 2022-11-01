@@ -21,5 +21,10 @@ public class WebHookVariableMessageBuilder implements VariableMessageBuilder {
 	public String build(String template) {
 		return matcher.replace(matcher.replace(template, resolver),resolver);
 	}
+
+    @Override
+    public void addWebHookPayload(String webHookContent) {
+        // NOOP for non Velocity templates. Can't reference the webhook body from this template.
+    }
 	
 }

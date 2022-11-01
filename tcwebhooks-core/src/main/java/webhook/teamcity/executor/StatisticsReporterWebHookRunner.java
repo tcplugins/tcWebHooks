@@ -1,5 +1,8 @@
 package webhook.teamcity.executor;
 
+import java.util.Collections;
+
+import org.apache.commons.codec.digest.HmacUtils;
 import org.joda.time.LocalDate;
 
 import com.google.gson.Gson;
@@ -11,15 +14,20 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
+import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.history.WebHookHistoryItemFactory;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.statistics.LocalDateTypeAdaptor;
 import webhook.teamcity.statistics.StatisticsReport;
 
 public class StatisticsReporterWebHookRunner extends AbstractWebHookExecutor {
 
-	private StatisticsReport myStatisticsReport;
+	private static final String HMAC_HEADER_NAME = "x-tcwebhooks-hmac";
+    private static final String HMAC_ALGORITHM = "HmacSHA256";
+    private StatisticsReport myStatisticsReport;
+    private VariableMessageBuilder simpleVariableMessageBuilder = new SimpleCopyingVariableMessageBuilder();
 	private SProject rootProject;
 
 	public StatisticsReporterWebHookRunner(WebHookContentBuilder webHookContentBuilder,
@@ -40,6 +48,12 @@ public class StatisticsReporterWebHookRunner extends AbstractWebHookExecutor {
 		webhook.setCharset("UTF-8");
 		webhook.setPayload(gson.toJson(myStatisticsReport));
 		webhook.setUrl(whc.getUrl());
+		webhook.addHeaders(Collections.singletonList(
+		        new WebHookHeaderConfig(HMAC_HEADER_NAME, 
+		                new HmacUtils(HMAC_ALGORITHM, myStatisticsReport.getPluginInfo().getTcWehooksVersion())
+		                .hmacHex(webhook.getPayload()))
+		        ));
+		webhook.resolveHeaders(this.simpleVariableMessageBuilder); // The webhook only sends resolved headers 
 		return webhook;
 	}
 
@@ -66,5 +80,18 @@ public class StatisticsReporterWebHookRunner extends AbstractWebHookExecutor {
 	protected void errorCallback(RuntimeException exception) {
 		throw exception;
 	}
+	
+	protected static class SimpleCopyingVariableMessageBuilder implements VariableMessageBuilder {
 
+        @Override
+        public String build(String template) {
+            return template; // Just return template without doing any substitution
+        }
+
+        @Override
+        public void addWebHookPayload(String webHookContent) {
+            // NOOP
+        }
+	}
+	
 }

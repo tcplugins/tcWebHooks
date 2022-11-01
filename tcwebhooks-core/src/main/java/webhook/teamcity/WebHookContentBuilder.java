@@ -70,6 +70,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.buildAddedToQueue(sBuild, extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -86,6 +87,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.buildRemovedFromQueue(sBuild, extraParameters, whc.getEnabledTemplates(), templateForThisBuild, user, comment));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -132,6 +134,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.buildStarted(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -149,6 +152,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.changesLoaded(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -166,6 +170,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.serviceMessageReceived(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -183,6 +188,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.buildInterrupted(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -200,6 +206,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.beforeBuildFinish(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -221,6 +228,7 @@ public class WebHookContentBuilder {
 				extraParameters.resolveParameters(builders);
 				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				wh.setPayload(payloadFormat.buildFinished(sBuild, getPreviousNonPersonalBuild(wh, sBuild), extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -238,6 +246,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.buildPinned(sBuild, extraParameters, whc.getEnabledTemplates(), templateForThisBuild, username, comment));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -255,6 +264,7 @@ public class WebHookContentBuilder {
 				VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 				extraParameters.resolveParameters(builders);
 				wh.setPayload(payloadFormat.buildUnpinned(sBuild, extraParameters, whc.getEnabledTemplates(), templateForThisBuild, username, comment));
+				builder.addWebHookPayload(wh.getPayload());
 				wh.resolveAuthenticationParameters(builder);
 				wh.setUrl(builder.build(whc.getUrl()));
 				wh.checkFilters(builder);
@@ -283,6 +293,7 @@ public class WebHookContentBuilder {
 			VariableMessageBuilder builder = builders.get(payloadFormat.getTemplateEngineType().toString());
 			extraParameters.resolveParameters(builders);
 			wh.setPayload(payloadFormat.responsibilityChanged(responsibilityHolder, extraParameters, whc.getEnabledTemplates(), templateForThisBuild));
+			builder.addWebHookPayload(wh.getPayload());
 			wh.resolveAuthenticationParameters(builder);
 			wh.setUrl(builder.build(whc.getUrl()));
 			wh.checkFilters(builder);
