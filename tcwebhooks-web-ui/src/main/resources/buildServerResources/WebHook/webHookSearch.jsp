@@ -101,7 +101,7 @@
 					<td>
 							<ul class="commalist webhookTags">
 								<c:forEach items="${hook.tags}" var="tag">
-									<li><a href="search.html?tag=<c:out value="${tag}" />"><c:out value="${tag}" /></a></li>	
+									<li title="<c:out value="${tag.type.description}" />"><a href="../webhooks/search.html?tag=<c:out value="${tag.name}" />"><c:out value="${tag.name}" /></a></li>	
 								</c:forEach>
 							</ul>	
 					</td>
