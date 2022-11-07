@@ -1,5 +1,6 @@
 package webhook.teamcity.extension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,43 +26,49 @@ import webhook.teamcity.settings.WebHookSettingsManager;
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookTemplateListPageController extends WebHookTemplateBasePageController {
 
-	    private final WebHookPayloadManager myPayloadManager;
+		private final WebHookPayloadManager myPayloadManager;
 
 		@SuppressWarnings("squid:S00107")
-	    public WebHookTemplateListPageController(SBuildServer server, WebControllerManager webManager, 
-	    		PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager, 
-	    		WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
-	    		WebHookSettingsManager webHookSettingsManager, ProjectIdResolver projectIdResolver) {
-	    	super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager, projectIdResolver);
-	    	this.myPayloadManager = payloadManager;
-	    }
+		public WebHookTemplateListPageController(SBuildServer server, WebControllerManager webManager,
+				PluginDescriptor pluginDescriptor, WebHookPayloadManager payloadManager,
+				WebHookPluginDataResolver webHookPluginDataResolver, WebHookTemplateManager webHookTemplateManager,
+				WebHookSettingsManager webHookSettingsManager, ProjectIdResolver projectIdResolver) {
+			super(server, webManager, pluginDescriptor, webHookPluginDataResolver, webHookTemplateManager, webHookSettingsManager, projectIdResolver);
+			this.myPayloadManager = payloadManager;
+		}
 
-	    @Override
-	    protected String getUrl() {
-	    	return "/webhooks/templates.html";
-	    }
+		@Override
+		protected String getUrl() {
+			return "/webhooks/templates.html";
+		}
 
-	    @Nullable
-	    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-	    	
-	        HashMap<String,Object> params = new HashMap<>();
-	        addBaseParams(params);
-	        
-	        
-	        List<WebHookPayloadTemplate> templates; 
-	        
-	        if(request.getParameter("projectId") != null){
-	        	SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
-	        	templates = myTemplateManager.getRegisteredPermissionedTemplatesForProject(project);
-	        } else {
-	        	templates = myTemplateManager.getRegisteredPermissionedTemplates();
-	        }
-	        
-	        params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
-	        params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, templates,
-	        		myPayloadManager.getRegisteredFormats(), myWebHookSettingsManager, myServer.getProjectManager()).getTemplateList());
-	        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateList.jsp", params);
-	    }
+		@Nullable
+		protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+			HashMap<String,Object> params = new HashMap<>();
+			addBaseParams(params);
+
+
+			List<WebHookPayloadTemplate> templates;
+
+			if(request.getParameter("projectId") != null){
+				SProject project = TeamCityIdResolver.findProjectById(this.myServer.getProjectManager(), request.getParameter("projectId"));
+				if (project != null) {
+					templates = myTemplateManager.getRegisteredPermissionedTemplatesForProject(project);
+					params.put("project", project);
+				} else {
+					templates = new ArrayList<>();
+					params.put("error", "Project ID was not found");
+				}
+			} else {
+				templates = myTemplateManager.getRegisteredPermissionedTemplates();
+			}
+
+			params.put("payloadFormats", myPayloadManager.getTemplatedFormats());
+			params.put("webHookTemplates", RegisteredWebHookTemplateBean.build(myTemplateManager, templates,
+					myPayloadManager.getRegisteredFormats(), myWebHookSettingsManager, myServer.getProjectManager()).getTemplateList());
+			return new ModelAndView(myPluginDescriptor.getPluginResourcesPath() + "WebHook/templateList.jsp", params);
+		}
 
 
 }

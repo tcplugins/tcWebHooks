@@ -74,13 +74,31 @@
     		var templateJson = {};
 		</script>		
 		<div>
-		<h2>The following table shows the WebHooks Templates installed in this TeamCity instance.</h2> 
-		A guide to <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction">WebHook Templates is on the tcWebHooks Wiki</a>. 
+
+		<c:if test="${not empty error}">
+			<h2>Error: ${error}</h2>
+			<p><a href="templates.html">Click to view all templates</a>. </p>
+		</c:if>
+	<c:if test="${empty error}">
+
+		<c:if test="${not empty project}">
+			<h2>The following table shows the WebHooks Templates associated with <em><c:out value="${project.name}"/></em>.</h2>
+		</c:if>
+		
+		<c:if test="${empty project}"> 
+			<h2>The following table shows the WebHooks Templates installed in this TeamCity instance.</h2>
+		</c:if>
+		<p>A guide to <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHook-Templates-:-An-Introduction">WebHook Templates is on the tcWebHooks Wiki</a>.</p> 
 		<p>Additional templates can be downloaded from the 
 		<a href="https://github.com/tcplugins/tcWebHooksTemplates">tcWebHooksTemplates project</a> on GitHub. 
 		User contributions are welcome. Please see the readme for instructions on importing and exporting WebHook Templates.<p>
 		<c:if test="${not isRestApiInstalled}">
 			<p>Viewing or making changes to template content will not be possible using the WebHook Templates UI because the <a href="https://github.com/tcplugins/tcWebHooks/wiki/WebHooks-REST-API">WebHooks REST API</a> is not installed.
+		</c:if>
+
+		
+		<c:if test="${not empty project}">
+			The following templates are associated with <c:out value="${project.name}"/>. <a href="templates.html">Click to view all templates</a>. 
 		</c:if>
     	</div>
     <table id="webHookTemplateTable" class="settings">
@@ -97,7 +115,7 @@
 		<tbody>
 		    <c:forEach items="${webHookTemplates}" var="template">
 			  <tr id="viewRow_${template.templateId}" class="webHookTemplate">
-				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)"><c:out value="${template.templateDescription}" /></td>
+				<td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/>"><c:out value="${template.templateDescription}" /></td>
 				<td class="nowrap"><a href="../project.html?projectId=${template.projectExternalId}"><c:out value="${template.projectName}" /></a></td>
 				<td class="nowrap">${template.formatDescription}</td>
 				<td>
@@ -109,14 +127,14 @@
 				</td>
 				<td class="nowrap">${template.templateState.description}</td>
 				
-				<td><a href="search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
+				<td><a title="Search for webhooks that use this template" href="search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
 
 		<c:choose>  
     		<c:when test="${template.templateDescription == 'Legacy Webhook' || template.templateId == 'statistics-report'}"> 		
 				<td>No template available</td>
 			</c:when>
 			<c:otherwise>  		
-				<td><a href="template.html?template=${template.templateId}">View</a></td>
+				<td><a title="Template ID: <c:out value="${template.templateId}"/>" href="template.html?template=${template.templateId}">View</a></td>
 			</c:otherwise>  
 		</c:choose>
 		
@@ -124,6 +142,7 @@
 		    </c:forEach>
     	</tbody>
     	</table>
+	</c:if>
 
     <bs:dialog dialogId="noRestApiDialog"
                dialogClass="noRestApiDialog"

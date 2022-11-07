@@ -6,6 +6,8 @@
 <c:set var="parameterConfigDialogScope" value="WebHooksPlugin.Parameters" scope="request"/>
 <c:set var="showLinksToOldEditPage" value="true" scope="request"/>
 <c:set var="showLinksForInlineEditingIfRestApiMissing" value="false" scope="request"/>
+<c:set var="parentTemplateCount" value="0" scope="request"/>
+<c:set var="parentParameterCount" value="0" scope="request"/>
 
 
 <style>
@@ -43,26 +45,7 @@ ul.commalist li:last-child:after {
 	
 	${permissionError}
 		
-		<c:if test="${fn:length(projectWebHooksAndTemplates) > 0}" >
-			<h2 class="webhookHeading">WebHooks and Templates in parent Projects</h2>
-			<p>WebHooks from parent projects may also be executed for builds in this project. Templates from parent projects are available for webhooks to use.</p>
-			Parent projects have the following webhooks and templates:
-			<table class="highlightable parametersTable webhooktable">
-				<thead>
-				<tr><th class="name" style="width:40%">Project Name</th><th style="width:20%">WebHook Count</th><th style="width:20%">Template Count</th><th style="width:20%">Parameter Count</th></tr>
-				</thead>
-				<tbody>
-			<c:forEach items="${projectWebHooksAndTemplates}" var="parent">
-				<tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
-					<td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
-					<td>${fn:length(parent.templates.templateList)} templates available</td>
-					<td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
-				</tr>
-			</c:forEach>
-			</tbody>
-			</table>
-			<p><p>
-		</c:if>
+		<%@ include file="jsp-includes/projectParentItemsTable.jsp" %>
 
 		<c:choose>
 			<c:when test="${projectExternalId == '_Root'}">

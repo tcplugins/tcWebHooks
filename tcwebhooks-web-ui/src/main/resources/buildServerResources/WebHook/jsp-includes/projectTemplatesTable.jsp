@@ -8,14 +8,14 @@
 </c:choose>
 
 <c:if test="${fn:length(webHookTemplates) == 0}" >
-        <p>There are no Templates associated with this project.</p>
+        <p>There are no Templates associated with this project and <strong>${parentTemplateCount}</strong> templates inherited from parent projects.</p>
         To associate a template with this project, 
         <a href="../webhooks/templates.html">View WebHook Templates</a> and either select this project
         when creating a new	template, or edit an existing template and change the associated project.
 </c:if>
 <c:if test="${fn:length(webHookTemplates) > 0}" >
-        <p>There are <strong>${fn:length(webHookTemplates)}</strong> Templates associated with this project.
-            <a href="../webhooks/templates.html?projectId=${projectExternalId}">View project Templates</a>.</p>
+        <p>There are <a href="../webhooks/templates.html?projectId=${projectExternalId}" title="Click to view a list of templates associated with this project"><strong>${fn:length(webHookTemplates)}</strong> templates associated with this project</a> 
+            and <strong>${parentTemplateCount}</strong> templates inherited from parent projects.</p>
         <table id="webHookTemplateTable" class="settings parametersTable webhooktable">
             <thead>
             <tr style="background-color: rgb(245, 245, 245);">
