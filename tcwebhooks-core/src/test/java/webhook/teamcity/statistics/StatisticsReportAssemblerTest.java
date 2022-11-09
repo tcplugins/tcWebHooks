@@ -40,6 +40,7 @@ import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.format.WebHookPayloadJson;
+import webhook.teamcity.payload.format.WebHookPayloadJsonVelocityTemplate;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.LegacyJsonWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComXmlWebHookTemplate;
@@ -179,6 +180,9 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		WebHookPayloadJson jsonFormat = new WebHookPayloadJson(framework.getWebHookPayloadManager(), framework.getWebHookVariableResolverManager());
 		jsonFormat.register();
 		
+		WebHookPayloadJsonVelocityTemplate jsonVelocityFormat = new WebHookPayloadJsonVelocityTemplate(framework.getWebHookPayloadManager(), framework.getWebHookVariableResolverManager());
+		jsonVelocityFormat.register();
+		
 		LegacyJsonWebHookTemplate legacyJsonTemplate = new LegacyJsonWebHookTemplate(
 				framework.getWebHookTemplateManager()
 				);
@@ -246,7 +250,8 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		WebHookConfigurationStatistics configStats = reportAssembler.assembleWebHookConfigurationStatistics(plainHasher);
 		assertEquals((Integer)3, configStats.getAuthTypes().get("none"));
 		assertEquals((Integer)1, configStats.getFormats().get("json"));
-		assertEquals((Integer)2, configStats.getFormats().get("jsonTemplate"));
+		assertEquals((Integer)1, configStats.getFormats().get("jsonTemplate"));
+		assertEquals((Integer)1, configStats.getFormats().get("jsonVelocityTemplate"));
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		System.out.println(gson.toJson(configStats));

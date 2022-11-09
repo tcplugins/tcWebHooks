@@ -31,9 +31,11 @@ import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.payload.format.WebHookPayloadJsonTemplate;
+import webhook.teamcity.payload.format.WebHookPayloadJsonVelocityTemplate;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManagerImpl;
 import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVariableResolverFactory;
+import webhook.teamcity.payload.variableresolver.velocity.WebHooksBeanUtilsVelocityVariableResolverFactory;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxTestHelper;
@@ -71,9 +73,12 @@ public abstract class AbstractSpringTemplateTest {
 		
 		WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
 		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVariableResolverFactory());
+		variableResolverManager.registerVariableResolverFactory(new WebHooksBeanUtilsVelocityVariableResolverFactory());
 		
 		WebHookPayloadJsonTemplate webHookPayloadJsonTemplate = new WebHookPayloadJsonTemplate(payloadManager, variableResolverManager);
 		webHookPayloadJsonTemplate.register();
+		WebHookPayloadJsonVelocityTemplate webHookPayloadVelocityJsonTemplate = new WebHookPayloadJsonVelocityTemplate(payloadManager, variableResolverManager);
+		webHookPayloadVelocityJsonTemplate.register();
 		WebHookTemplateResolver templateResolver = new WebHookTemplateResolver(templateManager, payloadManager);
 		webHookContentBuilder = new WebHookContentBuilder(sBuildServer, templateResolver, variableResolverManager, webHookParameterStore);
 		

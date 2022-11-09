@@ -7,7 +7,7 @@ public class UnsupportedWebHookFormatException extends WebHookContentResolutionE
 	private static final long serialVersionUID = -3763862515669344112L;
 
 	public UnsupportedWebHookFormatException(String formatName) {
-		super("No WebHook format + '" + formatName + "' was found", UNSUPPORTED_WEBHOOK_FORMAT_EXCEPTION_ERROR_CODE);
+		super("No WebHook format '" + formatName + "' was found", UNSUPPORTED_WEBHOOK_FORMAT_EXCEPTION_ERROR_CODE);
 	}
 
 }
