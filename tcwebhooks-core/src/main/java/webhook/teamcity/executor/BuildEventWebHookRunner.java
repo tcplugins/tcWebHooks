@@ -1,5 +1,7 @@
 package webhook.teamcity.executor;
 
+import java.util.Map;
+
 import jetbrains.buildServer.serverSide.SBuild;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
@@ -15,6 +17,7 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 	private final SBuild sBuild;
 	private String username;
 	private String comment;
+    private Map<String, String> extraAttributes;
 	
 	public BuildEventWebHookRunner(
 			WebHookContentBuilder webHookContentBuilder, 
@@ -27,7 +30,8 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 			boolean overrideIsEnabled, 
 			WebHook webhook, 
 			SBuild sBuild,
-			boolean isTest) 
+			boolean isTest, 
+			Map<String, String> extraAttributes) 
 	{
 		super(
 			  webHookContentBuilder, 
@@ -41,11 +45,12 @@ public class BuildEventWebHookRunner extends AbstractWebHookExecutor implements 
 		this.sBuild = sBuild;
 		this.username = username;
 		this.comment = comment;
+		this.extraAttributes = extraAttributes;
 	}
 	
 	@Override
 	protected WebHook getWebHookContent() {
-		return webHookContentBuilder.buildWebHookContent(webhook, whc, sBuild, state, username, comment, overrideIsEnabled);
+		return webHookContentBuilder.buildWebHookContent(webhook, whc, sBuild, state, username, comment, overrideIsEnabled, extraAttributes);
 	}
 	
 	@Override

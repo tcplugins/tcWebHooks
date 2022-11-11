@@ -3,6 +3,7 @@ package webhook.teamcity;
 import static org.junit.Assert.assertNotNull;
 
 import java.text.ParseException;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -31,17 +32,17 @@ public class WebHookServiceMessageHandlerTest {
 	@Test
 	public void testServiceMessageHandlerCalledWebHookListener() throws ParseException {
 		MockitoAnnotations.initMocks(this);
-		ServiceMessage serviceMessage = ServiceMessage.parse(TEAMCITY_SERVICE_MESSAGE_PREFIX + WebHookServiceMessageHandler.SERVICE_MESSAGE_NAME + TEAMCITY_SERVICE_MESSAGE_SUFFIX);
+		ServiceMessage serviceMessage = ServiceMessage.parse(TEAMCITY_SERVICE_MESSAGE_PREFIX + WebHookServiceMessageHandler.SERVICE_MESSAGE_NAME + " foo='bar'" + TEAMCITY_SERVICE_MESSAGE_SUFFIX);
 		assertNotNull(serviceMessage);
 		
 		webHookServiceMessageHandler.translate(runningBuild, null, serviceMessage);
-		Mockito.verify(webhookListener).serviceMessageReceived(runningBuild);
+		Mockito.verify(webhookListener).serviceMessageReceived(runningBuild, Collections.singletonMap("foo", "bar"));
 	}
 	
 	@Test
 	@SuppressWarnings("java:S2699")
 	public void testOutputServiceMessage() {
-		System.out.println(TEAMCITY_SERVICE_MESSAGE_PREFIX + WebHookServiceMessageHandler.SERVICE_MESSAGE_NAME + TEAMCITY_SERVICE_MESSAGE_SUFFIX);
+		System.out.println(TEAMCITY_SERVICE_MESSAGE_PREFIX + WebHookServiceMessageHandler.SERVICE_MESSAGE_NAME + " foo='bar'" + TEAMCITY_SERVICE_MESSAGE_SUFFIX);
 	}
 
 }

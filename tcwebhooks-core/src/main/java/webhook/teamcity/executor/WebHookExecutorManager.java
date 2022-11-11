@@ -1,5 +1,7 @@
 package webhook.teamcity.executor;
 
+import java.util.Map;
+
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
@@ -47,11 +49,11 @@ public class WebHookExecutorManager implements WebHookExecutor, WebHookStatistic
 
 	@Override
 	public void execute(WebHook webHook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username,
-			String comment, boolean isTest) {
+			String comment, boolean isTest, Map<String,String> extraAttributes) {
 		if (myWebHookMainSettings.useThreadedExecutor()) {
-			myWebHookThreadingExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
+			myWebHookThreadingExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest, extraAttributes);
 		} else {
-			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest);
+			myWebHookSerialExecutor.execute(webHook, whc, sBuild, state, username, comment, isTest, extraAttributes);
 		}
 	}
 

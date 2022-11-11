@@ -1,5 +1,7 @@
 package webhook.teamcity.executor;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.serverSide.SBuild;
@@ -32,6 +34,7 @@ public interface WebHookExecutor {
 	 * Executor for other build events.
 	 * @param sBuild
 	 * @param state
+	 * @param extraAttributes 
 	 */
 	public void execute(
 			@NotNull WebHook webHook,
@@ -40,7 +43,7 @@ public interface WebHookExecutor {
 			@NotNull BuildStateEnum state,
 			String user, 
 			String comment,
-			boolean isTest
+			boolean isTest, Map<String, String> extraAttributes
 		);
 
 	/**

@@ -20,7 +20,7 @@ public class WebHookServiceMessageHandler implements ServiceMessageTranslator {
 
 	@Override
 	public List<BuildMessage1> translate(SRunningBuild runningBuild, BuildMessage1 originalMessage, ServiceMessage serviceMessage) {
-		myWebHookListener.serviceMessageReceived(runningBuild);
+		myWebHookListener.serviceMessageReceived(runningBuild, serviceMessage.getAttributes());
 		
 		return Collections.singletonList(originalMessage);
 	}

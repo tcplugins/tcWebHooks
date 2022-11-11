@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import org.jdom.JDOMException;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class ElasticSearchWebHookTemplateTest extends AbstractSpringTemplateTest
 		WebHookConfig webhookElastic  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-elastic.xml"));
 		WebHook wh = webHookFactory.getWebHook(webhookElastic,null);
 		
-		wh = webHookContentBuilder.buildWebHookContent(wh, webhookElastic, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true);
+		wh = webHookContentBuilder.buildWebHookContent(wh, webhookElastic, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true, Collections.emptyMap());
 		System.out.println(wh.getPayload());
 		assertTrue(wh.getPayload().contains("\"build_status_url\": \"http://my-server/viewLog.html?buildTypeId=TestBuild&buildId=123456\""));
 	}

@@ -1,5 +1,7 @@
 package webhook.teamcity.executor;
 
+import java.util.Map;
+
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
@@ -44,11 +46,11 @@ public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 
 	@Override
 	public void execute(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String user, String comment,
-			boolean isTest) {
+			boolean isTest, Map<String,String> extraAttributes) {
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: About to schedule runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 		
-		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, user, comment, isTest);
+		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, user, comment, isTest, extraAttributes);
 		executorServices.getNormalExecutorService().execute(runner);
 		
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: Finished scheduling runner for webhook :: " + 

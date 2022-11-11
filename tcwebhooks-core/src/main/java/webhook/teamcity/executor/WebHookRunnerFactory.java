@@ -1,5 +1,7 @@
 package webhook.teamcity.executor;
 
+import java.util.Map;
+
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
@@ -20,7 +22,7 @@ public class WebHookRunnerFactory {
 	private WebHookHistoryItemFactory webHookHistoryItemFactory;
 
 	public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username,
-			String comment, boolean isTest) {
+			String comment, boolean isTest, Map<String, String> extraAttributes) {
 		return new BuildEventWebHookRunner(
 				webHookContentBuilder, 
 				webHookHistoryRepository, 
@@ -32,7 +34,8 @@ public class WebHookRunnerFactory {
 				isTest,	// Test enables override too.
 				webhook,
 				sBuild,
-				isTest
+				isTest,
+				extraAttributes
 			);
 	}
 

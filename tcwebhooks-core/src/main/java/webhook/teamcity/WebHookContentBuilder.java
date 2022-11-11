@@ -114,7 +114,7 @@ public class WebHookContentBuilder {
 		return buildersMap;
 	}
 	
-	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username, String comment, boolean isOverrideEnabled) {
+	public WebHook buildWebHookContent(WebHook wh, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username, String comment, boolean isOverrideEnabled, Map<String, String> extraAttributes) {
 		WebHookPayload payloadFormat = webHookTemplateResolver.getTemplatePayloadFormat(whc.getPayloadTemplate());
 		VariableResolverFactory variableResolverFactory = this.webHookVariableResolverManager.getVariableResolverFactory(payloadFormat.getTemplateEngineType());
 		WebHookTemplateContent templateForThisBuild;
@@ -164,6 +164,7 @@ public class WebHookContentBuilder {
 			if (Boolean.TRUE.equals(wh.isEnabled())){
 				templateForThisBuild = findTemplateForState(sBuild, state, whc.getPayloadTemplate());
 				ExtraParameters extraParameters = mergeParameters(whc.getParams(), sBuild.getBuildType().getProject(), sBuild, getPreferredDateFormat(templateForThisBuild));
+				extraParameters.addAll(ExtraParameters.TEAMCITY, extraAttributes, false, false);
 				extraParameters.forceResolveVariables(sBuild.getValueResolver());
 				WebHookPayloadContent content = new WebHookPayloadContent(variableResolverFactory, server, sBuild, getPreviousNonPersonalBuild(wh, sBuild), state, extraParameters, whc.getEnabledTemplates());
 				Map<String,VariableMessageBuilder> builders = createVariableMessageBuilders(payloadFormat, content);

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import org.jdom.JDOMException;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class SlackComCompactWebHookTemplateTest extends AbstractSpringTemplateTe
 		WebHookConfig webhookSlackCompact  = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/project-settings-test-slack.xml"));
 		WebHook wh = webHookFactory.getWebHook(webhookSlackCompact,null);
 		
-		wh = webHookContentBuilder.buildWebHookContent(wh, webhookSlackCompact, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true);
+		wh = webHookContentBuilder.buildWebHookContent(wh, webhookSlackCompact, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true, Collections.emptyMap());
 		System.out.println(wh.getUrl());
 		System.out.println(wh.getPayload());
 		assertTrue(wh.getPayload().contains("{ \"title\" : \"Project Name\", \"value\" : \"<http://my-server//project.html?projectId=ATestProject|Test Project>\", \"short\": true },"));

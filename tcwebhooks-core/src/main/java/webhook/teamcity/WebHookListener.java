@@ -2,7 +2,9 @@ package webhook.teamcity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,79 +44,79 @@ import webhook.teamcity.statistics.WebHooksStatisticsReportEventListener;
  * Listens for Server events and then triggers the execution of webhooks if configured.
  */
 public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener {
-    
+
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
 	private static final String AT_BUILD_STATE = " at buildState ";
 	public static final String WEBHOOKS_SETTINGS_ATTRIBUTE_NAME = "webhooks";
 	private final SBuildServer myBuildServer;
-    private final WebHookSettingsManager mySettings;
-    private final WebHookMainSettings myMainSettings;
-    private final WebHookTemplateManager myManager;
-    private final WebHookFactory webHookFactory;
-    private final WebHookExecutor webHookExecutor;
-    private final WebHookStatisticsExecutor webHookStatisticsExecutor;
-    
-    
-    public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings, 
-    						WebHookMainSettings configSettings, WebHookTemplateManager manager,
-    						WebHookFactory factory, WebHookTemplateResolver resolver,
-    						WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
-    						WebHookHistoryItemFactory historyItemFactory,
-    						WebHookExecutor executor, WebHookStatisticsExecutor statisticsExecutor) {
+	private final WebHookSettingsManager mySettings;
+	private final WebHookMainSettings myMainSettings;
+	private final WebHookTemplateManager myManager;
+	private final WebHookFactory webHookFactory;
+	private final WebHookExecutor webHookExecutor;
+	private final WebHookStatisticsExecutor webHookStatisticsExecutor;
 
-        myBuildServer = sBuildServer;
-        mySettings = settings;
-        myMainSettings = configSettings;
-        myManager = manager;
-        webHookFactory = factory;
-        webHookExecutor = executor;
-        webHookStatisticsExecutor = statisticsExecutor;
-        
-        Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
-    }
-    
-    public void register(){
-        myBuildServer.addListener(this);
-        Loggers.SERVER.debug(WEB_HOOK_LISTENER + "Registering");
-    }
 
-	private void processBuildEvent(SBuild sBuild, BuildStateEnum state) {
-			
+	public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings,
+							WebHookMainSettings configSettings, WebHookTemplateManager manager,
+							WebHookFactory factory, WebHookTemplateResolver resolver,
+							WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
+							WebHookHistoryItemFactory historyItemFactory,
+							WebHookExecutor executor, WebHookStatisticsExecutor statisticsExecutor) {
+
+		myBuildServer = sBuildServer;
+		mySettings = settings;
+		myMainSettings = configSettings;
+		myManager = manager;
+		webHookFactory = factory;
+		webHookExecutor = executor;
+		webHookStatisticsExecutor = statisticsExecutor;
+
+		Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
+	}
+
+	public void register(){
+		myBuildServer.addListener(this);
+		Loggers.SERVER.debug(WEB_HOOK_LISTENER + "Registering");
+	}
+
+	private void processBuildEvent(SBuild sBuild, BuildStateEnum state, Map<String, String> serviceMessageAttributes) {
+
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-			webHookExecutor.execute(wh, whc, sBuild, state, null, null, false);
-    	}
+			webHookExecutor.execute(wh, whc, sBuild, state, null, null, false, serviceMessageAttributes);
+		}
 	}
 	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
-		
+
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
 		}
 	}
-	
+
 	private void processResponsibilityEvent(BuildStateEnum state, WebHookResponsibilityHolder responsibilityHolder) {
-		
+
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(responsibilityHolder.getSProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, state, responsibilityHolder, false);
 		}
 	}
-	
+
 	private void processPinEvent(SBuild sBuild, BuildStateEnum state, String user, String comment) {
-		
+
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
+			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false, Collections.emptyMap());
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Build a list of Enabled webhooks to pass to the POSTing logic.
 	 * @param projectId
 	 * @return
@@ -126,18 +128,18 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		projects.addAll(myProject.getProjectPath());
 		for (SProject project : projects){
 			WebHookProjectSettings projSettings = mySettings.getSettings(project.getProjectId());
-	    	if (projSettings.isEnabled()){
-		    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
-		    		if ( !whc.isEnabledForSubProjects() && !myProject.getProjectId().equals(project.getProjectId())){
-		    			// Sub-projects are disabled and we are a subproject.
-		    			if (Loggers.ACTIVITIES.isDebugEnabled()){
-			    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
-			    					+ ":: subprojects not enabled. myProject is: " + myProject.getProjectId() + ". webhook project is: " + project.getProjectId());
-		    			}
-		    			continue;
-		    		}
-		    		
-		    		if (whc.getEnabled()){
+			if (projSettings.isEnabled()){
+				for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
+					if ( !whc.isEnabledForSubProjects() && !myProject.getProjectId().equals(project.getProjectId())){
+						// Sub-projects are disabled and we are a subproject.
+						if (Loggers.ACTIVITIES.isDebugEnabled()){
+							Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
+									+ ":: subprojects not enabled. myProject is: " + myProject.getProjectId() + ". webhook project is: " + project.getProjectId());
+						}
+						continue;
+					}
+
+					if (whc.getEnabled()){
 						if (myManager.isRegisteredTemplate(whc.getPayloadTemplate())){
 							whc.setProjectExternalId(project.getExternalId());
 							whc.setProjectInternalId(project.getProjectId());
@@ -145,60 +147,60 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 						} else {
 							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate());
 						}
-		    		} else {
-		    			Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() 
-		    					+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")");
-		    		}
+					} else {
+						Loggers.ACTIVITIES.debug(this.getClass().getSimpleName()
+								+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")");
+					}
 				}
-	    	} else {
-	    		Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + projectId);
-	    	}
+			} else {
+				Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + projectId);
+			}
 		}
-    	return configs;
+		return configs;
 	}
 
 	@Override
-    public void buildStarted(SRunningBuild sRunningBuild){
-    	processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_STARTED);
-    }	
-	
+	public void buildStarted(SRunningBuild sRunningBuild){
+		processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_STARTED, Collections.emptyMap());
+	}
+
 	@Override
 	public void changesLoaded(SRunningBuild sRunningBuild){
-		processBuildEvent(sRunningBuild, BuildStateEnum.CHANGES_LOADED);
-	}	
-	
-    @Override
-    public void buildFinished(SRunningBuild sRunningBuild){
-    	processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_FINISHED);
-    }    
-
-    @Override
-    public void buildInterrupted(SRunningBuild sRunningBuild) {
-    	processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_INTERRUPTED);
-    }      
-
-    @Override
-    public void beforeBuildFinish(SRunningBuild sRunningBuild) {
-    	processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED);
+		processBuildEvent(sRunningBuild, BuildStateEnum.CHANGES_LOADED, Collections.emptyMap());
 	}
-    
-    /**
-     * Called when responsibility for several tests at once is changed. <br>
-	 * Some events may be omitted when the responsibility was changed on another node, 
-	 * i.e. it's not called on read-only node when the responsibility was assigned and 
+
+	@Override
+	public void buildFinished(SRunningBuild sRunningBuild){
+		processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_FINISHED, Collections.emptyMap());
+	}
+
+	@Override
+	public void buildInterrupted(SRunningBuild sRunningBuild) {
+		processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_INTERRUPTED, Collections.emptyMap());
+	}
+
+	@Override
+	public void beforeBuildFinish(SRunningBuild sRunningBuild) {
+		processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, Collections.emptyMap());
+	}
+
+	/**
+	 * Called when responsibility for several tests at once is changed. <br>
+	 * Some events may be omitted when the responsibility was changed on another node,
+	 * i.e. it's not called on read-only node when the responsibility was assigned and
 	 * immediately removed on the main server.
-     * 
-     * @since 6.0
-     */
+	 *
+	 * @since 6.0
+	 */
 	@Override
 	public void responsibleChanged(
 			SProject project,
-			Collection<TestName> testNames, 
+			Collection<TestName> testNames,
 			ResponsibilityEntry entry,
 			boolean isUserAction) {
-			
+
 		processResponsibilityEvent(
-				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				BuildStateEnum.RESPONSIBILITY_CHANGED,
 				WebHookResponsibilityHolder
 					.builder()
 					.sProject(project)
@@ -209,8 +211,8 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 
 	/**
-	 * New version of responsibleChanged, which has some bugfixes, but 
-	 * is only available in versions 7.0 and above.    
+	 * New version of responsibleChanged, which has some bugfixes, but
+	 * is only available in versions 7.0 and above.
 	 * @param bt
 	 * @param oldValue
 	 * @param newValue
@@ -218,11 +220,11 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	 */
 	@Override
 	public void responsibleChanged(@NotNull SBuildType sBuildType,
-            @NotNull ResponsibilityEntry responsibilityEntryOld,
-            @NotNull ResponsibilityEntry responsibilityEntryNew) {
-		
+			@NotNull ResponsibilityEntry responsibilityEntryOld,
+			@NotNull ResponsibilityEntry responsibilityEntryNew) {
+
 		processResponsibilityEvent(
-				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				BuildStateEnum.RESPONSIBILITY_CHANGED,
 				WebHookResponsibilityHolder
 					.builder()
 					.sBuildType(sBuildType)
@@ -232,23 +234,23 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 					.build()
 				);
 	}
-	
+
 	/**
 	 * Called when responsibility for several build problems at once is changed.<br>
-	 * Some events may be omitted when the responsibility was changed on another 
-	 * node, i.e. it's not called on read-only node when the responsibility was 
+	 * Some events may be omitted when the responsibility was changed on another
+	 * node, i.e. it's not called on read-only node when the responsibility was
 	 * assigned and immediately removed on the main server.
-	 * 
+	 *
 	 * @since 8.0
 	 */
 	@Override
 	public void responsibleChanged(
 			@NotNull SProject project,
-            @NotNull Collection<BuildProblemInfo> buildProblems,
-            @Nullable ResponsibilityEntry entry) 
+			@NotNull Collection<BuildProblemInfo> buildProblems,
+			@Nullable ResponsibilityEntry entry)
 	{
 		processResponsibilityEvent(
-				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				BuildStateEnum.RESPONSIBILITY_CHANGED,
 				WebHookResponsibilityHolder
 					.builder()
 					.sProject(project)
@@ -257,20 +259,20 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 					.build()
 			);
 	}
-	
-   /**
-    * Called when responsibility for several tests at once is changed.
-    * @param project the project
-    * @param entry the new responsibility entry for each test
-    * @since 7.0
-    */
+
+/**
+	* Called when responsibility for several tests at once is changed.
+	* @param project the project
+	* @param entry the new responsibility entry for each test
+	* @since 7.0
+	*/
 	@Override
 	public void responsibleRemoved(
-			SProject project, 
+			SProject project,
 			TestNameResponsibilityEntry entry)
 	{
 		processResponsibilityEvent(
-				BuildStateEnum.RESPONSIBILITY_CHANGED, 
+				BuildStateEnum.RESPONSIBILITY_CHANGED,
 				WebHookResponsibilityHolder
 					.builder()
 					.state(ResponsibilityEntry.State.FIXED)
@@ -279,33 +281,33 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 					.build()
 			);
 	}
-	
+
 	/**
-	 * Support for listening to events where a user has modified a build result 
+	 * Support for listening to events where a user has modified a build result
 	 * and "marked as successful" or "marked as failed".
-	 * 
-	 * Checks if the list of problems has gone to zero (from greater than zero) 
-	 * or vice versa. If so, it fires the finished event. 
+	 *
+	 * Checks if the list of problems has gone to zero (from greater than zero)
+	 * or vice versa. If so, it fires the finished event.
 	 */
 	@Override
 	public void buildProblemsChanged(SBuild build, List<BuildProblemData> before, List<BuildProblemData> after) {
-		if (build instanceof SFinishedBuild 
-				&& (   
-					   ! before.isEmpty() &&   after.isEmpty()		// Problems count changed to zero (muted)
-					  || before.isEmpty() && ! after.isEmpty() 		// Problems count changed from zero to greater than zero. 
+		if (build instanceof SFinishedBuild
+				&& (
+					! before.isEmpty() &&   after.isEmpty()		// Problems count changed to zero (muted)
+					|| before.isEmpty() && ! after.isEmpty() 		// Problems count changed from zero to greater than zero.
 				)
 			)
 		{
-			this.processBuildEvent(build, BuildStateEnum.BUILD_FINISHED);
+			this.processBuildEvent(build, BuildStateEnum.BUILD_FINISHED, Collections.emptyMap());
 		}
 
 	}
-	
+
 	@Override
 	public void buildTypeAddedToQueue(SQueuedBuild queuedBuild) {
 		this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_ADDED_TO_QUEUE, null, null);
 	}
-	
+
 	@Override
 	public void buildRemovedFromQueue(SQueuedBuild queuedBuild, User user, String comment) {
 		// Only send a webhook if the build was actively removed from the queue by a user.
@@ -313,25 +315,25 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 			this.processQueueEvent(queuedBuild, BuildStateEnum.BUILD_REMOVED_FROM_QUEUE, user.getUsername(), comment);
 		}
 	}
-	
+
 	@Override
 	public void buildPinned(SBuild build, User user, String comment) {
 		this.processPinEvent(
-				build, 
-				BuildStateEnum.BUILD_PINNED, 
-				user != null ? user.getUsername() : null, 
-				comment);
-	}
-	
-	@Override
-	public void buildUnpinned(SBuild build, User user, String comment) {
-		this.processPinEvent(
-				build, 
-				BuildStateEnum.BUILD_UNPINNED, 
+				build,
+				BuildStateEnum.BUILD_PINNED,
 				user != null ? user.getUsername() : null,
 				comment);
 	}
-	
+
+	@Override
+	public void buildUnpinned(SBuild build, User user, String comment) {
+		this.processPinEvent(
+				build,
+				BuildStateEnum.BUILD_UNPINNED,
+				user != null ? user.getUsername() : null,
+				comment);
+	}
+
 	@Override
 	public void serverStartup() {
 		mySettings.initialise();
@@ -342,7 +344,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
 		webHookStatisticsExecutor.execute(reportingWebhook, reportingWebhookConfig, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
 	}
-	
+
 	@Override
 	public void reportStatistics(StatisticsReport statisticsReport) {
 		for (WebHookConfig whc : getListOfEnabledWebHooks(myBuildServer.getProjectManager().getRootProject().getProjectId())){
@@ -354,9 +356,9 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	}
 
-	public void serviceMessageReceived(SRunningBuild runningBuild) {
-		processBuildEvent(runningBuild, BuildStateEnum.SERVICE_MESSAGE_RECEIVED);
+	public void serviceMessageReceived(SRunningBuild runningBuild, Map<String, String> serviceMessageAttributes) {
+		processBuildEvent(runningBuild, BuildStateEnum.SERVICE_MESSAGE_RECEIVED, serviceMessageAttributes);
 	}
 
-	
+
 }

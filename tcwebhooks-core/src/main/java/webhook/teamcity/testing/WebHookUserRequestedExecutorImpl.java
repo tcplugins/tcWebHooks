@@ -2,6 +2,7 @@ package webhook.teamcity.testing;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 
 import org.joda.time.LocalDateTime;
 
@@ -129,8 +130,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookExecutionRequest.getTestBuildState(),
 					A_TESTING_USER,
 					A_TEST_EXECUTION_COMMENT,
-					true
-					);
+					true,
+					Collections.emptyMap());
 		} else if (webHookExecutionRequest.getTestBuildState().equals(BuildStateEnum.RESPONSIBILITY_CHANGED)) {
 			SBuildType sBuildType = myServer.findBuildInstanceById(webHookExecutionRequest.getBuildId()).getBuildType();
 			WebHookResponsibilityHolder responsibilityHolder = WebHookResponsibilityHolder
@@ -156,7 +157,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookExecutionRequest.getTestBuildState(),
 					null,
 					null,
-					true
+					true,
+					Collections.emptyMap()
 				);
 		}
 		WebHookPayload webHookPayload = myWebHookTemplateResolver.getTemplatePayloadFormat(webHookExecutionRequest.getTemplateId());
@@ -205,7 +207,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 						webHookTemplateExecutionRequest.getTestBuildState(),
 						A_TESTING_USER,
 						A_TEST_EXECUTION_COMMENT,
-						true
+						true,
+						Collections.emptyMap()
 						);
 		} else if (webHookTemplateExecutionRequest.getTestBuildState().equals(BuildStateEnum.RESPONSIBILITY_CHANGED)) {
 			SBuildType sBuildType = myServer.findBuildInstanceById(webHookTemplateExecutionRequest.getBuildId()).getBuildType();
@@ -232,7 +235,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					webHookTemplateExecutionRequest.getTestBuildState(),
 					null,
 					null,
-					true
+					true,
+					Collections.emptyMap()
 				);
 		}
 
@@ -398,7 +402,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 												testBuildState,
 												A_TESTING_USER,
 												A_TEST_EXECUTION_COMMENT,
-												true
+												true,
+												Collections.emptyMap()
 											);
 	} else if (testBuildState.equals(BuildStateEnum.RESPONSIBILITY_CHANGED)) {
 		WebHookResponsibilityHolder responsibilityHolder = WebHookResponsibilityHolder
@@ -423,7 +428,8 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 												testBuildState,
 												null,
 												null,
-												true
+												true,
+												Collections.emptyMap()
 											);
 		}
 		webHookRunner.run();

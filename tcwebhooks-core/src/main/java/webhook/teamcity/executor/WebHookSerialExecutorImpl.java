@@ -1,5 +1,7 @@
 package webhook.teamcity.executor;
 
+import java.util.Map;
+
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
@@ -43,12 +45,12 @@ public class WebHookSerialExecutorImpl implements WebHookSerialExecutor, WebHook
 
 	@Override
 	public void execute(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username,
-			String comment, boolean isTest) 
+			String comment, boolean isTest, Map<String,String> extraAttributes) 
 	{
 		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: About to start runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
-		webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, username, comment, isTest).run();
+		webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, username, comment, isTest, extraAttributes).run();
 		
 		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: Finished runner for webhook :: " + 
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
