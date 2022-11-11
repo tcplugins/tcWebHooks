@@ -14,6 +14,13 @@
 	      <resource>
 	        <directory>src/main/resources</directory>
 	        <filtering>false</filtering>
+	        <excludes>
+	          <exclude>**/3rd-party/mocha*/**</exclude>
+	          <exclude>**/3rd-party/mocha*</exclude>
+	          <exclude>**/js/tests/*</exclude>
+	          <exclude>**/js/3rd-party/Chart.js</exclude>
+	          <exclude>**/js/3rd-party/Chart.bundle.js</exclude>
+	        </excludes>
 	      </resource>
 	      <resource>
 	        <directory>src/main/teamcity-plugin-resources</directory>
