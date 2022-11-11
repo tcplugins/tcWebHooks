@@ -8,8 +8,8 @@
             "fallback": "#capitalise(${buildStateDescription}) : ${buildName} build #${buildNumber}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;" },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -25,8 +25,8 @@
             "fallback": "#capitalise(${buildStateDescription}) : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -44,8 +44,8 @@
             "color": "danger",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -62,8 +62,8 @@
             "color": "danger",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -81,8 +81,8 @@
             "color": "good",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -99,8 +99,8 @@
             "color": "good",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -117,8 +117,8 @@
             "fallback": "#capitalise(${buildStateDescription}) : ${buildName} build #${buildNumber}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -134,8 +134,8 @@
             "fallback": "#capitalise(${buildStateDescription}) : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -153,8 +153,8 @@
             "color": "danger",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -171,8 +171,8 @@
             "color": "danger",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -190,8 +190,8 @@
             "color": "good",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -208,8 +208,8 @@
             "color": "good",
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus}" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -226,8 +226,8 @@
             "fallback": "#capitalise(${buildStateDescription}) : ${buildName} build #${buildNumber}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;" },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
                 { "title" : "Agent", "value" : "${agentName}", "short" : true }
@@ -243,8 +243,8 @@
             "fallback": "#capitalise(${buildStateDescription}) : ${buildName} [${branchDisplayName}] build #${buildNumber}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
-                { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
-                { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "Build Name", "value" : "&lt;${rootUrl}viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
                 { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build_vcs_number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true },
@@ -257,13 +257,13 @@
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments": [ 
         { 
-            "title": "${capitalise(buildStateDescription)} : ${buildName} &lt;${buildStatusUrl}|build #${buildId}&gt;",
-            "fallback": "${capitalise(buildStateDescription)} : ${buildName} build #${buildId}", 
+            "title": "#capitalise(${buildStateDescription}) : ${buildName} &lt;${buildStatusUrl}|build #${buildId}&gt;",
+            "fallback": "#capitalise(${buildStateDescription}) : ${buildName} build #${buildId}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
                 { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
                 { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
-                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;" },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build.vcs.number},0,7,32)&gt;" },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true }
             ]
         }
@@ -273,14 +273,14 @@
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments": [ 
         { 
-            "title": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildId}&gt;",
-            "fallback": "${capitalise(buildStateDescription)} : ${buildName} [${branchDisplayName}] build #${buildId}", 
+            "title": "#capitalise(${buildStateDescription}) : ${buildName} [${branchDisplayName}] &lt;${buildStatusUrl}|build #${buildId}&gt;",
+            "fallback": "#capitalise(${buildStateDescription}) : ${buildName} [${branchDisplayName}] build #${buildId}", 
             "fields" : [
                 { "title" : "Status", "value" : "${buildStatus} (${buildStateDescription})" },
                 { "title" : "Project Name", "value" : "&lt;${rootUrl}/project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
                 { "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true },
                 { "title" : "Branch", "value" : "${branchDisplayName}", "short": true },
-                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|${substr(build.vcs.number,0,7,32)}&gt;", "short": true },
+                { "title" : "Commit", "value" : "&lt;${buildStatusUrl}&amp;tab=buildChangesDiv|#substr(${build.vcs.number},0,7,32)&gt;", "short": true },
                 { "title" : "Triggered By", "value" : "${triggeredBy}", "short" : true }
             ]
         }

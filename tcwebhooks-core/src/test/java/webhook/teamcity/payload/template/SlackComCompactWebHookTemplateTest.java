@@ -26,7 +26,7 @@ public class SlackComCompactWebHookTemplateTest extends AbstractSpringTemplateTe
 		wh = webHookContentBuilder.buildWebHookContent(wh, webhookSlackCompact, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true, Collections.emptyMap());
 		System.out.println(wh.getUrl());
 		System.out.println(wh.getPayload());
-		assertTrue(wh.getPayload().contains("{ \"title\" : \"Project Name\", \"value\" : \"<http://my-server//project.html?projectId=ATestProject|Test Project>\", \"short\": true },"));
+		assertTrue(wh.getPayload().contains("{ \"title\" : \"Project Name\", \"value\" : \"<http://my-server/project.html?projectId=ATestProject|Test Project>\", \"short\": true },"));
 	}
 
 	@Override
