@@ -30,7 +30,7 @@
                 <c:forEach items="${webHookTemplates}" var="template">
                   <tr id="viewRow_${template.templateId}" class="webHookTemplate">
                     <td class="nowrap heading" title="<c:out value="${template.templateToolTip}"/> (id: <c:out value="${template.templateId}"/>)"><c:out value="${template.templateDescription}" /></td>
-                    <td class="nowrap">${template.formatDescription}</td>
+                    <td>${template.formatDescription}</td>
                     <td>
                         <ul class="commalist">
                         <c:forEach items="${template.supportedBuildEnumStates}" var="state">	
@@ -38,13 +38,16 @@
                         </c:forEach>
                         </ul>
                     </td>
-                    <td class="nowrap">${template.templateState.description}</td>
+                    <td>${template.templateState.description}</td>
                     
                     <td><a href="../webhooks/search.html?templateId=${template.templateId}">${template.webhookUsageCount}&nbsp;webhook(s)</a></td>
     
             <c:choose>  
                 <c:when test="${template.templateDescription == 'Legacy Webhook'}"> 		
                     <td>No template available</td>
+                </c:when>
+                <c:when test="${template.templateDescription == 'Webhook Statistics'}"> 		
+                    <td>Template not editable</td>
                 </c:when>
                 <c:otherwise>  		
                     <td><a href="../webhooks/template.html?template=${template.templateId}">View</a></td>
