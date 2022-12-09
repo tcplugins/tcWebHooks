@@ -37,7 +37,7 @@ public class WebHookParameterFinder {
 
 	public ProjectWebhookParameters getAllWebHookParameters(SProject sProject, PagerData pagerData, Fields fields, BeanContext myBeanContext) {
 		return new ProjectWebhookParameters(
-				myWebHookParameterStore.getAllWebHookParameters(sProject),
+				myWebHookParameterStore.getOwnWebHookParameters(sProject),
 				sProject.getExternalId(), 
 				pagerData, 
 				fields, 
