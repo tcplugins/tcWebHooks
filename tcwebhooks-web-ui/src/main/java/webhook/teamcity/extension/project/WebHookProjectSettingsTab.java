@@ -147,6 +147,10 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 						myWebhookSettingsManager,
 						myProjectManager)
 					.getTemplateList();
+				
+				myWebHookParameterStore.getOwnWebHookParameters(projectParent).forEach(param -> {
+					projectParameters.put(param.getName(), new ProjectWebHookParameterBean(projectParent, param));
+				});
 			} else {
 				projectWebHooksAndTemplates.add(
 						new ProjectWebHooksAndTemplatesBean(
@@ -161,10 +165,6 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 						)
 					);
 			}
-			// Just put any new params in. The more specific project ones will overwrite parent project ones.
-			myWebHookParameterStore.getOwnWebHookParameters(projectParent).forEach(param -> {
-				projectParameters.put(param.getName(), new ProjectWebHookParameterBean(projectParent, param));
-			});
 		}
 
 		model.put("projectWebHooksAndTemplates", projectWebHooksAndTemplates);

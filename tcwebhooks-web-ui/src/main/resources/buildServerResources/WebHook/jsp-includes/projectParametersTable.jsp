@@ -8,7 +8,7 @@
     </c:if>
 </c:if>
 <c:if test="${fn:length(projectWebhookParameters) > 0}" >
-    <p>There are <strong>${fn:length(projectWebhookParameters)}</strong> Parameters available to <c:out value="${project.fullName}"/> and sub-projects.
+    <p>There are <strong>${fn:length(projectWebhookParameters)}</strong> Parameters defined in <c:out value="${project.fullName}"/> and <strong>${parentParameterCount}</strong> parameters inherited from parent projects. Parameters are also available to sub-projects.
         <c:if test="${showLinksToOldEditPage}">
             <a href="../webhooks/index.html?projectId=${projectExternalId}#parameters">Edit project Parameters</a>.</p>
         </c:if>

@@ -162,6 +162,10 @@ public class WebHookIndexPageController extends BaseController {
 									myWebhookSettingsManager,
 									myProjectManager)
 								.getTemplateList();
+							
+							myWebHookParameterStore.getOwnWebHookParameters(projectParent).forEach(param -> {
+								projectParameters.put(param.getName(), new ProjectWebHookParameterBean(projectParent, param));
+							});
 						} else {
 							projectWebHooksAndTemplates.add(
 									new ProjectWebHooksAndTemplatesBean(
@@ -176,10 +180,6 @@ public class WebHookIndexPageController extends BaseController {
 									)
 								);
 						}
-						// Just put any new params in. The more specific project ones will overwrite parent project ones.
-						myWebHookParameterStore.getOwnWebHookParameters(projectParent).forEach(param -> {
-							projectParameters.put(param.getName(), new ProjectWebHookParameterBean(projectParent, param));
-						});
 					}
 
 					params.put("projectWebHooksAndTemplates", projectWebHooksAndTemplates);
