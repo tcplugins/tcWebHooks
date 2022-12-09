@@ -1,17 +1,17 @@
 package webhook.teamcity.extension.util;
 
+import java.util.Objects;
+
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
-import jetbrains.buildServer.serverSide.auth.AuthUtil;
+import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ErrorResult;
 import webhook.teamcity.json.WebHookAuthenticationJson;
 import webhook.teamcity.json.WebHookConfigurationJson;
 import webhook.teamcity.json.WebHookFilterJson;
-
-import java.util.Objects;
 
 public class WebHookConfigurationValidator {
 	private static final String PROJECT_ID_KEY = "projectId";
@@ -90,11 +90,11 @@ public class WebHookConfigurationValidator {
 		
 		return result;
 	}
-	private ErrorResult validateProjectId(String projectId, ErrorResult result) {
-		if (projectId != null && !projectId.isEmpty()) {
+	private ErrorResult validateProjectId(String projectExternalId, ErrorResult result) {
+		if (projectExternalId != null && !projectExternalId.isEmpty()) {
 			SProject sProject = null;
 			try {
-				sProject = myProjectManager.findProjectByExternalId(projectId);
+				sProject = myProjectManager.findProjectByExternalId(projectExternalId);
 				
 			} catch (AccessDeniedException ex) {
 				result.addError(PROJECT_ID_KEY, "The TeamCity project is not visible to your user");
@@ -102,7 +102,7 @@ public class WebHookConfigurationValidator {
 			if (sProject == null) {
 				result.addError(PROJECT_ID_KEY, "The projectId must refer to a valid TeamCity project");
 			}
-			if (!AuthUtil.hasPermissionToManageProject(mySecurityContext.getAuthorityHolder(), projectId)) {
+			if (!mySecurityContext.getAuthorityHolder().isPermissionGrantedForProject(sProject.getProjectId(), Permission.EDIT_PROJECT)) {
 				result.addError(PROJECT_ID_KEY, "The TeamCity project is not writable by your user");
 			}
 		} else {
