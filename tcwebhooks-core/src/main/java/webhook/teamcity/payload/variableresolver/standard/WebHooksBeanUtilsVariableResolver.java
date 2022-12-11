@@ -80,7 +80,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				if (extraParameters.containsKey(dirtyString)){
 					return StringEscapeUtils.escapeJson(extraParameters.get(dirtyString));
 				}
-				return StringEscapeUtils.escapeJson((String) getProperty(bean, dirtyString).toString());
+				return StringEscapeUtils.escapeJson(getProperty(bean, dirtyString));
 			} catch (NullPointerException | IllegalArgumentException |
 					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
 			{
@@ -94,7 +94,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				if (extraParameters.containsKey(dirtyString)){
 					return StringUtils.capitaliseAllWords(extraParameters.get(dirtyString));
 				}
-				return StringUtils.capitaliseAllWords((String) getProperty(bean, dirtyString));
+				return StringUtils.capitaliseAllWords(getProperty(bean, dirtyString));
 			} catch (NullPointerException | IllegalArgumentException |
 					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
 			{
@@ -133,7 +133,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				if (extraParameters.containsKey(dirtyString)){
 					return StringUtils.capitaliseFirstWord(extraParameters.get(dirtyString));
 				}
-				return StringUtils.capitaliseFirstWord((String) PropertyUtils.getProperty(bean, dirtyString).toString());
+				return StringUtils.capitaliseFirstWord(PropertyUtils.getProperty(bean, dirtyString).toString());
 			} catch (NullPointerException | IllegalArgumentException |
 					IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
 			{
@@ -147,7 +147,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 				if (extraParameters.containsKey(dirtyString)){
 					return StringSanitiser.sanitise(extraParameters.get(dirtyString));
 				}
-				return StringSanitiser.sanitise((String) getProperty(bean, dirtyString));
+				return StringSanitiser.sanitise(getProperty(bean, dirtyString));
 
 			} catch (NullPointerException | IllegalArgumentException |
 					 IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -170,10 +170,10 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			}
 
 			// Or override it from the PayloadContent if it exists.
-			try {
-				value = getProperty(bean, variableName).toString();
+			try { //NOSONAR
+				value = getProperty(bean, variableName);
 			} catch (NullPointerException npe){
-				value = (String) getProperty(bean, variableName);
+				value =  getProperty(bean, variableName);
 			}
 
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

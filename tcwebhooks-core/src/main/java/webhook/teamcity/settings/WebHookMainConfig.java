@@ -14,6 +14,8 @@ import webhook.WebHookProxyConfig;
 
 public class WebHookMainConfig {
 
+	private static final String HTTP_PREFIX = "http://";
+	private static final String HTTPS_PREFIX = "https://";
 	public static final String SINGLE_HOST_REGEX = "^[^./~`'\"]+(?:/.*)?$";
 	public static final String HOSTNAME_ONLY_REGEX = "^([^/]+)(?:/.*)?$";
 	private static final int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
@@ -81,23 +83,22 @@ public class WebHookMainConfig {
 
 	public String stripProtocolFromUrl(String url){
 		String tmpURL = url;
-		if(tmpURL.length() > "https://".length()
-			&& tmpURL.substring(0,"https://".length()).equalsIgnoreCase("https://"))
+		if(tmpURL.length() > HTTPS_PREFIX.length()
+			&& tmpURL.substring(0,HTTPS_PREFIX.length()).equalsIgnoreCase(HTTPS_PREFIX))
 		{
-				tmpURL = tmpURL.substring("https://".length());
-		} else if (tmpURL.length() > "http://".length()
-			&& tmpURL.substring(0,"http://".length()).equalsIgnoreCase("http://"))
+				tmpURL = tmpURL.substring(HTTPS_PREFIX.length());
+		} else if (tmpURL.length() > HTTP_PREFIX.length()
+			&& tmpURL.substring(0,HTTP_PREFIX.length()).equalsIgnoreCase(HTTP_PREFIX))
 		{
-				tmpURL = tmpURL.substring("http://".length());
+				tmpURL = tmpURL.substring(HTTP_PREFIX.length());
 		}
 		return tmpURL;
 	}
 
 	public String getHostNameFromUrl(String url){
 		Matcher m = hostnameOnlyPattern.matcher(this.stripProtocolFromUrl(url));
-		while (m.find()) {
-		    String s = m.group(1);
-		    return s;
+		if (m.find()) {
+			return m.group(1);
 		}
 		return "";
 	}
@@ -110,12 +111,12 @@ public class WebHookMainConfig {
 		if ((this.proxyHost == null)
 				|| (this.proxyHost.length() == 0)
 				|| (this.proxyPort == null)
-				|| (!(this.proxyPort > 0))){
+				|| (this.proxyPort <= 0)){
 			/* If we don't have all the components of a proxy
 			 * configured, don't proxy the URL.
 			 */
 			return false;
-		} else if (this.proxyShortNames == false && this.isUrlShortName(url)){
+		} else if (!Boolean.TRUE.equals(this.proxyShortNames) && this.isUrlShortName(url)){
 			/* If the hostname part of the URL does not contain a dot, and we have proxyShortNames unset
 			 * then don't proxy the URL.
 			 */
@@ -181,7 +182,7 @@ public class WebHookMainConfig {
 
 		}
 
-		if (this.noProxyUrls.size() > 0){
+		if (!this.noProxyUrls.isEmpty()){
 			for (Iterator<String> i = this.noProxyUrls.iterator(); i.hasNext();){
 				el.addContent(this.getNoProxyAsElement(i.next()));
 			}

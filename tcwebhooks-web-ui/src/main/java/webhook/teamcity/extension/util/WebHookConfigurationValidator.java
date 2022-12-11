@@ -102,7 +102,7 @@ public class WebHookConfigurationValidator {
 			if (sProject == null) {
 				result.addError(PROJECT_ID_KEY, "The projectId must refer to a valid TeamCity project");
 			}
-			if (!mySecurityContext.getAuthorityHolder().isPermissionGrantedForProject(sProject.getProjectId(), Permission.EDIT_PROJECT)) {
+			if (sProject != null && !mySecurityContext.getAuthorityHolder().isPermissionGrantedForProject(sProject.getProjectId(), Permission.EDIT_PROJECT)) {
 				result.addError(PROJECT_ID_KEY, "The TeamCity project is not writable by your user");
 			}
 		} else {

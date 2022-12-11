@@ -24,7 +24,7 @@ public class WebHookResponsibilityEntry {
 		}
 		return builder()
 			.state(re.getState())
-			.responsibleUser(re.getResponsibleUser() != null ? re.getResponsibleUser().getUsername() : null)
+			.responsibleUser(ResponsibilityEntry.State.NONE != re.getState() ? re.getResponsibleUser().getUsername() : null)
 			.reporterUser(re.getReporterUser() != null ? re.getReporterUser().getUsername() : null)
 			.timestamp(re.getTimestamp())
 			.comment(re.getComment())
