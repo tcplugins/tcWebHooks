@@ -39,6 +39,9 @@ public class FixPluginZipFileAction extends WebHooksApiAction implements Control
 	public void process(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response,
 			@Nullable final Element ajaxResponse) {
 		String path;
+		if (ajaxResponse == null) {
+			return;
+		}
 		try {
 			path = getParameterAsStringOrNull(request, API_ZIP_FILE, "Please supply an API ZIP file path.");
 		} catch (MissingPathException e) {
