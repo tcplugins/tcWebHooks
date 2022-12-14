@@ -168,7 +168,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		}
 
 		model.put("projectWebHooksAndTemplates", projectWebHooksAndTemplates);
-		model.put("buildList", currentProject.getBuildTypes());
+		model.put("buildList", currentProject.getOwnBuildTypes());
 		model.put("parentProjectBeans", parentProjectBeans);
 		model.put("projectBean", projectBean);
 		model.put("webHookTemplates", projectTemplatesBean);
