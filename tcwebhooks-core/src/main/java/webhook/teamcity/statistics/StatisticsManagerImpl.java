@@ -69,7 +69,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 	// Write stats for today.
 
 	@Override
-	public void updateStatistics(LocalDateTime now) throws StatisticsFileOperationException {
+	public synchronized void updateStatistics(LocalDateTime now) throws StatisticsFileOperationException {
 		
 		File dirPath = new File(getConfigDir());
 		if ( !dirPath.isDirectory() && !dirPath.mkdir() ) {

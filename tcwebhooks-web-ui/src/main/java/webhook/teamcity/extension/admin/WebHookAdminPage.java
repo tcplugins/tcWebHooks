@@ -12,9 +12,11 @@ import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
+import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.extension.bean.StatisticsChartBean;
 import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookSearchFilter;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.statistics.StatisticsManager;
@@ -25,19 +27,26 @@ public class WebHookAdminPage extends AdminPage {
 	private final WebHookTemplateManager myWebHookTemplateManager;
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final StatisticsManager myWebHookStatisticsManager;
+	private final WebHookMainSettings myWebHookMainSettings;
+	private final WebHookPluginDataResolver myWebHookPluginDataResolver;
+
 
 	public WebHookAdminPage(@NotNull PagePlaces pagePlaces, 
 								  @NotNull PluginDescriptor descriptor,
 								  @NotNull WebHookHistoryRepository webHookHistoryRepository,
 								  @NotNull WebHookTemplateManager webHookTemplateManager,
 								  @NotNull WebHookSettingsManager webHookSettingsManager,
-								  @NotNull StatisticsManager webHookStatisticsManager
+								  @NotNull StatisticsManager webHookStatisticsManager,
+								  @NotNull WebHookMainSettings webHookMainSettings,
+								  @NotNull WebHookPluginDataResolver webHookPluginDataResolver
 								  ) {
 		super(pagePlaces);
 		this.myWebHookHistoryRepository = webHookHistoryRepository;
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookSettingsManager = webHookSettingsManager;
 		this.myWebHookStatisticsManager = webHookStatisticsManager;
+		this.myWebHookMainSettings = webHookMainSettings;
+		this.myWebHookPluginDataResolver = webHookPluginDataResolver;
 		setPluginName(TC_WEB_HOOK_REST_API_ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/adminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
@@ -69,5 +78,8 @@ public class WebHookAdminPage extends AdminPage {
 		model.put("skippedCount", myWebHookHistoryRepository.getDisabledCount());
 		model.put("totalCount", myWebHookHistoryRepository.getTotalCount());
 		model.put("history", myWebHookHistoryRepository.findHistoryErroredItems(1, 20).getItems());
+		model.put("webhookStatisticsEnabled", this.myWebHookMainSettings.isAssembleStatisticsEnabled());
+		model.put("webhookAnalyticsEnabled", this.myWebHookMainSettings.isReportStatisticsEnabled());
+		model.put("isRestApiInstalled", this.myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
 	}
 }

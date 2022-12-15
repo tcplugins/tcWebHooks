@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import org.jdom.Element;
 
 import webhook.WebHookProxyConfig;
@@ -20,25 +21,26 @@ public class WebHookMainConfig {
 	public static final String HOSTNAME_ONLY_REGEX = "^([^/]+)(?:/.*)?$";
 	private static final int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
 	private static final int HTTP_RESPONSE_TIMEOUT_DEFAULT = 120;
+	private static final int STATISTICS_REPORTING_DAYS_DEFAULT = 5;
 
 	private String webhookInfoUrl = null;
 	private String webhookInfoText = null;
-	private Boolean webhookShowFurtherReading = true;
+	private Boolean webhookShowFurtherReading = null;
 	private Integer proxyPort = null;
 	private String proxyHost = null;
 	private String proxyUsername = null;
 	private String proxyPassword = null;
 	private Boolean proxyShortNames = false;
-	private List<String> noProxyUrls;
-	private List<Pattern> noProxyPatterns;
-	private Integer httpConnectionTimeout;
-	private Integer httpResponseTimeout;
-	private boolean useThreadedExecutor = true;
-	
-	private boolean assembleStatistics = true;
-	private Boolean reportStatistics;
-	private Integer reportStatisticsFrequencyDays;
-	
+	private List<String> noProxyUrls = null;
+	private List<Pattern> noProxyPatterns = null;
+	private Integer httpConnectionTimeout = null;
+	private Integer httpResponseTimeout = null;
+	private Boolean useThreadedExecutor = null;
+
+	private Boolean assembleStatistics = null;
+	private Boolean reportStatistics = null;
+	private Integer reportStatisticsFrequencyDays = null;
+
 	private Pattern singleHostPattern;
 	private Pattern hostnameOnlyPattern;
 
@@ -50,7 +52,7 @@ public class WebHookMainConfig {
 	}
 
 	public String getProxyListasString(){
-    	return " host:" + this.proxyHost + " port: " + this.proxyPort;
+		return " host:" + this.proxyHost + " port: " + this.proxyPort;
 	}
 
 	private Pattern generatePatternFromURL(String noProxyUrl){
@@ -125,13 +127,13 @@ public class WebHookMainConfig {
 			/* Else loop around the patterns matching the URL and don't
 			 * proxy the URL if we have a match.
 			 */
-	    	for(Iterator<Pattern> noProxyPattern = noProxyPatterns.iterator(); noProxyPattern.hasNext();)
-	    	{
-	    		Pattern tempPat = noProxyPattern.next();
-	    		if (tempPat.matcher(this.getHostNameFromUrl(url)).find()){
-	    			return false;
-	    		}
-	    	}
+			for(Iterator<Pattern> noProxyPattern = noProxyPatterns.iterator(); noProxyPattern.hasNext();)
+			{
+				Pattern tempPat = noProxyPattern.next();
+				if (tempPat.matcher(this.getHostNameFromUrl(url)).find()){
+					return false;
+				}
+			}
 		}
 		return true;
 	}
@@ -163,10 +165,10 @@ public class WebHookMainConfig {
 
 	public Element getProxyAsElement(){
 		/*
-    		  <proxy host="myproxy.mycompany.com" port="8080" >
-      			<noproxy url=".mycompany.com" />
-      			<noproxy url="192.168.0." />
-    		  </proxy>
+			  <proxy host="myproxy.mycompany.com" port="8080" >
+				  <noproxy url=".mycompany.com" />
+				  <noproxy url="192.168.0." />
+			  </proxy>
 		 */
 		if (this.getProxyHost() == null || this.getProxyPort() == null){
 			return null;
@@ -198,26 +200,26 @@ public class WebHookMainConfig {
 				.setAttribute("connect", String.valueOf(getHttpConnectionTimeout()))
 				.setAttribute("response", String.valueOf(this.getHttpResponseTimeout()));
 	}
-	
+
 	public Element getReportStatisticsAsElement() {
 		if (Objects.nonNull(this.reportStatistics)) {
 			return new Element("statistics").setAttribute("reporting", this.reportStatistics.toString());
 		}
 		return null;
 	}
-	
+
 	public boolean isAssembleStatistics() {
-		return assembleStatistics;
+		return defaultIfNull(this.assembleStatistics, Boolean.TRUE);
 	}
-	
+
 	public void setAssembleStatistics(boolean assembleStatistics) {
 		this.assembleStatistics = assembleStatistics;
 	}
-	
+
 	public boolean isReportStatisticsEnabled() {
-		return Boolean.TRUE.equals(this.reportStatistics);
+		return defaultIfNull(this.reportStatistics, Boolean.FALSE);
 	}
-	
+
 	public void setReportStatistics(Boolean reportStatistics) {
 		this.reportStatistics = reportStatistics;
 	}
@@ -291,14 +293,11 @@ public class WebHookMainConfig {
 	}
 
 	public Boolean getWebhookShowFurtherReading() {
-		return webhookShowFurtherReading;
+		return defaultIfNull(webhookShowFurtherReading, Boolean.TRUE);
 	}
 
 	public Integer getHttpConnectionTimeout() {
-		if (this.httpConnectionTimeout != null) {
-			return httpConnectionTimeout;
-		}
-		return HTTP_CONNECT_TIMEOUT_DEFAULT;
+		return defaultIfNull(httpConnectionTimeout, HTTP_CONNECT_TIMEOUT_DEFAULT);
 	}
 
 	public void setHttpConnectionTimeout(Integer httpConnectionTimeout) {
@@ -306,10 +305,7 @@ public class WebHookMainConfig {
 	}
 
 	public Integer getHttpResponseTimeout() {
-		if (this.httpResponseTimeout != null) {
-			return httpResponseTimeout;
-		}
-		return HTTP_RESPONSE_TIMEOUT_DEFAULT;
+		return defaultIfNull(this.httpResponseTimeout, HTTP_RESPONSE_TIMEOUT_DEFAULT);
 	}
 
 	public void setHttpResponseTimeout(Integer httpResponseimeout) {
@@ -317,7 +313,11 @@ public class WebHookMainConfig {
 	}
 
 	public boolean useThreadedExecutor() {
-		return useThreadedExecutor;
+		return defaultIfNull(this.useThreadedExecutor, Boolean.TRUE);
+	}
+
+	public boolean useThreadedExecutorIsDefined() {
+		return this.useThreadedExecutor != null;
 	}
 
 	public void setThreadPoolExecutor(boolean threadPoolSender) {
@@ -325,14 +325,32 @@ public class WebHookMainConfig {
 	}
 
 	public int getReportStatisticsFrequency() {
-		if (this.reportStatisticsFrequencyDays != null) {
-			return this.reportStatisticsFrequencyDays;
-		}
-		return 5;
+		return defaultIfNull(this.reportStatisticsFrequencyDays, STATISTICS_REPORTING_DAYS_DEFAULT);
 	}
 
 	public void setReportStatisticsFrequency(Integer statisticsFrequencyDays) {
 		this.reportStatisticsFrequencyDays = statisticsFrequencyDays;
+	}
+
+	public Element getStatisticsAsElement() {
+		if (this.assembleStatistics != null || this.reportStatistics != null || this.reportStatisticsFrequencyDays != null) {
+			Element statistics = new Element("statistics");
+			if (this.assembleStatistics != null) {
+				statistics.setAttribute("enabled", Boolean.toString(isAssembleStatistics()));
+			}
+			if (this.reportStatistics != null || this.reportStatisticsFrequencyDays != null) {
+				Element reporting = new Element("reporting");
+				if (this.reportStatistics != null) {
+					reporting.setAttribute("enabled", Boolean.toString(isReportStatisticsEnabled()));
+				}
+				if (this.reportStatisticsFrequencyDays != null) {
+					reporting.setAttribute("frequency", String.valueOf(this.getReportStatisticsFrequency()));
+				}
+				statistics.addContent(reporting);
+			}
+			return statistics;
+		}
+		return null;
 	}
 
 }

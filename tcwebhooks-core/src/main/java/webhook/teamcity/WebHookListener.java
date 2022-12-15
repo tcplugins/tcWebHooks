@@ -342,6 +342,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	@Override
 	public void reportStatistics(WebHookConfig reportingWebhookConfig, StatisticsReport statisticsReport) {
 		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
+		reportingWebhook.setEnabledForBuildState(BuildStateEnum.REPORT_STATISTICS, reportingWebhook.isEnabled());
 		webHookStatisticsExecutor.execute(reportingWebhook, reportingWebhookConfig, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
 	}
 
@@ -349,6 +350,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	public void reportStatistics(StatisticsReport statisticsReport) {
 		for (WebHookConfig whc : getListOfEnabledWebHooks(myBuildServer.getProjectManager().getRootProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+			wh.setEnabledForBuildState(BuildStateEnum.REPORT_STATISTICS, wh.isEnabled());
 			if (Boolean.TRUE.equals(wh.isEnabled()) && wh.getBuildStates().enabled(BuildStateEnum.REPORT_STATISTICS)) {
 				webHookStatisticsExecutor.execute(wh, whc, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
 			}

@@ -47,6 +47,21 @@
         class="webhook.teamcity.extension.admin.WebHookAdminPage"
         init-method="register" 
         />
+    <bean id="webHookStatisticsConfigurationActionController"
+     	class="webhook.teamcity.extension.admin.WebHookStatisticsConfigurationActionController" 
+     	/>
+  
+    <bean id="updateStatisticsOptionAction"
+     	class="webhook.teamcity.extension.admin.UpdateStatisticsOptionAction" 
+     	/>
+  
+    <bean id="refreshStatisticsAction"
+     	class="webhook.teamcity.extension.admin.RefreshStatisticsAction" 
+     	/>
+  
+    <bean id="updateAnalyticsOptionAction"
+     	class="webhook.teamcity.extension.admin.UpdateAnalyticsOptionAction" 
+     	/>
   
 	<bean id="WebHookProjectSettingsTab"
         class="webhook.teamcity.extension.project.WebHookProjectSettingsTab"
