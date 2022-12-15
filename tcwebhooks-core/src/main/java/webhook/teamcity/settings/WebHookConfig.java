@@ -79,7 +79,7 @@ public class WebHookConfig {
 	@Builder.Default private String payloadFormat = null;
 	@Builder.Default private String payloadTemplate = "none";
 	@Builder.Default private BuildState states = new BuildState();
-	private SortedMap<String, CustomMessageTemplate> templates; // This defaults to null so that it's not in the XML if empty.
+	@Builder.Default private SortedMap<String, CustomMessageTemplate> templates = new TreeMap<>();
 	@Builder.Default private Boolean allBuildTypesEnabled = true;
 	@Builder.Default private Boolean subProjectsEnabled = true;
 	@Builder.Default private Set<String> enabledBuildTypesSet = new HashSet<>();
@@ -450,6 +450,7 @@ public class WebHookConfig {
 			el.addContent(paramsEl);
 		}
 
+		// Don't put into the XML if empty.
 		if (this.templates != null && this.templates.size() > 0){
 			Element templatesEl = new Element(EL_CUSTOM_TEMPLATES);
 			for (CustomMessageTemplate t : this.templates.values()){
