@@ -7,9 +7,10 @@ import org.junit.rules.ExpectedException;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 
 public class JsonToHtmlPrettyPrintingRendererTest {
-	
-	  @Rule
-	  public final ExpectedException exception = ExpectedException.none();
+
+	@SuppressWarnings("deprecation")
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
 
 	@Test
 	public void testRender() throws WebHookHtmlRendererException {
@@ -27,7 +28,7 @@ public class JsonToHtmlPrettyPrintingRendererTest {
 			System.out.println(ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testRender2WithOutput() {
 		try {

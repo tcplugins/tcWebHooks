@@ -21,8 +21,6 @@ import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryItem.WebHookErrorStatus;
 import webhook.teamcity.settings.WebHookConfig;
-import webhook.teamcity.statistics.StatisticsEntity;
-import webhook.teamcity.statistics.StatisticsEntityBuilder;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class StatisticsEntityBuilderTest {

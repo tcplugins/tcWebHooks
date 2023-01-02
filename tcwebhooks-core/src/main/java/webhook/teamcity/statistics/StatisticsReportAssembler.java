@@ -2,22 +2,8 @@ package webhook.teamcity.statistics;
 
 import java.util.List;
 
-import org.joda.time.LocalDate;
-
 public interface StatisticsReportAssembler {
 	
-	/**
-	 * Assemble all statistics into a report.
-	 * Sensitive values can be hashed by passing in an a {@link ValueHasher}
-	 * which calls crypt. Alternatively, pass in a non-encrypting ValueHasher.
-	 * 
-	 * @param hasher - Hasher to pass sensitive values through.
-	 * @param fromDate - Start date for statistics.
-	 * @param toDate - End date (non-inclusive) for statistics.
-	 * @return A {@link StatisticsReport} relevant to the dates requested.
-	 */
-	//public StatisticsReport assembleStatisticsReports(ValueHasher hasher, LocalDate minusDays, LocalDate now);
-
 	/**
 	 * Assemble all statistics into a report.
 	 * Sensitive values can be hashed by passing in an a {@link ValueHasher}

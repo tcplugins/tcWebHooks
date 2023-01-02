@@ -9,7 +9,6 @@ import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
-import webhook.teamcity.exception.StatisticsFileOperationException;
 import webhook.teamcity.settings.WebHookMainSettings;
 
 public class StatisticsSnapshotScheduler implements DeferrableService {

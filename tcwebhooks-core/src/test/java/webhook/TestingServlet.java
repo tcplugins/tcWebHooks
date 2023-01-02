@@ -57,7 +57,8 @@ public class TestingServlet extends HttpServlet
 		System.out.println("Handling Web request for " + ((Request) request).getRequestURL().toString());
 	}
 
-	private void printParams(HttpServletRequest request, HttpServletResponse response){
+	@SuppressWarnings("null")
+    private void printParams(HttpServletRequest request, HttpServletResponse response){
 		PrintWriter out = null;
 		try {
 			out = response.getWriter();

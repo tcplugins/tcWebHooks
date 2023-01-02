@@ -1,13 +1,12 @@
 package webhook.teamcity.settings.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.settings.converter.OldStyleBuildState;
-import webhook.teamcity.settings.converter.WebHookBuildStateConverter;
 
 public class WebHookBuildStateConverterTest {
 

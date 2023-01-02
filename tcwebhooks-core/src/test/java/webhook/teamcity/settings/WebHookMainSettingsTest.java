@@ -2,14 +2,12 @@ package webhook.teamcity.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -78,6 +76,7 @@ public class WebHookMainSettingsTest {
         assertEquals("test_user", proxyElement.getAttribute("username").getValue());
         assertEquals("test_pass", proxyElement.getAttribute("password").getValue());
         
+        @SuppressWarnings("unchecked")
         List<Element> namedChildren = proxyElement.getChildren("noproxy");
         assertEquals(".mycompany.com", namedChildren.get(0).getAttribute("url").getValue());
         assertEquals("192.168.0.", namedChildren.get(1).getAttribute("url").getValue());

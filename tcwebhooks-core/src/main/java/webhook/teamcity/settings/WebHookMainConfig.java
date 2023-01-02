@@ -202,13 +202,6 @@ public class WebHookMainConfig {
 				.setAttribute("response", String.valueOf(this.getHttpResponseTimeout()));
 	}
 
-	public Element getReportStatisticsAsElement() {
-		if (Objects.nonNull(this.reportStatistics)) {
-			return new Element("statistics").setAttribute("reporting", this.reportStatistics.toString());
-		}
-		return null;
-	}
-
 	public boolean isAssembleStatistics() {
 		return defaultIfNull(this.assembleStatistics, Boolean.TRUE);
 	}

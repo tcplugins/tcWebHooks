@@ -21,7 +21,6 @@ import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.statistics.StatisticsReport;
 import webhook.teamcity.statistics.WebHooksPluginInfo;
-import webhook.testframework.MockWebHook;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsReporterWebHookRunnerTest extends AuthWithRealServerTestBase {
