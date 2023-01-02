@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server>
   <webhooks useThreadedExecutor="true">
-    <proxy host="myproxy.mycompany.com" port="8080">
+    <proxy host="myproxy.mycompany.com" port="8080" proxyShortNames="true" username="test_user" password="test_pass">
       <noproxy url=".mycompany.com" />
       <noproxy url="192.168.0." />
     </proxy>
-    <info url="http://intranet.mycompany.com/docs/UsingWebHooks" text="Using WebHooks in myCompany Inc." />
+    <info url="http://intranet.mycompany.com/docs/UsingWebHooks" text="Using WebHooks in myCompany Inc." show-reading="true"/>
     <statistics enabled="true">
       <reporting enabled="true" frequency="5"/>
     </statistics>
+    <http-timeout connect="50" response="55"/>
   </webhooks>
 </server>

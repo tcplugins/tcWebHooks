@@ -176,6 +176,7 @@ public class WebHookMainConfig {
 		Element el = new Element("proxy");
 		el.setAttribute("host", this.getProxyHost());
 		el.setAttribute("port", String.valueOf(this.getProxyPort()));
+		el.setAttribute("proxyShortNames", String.valueOf(this.isProxyShortNames()));
 		if (   this.proxyPassword != null && this.proxyPassword.length() > 0
 			&& this.proxyUsername != null && this.proxyUsername.length() > 0 )
 		{

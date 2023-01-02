@@ -11,7 +11,7 @@ import webhook.WebHookProxyConfig;
 import webhook.teamcity.Loggers;
 
 public class WebHookMainSettings implements MainConfigProcessor {
-	private static final String ATTRIBUTENAME_USE_THREADED_EXECUTOR = "useThreadedExecutor";
+	protected static final String ATTRIBUTENAME_USE_THREADED_EXECUTOR = "useThreadedExecutor";
 	private static final String ATTRIBUTENAME_ENABLED = "enabled";
 	private static final String NAME = WebHookMainSettings.class.getName();
 	private WebHookMainConfig webHookMainConfig;
