@@ -1,6 +1,7 @@
 package webhook.teamcity.server.rest.data;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.data.Locator;
@@ -10,7 +11,6 @@ import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameters;
 import webhook.teamcity.server.rest.util.BeanContext;
@@ -46,7 +46,7 @@ public class WebHookParameterFinder {
 	
 	public ProjectWebhookParameter findWebhookParameter(SProject sProject, String paramLocator, Fields fields, BeanContext myBeanContext) {
 		
-		if (StringUtil.isEmpty(paramLocator)) {
+		if (StringUtils.isEmpty(paramLocator)) {
 			throw new BadRequestException("Empty parameter locator is not supported.");
 		}
 

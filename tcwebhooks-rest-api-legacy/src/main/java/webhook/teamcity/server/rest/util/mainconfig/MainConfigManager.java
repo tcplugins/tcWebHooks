@@ -77,7 +77,7 @@ public class MainConfigManager {
 	}
 	
 	public void updateInfo(Information info){
-		
+		throw new UnsupportedOperationException("Not implimented yet");
 	}
 
 }
