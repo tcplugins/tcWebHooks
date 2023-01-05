@@ -255,9 +255,6 @@ public class WebHookTemplateFromXml implements WebHookPayloadTemplate {
 		return this.preferredDateTimeFormat;
 	}
 	
-	public void persist(){
-		
-	}
 
 	@Override
 	public WebHookTemplateEntity getAsEntity() {

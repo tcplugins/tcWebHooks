@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 
 import jetbrains.buildServer.log.Loggers;
 import webhook.teamcity.WebHookContentResolutionException;
+import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 
 public class WebHookVariableResolverManagerImpl implements WebHookVariableResolverManager {
@@ -34,7 +35,7 @@ public class WebHookVariableResolverManagerImpl implements WebHookVariableResolv
 	@Override
 	public VariableResolverFactory getVariableResolverFactory(PayloadTemplateEngineType type) {
 		if (! variableResolvers.containsKey(type)) {
-			throw new WebHookContentResolutionException("No VariableResolverFactory is registered for type '" + type.toString() + "'", WebHookContentResolutionException.WEBHOOK_VARIABLE_RESOLVER_NOT_FOUND_EXCEPTION_ERROR_CODE);
+			throw new WebHookContentResolutionException("No VariableResolverFactory is registered for type '" + type.toString() + "'", WebHookExecutionException.WEBHOOK_VARIABLE_RESOLVER_NOT_FOUND_EXCEPTION_ERROR_CODE);
 		}
 		return variableResolvers.get(type);
 	}

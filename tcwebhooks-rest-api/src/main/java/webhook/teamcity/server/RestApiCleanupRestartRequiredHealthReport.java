@@ -87,7 +87,7 @@ public class RestApiCleanupRestartRequiredHealthReport extends HealthStatusRepor
 	@Override
 	public void report(HealthStatusScope scope, HealthStatusItemConsumer resultConsumer) {
 		Map<String,Object> params = new HashMap<>();
-		params.put("webhookRestApiRestartRequired", myWebHookTeamCityRestApiZipPluginFixer.isHaveFilesBeenCleanedSinceBoot());
+		params.put(CATEGORY_ID, myWebHookTeamCityRestApiZipPluginFixer.isHaveFilesBeenCleanedSinceBoot());
 		params.put("adminUrl", stripTrailingSlash(mySBuildServer.getRootUrl()) + "/admin/admin.html?item=" + WebHookRestApiAdminPage.TC_WEB_HOOK_REST_API_ADMIN_ID);
 	    final HealthStatusItem item = new HealthStatusItem("webhook-api-restart-required", myCategory, params);
 	    resultConsumer.consumeGlobal(item);

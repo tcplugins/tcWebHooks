@@ -1,11 +1,11 @@
 package webhook.teamcity.server.rest.data;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.data.Locator;
 import jetbrains.buildServer.server.rest.errors.BadRequestException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
-import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
@@ -40,7 +40,7 @@ public class TemplateFinder {
 	
 	public WebHookTemplateConfigWrapper findTemplateById(String templateLocator) {
 
-		if (StringUtil.isEmpty(templateLocator)) {
+		if (StringUtils.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");
 		}
 
@@ -118,7 +118,7 @@ public class TemplateFinder {
 		
 		WebHookTemplateConfigWrapper templateConfigWrapper =  findTemplateById(templateLocator);
 		
-		if (StringUtil.isEmpty(templateLocator)) {
+		if (StringUtils.isEmpty(templateLocator)) {
 			throw new BadRequestException("Empty template locator is not supported.");
 		}
 

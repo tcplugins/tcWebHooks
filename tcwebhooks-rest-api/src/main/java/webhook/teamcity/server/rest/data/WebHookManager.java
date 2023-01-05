@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.server.rest.data.Locator;
@@ -15,7 +16,6 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import jetbrains.buildServer.util.StringUtil;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.util.BeanContext;
@@ -53,7 +53,7 @@ public class WebHookManager {
 	
 	public ProjectWebhook findWebHookById(String projectExternalId, String webHookLocator, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 
-		if (StringUtil.isEmpty(webHookLocator)) {
+		if (StringUtils.isEmpty(webHookLocator)) {
 			throw new BadRequestException("Empty webhook locator is not supported.");
 		}
 
@@ -88,7 +88,7 @@ public class WebHookManager {
 	}
 	
 	public  WebHookConfig getWebHookConfigById(String projectExternalId, final String webHookLocator) {
-		if (StringUtil.isEmpty(webHookLocator)) {
+		if (StringUtils.isEmpty(webHookLocator)) {
 			throw new BadRequestException("Empty webhook locator is not supported.");
 		}
 
