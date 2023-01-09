@@ -10,7 +10,7 @@ import jetbrains.buildServer.util.StringUtil;
 
 public abstract class WebHooksApiAction {
 
-	public WebHooksApiAction() {
+	protected WebHooksApiAction() {
 		super();
 	}
 

@@ -5,6 +5,8 @@ import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
 
 public class WebHookFilterValidator {
 
+	private WebHookFilterValidator() {}
+	
 	public static ErrorResult validateNewFilter(ProjectWebHookFilter newFilter, ErrorResult result) {
 		
 		if (newFilter.getId() != null) {
