@@ -16,7 +16,7 @@ public abstract class LegacyDeprecatedFormatWebHookTemplate extends AbstractWebH
 
 	Set<BuildStateEnum> states = new HashSet<>();
 
-	public LegacyDeprecatedFormatWebHookTemplate(WebHookTemplateManager manager) {
+	protected LegacyDeprecatedFormatWebHookTemplate(WebHookTemplateManager manager) {
 		super();
 		this.manager = manager;
 		Collections.addAll(states, BuildStateEnum.getNotifyStates());

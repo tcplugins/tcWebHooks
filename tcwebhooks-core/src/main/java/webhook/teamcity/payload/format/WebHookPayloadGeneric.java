@@ -25,7 +25,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	WebHookVariableResolverManager webHookVariableResolverManager;
 	VariableResolverFactory myVariableResolverFactory;
 
-	public WebHookPayloadGeneric(WebHookPayloadManager manager, WebHookVariableResolverManager webHookVariableResolverManager){
+	protected WebHookPayloadGeneric(WebHookPayloadManager manager, WebHookVariableResolverManager webHookVariableResolverManager){
 		this.setPayloadManager(manager);
 		this.webHookVariableResolverManager = webHookVariableResolverManager;
 	}

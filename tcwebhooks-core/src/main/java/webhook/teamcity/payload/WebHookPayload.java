@@ -177,6 +177,8 @@ public interface WebHookPayload extends WebHookContentObjectSerialiser {
 	/**
 	 * buildChangedStatus has been deprecated because it alluded to build history status, which was incorrect.
 	 * It will no longer be called by the WebHookListener
+	 * 
+	 * @deprecated
 	 */
 	@Deprecated
     String buildChangedStatus(SBuild sRunningBuild, SFinishedBuild previousBuild,

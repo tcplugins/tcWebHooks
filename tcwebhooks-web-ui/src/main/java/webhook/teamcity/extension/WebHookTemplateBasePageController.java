@@ -14,38 +14,38 @@ import webhook.teamcity.settings.WebHookSettingsManager;
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public abstract class WebHookTemplateBasePageController extends BaseController {
 
-	    static final String GET_VARIABLE_NAME_TEMPLATE = "template";
-		final WebControllerManager myWebManager;
-	    final PluginDescriptor myPluginDescriptor;
-		final WebHookTemplateManager myTemplateManager;
-		final WebHookPluginDataResolver myWebHookPluginDataResolver;
-		final WebHookSettingsManager myWebHookSettingsManager;
-		final ProjectIdResolver myProjectIdResolver;
+	static final String GET_VARIABLE_NAME_TEMPLATE = "template";
+	final WebControllerManager myWebManager;
+	final PluginDescriptor myPluginDescriptor;
+	final WebHookTemplateManager myTemplateManager;
+	final WebHookPluginDataResolver myWebHookPluginDataResolver;
+	final WebHookSettingsManager myWebHookSettingsManager;
+	final ProjectIdResolver myProjectIdResolver;
 
-	    public WebHookTemplateBasePageController(SBuildServer server, WebControllerManager webManager, 
-	    		PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
-	    		WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager,
-	    		ProjectIdResolver projectIdResolver) {
-	        super(server);
-	        myWebManager = webManager;
-	        myPluginDescriptor = pluginDescriptor;
-	        myWebHookPluginDataResolver = webHookPluginDataResolver;
-	        myTemplateManager = webHookTemplateManager;
-	        myWebHookSettingsManager = webHookSettingsManager;
-	        myProjectIdResolver = projectIdResolver;
-	    }
-	    
-	    protected abstract String getUrl();
+	protected WebHookTemplateBasePageController(SBuildServer server, WebControllerManager webManager,
+			PluginDescriptor pluginDescriptor, WebHookPluginDataResolver webHookPluginDataResolver,
+			WebHookTemplateManager webHookTemplateManager, WebHookSettingsManager webHookSettingsManager,
+			ProjectIdResolver projectIdResolver) {
+		super(server);
+		myWebManager = webManager;
+		myPluginDescriptor = pluginDescriptor;
+		myWebHookPluginDataResolver = webHookPluginDataResolver;
+		myTemplateManager = webHookTemplateManager;
+		myWebHookSettingsManager = webHookSettingsManager;
+		myProjectIdResolver = projectIdResolver;
+	}
 
-	    public void register(){
-	      myWebManager.registerController(getUrl(), this);
-	    }
+	protected abstract String getUrl();
 
-		protected void addBaseParams(HashMap<String, Object> params) {
-			params.put("jspHome",this.myPluginDescriptor.getPluginResourcesPath());
-	    	params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
-	    	params.put("rootContext", myServer.getServerRootPath());
-	    	params.put("isRestApiInstalled", myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
-		}
+	public void register() {
+		myWebManager.registerController(getUrl(), this);
+	}
+
+	protected void addBaseParams(HashMap<String, Object> params) {
+		params.put("jspHome", this.myPluginDescriptor.getPluginResourcesPath());
+		params.put("includeJquery", Boolean.toString(this.myServer.getServerMajorVersion() < 7));
+		params.put("rootContext", myServer.getServerRootPath());
+		params.put("isRestApiInstalled", myWebHookPluginDataResolver.isWebHooksRestApiInstalled());
+	}
 
 }

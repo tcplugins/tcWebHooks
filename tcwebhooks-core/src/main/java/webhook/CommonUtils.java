@@ -3,7 +3,9 @@ package webhook;
 import jetbrains.buildServer.serverSide.SProject;
 
 public class CommonUtils {
-	
+
+	private CommonUtils() {}
+
 	public static String getSensibleProjectName(SProject project){
 		if (project.getProjectId().equals(Constants.ROOT_PROJECT_ID)) {
 			return project.getProjectId();

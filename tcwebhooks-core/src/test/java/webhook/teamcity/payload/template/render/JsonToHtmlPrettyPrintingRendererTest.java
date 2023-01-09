@@ -6,8 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.gson.stream.MalformedJsonException;
-
 import webhook.teamcity.payload.template.render.WebHookStringRenderer.WebHookHtmlRendererException;
 
 public class JsonToHtmlPrettyPrintingRendererTest {

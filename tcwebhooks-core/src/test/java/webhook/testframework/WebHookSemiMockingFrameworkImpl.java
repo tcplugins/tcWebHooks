@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.jdom.JDOMException;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import jetbrains.buildServer.messages.Status;
@@ -132,11 +131,11 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		
-		when(projectIdResolver.getExternalProjectId(Mockito.eq("project1"))).thenReturn("ATestProject");
-		when(projectIdResolver.getInternalProjectId(Mockito.eq("ATestProject"))).thenReturn("project1");
+		when(projectIdResolver.getExternalProjectId("project1")).thenReturn("ATestProject");
+		when(projectIdResolver.getInternalProjectId("ATestProject")).thenReturn("project1");
 		
-		when(projectIdResolver.getExternalProjectId(Mockito.eq("_Root"))).thenReturn("_Root");
-		when(projectIdResolver.getInternalProjectId(Mockito.eq("_Root"))).thenReturn("_Root");
+		when(projectIdResolver.getExternalProjectId("_Root")).thenReturn("_Root");
+		when(projectIdResolver.getInternalProjectId("_Root")).thenReturn("_Root");
 		
 		webHookTemplateJaxHelper = new WebHookTemplateJaxTestHelper();
 		webHookVariableResolverManager = new WebHookVariableResolverManagerImpl();
@@ -157,7 +156,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		webHookStatisticsExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		
-		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookTemplateResolver, webHookContentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
+		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookExecutor, webHookStatisticsExecutor);
 		when(projectSettingsManager.getTemplateUsageCount((String)any())).thenReturn(0);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
@@ -174,7 +173,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		finishedFailedBuilds.add(previousFailedBuild);
 		((MockSBuildType) sBuildType).setProject(sProject);
 		when(projectSettingsManager.getSettings(sRunningBuild.getProjectId())).thenReturn(webHookProjectSettings);
-		when(projectSettingsManager.getSettings(Mockito.eq("_Root"))).thenReturn(new WebHookProjectSettings());
+		when(projectSettingsManager.getSettings("_Root")).thenReturn(new WebHookProjectSettings());
 
 		
 		when(build2.getBuildTypeId()).thenReturn("bt2");
@@ -243,7 +242,6 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 
 	@Override
 	public WebHookPayloadContent getWebHookContent() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

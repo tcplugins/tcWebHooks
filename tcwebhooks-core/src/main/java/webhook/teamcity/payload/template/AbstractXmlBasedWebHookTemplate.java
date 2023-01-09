@@ -42,7 +42,7 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	private ProjectIdResolver projectIdResolver;
 	private DeferrableServiceManager deferrableServiceManager;
 
-	public AbstractXmlBasedWebHookTemplate(
+	protected AbstractXmlBasedWebHookTemplate(
 			WebHookTemplateManager templateManager, WebHookPayloadManager payloadManager, 
 			WebHookTemplateJaxHelper webHookTemplateJaxHelper, ProjectIdResolver projectIdResolver, 
 			DeferrableServiceManager deferrableServiceManager) {

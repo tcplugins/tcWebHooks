@@ -154,7 +154,7 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, resolver, contentBuilder, historyRepository, historyItemFactory, webHookExecutor, webHookStatisticsExecutor);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, webHookExecutor, webHookStatisticsExecutor);
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);

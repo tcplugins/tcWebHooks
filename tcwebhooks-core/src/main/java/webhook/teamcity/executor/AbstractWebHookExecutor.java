@@ -36,7 +36,7 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	protected WebHook webhook;
 	protected boolean isTest;
 	
-	public AbstractWebHookExecutor(
+	protected AbstractWebHookExecutor(
 			WebHookContentBuilder webHookContentBuilder,
 			WebHookHistoryRepository webHookHistoryRepository,
 			WebHookHistoryItemFactory webHookHistoryItemFactory,

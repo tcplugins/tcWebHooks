@@ -31,6 +31,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 	Integer rank = 100;
 	String charset = "UTF-8";
 
+	@Override
 	public void setPayloadManager(WebHookPayloadManager manager){
 		myManager = manager;
 	}

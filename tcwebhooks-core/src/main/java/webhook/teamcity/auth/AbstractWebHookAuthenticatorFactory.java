@@ -14,7 +14,7 @@ public abstract class AbstractWebHookAuthenticatorFactory implements WebHookAuth
 	protected WebHookAuthenticatorProvider myProvider;
 	protected List<WebHookAuthenticationParameter> parameterDefinition;
 
-	public AbstractWebHookAuthenticatorFactory(WebHookAuthenticatorProvider provider) {
+	protected AbstractWebHookAuthenticatorFactory(WebHookAuthenticatorProvider provider) {
 		myProvider = provider;
 		parameterDefinition = new ArrayList<>();
 	}

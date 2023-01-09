@@ -27,10 +27,7 @@ import webhook.WebHook;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.executor.WebHookStatisticsExecutor;
-import webhook.teamcity.history.WebHookHistoryItemFactory;
-import webhook.teamcity.history.WebHookHistoryRepository;
 import webhook.teamcity.payload.WebHookTemplateManager;
-import webhook.teamcity.payload.WebHookTemplateResolver;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -60,10 +57,8 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings,
 							WebHookMainSettings configSettings, WebHookTemplateManager manager,
-							WebHookFactory factory, WebHookTemplateResolver resolver,
-							WebHookContentBuilder contentBuilder, WebHookHistoryRepository historyRepository,
-							WebHookHistoryItemFactory historyItemFactory,
-							WebHookExecutor executor, WebHookStatisticsExecutor statisticsExecutor) {
+							WebHookFactory factory, WebHookExecutor executor, 
+							WebHookStatisticsExecutor statisticsExecutor) {
 
 		myBuildServer = sBuildServer;
 		mySettings = settings;
