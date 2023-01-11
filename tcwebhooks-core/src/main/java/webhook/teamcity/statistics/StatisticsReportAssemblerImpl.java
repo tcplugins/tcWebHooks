@@ -61,6 +61,7 @@ public class StatisticsReportAssemblerImpl implements StatisticsReportAssembler 
 		
 		List<WebHookSearchResult> webHookConfigs = myWebHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().show("all").build());
 		WebHookConfigurationStatistics stats = new WebHookConfigurationStatistics();
+		stats.configurationCount = webHookConfigs.size();
 		for (WebHookSearchResult config : webHookConfigs) {
 
 			WebHookConfigEnhanced webHookConfigEnhanced = config.getWebHookConfigEnhanced();

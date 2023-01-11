@@ -252,7 +252,7 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		assertEquals((Integer)1, configStats.getFormats().get("json"));
 		assertEquals((Integer)1, configStats.getFormats().get("jsonTemplate"));
 		assertEquals((Integer)1, configStats.getFormats().get("jsonVelocityTemplate"));
-		
+		assertEquals((Integer)3, configStats.getConfigurationCount());
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		System.out.println(gson.toJson(configStats));
 	}
