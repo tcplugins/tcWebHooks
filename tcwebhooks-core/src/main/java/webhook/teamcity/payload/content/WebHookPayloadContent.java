@@ -262,13 +262,13 @@ public class WebHookPayloadContent {
 
 		private SimpleDateFormat determineDateFormat() {
 			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.
-			if (teamcityProperties.containsKey("webhook.preferedDateFormat")){
+			if (teamcityProperties!= null && teamcityProperties.containsKey("webhook.preferedDateFormat")){
 				try {
 					format = new SimpleDateFormat(teamcityProperties.get("webhook.preferredDateFormat"));
 				}
 				catch (NullPointerException | IllegalArgumentException ex){}
 
-			} else if (extraParameters.containsKey("preferredDateFormat")){
+			} else if (extraParameters != null && extraParameters.containsKey("preferredDateFormat")){
 				try {
 					format = new SimpleDateFormat(extraParameters.get("preferredDateFormat"));
 				}
