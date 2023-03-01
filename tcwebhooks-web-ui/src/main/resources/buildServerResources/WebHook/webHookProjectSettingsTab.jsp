@@ -70,7 +70,9 @@ ul.commalist li:last-child:after {
 	<%@ include file="jsp-includes/editWebHookParameterDialog.jsp" %>
 	<%@ include file="jsp-includes/deleteWebHookParameterDialog.jsp" %>
 	<%@ include file="jsp-includes/editWebHookHeaderDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookHeaderDialog.jsp" %>
 	<%@ include file="jsp-includes/editWebHookFilterDialog.jsp" %>
+	<%@ include file="jsp-includes/deleteWebHookFilterDialog.jsp" %>
 	<%@ include file="jsp-includes/noRestApiDialog.jsp" %>
 	
 	<script type="text/javascript">
