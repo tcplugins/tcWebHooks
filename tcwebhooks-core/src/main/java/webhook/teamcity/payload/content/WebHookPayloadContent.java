@@ -2,6 +2,7 @@ package webhook.teamcity.payload.content;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,9 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.STest;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
+import jetbrains.buildServer.serverSide.mute.MuteInfo;
 import jetbrains.buildServer.vcs.SVcsModification;
 import lombok.Getter;
 import lombok.Setter;
@@ -112,8 +115,17 @@ public class WebHookPayloadContent {
 			}
 			populateCommonContent(variableResolverFactory, server, responsibilityHolder, buildState, templates);
 		}
+		
+		public WebHookPayloadContent(
+		        VariableResolverFactory variableResolverFactory, 
+		        SBuildServer server, SProject sProject, 
+		        Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, 
+		        BuildStateEnum buildState, ExtraParameters extraParameters, Map<String,String> templates) {
+		    this.extraParameters =  new ExtraParameters(extraParameters);
+		    populateCommonContent(variableResolverFactory, server, sProject, mutedOrUnmutedGroups, buildState, templates);
+		}
 
-		/**
+        /**
 		 * Constructor: Only called by Add and Remove from Queue.
 		 * @param server
 		 * @param buildType
@@ -259,6 +271,22 @@ public class WebHookPayloadContent {
 			setResponsibilityUserNew(newUser);
 
 		}
+		
+	    private void populateCommonContent(VariableResolverFactory variableResolverFactory, SBuildServer server, SProject sProject,
+	                Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, BuildStateEnum buildState,
+	                Map<String, String> templates) {
+            SimpleDateFormat format = determineDateFormat();
+            setCurrentTime(format.format(new Date()));
+            setNotifyType(buildState.getShortName());
+            setBuildEventType(buildState);
+            setDerivedBuildEventType(buildState);
+            setProjectName(sProject.getName());
+            setProjectId(TeamCityIdResolver.getProjectId(sProject));
+            setProjectInternalId(TeamCityIdResolver.getInternalProjectId(sProject));
+            setProjectExternalId(TeamCityIdResolver.getExternalProjectId(sProject));
+            setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
+            setBuildStateDescription(buildState.getDescriptionSuffix());
+	        }
 
 		private SimpleDateFormat determineDateFormat() {
 			SimpleDateFormat format =  new SimpleDateFormat(); //preferred for locale first, and then override if found.

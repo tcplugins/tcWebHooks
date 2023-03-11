@@ -3,12 +3,16 @@
  */
 package webhook.teamcity.payload.format;
 
+import java.util.Collection;
 import java.util.Map;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
+import jetbrains.buildServer.serverSide.STest;
+import jetbrains.buildServer.serverSide.mute.MuteInfo;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.WebHookPayload;
@@ -69,7 +73,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), sBuild, BuildStateEnum.BUILD_UNPINNED, extraParameters, templates, username, comment);
 		return getStatusAsString(content, webHookTemplate);
 	}
-	
+
 	@Override
 	public String serviceMessageReceived(SBuild sRunningBuild, SFinishedBuild previousBuild, ExtraParameters extraParameters,
 			Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
@@ -130,7 +134,23 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 			WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(), responsibilityHolder, BuildStateEnum.RESPONSIBILITY_CHANGED, extraParameters, templates);
 		return getStatusAsString(content, webHookTemplate);
+	}
 
+
+	@Override
+	public String testsMuted(SProject sProject, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, ExtraParameters extraParameters,
+			Map<String, String> enabledTemplates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(),
+				sProject, mutedOrUnmutedGroups, BuildStateEnum.TESTS_MUTED, extraParameters, enabledTemplates);
+		return getStatusAsString(content, webHookTemplate);
+	}
+
+	@Override
+	public String testsUnMuted(SProject sProject, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, ExtraParameters extraParameters,
+			Map<String, String> enabledTemplates, WebHookTemplateContent webHookTemplate) {
+		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(),
+				sProject, mutedOrUnmutedGroups, BuildStateEnum.TESTS_MUTED, extraParameters, enabledTemplates);
+		return getStatusAsString(content, webHookTemplate);
 	}
 	protected abstract String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate);
 

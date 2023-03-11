@@ -1,11 +1,16 @@
 package webhook.teamcity.executor;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
+import jetbrains.buildServer.serverSide.STest;
+import jetbrains.buildServer.serverSide.mute.MuteInfo;
+import jetbrains.buildServer.users.SUser;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.settings.WebHookConfig;
@@ -60,5 +65,25 @@ public interface WebHookExecutor {
 			@NotNull BuildStateEnum state,
 			@NotNull WebHookResponsibilityHolder responsibilityHolder, 
 			boolean isTest);
+
+	/**
+	 * Executor for Tests Muted/Unmuted events.
+	 * @param wh
+	 * @param whc
+	 * @param sProject
+	 * @param mutedOrUnmutedGroups
+	 * @param state
+	 * @param user
+	 * @param comment
+	 * @param isTest
+	 */
+    public void execute(
+            WebHook webHook, 
+            WebHookConfig whc, 
+            SProject sProject,
+            Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups,
+            BuildStateEnum state, 
+            SUser user, 
+            boolean isTest);
 
 }

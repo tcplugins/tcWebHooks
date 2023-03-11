@@ -1,10 +1,13 @@
 package webhook.teamcity.executor;
 
+import java.util.Collection;
 import java.util.Map;
 
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
+import jetbrains.buildServer.serverSide.STest;
+import jetbrains.buildServer.serverSide.mute.MuteInfo;
 import lombok.AllArgsConstructor;
 import webhook.WebHook;
 import webhook.teamcity.BuildStateEnum;
@@ -87,5 +90,20 @@ public class WebHookRunnerFactory {
 				report
 			);
 	}
+
+    public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SProject sProject, BuildStateEnum state,
+            Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, boolean isTest) {
+        // TODO Auto-generated method stub
+        return new TestsMutingWebHookRunner(
+                webHookContentBuilder, 
+                webHookHistoryRepository, 
+                webHookHistoryItemFactory, 
+                webhook, 
+                whc, 
+                sProject,
+                state,
+                mutedOrUnmutedGroups, 
+                isTest);
+    }
 
 }
