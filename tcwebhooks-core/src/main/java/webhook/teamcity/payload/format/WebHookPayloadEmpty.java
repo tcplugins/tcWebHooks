@@ -1,11 +1,15 @@
 package webhook.teamcity.payload.format;
 
+import java.util.Collection;
 import java.util.Map;
 
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
+import jetbrains.buildServer.serverSide.STest;
+import jetbrains.buildServer.serverSide.mute.MuteInfo;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
@@ -51,7 +55,7 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 			WebHookTemplateContent webHookTemplate, String username, String comment) {
 		return "";
 	}
-	
+
 	@Override
 	public String serviceMessageReceived(SBuild sRunningBuild, SFinishedBuild previousBuild,
 			ExtraParameters extraParameters, Map<String, String> templates, WebHookTemplateContent webHookTemplate) {
@@ -135,6 +139,18 @@ public class WebHookPayloadEmpty implements WebHookPayload, WebHookContentObject
 	public String responsibilityChanged(WebHookResponsibilityHolder responsibilityHolder,
 			ExtraParameters mergeParameters, Map<String, String> enabledTemplates,
 			WebHookTemplateContent templateForThisBuild) {
+		return "";
+	}
+
+	@Override
+	public String testsMuted(SProject sProject, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, ExtraParameters extraParameters,
+			Map<String, String> enabledTemplates, WebHookTemplateContent templateForThisBuild) {
+		return "";
+	}
+
+	@Override
+	public String testsUnMuted(SProject sProject, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, ExtraParameters extraParameters,
+			Map<String, String> enabledTemplates, WebHookTemplateContent templateForThisBuild) {
 		return "";
 	}
 

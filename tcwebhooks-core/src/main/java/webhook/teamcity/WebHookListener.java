@@ -5,7 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.commons.collections.map.SingletonMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +23,11 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.STest;
+import jetbrains.buildServer.serverSide.mute.MuteInfo;
 import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
 import jetbrains.buildServer.tests.TestName;
+import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import webhook.WebHook;
 import webhook.teamcity.executor.WebHookExecutor;
@@ -110,6 +116,25 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false, Collections.emptyMap());
 		}
 	}
+	
+    private void processTestEvent(BuildStateEnum state, @Nullable SUser user, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups) {
+        if (!mutedOrUnmutedGroups.keySet().isEmpty()) {
+            Set<SProject> projects = new TreeSet<>();
+            for(MuteInfo unmuted : mutedOrUnmutedGroups.keySet()) {
+                for (STest t: unmuted.getTests()) {
+                    projects.add(this.myBuildServer.getProjectManager().findProjectById(t.getProjectId()));
+                }
+            }
+            for (SProject project : projects) {
+                Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId()+ AT_BUILD_STATE + state.getShortName());
+                for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())){
+                    WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+                    webHookExecutor.execute(wh, whc, project, mutedOrUnmutedGroups, state, user, false);
+                }
+            }
+        }
+    }
+
 
 	/**
 	 * Build a list of Enabled webhooks to pass to the POSTing logic.
@@ -354,8 +379,17 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 
 	public void serviceMessageReceived(SRunningBuild runningBuild, Map<String, String> serviceMessageAttributes) {
-		processBuildEvent(runningBuild, BuildStateEnum.SERVICE_MESSAGE_RECEIVED, serviceMessageAttributes);
+		this.processBuildEvent(runningBuild, BuildStateEnum.SERVICE_MESSAGE_RECEIVED, serviceMessageAttributes);
 	}
 
+	@Override
+	public void testsMuted(MuteInfo muteInfo) {
+	    this.processTestEvent(BuildStateEnum.TESTS_MUTED, null, Collections.singletonMap(muteInfo, new ArrayList<>()));
+	}
+	
+	@Override
+	public void testsUnmuted(SUser user, Map<MuteInfo, Collection<STest>> unmutedGroups) {
+	    this.processTestEvent(BuildStateEnum.TESTS_UNMUTED, user, unmutedGroups);
+	}
 
 }

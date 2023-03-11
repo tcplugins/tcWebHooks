@@ -18,6 +18,8 @@ public enum BuildStateEnum {
 	RESPONSIBILITY_CHANGED	("responsibilityChanged",	"changed responsibility",				"Build Responsibility Changed", 	"Responsibility Changed"),
 	BUILD_PINNED			("buildPinned", 			"been pinned",							"Build Pinned",						"Pinned"), 
 	BUILD_UNPINNED			("buildUnpinned",			"been unpinned",						"Build Unpinned",					"Unpinned"),
+	TESTS_MUTED			("testsMuted", 			"has had some tests muted",							"Tests Muted",						"Tests Muted"), 
+	TESTS_UNMUTED			("testsUnmuted",			"has had some tests unmuted",						"Tests Unmuted",					"Tests Unmuted"),
 	REPORT_STATISTICS		("reportStatistics",		"reported statistics",					"Statistics Reported",				"Statistics Reported"), 
 	SERVICE_MESSAGE_RECEIVED("serviceMessageReceived",	"received a service message",			"Service Message Received",			"Service Message Received");
     
