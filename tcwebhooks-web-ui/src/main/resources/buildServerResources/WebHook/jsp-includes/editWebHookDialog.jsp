@@ -103,6 +103,16 @@
 														 Build Unpinned</label>
 													</td>
 												</tr>
+												<tr style="border:none;"><td>&nbsp;</td>
+													<td class="testsMuted" style="padding-left:3px;"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="testsMuted" name="TestsMuted" type=checkbox />
+														 Tests Muted</label>
+													</td>
+													<td class="testsUnmuted"><label style='white-space:nowrap;'>
+														<input onclick='selectBuildState();' class="buildState" id="testsUnmuted" name="TestsUnmuted" type=checkbox />
+														 Tests Unmuted</label>
+													</td>
+												</tr>
 												<tr style="border:none;" class="onCompletion"><td style="vertical-align:text-top;">On Completion:</td>
 													<td colspan=2 >
 														<table style="padding:0; margin:0; left: 0px;"><tbody style="padding:0; margin:0; left: 0px;">
@@ -241,6 +251,8 @@
 								            			<option value="responsibilityChanged">Build Responsibility Changed</option>
 								            			<option value="buildPinned">Build Pinned</option>
 								            			<option value="buildUnpinned">Build Unpinned</option>
+								            			<option value="testsMuted">Tests Muted</option>
+								            			<option value="testsUnmuted">Tests Unmuted</option>
 								            			<option value="buildSuccessful">Build Successful</option>
 								            			<option value="buildFixed"> - Build changes from Failure to Success</option>
 								            			<option value="buildFailed">Build Failed</option>

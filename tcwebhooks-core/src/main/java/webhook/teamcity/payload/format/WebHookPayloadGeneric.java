@@ -149,7 +149,7 @@ public abstract class WebHookPayloadGeneric implements WebHookPayload {
 	public String testsUnMuted(SProject sProject, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, ExtraParameters extraParameters,
 			Map<String, String> enabledTemplates, WebHookTemplateContent webHookTemplate) {
 		WebHookPayloadContent content = new WebHookPayloadContent(getVariableResolverFactory(), myManager.getServer(),
-				sProject, mutedOrUnmutedGroups, BuildStateEnum.TESTS_MUTED, extraParameters, enabledTemplates);
+				sProject, mutedOrUnmutedGroups, BuildStateEnum.TESTS_UNMUTED, extraParameters, enabledTemplates);
 		return getStatusAsString(content, webHookTemplate);
 	}
 	protected abstract String getStatusAsString(WebHookPayloadContent content, WebHookTemplateContent webHookTemplate);

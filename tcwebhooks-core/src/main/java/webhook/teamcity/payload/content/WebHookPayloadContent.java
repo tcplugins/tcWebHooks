@@ -98,6 +98,7 @@ public class WebHookPayloadContent {
 		@Getter @Setter private SBuild build;
 		@Getter @Setter private SProject project;
 		@Getter @Setter private SBuildType buildType;
+		@Getter @Setter private Map<MuteInfo, Collection<STest>> mutedOrUnmutedTests;
 
 		/**
 		 * Constructor: Only called by RepsonsibilityChanged.
@@ -116,6 +117,16 @@ public class WebHookPayloadContent {
 			populateCommonContent(variableResolverFactory, server, responsibilityHolder, buildState, templates);
 		}
 		
+		/**
+		 * Constructor: Called by TestMuted and TestsUnmuted.
+		 * @param variableResolverFactory
+		 * @param server
+		 * @param sProject
+		 * @param mutedOrUnmutedGroups
+		 * @param buildState
+		 * @param extraParameters
+		 * @param templates
+		 */
 		public WebHookPayloadContent(
 		        VariableResolverFactory variableResolverFactory, 
 		        SBuildServer server, SProject sProject, 
@@ -286,6 +297,7 @@ public class WebHookPayloadContent {
             setProjectExternalId(TeamCityIdResolver.getExternalProjectId(sProject));
             setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
             setBuildStateDescription(buildState.getDescriptionSuffix());
+            setMutedOrUnmutedTests(mutedOrUnmutedGroups);
 	        }
 
 		private SimpleDateFormat determineDateFormat() {
