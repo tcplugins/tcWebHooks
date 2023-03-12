@@ -52,6 +52,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 		protected static final String BUILD_SUCCESSFUL = "BuildSuccessful";
 		protected static final String BUILD_PINNED = "BuildPinned";
 		protected static final String BUILD_UNPINNED = "BuildUnpinned";
+		protected static final String TESTS_MUTED = "TestsMuted";
+		protected static final String TESTS_UNMUTED = "TestsUnmuted";
 		protected static final String SERVICE_MESSAGE_RECEIVED = "ServiceMessageReceived";
 		
 		private final WebControllerManager myWebManager;
@@ -147,6 +149,8 @@ public class WebHookAjaxEditPageController extends BaseController {
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.RESPONSIBILITY_CHANGED, "ResponsibilityChanged");
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_PINNED, BUILD_PINNED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.BUILD_UNPINNED, BUILD_UNPINNED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.TESTS_MUTED, TESTS_MUTED);
+			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.TESTS_UNMUTED, TESTS_UNMUTED);
 			    						buildStateResolver.checkAndAddBuildState(request, states, BuildStateEnum.SERVICE_MESSAGE_RECEIVED, SERVICE_MESSAGE_RECEIVED);
 			    						
 			    						if ((request.getParameter("buildTypeSubProjects") != null ) && (request.getParameter("buildTypeSubProjects").equalsIgnoreCase("on"))){

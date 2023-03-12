@@ -292,6 +292,8 @@ WebHooksPlugin = {
 										    "BUILD_INTERRUPTED" : false,
 										    "BUILD_PINNED" : false,
 										    "BUILD_UNPINNED" : false,
+										    "TESTS_MUTED" : false,
+										    "TESTS_UNMUTED" : false,
 										    "SERVICE_MESSAGE_RECEIVED" : false
 									    }
 									}),

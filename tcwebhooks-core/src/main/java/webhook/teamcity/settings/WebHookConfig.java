@@ -598,6 +598,12 @@ public class WebHookConfig {
 			if (states.enabled(BuildStateEnum.BUILD_UNPINNED)){
 				enabledStates += ", Build Unpinned";
 			}
+			if (states.enabled(BuildStateEnum.TESTS_MUTED)){
+			    enabledStates += ", Tests Muted";
+			}
+			if (states.enabled(BuildStateEnum.TESTS_UNMUTED)){
+			    enabledStates += ", Tests Unmuted";
+			}
 			if (states.enabled(BuildStateEnum.SERVICE_MESSAGE_RECEIVED)){
 				enabledStates += ", Service Message Received";
 			}

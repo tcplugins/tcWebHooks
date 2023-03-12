@@ -402,6 +402,14 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
                         "enabled": true
                     },
                     {
+                        "type": "testsMuted",
+                        "enabled": true
+                    },
+                    {
+                        "type": "testsUnmuted",
+                        "enabled": true
+                    },
+                    {
                         "type": "serviceMessageReceived",
                         "enabled": true
                     }
@@ -471,6 +479,8 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 										    "BUILD_INTERRUPTED" : false,
 										    "BUILD_PINNED" : false,
 										    "BUILD_UNPINNED" : false,
+										    "TESTS_MUTED" : false,
+										    "TESTS_UNMUTED" : false,
 										    "SERVICE_MESSAGE_RECEIVED" : false
 									    }
 									}),
@@ -1274,6 +1284,8 @@ function convertFormToWebHook(myJson) {
             { type: "buildInterrupted", enabled: $j("#editWebHookForm :input#buildInterrupted").is(':checked') },
             { type: "buildPinned", enabled: $j("#editWebHookForm :input#buildPinned").is(':checked') },
             { type: "buildUnpinned", enabled: $j("#editWebHookForm :input#buildUnpinned").is(':checked') },
+            { type: "testsMuted", enabled: $j("#editWebHookForm :input#testsMuted").is(':checked') },
+            { type: "testsUnmuted", enabled: $j("#editWebHookForm :input#testsUnmuted").is(':checked') },
             { type: "serviceMessageReceived", enabled: $j("#editWebHookForm :input#serviceMessageReceived").is(':checked') }
         ]
     };
@@ -1359,6 +1371,8 @@ function renderPreviewOnChange() {
                         "BUILD_INTERRUPTED": false,
                         "BUILD_PINNED": false,
                         "BUILD_UNPINNED": false,
+                        "TESTS_MUTED": false,
+                        "TESTS_UNMUTED": false,
                         "SERVICE_MESSAGE_RECEIVED": false
                     }
                 }),

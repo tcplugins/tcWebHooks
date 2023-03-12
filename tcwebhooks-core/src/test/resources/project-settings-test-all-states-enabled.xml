@@ -17,6 +17,8 @@
         <state type="responsibilityChanged" enabled="true" />
         <state type="buildPinned" enabled="true" />
         <state type="buildUnpinned" enabled="true" />
+        <state type="testsMuted" enabled="true" />
+        <state type="testsUnmuted" enabled="true" />
         <state type="serviceMessageReceived" enabled="true" />
       </states>
        <parameters>

@@ -58,6 +58,8 @@ public class BuildStateTest {
 		state.enable(BUILD_SUCCESSFUL);
 		state.enable(BUILD_PINNED);
 		state.enable(BUILD_UNPINNED);
+		state.enable(TESTS_MUTED);
+		state.enable(TESTS_UNMUTED);
 		state.enable(SERVICE_MESSAGE_RECEIVED);
 		assertTrue(state.allEnabled());
 	}
@@ -128,6 +130,8 @@ public class BuildStateTest {
 		state.enable(BUILD_SUCCESSFUL);
 		state.enable(BUILD_FIXED);
 		state.enable(BUILD_BROKEN);
+		state.enable(TESTS_MUTED);
+		state.enable(TESTS_UNMUTED);
 		assertFalse(state.noneEnabled());
 	}
 

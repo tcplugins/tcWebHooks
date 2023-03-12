@@ -198,6 +198,10 @@
             		<td class="buildPinned" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildPinned" name="BuildPinned" type=checkbox /> Build Pinned</label></td>
             		<td class="buildUnpinned" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="buildUnpinned" name="BuildUnpinned" type=checkbox /> Build Unpinned</label></td>
             	</tr>
+            	<tr><td></td>
+            		<td class="testsMuted" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="testsMuted" name="TestsMuted" type=checkbox /> Tests Muted</label></td>
+            		<td class="testsUnmuted" style="padding-left:3px;"><label style='white-space:nowrap;'><input class="buildState" id="testsUnmuted" name="TestsUnmuted" type=checkbox /> Tests Unmuted</label></td>
+            	</tr>
                  <tr>
  					<td colspan="3">
  					<div id="tab-container" class="tab-container">
