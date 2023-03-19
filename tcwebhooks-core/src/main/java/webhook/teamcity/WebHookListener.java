@@ -223,6 +223,8 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 				BuildStateEnum.RESPONSIBILITY_CHANGED,
 				WebHookResponsibilityHolder
 					.builder()
+					.state(entry.getState())
+					.responsibilityEntryNew(entry)
 					.sProject(project)
 					.testNames(testNames)
 					.isUserAction(isUserAction)

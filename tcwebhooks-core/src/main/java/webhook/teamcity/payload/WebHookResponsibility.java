@@ -6,6 +6,7 @@ import jetbrains.buildServer.responsibility.ResponsibilityEntry;
 import jetbrains.buildServer.responsibility.TestNameResponsibilityEntry;
 import jetbrains.buildServer.tests.TestName;
 import lombok.Builder;
+import lombok.Getter;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.content.WebHookResponsibilityEntry;
 
@@ -14,18 +15,18 @@ import webhook.teamcity.payload.content.WebHookResponsibilityEntry;
  * so that it can be added to the payload.
  *
  */
-@Builder
+@Builder @Getter
 public class WebHookResponsibility {
 	
-	ResponsibilityEntry.State state;
-	WebHookResponsibilityEntry responsibilityEntryOld;
-	WebHookResponsibilityEntry responsibilityEntryNew;
-	Boolean isUserAction;
-	String projectId;
-	String buildTypeId;
-	TestNameResponsibilityEntry testNameResponsibilityEntry;
-	Collection<TestName> testNames;
-	Collection<WebHookBuildProblemInfo> buildProblems;
+	private ResponsibilityEntry.State state;
+	private WebHookResponsibilityEntry responsibilityEntryOld;
+	private WebHookResponsibilityEntry responsibilityEntryNew;
+	private Boolean isUserAction;
+	private String projectId;
+	private String buildTypeId;
+	private TestNameResponsibilityEntry testNameResponsibilityEntry;
+	private Collection<TestName> testNames;
+	private Collection<WebHookBuildProblemInfo> buildProblems;
 	
 	public static WebHookResponsibility build(WebHookResponsibilityHolder wrh) {
 		return
