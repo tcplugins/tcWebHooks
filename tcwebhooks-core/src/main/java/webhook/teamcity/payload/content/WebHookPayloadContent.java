@@ -362,7 +362,7 @@ public class WebHookPayloadContent {
 			// buildNumber won't have been resolved by TeamCity yet
 			// agent details won't have been resolved by TeamCity yet
 			setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
-			setBuildStatusUrl(getRootUrl() + "queue.html?itemId=" + getBuildId());
+			setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
 			setBuildStatusSakuraUrl(getRootUrl() + "buildConfiguration/" + getBuildTypeId() + "/" + getBuildId());
 			setBuildStateDescription(buildState.getDescriptionSuffix());
 		}
