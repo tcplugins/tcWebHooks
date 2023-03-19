@@ -34,7 +34,7 @@
             ]
         }
     ]
-}</default-branch-template><template-description>Slack.com JSON templates</template-description><template-tool-tip>Supports the slack.com JSON webhooks endpoint</template-tool-tip><preferred-date-format/><associated-project-id>_Root</associated-project-id><templates max-id="7"><template id="1"><template-text use-for-branch-template="false">{  
+}</default-branch-template><template-description>Slack.com JSON templates</template-description><template-tool-tip>Supports the slack.com JSON webhooks endpoint</template-tool-tip><preferred-date-format/><associated-project-id>_Root</associated-project-id><templates max-id="9"><template id="1"><template-text use-for-branch-template="false">{  
     "username": "TeamCity",
     "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
     "attachments": [ 
@@ -285,4 +285,66 @@
             ]
         }
     ]
-}</branch-template-text><states><state type="buildAddedToQueue" enabled="true"/><state type="buildRemovedFromQueue" enabled="true"/></states></template></templates></webhook-template>
+}</branch-template-text><states><state type="buildAddedToQueue" enabled="true"/><state type="buildRemovedFromQueue" enabled="true"/></states></template><template id="8"><template-text use-for-branch-template="true">## Define macro called "showTestUsers"
+#macro( showTestUsers $myTests)
+#if ( $myTests.size() &gt; 0 ) 
+#foreach( $entry in $myTests.entrySet() )##
+$entry.key.mutingUser.username ##
+#end
+#else No Changes found #end
+#end
+
+## Define macro called "showTests"
+#macro( showTests $myTests)
+#if ( $myTests.size() &gt; 0 ) 
+#foreach( $tests in $myTests.keySet() )##
+#foreach( $test in $tests.getTests() )##
+• #escapejson($test.name)
+#end
+#end
+#else No Changes found #end
+#end
+
+{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "#capitalise(${buildEventType.shortDescription}) : ${projectName}",
+            "fallback": "#capitalise(${notifyType}) : ${projectName}", 
+            "fields" : [
+                { "title" : "Status", "value" : "Project '${projectName}'' ${buildStateDescription}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true },
+                { "title" : "#capitalise(${buildEventType.shortDescription}) by", "value" : "#showTestUsers( $mutedOrUnmutedTests )", "short": true },
+                { "title" : "#capitalise(${buildEventType.shortDescription})", "value" : "#showTests( $mutedOrUnmutedTests )", "short": false }
+            ]
+        }
+    ]
+}</template-text><branch-template-text/><states><state type="testsMuted" enabled="true"/><state type="testsUnmuted" enabled="true"/></states></template><template id="9"><template-text use-for-branch-template="true">## Define macro called "showTests"
+#macro( showTests $myTests)
+#foreach( $test in $myTests )##
+• #escapejson($test)
+#end
+#end
+
+{  
+    "username": "TeamCity",
+    "icon_url" : "https://raw.githubusercontent.com/tcplugins/tcWebHooks/master/docs/icons/teamcity-logo-48x48.png",
+    "attachments": [ 
+        { 
+            "title": "#capitalise(${buildEventType.shortDescription}) to '#capitalise(${responsibilityInfo.getState()})' : ${projectName}",
+            "fallback": "#capitalise(${notifyType}) to '#capitalise(${responsibilityInfo.getState()})' : ${projectName}", 
+            "fields" : [
+                { "title" : "Status", "value" : "Project '${projectName}' ${buildStateDescription}" },
+                { "title" : "Project Name", "value" : "&lt;${rootUrl}project.html?projectId=${projectExternalId}|${projectName}&gt;", "short": true }
+#if (${buildExternalTypeId})
+                ,{ "title" : "Build Name", "value" : "&lt;${rootUrl}/viewType.html?buildTypeId=${buildExternalTypeId}|${buildName}&gt;", "short": true }
+#end
+                ,{ "title" : "New State", "value" : "${responsibilityInfo.getState()}", "short": true }
+#if (${responsibilityInfo.testNames}) 
+                ,{ "title" : "Tests", "value" : "#showTests(${responsibilityInfo.testNames})" }
+#end
+            ]
+        }
+    ]
+}</template-text><branch-template-text/><states><state type="responsibilityChanged" enabled="true"/></states></template></templates></webhook-template>
