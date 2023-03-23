@@ -119,7 +119,6 @@
 						<echo message="Attempting to build dist-core zip file" />
 						<mkdir dir="${project.build.directory}/dist-core" />
 						<mkdir dir="${project.build.directory}/dist-core/server" />
-						<mkdir dir="${project.build.directory}/dist-core/agent" />
 						
 						<echo message=" - Copying resources to dist-core" />
 						<copy todir="${project.build.directory}/dist-core/">
@@ -132,13 +131,6 @@
 						<copy todir="${project.build.directory}/dist-core/server/">
 							  <fileset dir="${project.build.directory}/">
 		    						<include name="*-jar-with-dependencies.jar" />
-		    				  </fileset>
-		    			</copy>
-		    			
-						<echo message=" - Copying dep jar to dist-core/agent" />
-						<copy todir="${project.build.directory}/dist-core/agent/">
-							  <fileset dir="${project.build.directory}/../../tcwebhooks-agent/target/">
-		    						<include name="agent-tcWebHooks-${version}.zip" />
 		    				  </fileset>
 		    			</copy>
 		    			
