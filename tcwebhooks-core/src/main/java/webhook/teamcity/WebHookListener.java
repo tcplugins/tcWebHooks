@@ -63,7 +63,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings,
 							WebHookMainSettings configSettings, WebHookTemplateManager manager,
-							WebHookFactory factory, WebHookExecutor executor, 
+							WebHookFactory factory, WebHookExecutor executor,
 							WebHookStatisticsExecutor statisticsExecutor) {
 
 		myBuildServer = sBuildServer;
@@ -85,7 +85,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	private void processBuildEvent(SBuild sBuild, BuildStateEnum state, Map<String, String> serviceMessageAttributes) {
 
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
-		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getProjectId())){
+		for (WebHookConfig whc : getListOfEnabledWebHooks(state, sBuild.getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, null, null, false, serviceMessageAttributes);
 		}
@@ -93,7 +93,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
 
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
-		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
+		for (WebHookConfig whc : getListOfEnabledWebHooks(state, sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
 		}
@@ -102,7 +102,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	private void processResponsibilityEvent(BuildStateEnum state, WebHookResponsibilityHolder responsibilityHolder) {
 
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + AT_BUILD_STATE + state.getShortName());
-		for (WebHookConfig whc : getListOfEnabledWebHooks(responsibilityHolder.getSProject().getProjectId())){
+		for (WebHookConfig whc : getListOfEnabledWebHooks(state, responsibilityHolder.getSProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, state, responsibilityHolder, false);
 		}
@@ -111,29 +111,29 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	private void processPinEvent(SBuild sBuild, BuildStateEnum state, String user, String comment) {
 
 		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
-		for (WebHookConfig whc : getListOfEnabledWebHooks(sBuild.getBuildType().getProjectId())){
+		for (WebHookConfig whc : getListOfEnabledWebHooks(state, sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false, Collections.emptyMap());
 		}
 	}
-	
-    private void processTestEvent(BuildStateEnum state, @Nullable SUser user, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups) {
-        if (!mutedOrUnmutedGroups.keySet().isEmpty()) {
-            Set<SProject> projects = new TreeSet<>();
-            for(MuteInfo unmuted : mutedOrUnmutedGroups.keySet()) {
-                for (STest t: unmuted.getTests()) {
-                    projects.add(this.myBuildServer.getProjectManager().findProjectById(t.getProjectId()));
-                }
-            }
-            for (SProject project : projects) {
-                Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId()+ AT_BUILD_STATE + state.getShortName());
-                for (WebHookConfig whc : getListOfEnabledWebHooks(project.getProjectId())){
-                    WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-                    webHookExecutor.execute(wh, whc, project, mutedOrUnmutedGroups, state, user, false);
-                }
-            }
-        }
-    }
+
+	private void processTestEvent(BuildStateEnum state, @Nullable SUser user, Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups) {
+		if (!mutedOrUnmutedGroups.keySet().isEmpty()) {
+			Set<SProject> projects = new TreeSet<>();
+			for(MuteInfo unmuted : mutedOrUnmutedGroups.keySet()) {
+				for (STest t: unmuted.getTests()) {
+					projects.add(this.myBuildServer.getProjectManager().findProjectById(t.getProjectId()));
+				}
+			}
+			for (SProject project : projects) {
+				Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId()+ AT_BUILD_STATE + state.getShortName());
+				for (WebHookConfig whc : getListOfEnabledWebHooks(state, project.getProjectId())){
+					WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+					webHookExecutor.execute(wh, whc, project, mutedOrUnmutedGroups, state, user, false);
+				}
+			}
+		}
+	}
 
 
 	/**
@@ -141,7 +141,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	 * @param projectId
 	 * @return
 	 */
-	private List<WebHookConfig> getListOfEnabledWebHooks(String projectId) {
+	private List<WebHookConfig> getListOfEnabledWebHooks(BuildStateEnum state, String projectId) {
 		List<WebHookConfig> configs = new ArrayList<>();
 		List<SProject> projects = new ArrayList<>();
 		SProject myProject = myBuildServer.getProjectManager().findProjectById(projectId);
@@ -159,13 +159,17 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 						continue;
 					}
 
-					if (whc.getEnabled()){
+					if (whc.getEnabled().booleanValue() && whc.isEnabledForBuildState(state)){
 						if (myManager.isRegisteredTemplate(whc.getPayloadTemplate())){
 							whc.setProjectExternalId(project.getExternalId());
 							whc.setProjectInternalId(project.getProjectId());
 							configs.add(whc);
 						} else {
 							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate());
+						}
+					} else if (whc.getEnabled().booleanValue() && !whc.isEnabledForBuildState(state)) {
+						if (Loggers.ACTIVITIES.isDebugEnabled()) {
+							Loggers.ACTIVITIES.debug("WebHookListener :: WebHook skipped. Not enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")");
 						}
 					} else {
 						Loggers.ACTIVITIES.debug(this.getClass().getSimpleName()
@@ -370,9 +374,8 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	@Override
 	public void reportStatistics(StatisticsReport statisticsReport) {
-		for (WebHookConfig whc : getListOfEnabledWebHooks(myBuildServer.getProjectManager().getRootProject().getProjectId())){
+		for (WebHookConfig whc : getListOfEnabledWebHooks(BuildStateEnum.REPORT_STATISTICS, myBuildServer.getProjectManager().getRootProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-			wh.setEnabledForBuildState(BuildStateEnum.REPORT_STATISTICS, wh.isEnabled());
 			if (Boolean.TRUE.equals(wh.isEnabled()) && wh.getBuildStates().enabled(BuildStateEnum.REPORT_STATISTICS)) {
 				webHookStatisticsExecutor.execute(wh, whc, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
 			}
@@ -386,12 +389,12 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	@Override
 	public void testsMuted(MuteInfo muteInfo) {
-	    this.processTestEvent(BuildStateEnum.TESTS_MUTED, null, Collections.singletonMap(muteInfo, new ArrayList<>()));
+		this.processTestEvent(BuildStateEnum.TESTS_MUTED, null, Collections.singletonMap(muteInfo, new ArrayList<>()));
 	}
-	
+
 	@Override
 	public void testsUnmuted(SUser user, Map<MuteInfo, Collection<STest>> unmutedGroups) {
-	    this.processTestEvent(BuildStateEnum.TESTS_UNMUTED, user, unmutedGroups);
+		this.processTestEvent(BuildStateEnum.TESTS_UNMUTED, user, unmutedGroups);
 	}
 
 }

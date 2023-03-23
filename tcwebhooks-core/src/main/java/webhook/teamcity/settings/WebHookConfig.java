@@ -507,6 +507,10 @@ public class WebHookConfig {
 		// Just check if this build type is only enabled for a specific build.
 		return enabledBuildTypesSet.contains(TeamCityIdResolver.getInternalBuildId(sBuildType));
 	}
+	
+	public boolean isEnabledForBuildState(BuildStateEnum state) {
+	    return this.getBuildStates().enabled(state);
+	}
 
 	public Set<String> getEnabledBuildTypesSet() {
 		return enabledBuildTypesSet;
