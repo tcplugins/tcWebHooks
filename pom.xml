@@ -89,7 +89,6 @@
 	<modules>
 		<module>tcwebhooks-core</module>
 		<module>tcwebhooks-rest-api</module>
-		<module>tcwebhooks-agent</module>
 		<module>tcwebhooks-web-ui</module>
 	</modules>
 
