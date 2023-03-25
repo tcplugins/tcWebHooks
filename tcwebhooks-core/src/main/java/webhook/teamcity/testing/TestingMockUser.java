@@ -133,4 +133,16 @@ public class TestingMockUser implements User {
 		return null;
 	}
 
+    @Override
+    public boolean isPermissionGrantedForAnyOfProjects(Collection<String> projectIds, Permission permission) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Permissions getPermissionsGrantedForAnyOfProjects(Collection<String> projectIds) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

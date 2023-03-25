@@ -254,7 +254,6 @@ public class MockProjectManager implements ProjectManager {
 		return false;
 	}
 
-	@Override
 	public List<SBuildType> getBuildTypesDependingOn(SBuildType type) {
 		// TODO Auto-generated method stub
 		return null;
