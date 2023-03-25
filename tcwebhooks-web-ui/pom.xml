@@ -199,7 +199,7 @@
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>server</artifactId>
-			<version>${teamcityVersion}</version>
+			<version>${teamcityServerVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
