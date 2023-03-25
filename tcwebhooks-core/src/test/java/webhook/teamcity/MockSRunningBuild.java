@@ -19,11 +19,13 @@ import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.parameters.ValueResolver;
 import jetbrains.buildServer.serverSide.Branch;
+import jetbrains.buildServer.serverSide.BuildChanges;
 import jetbrains.buildServer.serverSide.BuildPromotion;
 import jetbrains.buildServer.serverSide.BuildRevision;
 import jetbrains.buildServer.serverSide.BuildStatistics;
 import jetbrains.buildServer.serverSide.BuildStatisticsOptions;
 import jetbrains.buildServer.serverSide.BuildTypeNotFoundException;
+import jetbrains.buildServer.serverSide.ChangesCalculationOptions;
 import jetbrains.buildServer.serverSide.CompatibilityResult;
 import jetbrains.buildServer.serverSide.DownloadedArtifacts;
 import jetbrains.buildServer.serverSide.RepositoryVersion;
@@ -1190,6 +1192,30 @@ public class MockSRunningBuild implements SRunningBuild {
 				// TODO Auto-generated method stub
 				return null;
 			}
+
+            @Override
+            public String getProjectId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getProjectExternalId() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public BuildChanges getChanges(ChangesCalculationOptions options) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public boolean isCompositeBuild() {
+                // TODO Auto-generated method stub
+                return false;
+            }
 		};
 	}
 
@@ -1409,5 +1435,17 @@ public class MockSRunningBuild implements SRunningBuild {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public boolean isAgentLessBuild() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public int getAgentId() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 	
 }

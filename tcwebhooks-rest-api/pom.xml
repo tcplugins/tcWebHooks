@@ -17,8 +17,12 @@
    </pluginRepositories> -->
    	<repositories>
 		  <repository>
-		    <id>Internal company repository</id>
+		    <id>Local Repo (tcwebhooks-rest)</id>
 		    <url>file://${basedir}/lib-compile</url>
+		  </repository>
+		  <repository>
+		    <id>Local Repo (tcwebhooks-core)</id>
+		    <url>file://${basedir}/../tcwebhooks-core/local-mvn-repo</url>
 		  </repository>
 
 		  <!-- <repository>
@@ -191,6 +195,18 @@
 			<artifactId>common-api</artifactId>
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<!-- TeamCity/webapps/WEB-INF/lib/server.jar -->
+		<!-- Enables:
+		     - Saving reason for the change when saving a project. 
+		     - Used to obtain the server UUID for Statistics
+		     - Obtaining Secure values from SecureDataStorage  -->
+		<dependency>
+			<groupId>org.jetbrains.teamcity</groupId>
+			<artifactId>server</artifactId>
+			<version>${teamcityServerVersion}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
