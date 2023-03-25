@@ -21,6 +21,10 @@ public class WebHookMainConfig {
 	private static final int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
 	private static final int HTTP_RESPONSE_TIMEOUT_DEFAULT = 120;
 	private static final int STATISTICS_REPORTING_DAYS_DEFAULT = 5;
+	private static final boolean USE_WEBHOOK_THREADED_EXECUTOR = true; // Whether to use a dedicated thread pool for WebHooks.
+	private static final int WEB_HOOK_MIN_THREADS = 1;
+	private static final int WEB_HOOK_MAX_THREADS = 50;
+	private static final int WEB_HOOK_THREAD_QUEUE_SIZE = 3000;
 
 	private String webhookInfoUrl = null;
 	private String webhookInfoText = null;
@@ -35,6 +39,11 @@ public class WebHookMainConfig {
 	private Integer httpConnectionTimeout = null;
 	private Integer httpResponseTimeout = null;
 	private Boolean useThreadedExecutor = null;
+
+	private Boolean useWebHookTheadedExecutor = null;
+	private Integer webHookMinThreads = null;
+	private Integer webHookMaxThreads = null;
+	private Integer webHookThreadQueueSize = null;
 
 	private Boolean assembleStatistics = null;
 	private Boolean reportStatistics = null;
@@ -164,10 +173,10 @@ public class WebHookMainConfig {
 
 	public Element getProxyAsElement(){
 		/*
-			  <proxy host="myproxy.mycompany.com" port="8080" >
-				  <noproxy url=".mycompany.com" />
-				  <noproxy url="192.168.0." />
-			  </proxy>
+			<proxy host="myproxy.mycompany.com" port="8080" >
+				<noproxy url=".mycompany.com" />
+				<noproxy url="192.168.0." />
+			</proxy>
 		 */
 		if (this.getProxyHost() == null || this.getProxyPort() == null){
 			return null;
@@ -315,6 +324,20 @@ public class WebHookMainConfig {
 
 	public void setThreadPoolExecutor(boolean threadPoolSender) {
 		this.useThreadedExecutor = threadPoolSender;
+	}
+
+	public boolean useWebHookTheadedExecutor() {
+		return defaultIfNull(this.useWebHookTheadedExecutor, USE_WEBHOOK_THREADED_EXECUTOR);
+	}
+
+	public int getWebHookMinThreads() {
+		return defaultIfNull(this.webHookMinThreads, WEB_HOOK_MIN_THREADS);
+	}
+	public int getWebHookMaxThreads() {
+		return defaultIfNull(this.webHookMaxThreads, WEB_HOOK_MAX_THREADS);
+	}
+	public int getWebHookThreadQueueSize() {
+		return defaultIfNull(this.webHookThreadQueueSize, WEB_HOOK_THREAD_QUEUE_SIZE);
 	}
 
 	public int getReportStatisticsFrequency() {
