@@ -10,7 +10,7 @@
     	<gitBranch>${GIT_BRANCH}</gitBranch>    	
     	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
-    	<teamcityVersion>2018.2</teamcityVersion>
+    	<teamcityVersion>2019.1</teamcityVersion>
     	<teamcityServerVersion>2018.2.1</teamcityServerVersion>
     	<springframework.version>4.3.17.RELEASE</springframework.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
