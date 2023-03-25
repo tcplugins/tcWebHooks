@@ -393,6 +393,12 @@ public class MockSRunningBuild implements SRunningBuild {
 						// TODO Auto-generated method stub
 						return 0;
 					}
+
+                    @Override
+                    public boolean isPollingMode() {
+                        // TODO Auto-generated method stub
+                        return false;
+                    }
 				};
 			}
 			

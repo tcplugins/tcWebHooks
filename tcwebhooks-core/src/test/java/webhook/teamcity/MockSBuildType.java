@@ -20,6 +20,7 @@ import jetbrains.buildServer.parameters.ValueResolver;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.serverSide.AgentCompatibility;
 import jetbrains.buildServer.serverSide.AgentDescription;
+import jetbrains.buildServer.serverSide.BranchFilter;
 import jetbrains.buildServer.serverSide.BuildNumbers;
 import jetbrains.buildServer.serverSide.BuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.BuildTypeRenamingFailedException;
@@ -1301,6 +1302,18 @@ public class MockSBuildType implements SBuildType {
 
     @Override
     public String getReadOnlyReason() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Requirement> getBuildFeatureRequirements() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public BranchFilter getBuildTypeBranchFilter() {
         // TODO Auto-generated method stub
         return null;
     }
