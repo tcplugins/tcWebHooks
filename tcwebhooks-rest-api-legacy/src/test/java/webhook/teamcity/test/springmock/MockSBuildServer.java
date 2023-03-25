@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
+import jetbrains.buildServer.ExtensionsCollection;
 import jetbrains.buildServer.ServiceNotFoundException;
 import jetbrains.buildServer.TeamCityExtension;
 import jetbrains.buildServer.serverSide.BuildAgentManager;
@@ -24,7 +25,6 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SQLRunner;
 import jetbrains.buildServer.serverSide.SRunningBuild;
-import jetbrains.buildServer.serverSide.SourceVersionProvider;
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration;
 import jetbrains.buildServer.status.StatusProvider;
 import jetbrains.buildServer.users.User;
@@ -32,6 +32,7 @@ import jetbrains.buildServer.users.UserModel;
 import jetbrains.buildServer.util.ItemProcessor;
 import jetbrains.buildServer.vcs.VcsManager;
 import jetbrains.buildServer.vcs.VcsModificationHistory;
+import jetbrains.buildServer.version.ServerVersionInfo;
 
 public class MockSBuildServer implements SBuildServer {
 	
@@ -291,12 +292,6 @@ public class MockSBuildServer implements SBuildServer {
 	}
 
 	@Override
-	public SourceVersionProvider getSourceVersionProvider() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public LoginConfiguration getLoginConfiguration() {
 		// TODO Auto-generated method stub
 		return null;
@@ -377,6 +372,18 @@ public class MockSBuildServer implements SBuildServer {
 	public boolean isStarted() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public <T extends TeamCityExtension> ExtensionsCollection<T> getExtensionsCollection(Class<T> extensionClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ServerVersionInfo getVersion() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
