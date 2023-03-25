@@ -20,7 +20,7 @@ import webhook.teamcity.settings.WebHookConfig;
 public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 
 	private final WebHookRunnerFactory webHookRunnerFactory;
-	private final ExecutorServices executorServices;
+	private final WebHookThreadingExecutorFactory webHookThreadingExecutorFactory;
 
 	@Override
 	public void execute(WebHook webhook, WebHookConfig whc, SQueuedBuild sQueuedBuild,
@@ -30,7 +30,7 @@ public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
 		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sQueuedBuild, state, user, comment, isTest);
-		executorServices.getNormalExecutorService().execute(runner);
+		webHookThreadingExecutorFactory.getExecutorService().execute(runner);
 
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: Finished scheduling runner for webhook :: " +
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
@@ -43,7 +43,7 @@ public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
 		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, state, responsibilityHolder, isTest);
-		executorServices.getNormalExecutorService().execute(runner);
+		webHookThreadingExecutorFactory.getExecutorService().execute(runner);
 
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: Finished scheduling runner for webhook :: " +
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
@@ -56,7 +56,7 @@ public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
 		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sBuild, state, user, comment, isTest, extraAttributes);
-		executorServices.getNormalExecutorService().execute(runner);
+		webHookThreadingExecutorFactory.getExecutorService().execute(runner);
 
 		Loggers.SERVER.debug("WebHookThreadingExecutorImpl :: Finished scheduling runner for webhook :: " +
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
@@ -71,7 +71,7 @@ public class WebHookThreadingExecutorImpl implements WebHookThreadingExecutor {
 				webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey());
 
 		WebHookRunner runner = webHookRunnerFactory.getRunner(webhook, whc, sProject, state, mutedOrUnmutedGroups, isTest);
-		executorServices.getNormalExecutorService().execute(runner);
+		webHookThreadingExecutorFactory.getExecutorService().execute(runner);
 
 
 		Loggers.SERVER.debug("WebHookSerialExecutorImpl :: Finished runner for webhook :: " +
