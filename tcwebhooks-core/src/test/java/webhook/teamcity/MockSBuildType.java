@@ -33,6 +33,7 @@ import jetbrains.buildServer.serverSide.InvalidIdentifierException;
 import jetbrains.buildServer.serverSide.InvalidVcsRootScopeException;
 import jetbrains.buildServer.serverSide.Parameter;
 import jetbrains.buildServer.serverSide.PersistFailedException;
+import jetbrains.buildServer.serverSide.PersistentEntityVersion;
 import jetbrains.buildServer.serverSide.ResolvedSettings;
 import jetbrains.buildServer.serverSide.ResponsibilityInfo;
 import jetbrains.buildServer.serverSide.RunType;
@@ -1225,5 +1226,83 @@ public class MockSBuildType implements SBuildType {
 	public boolean isReadOnly() {
 		return false;
 	}
+
+    @Override
+    public PersistentEntityVersion getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void markPersisted(long expectedEditId) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String[] getRunnersOrder() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void resetRunnersOrder() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public List<? extends BuildTypeTemplate> getTemplates() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getTemplateIds() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isCompositeBuildType() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setTemplates(List<? extends BuildTypeTemplate> templates, boolean optimizeSettings) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addTemplate(BuildTypeTemplate template, boolean optimizeSettings) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void removeTemplates(Collection<? extends BuildTypeTemplate> templates, boolean inlineSettings) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setTemplatesOrder(List<String> templateIds) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public List<? extends BuildTypeTemplate> getOwnTemplates() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getReadOnlyReason() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	
 }

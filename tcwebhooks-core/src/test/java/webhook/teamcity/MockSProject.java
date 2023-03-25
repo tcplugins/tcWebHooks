@@ -20,6 +20,7 @@ import jetbrains.buildServer.serverSide.BuildTypeIdentity;
 import jetbrains.buildServer.serverSide.BuildTypeTemplate;
 import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.CopyOptions;
+import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.CyclicDependencyException;
 import jetbrains.buildServer.serverSide.DuplicateBuildTypeNameException;
 import jetbrains.buildServer.serverSide.DuplicateProjectNameException;
@@ -30,22 +31,24 @@ import jetbrains.buildServer.serverSide.InvalidVcsRootScopeException;
 import jetbrains.buildServer.serverSide.MaxNumberOfBuildTypesReachedException;
 import jetbrains.buildServer.serverSide.Parameter;
 import jetbrains.buildServer.serverSide.PersistFailedException;
+import jetbrains.buildServer.serverSide.PersistentEntityVersion;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SPersistentEntity;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.TemplateCannotBeRemovedException;
 import jetbrains.buildServer.serverSide.identifiers.DuplicateExternalIdException;
-import jetbrains.buildServer.serverSide.impl.ProjectFeatureDescriptorImpl;
 import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.vcs.DuplicateVcsRootNameException;
 import jetbrains.buildServer.vcs.SVcsRoot;
 import jetbrains.buildServer.vcs.UnknownVcsException;
 import jetbrains.buildServer.vcs.VcsRootInstance;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 public class MockSProject implements SProject {
 
-	private String name;
+    private String name;
 	private String description;
 	private String projectId;
 	private String projectExternalId;
@@ -650,7 +653,7 @@ public class MockSProject implements SProject {
 
 	@Override
 	public SProjectFeatureDescriptor addFeature(String type, Map<String, String> params) {
-		SProjectFeatureDescriptor feature = new ProjectFeatureDescriptorImpl(String.valueOf(features.size()), type, params, this);
+	    SProjectFeatureDescriptor feature = new MockSProjectFeatureDescriptor(type, this.projectId, params, String.valueOf(features.size()));
 		this.features.add(feature);
 		return feature;
 	}
@@ -701,5 +704,75 @@ public class MockSProject implements SProject {
 	public boolean isReadOnly() {
 		return false;
 	}
+
+    @Override
+    public PersistentEntityVersion getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void markPersisted(long expectedEditId) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getDefaultTemplateId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOwnDefaultTemplateId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public BuildTypeTemplate getDefaultTemplate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public BuildTypeTemplate getOwnDefaultTemplate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public SVcsRoot createDummyVcsRoot(String vcsName, Map<String, String> parameters) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getReadOnlyReason() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CustomDataStorage getCustomDataStorage(String storageId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Status getStatus(String branch) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @AllArgsConstructor @Getter
+    public class MockSProjectFeatureDescriptor implements SProjectFeatureDescriptor {
+
+            private String type;
+            private String projectId;
+            private Map<String, String> parameters;
+            private String id;
+
+    }
 
 }

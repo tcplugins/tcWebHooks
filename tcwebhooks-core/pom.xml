@@ -92,6 +92,13 @@
 			<version>1.1</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>23.0.0</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server-api.jar -->
 		<dependency>
@@ -108,14 +115,22 @@
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/common-impl.jar -->
+		<!-- 
+			Common-impl is used access the plugin manager, to determine which plugins are installed.
+			It's used for Statistics and to show the versions in the UI.
+		-->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>common-impl</artifactId>
-			<version>${teamcityVersion}</version>
+			<version>${teamcityServerVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- TeamCity/webapps/WEB-INF/lib/server.jar -->
+		<!-- Enables:
+		     - Saving reason for the change when saving a project. 
+		     - Used to obtain the server UUID for Statistics
+		     - Obtaining Secure values from SecureDataStorage  -->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>server</artifactId>
