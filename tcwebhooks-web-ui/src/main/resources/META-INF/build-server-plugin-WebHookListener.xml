@@ -31,6 +31,10 @@
         class="webhook.teamcity.executor.WebHookThreadingExecutorImpl"
         />
   		
+	<bean id="webHookThreadingExecutorFactory"
+        class="webhook.teamcity.executor.WebHookThreadingExecutorFactoryImpl"
+        />
+  		
 	<bean id="webHookRunnerFactory"
         class="webhook.teamcity.executor.WebHookRunnerFactory"
         />
