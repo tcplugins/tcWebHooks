@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import org.jdom.Element;
 
+import lombok.Setter;
 import webhook.WebHookProxyConfig;
 
 
@@ -21,7 +22,7 @@ public class WebHookMainConfig {
 	private static final int HTTP_CONNECT_TIMEOUT_DEFAULT = 120;
 	private static final int HTTP_RESPONSE_TIMEOUT_DEFAULT = 120;
 	private static final int STATISTICS_REPORTING_DAYS_DEFAULT = 5;
-	private static final boolean USE_WEBHOOK_THREADED_EXECUTOR = true; // Whether to use a dedicated thread pool for WebHooks.
+	private static final boolean WEBHOOK_DEDICATED_EXECUTOR = true; // Whether to use a dedicated thread pool for WebHooks.
 	private static final int WEB_HOOK_MIN_THREADS = 1;
 	private static final int WEB_HOOK_MAX_THREADS = 50;
 	private static final int WEB_HOOK_THREAD_QUEUE_SIZE = 3000;
@@ -40,14 +41,15 @@ public class WebHookMainConfig {
 	private Integer httpResponseTimeout = null;
 	private Boolean useThreadedExecutor = null;
 
-	private Boolean useWebHookTheadedExecutor = null;
-	private Integer webHookMinThreads = null;
-	private Integer webHookMaxThreads = null;
-	private Integer webHookThreadQueueSize = null;
-
 	private Boolean assembleStatistics = null;
 	private Boolean reportStatistics = null;
 	private Integer reportStatisticsFrequencyDays = null;
+
+	@Setter private Boolean dedicatedThreadPool = null;
+	@Setter private Integer minPoolSize = null;
+	@Setter private Integer maxPoolSize = null;
+	@Setter private Integer queueSize = null;
+
 
 	private Pattern singleHostPattern;
 	private Pattern hostnameOnlyPattern;
@@ -326,18 +328,18 @@ public class WebHookMainConfig {
 		this.useThreadedExecutor = threadPoolSender;
 	}
 
-	public boolean useWebHookTheadedExecutor() {
-		return defaultIfNull(this.useWebHookTheadedExecutor, USE_WEBHOOK_THREADED_EXECUTOR);
+	public boolean useDedicatedThreadPool() {
+		return defaultIfNull(this.dedicatedThreadPool, WEBHOOK_DEDICATED_EXECUTOR);
 	}
 
-	public int getWebHookMinThreads() {
-		return defaultIfNull(this.webHookMinThreads, WEB_HOOK_MIN_THREADS);
+	public int getMinPoolSize() {
+		return defaultIfNull(this.minPoolSize, WEB_HOOK_MIN_THREADS);
 	}
-	public int getWebHookMaxThreads() {
-		return defaultIfNull(this.webHookMaxThreads, WEB_HOOK_MAX_THREADS);
+	public int getMaxPoolSize() {
+		return defaultIfNull(this.maxPoolSize, WEB_HOOK_MAX_THREADS);
 	}
-	public int getWebHookThreadQueueSize() {
-		return defaultIfNull(this.webHookThreadQueueSize, WEB_HOOK_THREAD_QUEUE_SIZE);
+	public int getQueueSize() {
+		return defaultIfNull(this.queueSize, WEB_HOOK_THREAD_QUEUE_SIZE);
 	}
 
 	public int getReportStatisticsFrequency() {
@@ -365,6 +367,30 @@ public class WebHookMainConfig {
 				statistics.addContent(reporting);
 			}
 			return statistics;
+		}
+		return null;
+	}
+
+	/**
+	 *     &lt;dedicatedThreadPool enabled="true" minPoolSize="10" maxPoolSize="20" queueSize="1000"/&gt;
+	 * @return the above as an XML element
+	 */
+	public Element getDedicatedThreadPoolAsElement() {
+		if(this.dedicatedThreadPool != null || this.minPoolSize != null || this.maxPoolSize != null || this.queueSize != null) {
+			Element dedicatedThreadPoolElement = new Element(WebHookMainSettings.ATTRIBUTENAME_DEDICATED_THREAD_POOL);
+			if(this.dedicatedThreadPool != null) {
+				dedicatedThreadPoolElement.setAttribute(WebHookMainSettings.ATTRIBUTENAME_ENABLED, Boolean.toString(this.dedicatedThreadPool));
+			}
+			if(this.minPoolSize != null) {
+				dedicatedThreadPoolElement.setAttribute(WebHookMainSettings.ATTRIBUTENAME_MIN_POOL_SIZE, Integer.toString(this.minPoolSize));
+			}
+			if(this.maxPoolSize != null) {
+				dedicatedThreadPoolElement.setAttribute(WebHookMainSettings.ATTRIBUTENAME_MAX_POOL_SIZE, Integer.toString(this.maxPoolSize));
+			}
+			if(this.queueSize != null) {
+				dedicatedThreadPoolElement.setAttribute(WebHookMainSettings.ATTRIBUTENAME_QUEUE_SIZE, Integer.toString(this.queueSize));
+			}
+			return dedicatedThreadPoolElement;
 		}
 		return null;
 	}

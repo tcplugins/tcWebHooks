@@ -16,16 +16,16 @@ public class WebHookThreadingExecutorFactoryImpl implements WebHookThreadingExec
     private ExecutorService scheduledExecutorService;
     @Override
     public ExecutorService getExecutorService() {
-        if (!this.myMainSettings.getWebHookMainConfig().useWebHookTheadedExecutor()) {
+        if (!this.myMainSettings.getWebHookMainConfig().useThreadedExecutor()) {
             return executorServices.getNormalExecutorService();
         }
         
         if (this.scheduledExecutorService == null) {
            this.scheduledExecutorService = ExecutorsFactory.newFixedDaemonExecutor(
                     "WebHookThread-", 
-                    this.myMainSettings.getWebHookMainConfig().getWebHookMinThreads(), 
-                    this.myMainSettings.getWebHookMainConfig().getWebHookMaxThreads(),
-                    this.myMainSettings.getWebHookMainConfig().getWebHookThreadQueueSize());
+                    this.myMainSettings.getWebHookMainConfig().getMinPoolSize(), 
+                    this.myMainSettings.getWebHookMainConfig().getMaxPoolSize(),
+                    this.myMainSettings.getWebHookMainConfig().getQueueSize());
         }
         return this.scheduledExecutorService;
     }
