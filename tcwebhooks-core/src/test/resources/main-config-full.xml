@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server>
   <webhooks useThreadedExecutor="true">
+    <dedicatedThreadPool enabled="true" minPoolSize="10" maxPoolSize="20" queueSize="1000" />
     <proxy host="myproxy.mycompany.com" port="8080" proxyShortNames="true" username="test_user" password="test_pass">
       <noproxy url=".mycompany.com" />
       <noproxy url="192.168.0." />
