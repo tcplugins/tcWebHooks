@@ -323,7 +323,7 @@ public class WebHookConfig {
 	public static String generateRandomKey() {
 		int min = 1000000;
 		int max = 1000000000;
-		Integer rand = min + new Random().nextInt((max - min) + 1);
+		Integer rand = min + new Random().nextInt((max - min) + 1); //NOSONAR We are not using this value for anything secure
 		return "id_" + rand.toString();
 	}
 

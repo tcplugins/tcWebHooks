@@ -19,7 +19,7 @@ public class WebHookEndPointPayload {
 	@Builder.Default boolean parseFailure = false;
 	Map<String, String> headers;
 	Map<String, String[]> parameters;
-	@Builder.Default Random random = new Random();
+	@Builder.Default Random random = new Random(); //NOSONAR We are not using this value for anything secure
 	
 	public WebHookEndPointPayload generateHash(){
 		int min = 1000000;
