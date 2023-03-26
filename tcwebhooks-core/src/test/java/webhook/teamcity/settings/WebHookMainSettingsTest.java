@@ -42,62 +42,74 @@ public class WebHookMainSettingsTest {
 		assertEquals(Boolean.TRUE, whms.isAssembleStatisticsEnabled());
 		assertEquals(Boolean.TRUE, whms.isReportStatisticsEnabled());
 		assertEquals(5, whms.getReportStatisticsFrequency());
+		assertEquals(Boolean.TRUE, whms.getWebHookMainConfig().useDedicatedThreadPool());
+		assertEquals(10, whms.getWebHookMainConfig().getMinPoolSize());
+		assertEquals(20, whms.getWebHookMainConfig().getMaxPoolSize());
+		assertEquals(1000, whms.getWebHookMainConfig().getQueueSize());
+
 	}
-	
+
 	/*
-	    <?xml version="1.0" encoding="UTF-8"?>
-        <server>
-          <webhooks useThreadedExecutor="true">
-            <proxy host="myproxy.mycompany.com" port="8080" proxyShortNames="true" username="test_user" password="test_pass">
-              <noproxy url=".mycompany.com" />
-              <noproxy url="192.168.0." />
-            </proxy>
-            <info url="http://intranet.mycompany.com/docs/UsingWebHooks" text="Using WebHooks in myCompany Inc." show-reading="true"/>
-            <statistics enabled="true">
-              <reporting enabled="true" frequency="5"/>
-            </statistics>
-            <http-timeout connect="50" response="55"/>
-          </webhooks>
-        </server>
+		<?xml version="1.0" encoding="UTF-8"?>
+		<server>
+		  <webhooks useThreadedExecutor="true">
+			<dedicatedThreadPool enabled="true" minPoolSize="10" maxPoolSize="20" queueSize="1000"/>
+			<proxy host="myproxy.mycompany.com" port="8080" proxyShortNames="true" username="test_user" password="test_pass">
+			  <noproxy url=".mycompany.com" />
+			  <noproxy url="192.168.0." />
+			</proxy>
+			<info url="http://intranet.mycompany.com/docs/UsingWebHooks" text="Using WebHooks in myCompany Inc." show-reading="true"/>
+			<statistics enabled="true">
+			  <reporting enabled="true" frequency="5"/>
+			</statistics>
+			<http-timeout connect="50" response="55"/>
+		  </webhooks>
+		</server>
 	 */
-    @Test
-    public void TestWriteOfFullConfig() throws JDOMException, IOException {
-        WebHookMainSettings whms = new WebHookMainSettings(server);
-        whms.register();
-        whms.readFrom(getFullConfigElement());
-        Element e = new Element("server");
-        whms.writeTo(e);
-        Element webHooksElement = e.getChild("webhooks");
-        assertTrue(webHooksElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_USE_THREADED_EXECUTOR).getBooleanValue());
-        Element proxyElement = webHooksElement.getChild("proxy");
-        assertEquals("myproxy.mycompany.com", proxyElement.getAttribute("host").getValue());
-        assertEquals(8080, proxyElement.getAttribute("port").getIntValue());
-        assertEquals(true, proxyElement.getAttribute("proxyShortNames").getBooleanValue());
-        assertEquals("test_user", proxyElement.getAttribute("username").getValue());
-        assertEquals("test_pass", proxyElement.getAttribute("password").getValue());
-        
-        @SuppressWarnings("unchecked")
-        List<Element> namedChildren = proxyElement.getChildren("noproxy");
-        assertEquals(".mycompany.com", namedChildren.get(0).getAttribute("url").getValue());
-        assertEquals("192.168.0.", namedChildren.get(1).getAttribute("url").getValue());
+	@Test
+	public void TestWriteOfFullConfig() throws JDOMException, IOException {
+		WebHookMainSettings whms = new WebHookMainSettings(server);
+		whms.register();
+		whms.readFrom(getFullConfigElement());
+		Element e = new Element("server");
+		whms.writeTo(e);
+		Element webHooksElement = e.getChild("webhooks");
+		assertTrue(webHooksElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_USE_THREADED_EXECUTOR).getBooleanValue());
+		Element proxyElement = webHooksElement.getChild("proxy");
+		assertEquals("myproxy.mycompany.com", proxyElement.getAttribute("host").getValue());
+		assertEquals(8080, proxyElement.getAttribute("port").getIntValue());
+		assertEquals(true, proxyElement.getAttribute("proxyShortNames").getBooleanValue());
+		assertEquals("test_user", proxyElement.getAttribute("username").getValue());
+		assertEquals("test_pass", proxyElement.getAttribute("password").getValue());
 
-        Element infoElement = webHooksElement.getChild("info");
-        assertEquals("http://intranet.mycompany.com/docs/UsingWebHooks", infoElement.getAttribute("url").getValue());
-        assertEquals("Using WebHooks in myCompany Inc.", infoElement.getAttribute("text").getValue());
-        assertEquals(true, infoElement.getAttribute("show-reading").getBooleanValue());
-        
-        Element statsElement = webHooksElement.getChild("statistics");
-        assertEquals(true, statsElement.getAttribute("enabled").getBooleanValue());
-        Element statsReportingElement = statsElement.getChild("reporting");
-        assertEquals(true, statsReportingElement.getAttribute("enabled").getBooleanValue());
-        assertEquals(5, statsReportingElement.getAttribute("frequency").getIntValue());
-        
-        Element httpTimeoutElement = webHooksElement.getChild("http-timeout");
-        assertEquals(50, httpTimeoutElement.getAttribute("connect").getIntValue());
-        assertEquals(55, httpTimeoutElement.getAttribute("response").getIntValue());
-        
+		@SuppressWarnings("unchecked")
+		List<Element> namedChildren = proxyElement.getChildren("noproxy");
+		assertEquals(".mycompany.com", namedChildren.get(0).getAttribute("url").getValue());
+		assertEquals("192.168.0.", namedChildren.get(1).getAttribute("url").getValue());
 
-    }
+		Element infoElement = webHooksElement.getChild("info");
+		assertEquals("http://intranet.mycompany.com/docs/UsingWebHooks", infoElement.getAttribute("url").getValue());
+		assertEquals("Using WebHooks in myCompany Inc.", infoElement.getAttribute("text").getValue());
+		assertEquals(true, infoElement.getAttribute("show-reading").getBooleanValue());
+
+		Element statsElement = webHooksElement.getChild("statistics");
+		assertEquals(true, statsElement.getAttribute("enabled").getBooleanValue());
+		Element statsReportingElement = statsElement.getChild("reporting");
+		assertEquals(true, statsReportingElement.getAttribute("enabled").getBooleanValue());
+		assertEquals(5, statsReportingElement.getAttribute("frequency").getIntValue());
+
+		Element httpTimeoutElement = webHooksElement.getChild("http-timeout");
+		assertEquals(50, httpTimeoutElement.getAttribute("connect").getIntValue());
+		assertEquals(55, httpTimeoutElement.getAttribute("response").getIntValue());
+
+		Element threadElement = webHooksElement.getChild(WebHookMainSettings.ATTRIBUTENAME_DEDICATED_THREAD_POOL);
+		assertEquals(true, threadElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_ENABLED).getBooleanValue());
+		assertEquals(10, threadElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_MIN_POOL_SIZE).getIntValue());
+		assertEquals(20, threadElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_MAX_POOL_SIZE).getIntValue());
+		assertEquals(1000, threadElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_QUEUE_SIZE).getIntValue());
+
+
+	}
 
 	@Test
 	public void testWriteWithEmptySettings() {
@@ -126,6 +138,15 @@ public class WebHookMainSettingsTest {
 		whms.writeTo(e);
 		assertTrue(e.getChild("webhooks").getChildren().isEmpty());
 		assertTrue(e.getChild("webhooks").getAttribute(WebHookMainSettings.ATTRIBUTENAME_USE_THREADED_EXECUTOR).getBooleanValue());
+	}
+
+	@Test
+	public void testDedicatedThreadPoolDefaultValues() {
+		WebHookMainSettings whms = new WebHookMainSettings(server);
+		assertEquals(Boolean.TRUE, whms.getWebHookMainConfig().useDedicatedThreadPool());
+		assertEquals(1, whms.getWebHookMainConfig().getMinPoolSize());
+		assertEquals(50, whms.getWebHookMainConfig().getMaxPoolSize());
+		assertEquals(3000, whms.getWebHookMainConfig().getQueueSize());
 	}
 
 	private Element getFullConfigElement() throws JDOMException, IOException{

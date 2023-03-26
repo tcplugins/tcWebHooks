@@ -11,8 +11,12 @@ import webhook.WebHookProxyConfig;
 import webhook.teamcity.Loggers;
 
 public class WebHookMainSettings implements MainConfigProcessor {
+	protected static final String ATTRIBUTENAME_ENABLED = "enabled";
 	protected static final String ATTRIBUTENAME_USE_THREADED_EXECUTOR = "useThreadedExecutor";
-	private static final String ATTRIBUTENAME_ENABLED = "enabled";
+	protected static final String ATTRIBUTENAME_DEDICATED_THREAD_POOL = "dedicatedThreadPool";
+	protected static final String ATTRIBUTENAME_MIN_POOL_SIZE = "minPoolSize";
+	protected static final String ATTRIBUTENAME_MAX_POOL_SIZE = "maxPoolSize";
+	protected static final String ATTRIBUTENAME_QUEUE_SIZE = "queueSize";
 	private static final String NAME = WebHookMainSettings.class.getName();
 	private WebHookMainConfig webHookMainConfig;
 	private SBuildServer server;
@@ -85,6 +89,22 @@ public class WebHookMainSettings implements MainConfigProcessor {
 				}
 			}
 
+			Element dedicatedThreadPoolElement = webhooksElement.getChild(ATTRIBUTENAME_DEDICATED_THREAD_POOL);
+			if (dedicatedThreadPoolElement != null) {
+				if (dedicatedThreadPoolElement.getAttribute(ATTRIBUTENAME_ENABLED) != null) {
+					tempConfig.setDedicatedThreadPool(Boolean.parseBoolean(dedicatedThreadPoolElement.getAttributeValue(ATTRIBUTENAME_ENABLED)));
+				}
+				if (dedicatedThreadPoolElement.getAttribute(ATTRIBUTENAME_MIN_POOL_SIZE) != null) {
+					tempConfig.setMinPoolSize(Integer.valueOf(dedicatedThreadPoolElement.getAttributeValue(ATTRIBUTENAME_MIN_POOL_SIZE)));
+				}
+				if (dedicatedThreadPoolElement.getAttribute(ATTRIBUTENAME_MAX_POOL_SIZE) != null) {
+					tempConfig.setMaxPoolSize(Integer.valueOf(dedicatedThreadPoolElement.getAttributeValue(ATTRIBUTENAME_MAX_POOL_SIZE)));
+				}
+				if (dedicatedThreadPoolElement.getAttribute(ATTRIBUTENAME_QUEUE_SIZE) != null) {
+					tempConfig.setQueueSize(Integer.valueOf(dedicatedThreadPoolElement.getAttributeValue(ATTRIBUTENAME_QUEUE_SIZE)));
+				}
+			}
+
 			Element proxyElement = webhooksElement.getChild("proxy");
 			if(proxyElement != null)
 			{
@@ -132,6 +152,9 @@ public class WebHookMainSettings implements MainConfigProcessor {
 		if (webHookMainConfig.useThreadedExecutorIsDefined()) {
 			webhooksElement.setAttribute(ATTRIBUTENAME_USE_THREADED_EXECUTOR, Boolean.toString(webHookMainConfig.useThreadedExecutor()));
 		}
+		if (webHookMainConfig.getDedicatedThreadPoolAsElement() != null) {
+			webhooksElement.addContent(webHookMainConfig.getDedicatedThreadPoolAsElement());
+		}
 		if(webHookMainConfig.getProxyHost() != null && webHookMainConfig.getProxyHost().length() > 0
 				&& webHookMainConfig.getProxyPort() != null && webHookMainConfig.getProxyPort() > 0 )
 		{
@@ -152,7 +175,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
 		}
 
 		if (webHookMainConfig.getStatisticsAsElement() != null) {
-		    webhooksElement.addContent(webHookMainConfig.getStatisticsAsElement());
+			webhooksElement.addContent(webHookMainConfig.getStatisticsAsElement());
 		}
 
 		parentElement.addContent(webhooksElement);
