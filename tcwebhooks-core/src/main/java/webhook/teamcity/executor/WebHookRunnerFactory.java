@@ -19,7 +19,7 @@ import webhook.teamcity.statistics.StatisticsReport;
 
 @AllArgsConstructor
 public class WebHookRunnerFactory {
-	
+
 	private WebHookContentBuilder webHookContentBuilder;
 	private WebHookHistoryRepository webHookHistoryRepository;
 	private WebHookHistoryItemFactory webHookHistoryItemFactory;
@@ -27,10 +27,10 @@ public class WebHookRunnerFactory {
 	public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SBuild sBuild, BuildStateEnum state, String username,
 			String comment, boolean isTest, Map<String, String> extraAttributes) {
 		return new BuildEventWebHookRunner(
-				webHookContentBuilder, 
-				webHookHistoryRepository, 
-				webHookHistoryItemFactory, 
-				whc, 
+				webHookContentBuilder,
+				webHookHistoryRepository,
+				webHookHistoryItemFactory,
+				whc,
 				state,
 				username,
 				comment,
@@ -47,9 +47,9 @@ public class WebHookRunnerFactory {
 			WebHookResponsibilityHolder responsibilityHolder,
 			boolean isTest) {
 		return new ResponsibilityChangedWebHookRunner(
-				webHookContentBuilder, 
-				webHookHistoryRepository, 
-				webHookHistoryItemFactory, 
+				webHookContentBuilder,
+				webHookHistoryRepository,
+				webHookHistoryItemFactory,
 				whc,
 				state,
 				isTest,	// Test enables override too.
@@ -62,15 +62,15 @@ public class WebHookRunnerFactory {
 	public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SQueuedBuild sQueuedBuild, BuildStateEnum state,
 			String user, String comment, boolean isTest) {
 		return new QueuedBuildWebHookRunner(
-				webHookContentBuilder, 
-				webHookHistoryRepository, 
-				webHookHistoryItemFactory, 
-				whc, 
-				state, 
+				webHookContentBuilder,
+				webHookHistoryRepository,
+				webHookHistoryItemFactory,
+				whc,
+				state,
 				isTest,	// Test enables override too.
-				webhook, 
-				sQueuedBuild, 
-				user, 
+				webhook,
+				sQueuedBuild,
+				user,
 				comment,
 				isTest
 			);
@@ -78,32 +78,31 @@ public class WebHookRunnerFactory {
 
 	public Runnable getRunner(WebHook webhook, WebHookConfig whc, BuildStateEnum state, StatisticsReport report, SProject rootProject, boolean isTest) {
 		return new StatisticsReporterWebHookRunner(
-				webHookContentBuilder, 
-				webHookHistoryRepository, 
-				webHookHistoryItemFactory, 
-				whc, 
-				state, 
-				isTest, 
-				webhook, 
-				isTest, 
-				rootProject, 
+				webHookContentBuilder,
+				webHookHistoryRepository,
+				webHookHistoryItemFactory,
+				whc,
+				state,
+				isTest,
+				webhook,
+				isTest,
+				rootProject,
 				report
 			);
 	}
 
-    public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SProject sProject, BuildStateEnum state,
-            Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, boolean isTest) {
-        // TODO Auto-generated method stub
-        return new TestsMutingWebHookRunner(
-                webHookContentBuilder, 
-                webHookHistoryRepository, 
-                webHookHistoryItemFactory, 
-                webhook, 
-                whc, 
-                sProject,
-                state,
-                mutedOrUnmutedGroups, 
-                isTest);
-    }
+	public WebHookRunner getRunner(WebHook webhook, WebHookConfig whc, SProject sProject, BuildStateEnum state,
+			Map<MuteInfo, Collection<STest>> mutedOrUnmutedGroups, boolean isTest) {
+		return new TestsMutingWebHookRunner(
+				webHookContentBuilder,
+				webHookHistoryRepository,
+				webHookHistoryItemFactory,
+				webhook,
+				whc,
+				sProject,
+				state,
+				mutedOrUnmutedGroups,
+				isTest);
+	}
 
 }

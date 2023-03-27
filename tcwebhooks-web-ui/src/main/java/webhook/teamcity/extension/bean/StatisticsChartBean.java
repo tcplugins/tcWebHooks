@@ -54,6 +54,7 @@ public class StatisticsChartBean {
 			.put(WebHookExecutionException.WEBHOOK_DISABLED_BY_FILTER_INFO_CODE, "rgba(55, 55, 55, 0.2)")
 			
 			.put(WebHookExecutionException.WEBHOOK_EXECUTION_ERROR_CODE, "rgba(255, 49, 140, 0.5)")
+			.put(WebHookExecutionException.WEBHOOK_EXECUTION_QUEUE_FULL, "rgba(255, 49, 140, 0.4)")
 			
 			.put(WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE, "rgba(255, 131, 49, 0.8)")
 			.put(WebHookExecutionException.WEBHOOK_PAYLOAD_CONTENT_ASSEMBLY_EXCEPTION_ERROR_CODE, "rgba(255, 131, 49, 0.7)")

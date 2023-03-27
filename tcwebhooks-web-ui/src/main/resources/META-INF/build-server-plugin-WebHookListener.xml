@@ -33,6 +33,7 @@
   		
 	<bean id="webHookThreadingExecutorFactory"
         class="webhook.teamcity.executor.WebHookThreadingExecutorFactoryImpl"
+        init-method="requestDeferredRegistration"
         />
   		
 	<bean id="webHookRunnerFactory"

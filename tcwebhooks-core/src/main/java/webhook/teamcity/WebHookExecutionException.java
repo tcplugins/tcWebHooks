@@ -10,6 +10,8 @@ public class WebHookExecutionException extends RuntimeException {
 	public static final int    WEBHOOK_DISABLED_BY_FILTER_INFO_CODE = 702;
 	
 	public static final int    WEBHOOK_EXECUTION_ERROR_CODE = 801;
+	public static final int    WEBHOOK_EXECUTION_QUEUE_FULL = 802;
+	public static final String WEBHOOK_EXECUTION_QUEUE_FULL_MESSAGE = "WebHook Executor Queue full. Exception was: ";
 	
 	public static final int    WEBHOOK_CONTENT_RESOLUTION_ERROR_CODE = 900;
 	public static final int    TEMPLATE_NOT_FOUND_ERROR_CODE = 901;
