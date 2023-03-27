@@ -166,7 +166,6 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 		return shouldHideSecureData ? "********" : wh.getUrl();
 	}
 	protected abstract WebHook getWebHookContent();
-	protected abstract WebHookHistoryItem buildWebHookHistoryItem(WebHookErrorStatus errorStatus);
 
 	protected void errorCallback(RuntimeException exception) {
 		// Do nothing by default

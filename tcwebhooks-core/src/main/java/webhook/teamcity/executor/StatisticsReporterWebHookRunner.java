@@ -58,7 +58,7 @@ public class StatisticsReporterWebHookRunner extends AbstractWebHookExecutor {
 	}
 
 	@Override
-	protected WebHookHistoryItem buildWebHookHistoryItem(WebHookErrorStatus errorStatus) {
+	public WebHookHistoryItem buildWebHookHistoryItem(WebHookErrorStatus errorStatus) {
 		if (this.isTest) {
 			return webHookHistoryItemFactory.getWebHookHistoryTestItem(
 					whc,

@@ -42,7 +42,7 @@ public class ResponsibilityChangedWebHookRunner extends AbstractWebHookExecutor 
 	}
 	
 	@Override
-	protected WebHookHistoryItem buildWebHookHistoryItem(WebHookErrorStatus errorStatus) {
+	public WebHookHistoryItem buildWebHookHistoryItem(WebHookErrorStatus errorStatus) {
 		if (this.isTest) {
 			if (this.responsibilityHolder.getSBuildType() != null) {
 				return webHookHistoryItemFactory.getWebHookHistoryTestItem(
