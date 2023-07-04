@@ -386,7 +386,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	@Override
 	public void testsMuted(MuteInfo muteInfo) {
-	    this.processTestEvent(BuildStateEnum.TESTS_MUTED, null, Collections.singletonMap(muteInfo, new ArrayList<>()));
+	    this.processTestEvent(BuildStateEnum.TESTS_MUTED, null, Collections.singletonMap(muteInfo, muteInfo.getTests()));
 	}
 	
 	@Override
