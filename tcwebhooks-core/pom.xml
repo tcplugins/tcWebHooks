@@ -137,22 +137,23 @@
 			<version>1.15</version>
 		</dependency>
 
-		 <!--Jetty dependencies start here -->
+		 <!--Jetty Web Server dependencies start here -->
 		 <dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.4.43.v20210629</version>
+			<version>9.4.51.v20230217</version>
 			<scope>test</scope>
 		 </dependency>
 
 		 <dependency>
 			 <groupId>org.eclipse.jetty</groupId>
 			 <artifactId>jetty-webapp</artifactId>
-			<version>9.4.44.v20210927</version>
+			<version>9.4.51.v20230217</version>
 			<scope>test</scope>
 		 </dependency>
-		 <!--Jetty dependencies end here -->
+		<!--Jetty dependencies end here -->
 
+		<!--Jetty Proxy Server dependencies start here -->
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
@@ -173,6 +174,7 @@
 			<version>6.1.23</version>
 			<scope>test</scope>
 		</dependency>
+		<!--Jetty Proxy Server dependencies end here -->
 
 		<dependency>
 			<groupId>log4j</groupId>
