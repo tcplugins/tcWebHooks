@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
+import org.apache.velocity.tools.generic.DateTool;
 
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.Loggers;
@@ -65,10 +66,15 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 			Loggers.SERVER.debug(e);
 		} 
 		
-		if (!velocityContext.containsKey("jsonTool")) {
-			velocityContext.put("jsonTool", new VelocityJsonTool());
+		if (!velocityContext.containsKey("dateTool")) {
+			velocityContext.put("dateTool", new DateTool());
 		} else {
-			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'jsonTool' to Velocity context. An item of that name already exists");
+			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'dateTool' to Velocity context. An item of that name already exists");
+		}
+		if (!velocityContext.containsKey("jsonTool")) {
+		    velocityContext.put("jsonTool", new VelocityJsonTool());
+		} else {
+		    Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'jsonTool' to Velocity context. An item of that name already exists");
 		}
 		if (!velocityContext.containsKey("nullUtils")) {
 			velocityContext.put("nullUtils", new VelocityNullUtils());
