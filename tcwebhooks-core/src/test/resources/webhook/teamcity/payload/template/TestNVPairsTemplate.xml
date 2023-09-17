@@ -4,7 +4,7 @@
 	<template-description>Microsoft Teams (light)</template-description>
 	<template-tool-tip>A template for Microsoft Teams. Has a different look
 		and feel.</template-tool-tip>
-	<preferred-date-format></preferred-date-format>
+	<preferred-date-format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</preferred-date-format>
 	<templates max-id="3">
 		<template id="0">
 			<template-text use-for-branch-template="true">

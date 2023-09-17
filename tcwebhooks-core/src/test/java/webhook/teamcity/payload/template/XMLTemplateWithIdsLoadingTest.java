@@ -1,7 +1,7 @@
 package webhook.teamcity.payload.template;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,7 @@ public class XMLTemplateWithIdsLoadingTest {
 		
 		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		WebHookPayloadTemplate template = wtm.getTemplate("testXMLtemplateWithId");
-		assertTrue(template != null);
+		assertNotNull(template);
 		assertEquals(2, regsiteredTemplates.size());
 	}
 

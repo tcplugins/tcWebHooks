@@ -26,28 +26,29 @@ public class XMLTemplateLoadingTest {
 	WebHookTemplateManager wtm;
 	WebHookPayloadManager wpm;
 	ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
-	
+
 	@Test
 	public void TestXmlBranchAndNonBranchTemplatesViaChangeListener(){
 		when(mockServer.getRootUrl()).thenReturn("http://test.url");
 		wpm = new WebHookPayloadManager(mockServer);
 		wtm = new WebHookTemplateManager(wpm, new WebHookTemplateJaxHelperImpl(), projectIdResolver);
-		
+
 		//File configFile = new File("src/test/resources/webhook-templates_single-entry-called-testXMLtemplate.xml");
 		ServerPaths serverPaths = new ServerPaths(new File("src/test/resources/testXmlTemplate"));
 		WebHookTemplateFileChangeHandler changeListener = new WebHookTemplateFileChangeHandler(serverPaths, wtm, wpm, new WebHookTemplateJaxHelperImpl(), null);
 		changeListener.register();
 		changeListener.handleConfigFileChange();
-		
+
 		List<WebHookPayloadTemplate> regsiteredTemplates = wtm.getRegisteredTemplates();
 		WebHookPayloadTemplate template = wtm.getTemplate("testXMLtemplateWithCombinedTemplate");
-		assertTrue(template != null);
+		assertNotNull(template);
 		assertEquals("{ \"anotherMergedbuildStatus\" : \"${buildStatus}\" }", template.getTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText());
 		assertEquals("{ \"anotherMergedbuildStatus\" : \"${buildStatus}\" }", template.getBranchTemplateForState(BuildStateEnum.BUILD_STARTED).getTemplateText());
-		
+
 		assertEquals("{ \"mergedBuildStatus\" : \"${buildStatus}\" }", template.getTemplateForState(BuildStateEnum.BUILD_BROKEN).getTemplateText());
 		assertEquals("{ \"mergedBuildStatus\" : \"${buildStatus}\" }", template.getBranchTemplateForState(BuildStateEnum.BUILD_BROKEN).getTemplateText());
 		assertEquals(4, regsiteredTemplates.size());
+		assertEquals("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", template.getPreferredDateTimeFormat());
 	}
 
 }
