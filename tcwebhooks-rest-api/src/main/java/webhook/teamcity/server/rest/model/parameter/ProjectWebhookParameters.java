@@ -55,17 +55,12 @@ public class ProjectWebhookParameters {
 		
 		this.projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, true), projectExternalId);
 
-		if (fields.isIncluded("parameters", true, true)) {
-			parameters = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("parameters"),
-					new ValueWithDefault.Value<List<ProjectWebhookParameter>>() {
-						public List<ProjectWebhookParameter> get() {
-							final ArrayList<ProjectWebhookParameter> result = new ArrayList<>(parameters.size());
-							for (WebHookParameter parameter : webhookParameters) {
-								result.add(new ProjectWebhookParameter(parameter, fields, beanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, parameter)));
-							}
-							return result;
-						}
-					});
+		if (Boolean.TRUE.equals(fields.isIncluded("parameters", true, true))) {
+			final ArrayList<ProjectWebhookParameter> result = new ArrayList<>(parameters.size());
+			for (WebHookParameter parameter : webhookParameters) {
+				result.add(new ProjectWebhookParameter(parameter, fields, beanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, parameter)));
+			}
+			parameters = result;
 			if (pagerData != null) {
 				href = ValueWithDefault.decideDefault(fields.isIncluded("href"),
 						beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getHref()));
