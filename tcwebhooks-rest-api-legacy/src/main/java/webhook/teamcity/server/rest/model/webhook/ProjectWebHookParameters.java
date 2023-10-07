@@ -55,21 +55,15 @@ public class ProjectWebHookParameters {
 	public ProjectWebHookParameters(@NotNull final WebHookConfig config, @NotNull final List<WebHookParameter> webhookParameters, @NotNull String projectExternalId,
 			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
 		
-		//this.webhookId = ValueWithDefault.decideDefault(fields.isIncluded("webhookId", false, true), config.getUniqueKey());
-
 		if (Boolean.TRUE.equals(fields.isIncluded("parameters", true, true))) {
-			parameters = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("parameters"),
-					new ValueWithDefault.Value<List<ProjectWebhookParameter>>() {
-						public List<ProjectWebhookParameter> get() {
-							final ArrayList<ProjectWebhookParameter> result = new ArrayList<>(parameters.size());
-							int counter = 1;
-							for (WebHookParameter parameter : webhookParameters) {
-								parameter.setId(String.valueOf(counter++));
-								result.add(new ProjectWebhookParameter(parameter, fields, beanContext.getApiUrlBuilder().getWebHookParameterHref(projectExternalId, config, parameter)));
-							}
-							return result;
-						}
-					});
+			final ArrayList<ProjectWebhookParameter> result = new ArrayList<>(parameters.size());
+			int counter = 1;
+			for (WebHookParameter parameter : webhookParameters) {
+				parameter.setId(String.valueOf(counter++));
+				result.add(new ProjectWebhookParameter(parameter, fields, beanContext.getApiUrlBuilder().getWebHookParameterHref(projectExternalId, config, parameter)));
+			}
+			parameters = result;
+			
 			count = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("count"), parameters.size());
 			href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getWebHookParametersHref(projectExternalId, config));
 
