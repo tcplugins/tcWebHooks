@@ -16,18 +16,17 @@
 
 package webhook.teamcity.server.rest.jersey;
 
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.InjectableProvider;
 
-import java.lang.reflect.Type;
-
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
 
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.process.internal.RequestScoped;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.util.BeanContext;
 import jetbrains.buildServer.ServiceLocator;
@@ -41,36 +40,35 @@ import jetbrains.buildServer.server.rest.util.BeanFactory;
  */
 @Provider
 @SuppressWarnings("squid:S1191")
-public class BeanContextProvider implements InjectableProvider<Context, Type>, Injectable<BeanContext> {
-  private final RequestPathTransformInfo myRequestPathTransformInfo;
+public class BeanContextProvider implements Feature {
+  @Override
+  public boolean configure(FeatureContext context) {
+    context.register(new AbstractBinder() {
+      @Override
+      protected void configure() {
+        bindFactory(BeanContextFactory.class)
+                .to(BeanContext.class)
+                .in(RequestScoped.class);
+      }
+    });
 
-  // using request-specific field in singleton provider
-  // may lead to concurrency issue as this instance is
-  // created by spring not by Jersey!
-  @Context private HttpHeaders headers;
-  @Context private HttpServletRequest request;
-
-  private final BeanFactory myFactory;
-  private final ServiceLocator myServiceLocator;
-
-  public BeanContextProvider(final RequestPathTransformInfo requestPathTransformInfo, final BeanFactory factory, final ServiceLocator serviceLocator) {
-	myRequestPathTransformInfo = requestPathTransformInfo;
-    myFactory = factory;
-    myServiceLocator = serviceLocator;
+    return false;
   }
 
-  public ComponentScope getScope() {
-    return ComponentScope.PerRequest;
-  }
+  public static class BeanContextFactory implements Factory<BeanContext> {
+    @Inject private RequestPathTransformInfo myRequestPathTransformInfo;
+    @Inject private BeanFactory myFactory;
+    @Inject private ServiceLocator myServiceLocator;
+    @Inject private HttpHeaders headers;
+    @Inject private HttpServletRequest request;
 
-  public Injectable<BeanContext> getInjectable(final ComponentContext ic, final Context context, final Type type) {
-    if (type.equals(BeanContext.class)) {
-      return this;
+    @Override
+    public BeanContext provide() {
+      return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
     }
-    return null;
-  }
 
-  public BeanContext getValue() {
-    return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
+    @Override
+    public void dispose(BeanContext instance) {
+    }
   }
 }

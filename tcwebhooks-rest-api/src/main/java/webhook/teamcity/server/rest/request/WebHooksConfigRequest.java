@@ -1,5 +1,6 @@
 package webhook.teamcity.server.rest.request;
 
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -10,8 +11,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.jetbrains.annotations.NotNull;
-
-import com.sun.jersey.spi.resource.Singleton;
 
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;

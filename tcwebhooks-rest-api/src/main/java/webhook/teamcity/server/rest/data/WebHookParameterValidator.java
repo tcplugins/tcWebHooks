@@ -1,14 +1,18 @@
 package webhook.teamcity.server.rest.data;
 
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectable;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import org.springframework.stereotype.Component;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
 import webhook.teamcity.settings.project.WebHookParameterStore;
 
+@Component
+@JerseyInjectable
 public class WebHookParameterValidator {
 	private static final String PROJECT_ID_KEY = "projectId";
 	private final WebHookParameterStore myWebHookParameterStore;

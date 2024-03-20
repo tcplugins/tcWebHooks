@@ -3,10 +3,12 @@ package webhook.teamcity.server.rest.data;
 import java.util.regex.Pattern;
 
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectable;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import org.springframework.stereotype.Component;
 import webhook.Constants;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
@@ -16,6 +18,8 @@ import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
 
+@JerseyInjectable
+@Component
 public class TemplateValidator {
 	private static final String PROJECT_ID_KEY = "projectId";
 	private final WebHookTemplateManager myTemplateManager;

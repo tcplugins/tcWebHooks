@@ -3,6 +3,7 @@ package webhook.teamcity.server.rest.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectable;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.RootUrlHolder;
@@ -10,12 +11,15 @@ import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
+import org.springframework.stereotype.Component;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
+@JerseyInjectable
+@Component
 public class TemplateDataProvider extends DataProvider {
 
 	@NotNull private final WebHookTemplateManager myTemplateManager;

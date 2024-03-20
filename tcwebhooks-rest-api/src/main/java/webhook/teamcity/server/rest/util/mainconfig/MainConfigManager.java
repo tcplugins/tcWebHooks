@@ -2,6 +2,7 @@ package webhook.teamcity.server.rest.util.mainconfig;
 
 import javax.ws.rs.core.UriInfo;
 
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectable;
 import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.server.rest.model.mainconfig.Information;
@@ -10,6 +11,7 @@ import webhook.teamcity.server.rest.model.mainconfig.Proxy;
 import webhook.teamcity.server.rest.model.mainconfig.Webhooks;
 import webhook.teamcity.settings.WebHookMainSettings;
 
+@JerseyInjectable
 public class MainConfigManager {
 	
 	WebHookMainSettings mainConfig;

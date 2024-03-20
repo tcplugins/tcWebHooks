@@ -115,7 +115,7 @@
 		          <execution>
 		            <phase>package</phase>
 		            <configuration>
-		              <tasks>
+		              <target>
 						<echo message="Attempting to build dist-core zip file" />
 						<mkdir dir="${project.build.directory}/dist-core" />
 						<mkdir dir="${project.build.directory}/dist-core/server" />
@@ -139,7 +139,7 @@
 		    				 basedir="${project.build.directory}/dist-core"
 		    			 />
 		    			 
-		               </tasks>
+		               </target>
 		            </configuration>
 		            <goals>
 		              <goal>run</goal>
@@ -166,13 +166,13 @@
 	  		<scope>compile</scope>
 	  	</dependency>
   	
-	    <dependency>
+	    <!--<dependency>
 	      <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
 	      <artifactId>tcwebhooks-core</artifactId>
 	      <version>${currentVersion}</version>
 	      <type>test-jar</type>
 	      <scope>test</scope>
-	    </dependency>
+	    </dependency>-->
   	
   		<dependency>
 			<groupId>junit</groupId>

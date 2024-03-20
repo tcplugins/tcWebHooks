@@ -2,12 +2,16 @@ package webhook.teamcity.server.rest.data;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectable;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
+import org.springframework.stereotype.Component;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 
+@Component
+@JerseyInjectable
 public class WebHookDataProvider extends DataProvider {
 
 	private final WebHookManager myWebHookManager;

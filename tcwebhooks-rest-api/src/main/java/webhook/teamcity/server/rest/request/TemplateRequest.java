@@ -18,6 +18,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import jetbrains.buildServer.server.rest.model.PagerDataImpl;
+import jetbrains.buildServer.server.rest.model.SinglePagePagerData;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.difflib.DiffUtils;
@@ -152,7 +154,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"application/xml", "application/json"})
   public Templates serveTemplates(@QueryParam("fields") String fields) {
 	  checkTemplateReadPermission();
-	  return new Templates(myDataProvider.getWebHookTemplates(), new PagerData(getHref()), new Fields(fields), myBeanContext);
+	  return new Templates(myDataProvider.getWebHookTemplates(), new SinglePagePagerData(getHref()), new Fields(fields), myBeanContext);
   }
 
   @GET

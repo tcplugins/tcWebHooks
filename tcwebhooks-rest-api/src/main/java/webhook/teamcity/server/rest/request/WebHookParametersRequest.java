@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
+import jetbrains.buildServer.server.rest.model.SinglePagePagerData;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.ServiceLocator;
@@ -84,7 +85,7 @@ public class WebHookParametersRequest {
 		
 		SProject sProject = resolveProject(projectExternalId);
 		checkParameterReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookParameterFinder().getAllWebHookParameters(sProject, new PagerData(getHref(sProject.getExternalId())), new Fields(fields), myBeanContext);
+		return this.myDataProvider.getWebHookParameterFinder().getAllWebHookParameters(sProject, new SinglePagePagerData(getHref(sProject.getExternalId())), new Fields(fields), myBeanContext);
 	}
 	
 	@GET
