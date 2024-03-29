@@ -1,6 +1,5 @@
 package webhook.teamcity.server.rest.request;
 
-import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -24,7 +23,6 @@ import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
  */
 
 @Path(WebHooksConfigRequest.BASE_URI)
-@Singleton
 public class WebHooksConfigRequest implements ApiRequest {
 	static final String BASE_URI = Constants.API_URL + "/server";
 	private static final Permission mainConfigReadPermission = Permission.CHANGE_SERVER_SETTINGS;

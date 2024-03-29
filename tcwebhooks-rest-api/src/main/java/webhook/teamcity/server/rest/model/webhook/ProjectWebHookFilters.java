@@ -19,7 +19,7 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFilterConfig;
 
@@ -49,7 +49,7 @@ public class ProjectWebHookFilters {
 	public String prevHref;
 
 	public ProjectWebHookFilters(@NotNull final WebHookConfig config, @NotNull final List<WebHookFilterConfig> filterConfigs, @NotNull String projectExternalId,
-			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext) {
 		for(WebHookFilterConfig filter : filterConfigs ) {
 			count++;
 			ProjectWebHookFilter newFilter = ProjectWebHookFilter.copy(filter, count, beanContext.getApiUrlBuilder().getWebHookFilterHref(projectExternalId, config, count));

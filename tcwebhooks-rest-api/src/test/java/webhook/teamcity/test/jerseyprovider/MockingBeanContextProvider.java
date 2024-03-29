@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.PathTransformer;
 import jetbrains.buildServer.server.rest.RequestPathTransformInfo;
@@ -44,7 +44,7 @@ import jetbrains.buildServer.server.rest.util.BeanFactory;
  *         Date: 15.11.2009
  */
 @Provider
-public class MockingBeanContextProvider implements InjectableProvider<Context, Type>, Injectable<BeanContext> {
+public class MockingBeanContextProvider implements InjectableProvider<Context, Type>, Injectable<WebHookBeanContext> {
   
   @Mock private RequestPathTransformInfo myRequestPathTransformInfo;
 
@@ -59,7 +59,7 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
   @Mock private ServiceLocator myServiceLocator;
   
   public MockingBeanContextProvider() {
-	System.out.println("We are here: Trying to provide a test BeanContext instance");
+	System.out.println("We are here: Trying to provide a test WebHookBeanContext instance");
 	myServiceLocator = mock(ServiceLocator.class);
 	when(myServiceLocator.getSingletonService(WebHookWebLinks.class)).thenReturn(new WebHookWebLinks(new TemplateDataProviderTestContextProvider.TestUrlHolder()));
   }
@@ -68,16 +68,16 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
     return ComponentScope.PerRequest;
   }
 
-  public Injectable<BeanContext> getInjectable(final ComponentContext ic, final Context context, final Type type) {
-    if (type.equals(BeanContext.class)) {
+  public Injectable<WebHookBeanContext> getInjectable(final ComponentContext ic, final Context context, final Type type) {
+    if (type.equals(WebHookBeanContext.class)) {
       return this;
     }
     return null;
   }
 
-  public BeanContext getValue() {
-    //return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
-    return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new PathTransformer() {
+  public WebHookBeanContext getValue() {
+    //return new WebHookBeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
+    return new WebHookBeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new PathTransformer() {
 		
 		@Override
 		public String transform(String path) {

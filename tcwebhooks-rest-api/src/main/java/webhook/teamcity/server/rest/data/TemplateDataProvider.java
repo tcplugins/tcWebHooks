@@ -51,7 +51,7 @@ public class TemplateDataProvider extends DataProvider {
 		List<WebHookTemplateConfigWrapper> templates = new ArrayList<>();
 		for (WebHookTemplateConfig template : this.myTemplateManager.getRegisteredPermissionedTemplateConfigs()){
 			templates.add(new WebHookTemplateConfigWrapper(template,
-														   myProjectIdResolver.getExternalProjectId(template.getProjectInternalId()),
+														   this.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()),
 														   this.myTemplateManager.getTemplateState(template.getId(), TemplateState.BEST),
 														   WebHookTemplateStates.build(template)
 														  )

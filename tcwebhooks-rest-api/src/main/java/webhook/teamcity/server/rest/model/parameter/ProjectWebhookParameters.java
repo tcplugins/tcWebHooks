@@ -19,7 +19,7 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @XmlRootElement(name = "parameters")
@@ -51,7 +51,7 @@ public class ProjectWebhookParameters {
 	public String prevHref;
 
 	public ProjectWebhookParameters(@NotNull final List<WebHookParameter> webhookParameters, @NotNull String projectExternalId,
-			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext) {
 		
 		this.projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, true), projectExternalId);
 

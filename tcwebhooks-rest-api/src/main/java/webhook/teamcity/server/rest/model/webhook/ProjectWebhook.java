@@ -29,7 +29,7 @@ import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.server.rest.WebHookWebLinks;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfig.WebHookConfigBuilder;
@@ -109,7 +109,7 @@ public class ProjectWebhook {
 	@XmlAttribute
 	public  String webUrl;
 
-	public ProjectWebhook(WebHookConfig config, final String projectExternalId, final @NotNull Fields fields, @NotNull final BeanContext beanContext, Collection<String> enabledBuildTypes) {
+	public ProjectWebhook(WebHookConfig config, final String projectExternalId, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext, Collection<String> enabledBuildTypes) {
 		
 		this.url = ValueWithDefault.decideDefault(fields.isIncluded("url", true, true), config.getUrl()); 
 		this.id = ValueWithDefault.decideDefault(fields.isIncluded("id", true, true), config.getUniqueKey());

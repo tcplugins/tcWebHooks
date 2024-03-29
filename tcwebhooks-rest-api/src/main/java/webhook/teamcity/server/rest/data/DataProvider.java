@@ -15,8 +15,7 @@ public class DataProvider {
 	@NotNull private final RootUrlHolder myRootUrlHolder;
 	@NotNull private final PermissionChecker myPermissionChecker;
 	@NotNull private final ProjectManager myProjectManager;
-	@NotNull
-	protected final ProjectIdResolver myProjectIdResolver;
+	@NotNull private  final ProjectIdResolver myProjectIdResolver;
 	@NotNull private final SecurityContext mySecurityContext;
 
 	public DataProvider(@NotNull final SBuildServer server,
@@ -46,5 +45,9 @@ public class DataProvider {
 	
 	public SecurityContext getSecurityContext() {
 		return mySecurityContext;
+	}
+	
+	public PermissionChecker getPermissionChecker() {
+		return myPermissionChecker;
 	}
 }

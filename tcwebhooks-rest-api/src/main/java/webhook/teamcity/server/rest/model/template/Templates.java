@@ -17,7 +17,7 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
 
@@ -45,7 +45,7 @@ public class Templates {
 	  public Templates() {
 	  }
 
-	  public Templates(@NotNull final List<WebHookTemplateConfigWrapper> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+	  public Templates(@NotNull final List<WebHookTemplateConfigWrapper> templateObjects, @Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext) {
 	    if (fields.isIncluded("template", false, true)){
 	      templates = ValueWithDefault.decideDefault(fields.isIncluded("template"), new ValueWithDefault.Value<List<Template>>() {
 	        public List<Template> get() {

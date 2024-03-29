@@ -1,5 +1,6 @@
 package webhook.teamcity.server.rest.request;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,14 +18,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 
 @Path(Constants.API_URL)
 public class WebHooksIndexRequest {
 	
-	@Context
+	@Inject
 	@NotNull
-	private BeanContext myBeanContext;
+	private WebHookBeanContext myBeanContext;
 	@Context
 	@NotNull
 	private WebHookPluginDataResolver myWebHookPluginDataResolver;

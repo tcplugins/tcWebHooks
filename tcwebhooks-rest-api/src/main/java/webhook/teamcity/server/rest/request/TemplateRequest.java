@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -60,7 +61,7 @@ import webhook.teamcity.server.rest.model.template.Template;
 import webhook.teamcity.server.rest.model.template.Template.TemplateItem;
 import webhook.teamcity.server.rest.model.template.Template.WebHookTemplateStateRest;
 import webhook.teamcity.server.rest.model.template.Templates;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateBranchText;
 import webhook.teamcity.settings.config.WebHookTemplateConfig.WebHookTemplateItem;
@@ -89,7 +90,10 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Context @NotNull private TemplateValidator myTemplateValidator;
 
   @Context @NotNull private ServiceLocator myServiceLocator;
-  @Context @NotNull private BeanContext myBeanContext;
+  
+  @Inject
+  @NotNull
+  private WebHookBeanContext myBeanContext;
   @Context @NotNull public PermissionChecker myPermissionChecker;
 
   public static final String API_TEMPLATES_URL = Constants.API_URL + "/templates";

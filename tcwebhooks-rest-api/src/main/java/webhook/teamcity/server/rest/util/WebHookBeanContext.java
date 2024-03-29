@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 
-public class BeanContext {
+public class WebHookBeanContext {
   private final BeanFactory myFactory;
   @NotNull private final ServiceLocator myServiceLocator;
   @NotNull private final WebHookApiUrlBuilder myApiUrlBuilder;
 
-  public BeanContext(final BeanFactory factory, @NotNull final ServiceLocator serviceLocator, @NotNull WebHookApiUrlBuilder apiUrlBuilder) {
+  public WebHookBeanContext(final BeanFactory factory, @NotNull final ServiceLocator serviceLocator, @NotNull WebHookApiUrlBuilder apiUrlBuilder) {
     myFactory = factory;
     myServiceLocator = serviceLocator;
     myApiUrlBuilder = apiUrlBuilder;

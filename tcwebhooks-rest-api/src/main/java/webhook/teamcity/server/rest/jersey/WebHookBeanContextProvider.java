@@ -27,8 +27,10 @@ import javax.ws.rs.ext.Provider;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
+
+import webhook.teamcity.Loggers;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.RequestPathTransformInfo;
 import jetbrains.buildServer.server.rest.jersey.SimplePathTransformer;
@@ -40,22 +42,25 @@ import jetbrains.buildServer.server.rest.util.BeanFactory;
  */
 @Provider
 @SuppressWarnings("squid:S1191")
-public class BeanContextProvider implements Feature {
+public class WebHookBeanContextProvider implements Feature {
   @Override
   public boolean configure(FeatureContext context) {
+  	Loggers.SERVER.info("tcWebHooksRest: WebHookBeanContextProvider configure called");
+
     context.register(new AbstractBinder() {
       @Override
       protected void configure() {
-        bindFactory(BeanContextFactory.class)
-                .to(BeanContext.class)
+        Loggers.SERVER.info("tcWebHooksRest: WebHookBeanContextProvider AbstractBinder#configure called");
+        bindFactory(WebHookBeanContextFactory.class)
+                .to(WebHookBeanContext.class)
                 .in(RequestScoped.class);
       }
     });
 
-    return false;
+    return true;
   }
 
-  public static class BeanContextFactory implements Factory<BeanContext> {
+  public static class WebHookBeanContextFactory implements Factory<WebHookBeanContext> {
     @Inject private RequestPathTransformInfo myRequestPathTransformInfo;
     @Inject private BeanFactory myFactory;
     @Inject private ServiceLocator myServiceLocator;
@@ -63,12 +68,14 @@ public class BeanContextProvider implements Feature {
     @Inject private HttpServletRequest request;
 
     @Override
-    public BeanContext provide() {
-      return new BeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
+    public WebHookBeanContext provide() {
+    	Loggers.SERVER.info("tcWebHooksRest: here trying to create beanContext from factory " + myFactory.toString());
+      return new WebHookBeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
     }
 
     @Override
-    public void dispose(BeanContext instance) {
+    public void dispose(WebHookBeanContext instance) {
+    	Loggers.SERVER.info("tcWebHooksRest: dispose called");
     }
   }
 }

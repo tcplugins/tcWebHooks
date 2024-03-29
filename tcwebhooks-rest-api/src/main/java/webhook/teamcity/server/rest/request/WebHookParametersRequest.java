@@ -1,5 +1,6 @@
 package webhook.teamcity.server.rest.request;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +33,7 @@ import webhook.teamcity.server.rest.errors.WebHookPermissionException;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameters;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 import webhook.teamcity.settings.project.WebHookParameterStore;
 
@@ -55,9 +56,9 @@ public class WebHookParametersRequest {
 	@NotNull
 	private ServiceLocator myServiceLocator;
 	
-	@Context
+	@Inject
 	@NotNull
-	private BeanContext myBeanContext;
+	private WebHookBeanContext myBeanContext;
 	
 	@Context
 	@NotNull

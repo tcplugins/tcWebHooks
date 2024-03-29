@@ -35,7 +35,7 @@
 	<!--bean id="webHookManager" class="webhook.teamcity.server.rest.util.webhook.WebHookManager"/-->
 	<bean id="webHookManager" class="webhook.teamcity.server.rest.data.WebHookManager"/>
 	<bean id="webHookParameterFinder" class="webhook.teamcity.server.rest.data.WebHookParameterFinder"/>
-	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
+	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.WebHookBeanContextProvider"/>
 	<bean id="webHookSettingsManagerProvider" class="webhook.teamcity.server.rest.jersey.WebHookSettingsManagerProvider"/>
 	<bean id="webHookUserRequestedExecutorProvider" class="webhook.teamcity.test.jerseyprovider.MockingWebHookUserRequestedExecutorProvider"/>
 	<!--bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/-->

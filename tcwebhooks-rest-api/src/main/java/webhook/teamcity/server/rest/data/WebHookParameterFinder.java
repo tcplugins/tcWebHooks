@@ -13,7 +13,7 @@ import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameters;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 import webhook.teamcity.settings.project.WebHookParameterStore;
 import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
@@ -35,7 +35,7 @@ public class WebHookParameterFinder {
 		return Locator.createEmptyLocator().setDimension("id", webhookParameter.getId()).getStringRepresentation();
 	}
 
-	public ProjectWebhookParameters getAllWebHookParameters(SProject sProject, PagerData pagerData, Fields fields, BeanContext myBeanContext) {
+	public ProjectWebhookParameters getAllWebHookParameters(SProject sProject, PagerData pagerData, Fields fields, WebHookBeanContext myBeanContext) {
 		return new ProjectWebhookParameters(
 				myWebHookParameterStore.getOwnWebHookParameters(sProject),
 				sProject.getExternalId(), 
@@ -44,7 +44,7 @@ public class WebHookParameterFinder {
 				myBeanContext);
 	}
 	
-	public ProjectWebhookParameter findWebhookParameter(SProject sProject, String paramLocator, Fields fields, BeanContext myBeanContext) {
+	public ProjectWebhookParameter findWebhookParameter(SProject sProject, String paramLocator, Fields fields, WebHookBeanContext myBeanContext) {
 		
 		if (StringUtils.isEmpty(paramLocator)) {
 			throw new BadRequestException("Empty parameter locator is not supported.");

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -38,7 +39,7 @@ import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookParameters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookSearchFilter;
 import webhook.teamcity.settings.WebHookSearchFilter.WebHookSearchFilterBuilder;
@@ -60,9 +61,9 @@ public class WebHooksRequest {
 	@NotNull
 	private ServiceLocator myServiceLocator;
 	
-	@Context
+	@Inject
 	@NotNull
-	private BeanContext myBeanContext;
+	private WebHookBeanContext myBeanContext;
 	
 	@Context
 	@NotNull
@@ -128,7 +129,7 @@ public class WebHooksRequest {
 			}
 			locator.checkLocatorFullyProcessed();
 		}
-		List<ProjectWebhook> found = myDataProvider.getWebHookManager().searchForWebHooks(searchFilterBuilder.build(), new Fields(fields), myBeanContext);
+		List<ProjectWebhook> found = myDataProvider.getWebHookManager().searchForWebHooks(searchFilterBuilder.build(), new Fields(fields), myBeanContext, myDataProvider.getPermissionChecker());
 		projectWebhooks.setWebhooks(found);
 		projectWebhooks.setCount(found.size());
 		return projectWebhooks;
