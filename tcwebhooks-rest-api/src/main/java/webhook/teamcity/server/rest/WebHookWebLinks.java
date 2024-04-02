@@ -3,9 +3,11 @@ package webhook.teamcity.server.rest;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.RootUrlHolder;
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectable;
 import webhook.teamcity.server.rest.data.WebHookTemplateItemConfigWrapper.WebHookTemplateItemRest;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
 
+@JerseyInjectable
 public class WebHookWebLinks {
 	
 	RootUrlHolder myHolder;

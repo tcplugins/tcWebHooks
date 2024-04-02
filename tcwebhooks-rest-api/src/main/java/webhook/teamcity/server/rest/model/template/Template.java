@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.WebHookTemplateManager;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
@@ -123,13 +124,13 @@ public class Template {
 
 		BranchTemplateText(WebHookTemplateConfig webHookTemplateEntity, String id, Fields fields, WebHookBeanContext beanContext) {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getDefaultBranchTemplateTextHref(webHookTemplateEntity));
-			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl",false, false), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookDefaultBranchTemplateTextUrl(webHookTemplateEntity));
+			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl",false, false), beanContext.getWebHookWebLinks().getWebHookDefaultBranchTemplateTextUrl(webHookTemplateEntity));
 			this.content = ValueWithDefault.decideDefault(fields.isIncluded("content",false, false), webHookTemplateEntity.getDefaultBranchTemplate().getTemplateContent());
 		}
 		
 		BranchTemplateText(WebHookTemplateConfig webHookTemplateEntity, WebHookTemplateItemRest webHookTemplateItem, String id, Fields fields, WebHookBeanContext beanContext) {
 			this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getTemplateItemBranchTextHref(webHookTemplateEntity, webHookTemplateItem));
-			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl",false, false), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookBranchTemplateTextUrl(webHookTemplateEntity, webHookTemplateItem));
+			this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl",false, false), beanContext.getWebHookWebLinks().getWebHookBranchTemplateTextUrl(webHookTemplateEntity, webHookTemplateItem));
 			this.content = ValueWithDefault.decideDefault(fields.isIncluded("content",false, false), webHookTemplateItem.getBranchTemplateText().getTemplateContent());
 		}
 		
@@ -327,7 +328,7 @@ public class Template {
 
 		href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(template));
 		
-		webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl", false, false), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookTemplateUrl(template));
+		webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl", false, false), beanContext.getWebHookWebLinks().getWebHookTemplateUrl(template));
 		
 		if (template.getDefaultTemplate() != null){
 			defaultTemplate = ValueWithDefault.decideDefault(

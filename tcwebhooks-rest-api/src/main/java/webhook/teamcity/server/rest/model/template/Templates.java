@@ -15,6 +15,7 @@ import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.WebHookTemplateConfigWrapper;
 import webhook.teamcity.server.rest.util.WebHookBeanContext;

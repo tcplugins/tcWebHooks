@@ -19,6 +19,7 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.WebHookConfig;

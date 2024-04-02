@@ -16,6 +16,7 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.util.WebHookBeanContext;

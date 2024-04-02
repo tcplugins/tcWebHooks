@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.inject.Inject;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -28,6 +29,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.content.ExtraParameters;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.CustomMessageTemplate;
@@ -117,7 +119,7 @@ public class ProjectWebhook {
 		this.projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, true), projectExternalId);
 		this.template = ValueWithDefault.decideDefault(fields.isIncluded("template", true, true), config.getPayloadTemplate());
 		this.hideSecureValues = ValueWithDefault.decideDefault(fields.isIncluded("hideSecureValues", true, true), config.isHideSecureValues());
-		this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl", false, false), beanContext.getSingletonService(WebHookWebLinks.class).getWebHookUrl(projectExternalId));
+		this.webUrl = ValueWithDefault.decideDefault(fields.isIncluded("webUrl", false, false), beanContext.getWebHookWebLinks().getWebHookUrl(projectExternalId));
 		this.href = ValueWithDefault.decideDefault(fields.isIncluded("href"), beanContext.getApiUrlBuilder().getHref(projectExternalId, config));
 		this.buildTypes = ValueWithDefault.decideDefault(fields.isIncluded("buildTypes", true, true), new ProjectWebHookBuildType(config.isEnabledForAllBuildsInProject(), config.isEnabledForSubProjects(), enabledBuildTypes));
 

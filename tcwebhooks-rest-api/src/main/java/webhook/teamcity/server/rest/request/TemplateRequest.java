@@ -44,6 +44,7 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
+import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.data.TemplateDataProvider;
 import webhook.teamcity.server.rest.data.TemplateFinder;
 import webhook.teamcity.server.rest.data.TemplateValidator;
@@ -72,10 +73,10 @@ import webhook.teamcity.settings.config.builder.WebHookTemplateConfigBuilder;
 import webhook.teamcity.settings.entity.WebHookTemplateEntity;
 
 @Path(TemplateRequest.API_TEMPLATES_URL)
-public class TemplateRequest {
+public class TemplateRequest extends BaseRequest {
   private static final String UPDATE_TEMPLATE = "update Template";
-private static final String PROJECT_ID = "projectId";
-private static final String DEFAULT_TEMPLATE = "defaultTemplate";
+  private static final String PROJECT_ID = "projectId";
+  private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   private static final String TEMPLATE_ITEMS = "templateItems";
   private static final String TEMPLATE_ITEM_CONTAINED_INVALID_DATA = "TemplateItem contained invalid data";
   private static final String NO_TEMPLATE_FOUND_BY_THAT_ID = "No template found by that id";
@@ -86,15 +87,14 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   private static final Permission PROJECT_TEMPLATE_EDIT_PERMISSION = Permission.EDIT_PROJECT;
 
   @Context @NotNull private TemplateDataProvider myDataProvider;
-  @Context @NotNull private WebHookTemplateManager myTemplateManager;
+  //@Context @NotNull private WebHookTemplateManager myTemplateManager;
   @Context @NotNull private TemplateValidator myTemplateValidator;
 
   @Context @NotNull private ServiceLocator myServiceLocator;
   
-  @Inject
-  @NotNull
-  private WebHookBeanContext myBeanContext;
   @Context @NotNull public PermissionChecker myPermissionChecker;
+  
+  @Context @NotNull private WebHookWebLinks webHookWebLinks; 
 
   public static final String API_TEMPLATES_URL = Constants.API_URL + "/templates";
   protected static final String PARAMETERS = "/parameters";
@@ -158,7 +158,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   @Produces({"application/xml", "application/json"})
   public Templates serveTemplates(@QueryParam("fields") String fields) {
 	  checkTemplateReadPermission();
-	  return new Templates(myDataProvider.getWebHookTemplates(), new SinglePagePagerData(getHref()), new Fields(fields), myBeanContext);
+	  return new Templates(myDataProvider.getWebHookTemplates(), new SinglePagePagerData(getHref()), new Fields(fields), myWebHookBeanContext);
   }
 
   @GET
@@ -167,7 +167,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   public Template serveTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  checkTemplateReadPermission(wrapper.getExternalProjectId());
-	  return new Template(wrapper, new Fields(fields), myBeanContext);
+	  return new Template(wrapper, new Fields(fields), myWebHookBeanContext);
   }
 
   @GET
@@ -176,7 +176,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
   public Response exportTemplate(@PathParam("templateLocator") String templateLocator, @QueryParam("fields") String fields) {
 	  WebHookTemplateConfigWrapper wrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 	  checkTemplateReadPermission(wrapper.getExternalProjectId());
-	  Template template = new Template(wrapper, new Fields(fields), myBeanContext);
+	  Template template = new Template(wrapper, new Fields(fields), myWebHookBeanContext);
 	  return Response.ok(template)
 			  .header("Content-Disposition", "attachment; filename=\"" + template.getId() + ".json\"")
 			  .build();
@@ -211,10 +211,10 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		    }
 	    }
 
-	    myTemplateManager.registerTemplateFormatFromXmlConfig(template);
+	    myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(template);
 
 		if (persistAllXmlConfigTemplates(updateMode)){
-	    	return new Template(new WebHookTemplateConfigWrapper(template, myDataProvider.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()), myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+	    	return new Template(new WebHookTemplateConfigWrapper(template, myDataProvider.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()), myDataProvider.getTemplateManager().getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myWebHookBeanContext);
 	    } else {
 	    	throw new OperationException(ERROR_SAVING_TEMPLATE);
 	    }
@@ -234,7 +234,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		}
 	    WebHookTemplateConfig template = new WebHookTemplateConfig(newTemplate.id, true);
 
-	    if (myTemplateManager.getTemplate(template.getId()) != null){
+	    if (myDataProvider.getTemplateManager().getTemplate(template.getId()) != null){
 	    	validationResult.addError("name", "Template of that name already exists. To update existing template, please use PUT");
 	    	throw new BadRequestException("Template name already exists", validationResult);
 	    }
@@ -347,9 +347,9 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		  // We don't (currently) support updating defaultTemplate or other templateItems
 		  // The validator will have thrown an error above.
 
-		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
+		  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(template);
 		  if (persistAllXmlConfigTemplates(updateMode)){
-			  return new Template(new WebHookTemplateConfigWrapper(template, myDataProvider.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()), myTemplateManager.getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myBeanContext);
+			  return new Template(new WebHookTemplateConfigWrapper(template, myDataProvider.getProjectIdResolver().getExternalProjectId(template.getProjectInternalId()), myDataProvider.getTemplateManager().getTemplateState(newTemplate.id, TemplateState.BEST), WebHookTemplateStates.build(template)), Fields.LONG, myWebHookBeanContext);
 		  } else {
 			  throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
@@ -388,9 +388,9 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  checkTemplateWritePermission(webHookTemplateConfigWrapper.getExternalProjectId());
 	  checkTemplateCanBeRelocated(externalProjectId, webHookTemplateConfigWrapper);
 
-	  WebHookTemplateConfigWrapper newConfigWrapper = new WebHookTemplateConfigWrapper(rawConfig, externalProjectId, myTemplateManager.getTemplateState(webHookTemplateConfigWrapper.getTemplateConfig().getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfigWrapper.getTemplateConfig()));
+	  WebHookTemplateConfigWrapper newConfigWrapper = new WebHookTemplateConfigWrapper(rawConfig, externalProjectId, myDataProvider.getTemplateManager().getTemplateState(webHookTemplateConfigWrapper.getTemplateConfig().getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfigWrapper.getTemplateConfig()));
 	  
-	  Template newTemplate = new Template(newConfigWrapper, Fields.LONG, myBeanContext);
+	  Template newTemplate = new Template(newConfigWrapper, Fields.LONG, myWebHookBeanContext);
 
 	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfigWrapper, newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
@@ -399,9 +399,9 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 
 	  // The above will throw errors if the template is not found, so let's attempt to update it.
 	  if (webHookTemplateConfigWrapper.getTemplateConfig().getId().equals(rawConfig.getId())) {
-		  myTemplateManager.registerTemplateFormatFromXmlConfig(rawConfig);
+		  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(rawConfig);
 		  if (persistAllXmlConfigTemplates(UPDATE_TEMPLATE)){
-		  	return myTemplateManager.getTemplateConfig(rawConfig.getId(), TemplateState.BEST);
+		  	return myDataProvider.getTemplateManager().getTemplateConfig(rawConfig.getId(), TemplateState.BEST);
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
@@ -451,7 +451,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  checkTemplateCanBeRelocated(externalProjectId, webHookTemplateConfigWrapper);
 	  
 	  WebHookTemplateConfig newConfig = WebHookTemplateConfigBuilder.buildConfig(rawConfig);
-	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, externalProjectId, myTemplateManager.getTemplateState(webHookTemplateConfigWrapper.getTemplateConfig().getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfigWrapper.getTemplateConfig())), Fields.LONG, myBeanContext);
+	  Template newTemplate = new Template(new WebHookTemplateConfigWrapper(newConfig, externalProjectId, myDataProvider.getTemplateManager().getTemplateState(webHookTemplateConfigWrapper.getTemplateConfig().getId(), TemplateState.BEST), WebHookTemplateStates.build(webHookTemplateConfigWrapper.getTemplateConfig())), Fields.LONG, myWebHookBeanContext);
 
 	  ErrorResult validationResult = myTemplateValidator.validateTemplate(webHookTemplateConfigWrapper, newTemplate, new ErrorResult());
 	  if (validationResult.isErrored()) {
@@ -459,7 +459,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  }
 
 	  if (webHookTemplateConfigWrapper.getTemplateConfig().getId().equals(rawConfig.getId())) {
-		  myTemplateManager.registerTemplateFormatFromXmlConfig(newConfig);
+		  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(newConfig);
 		  if (persistAllXmlConfigTemplates(UPDATE_TEMPLATE)){
 			  return WebHookTemplateConfigBuilder.buildEntity(myDataProvider.getTemplateFinder().findTemplateById(templateLocator).getTemplateConfig());
 		  } else {
@@ -496,7 +496,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 				  	.addError("error", "Cannot delete template with associated webhooks")
 				  	.addError("webHookCount", "Associated webhook count: " + templateUsageCount));
 	  }
-	  if (myTemplateManager.removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getId())) {
+	  if (myDataProvider.getTemplateManager().removeXmlConfigTemplateFormat(webHookTemplateConfigWrapper.getTemplateConfig().getId())) {
 		  if ( ! persistAllXmlConfigTemplates("delete Template")){
 			  throw new OperationException("There was an error deleting your template. Unable to persist the change to disk.");
 		  }
@@ -544,7 +544,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		  }
 		  template.setDefaultTemplate(defaultTemplateText);
 
-		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
+		  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(template);
 		  if (persistAllXmlConfigTemplates("update Default TemplateItem content")){
 		  	return template.getDefaultTemplate().getTemplateContent();
 		  } else {
@@ -559,7 +559,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		  }
 		  template.setDefaultBranchTemplate(defaultBranchTemplateText);
 
-		  myTemplateManager.registerTemplateFormatFromXmlConfig(template);
+		  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(template);
 		  if (persistAllXmlConfigTemplates("update TemplateItem content")){
 		  	return template.getDefaultBranchTemplate().getTemplateContent();
 		  } else {
@@ -621,9 +621,9 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
 	  if(DEFAULT_TEMPLATE.equals(template.getTemplateItem().getId())) {
-		  return new TemplateItem(templateConfig, template.getTemplateItem().getTemplateText(), template.getTemplateItem().getBranchTemplateText(), template.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+		  return new TemplateItem(templateConfig, template.getTemplateItem().getTemplateText(), template.getTemplateItem().getBranchTemplateText(), template.getTemplateItem().getId(), new Fields(fields), myWebHookBeanContext);
 	  }
-	  return new TemplateItem(templateConfig, template.getTemplateItem(), template.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+	  return new TemplateItem(templateConfig, template.getTemplateItem(), template.getTemplateItem().getId(), new Fields(fields), myWebHookBeanContext);
   }
 
   /**
@@ -653,8 +653,8 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  
 	  Integer contextLines = Objects.nonNull(context) ? Integer.valueOf(context) : 100;
 
-	  Template template1 = new Template(templateWrapper1, new Fields("$short"), myBeanContext);
-	  Template template2 = new Template(templateWrapper2, new Fields("$short"), myBeanContext);
+	  Template template1 = new Template(templateWrapper1, new Fields("$short"), myWebHookBeanContext);
+	  Template template2 = new Template(templateWrapper2, new Fields("$short"), myWebHookBeanContext);
 
 
 	  String content1 = getTemplateContent(templateItem1, templateContentType1);
@@ -698,8 +698,8 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  checkTemplateReadPermission(templateWrapper2.getExternalProjectId());
 	  Integer contextLines = Objects.nonNull(context) ? Integer.valueOf(context) : 100;
 
-	  Template template1 = new Template(templateWrapper1, new Fields(fields), myBeanContext);
-	  Template template2 = new Template(templateWrapper2, new Fields(fields), myBeanContext);
+	  Template template1 = new Template(templateWrapper1, new Fields(fields), myWebHookBeanContext);
+	  Template template2 = new Template(templateWrapper2, new Fields(fields), myWebHookBeanContext);
 
 	  int maxTemplateTypes = template1.getTemplates().size() > template2.getTemplates().size() ? template1.getTemplates().size() : template2.getTemplates().size();
 
@@ -809,7 +809,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  } else {
 		  templateConfig.getTemplateConfig().getTemplates().deleteTemplateItem(Integer.valueOf(template.getTemplateItem().getId()));
 	  }
-	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig.getTemplateConfig());
+	  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(templateConfig.getTemplateConfig());
 	  if ( ! persistAllXmlConfigTemplates("delete TemplateItem")){
 	   	throw new OperationException(ERROR_SAVING_TEMPLATE);
 	  }
@@ -833,7 +833,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  }
 	  if(DEFAULT_TEMPLATE.equals(templateItemConfigWrapper.getTemplateItem().getId())) {
 
-		  TemplateItem previousDefaultTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
+		  TemplateItem previousDefaultTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myWebHookBeanContext);
 		  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousDefaultTemplateItem, templateItem, new ErrorResult());
 		  if (validationResult.isErrored()) {
 			  throw new UnprocessableEntityException(TEMPLATE_ITEM_CONTAINED_INVALID_DATA, validationResult);
@@ -851,18 +851,18 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 			  templateConfig.getDefaultBranchTemplate().setTemplateContent(templateItem.getBranchTemplateText().getContent());
 		  }
 
-		  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
+		  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(templateConfig);
 		  if (persistAllXmlConfigTemplates("update Default TemplateItem")){
 			  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 			  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
-			  return new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+			  return new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myWebHookBeanContext);
 		  } else {
 		   	throw new OperationException(ERROR_SAVING_TEMPLATE);
 		  }
 
 
 	  }
-	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
+	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myWebHookBeanContext);
 	  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException(TEMPLATE_ITEM_CONTAINED_INVALID_DATA, validationResult);
@@ -894,11 +894,11 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		  }
 	  }
 
-	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
+	  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(templateConfig);
 	  if (persistAllXmlConfigTemplates("update TemplateItem")) {
 		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemId);
-		  return new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext);
+		  return new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myWebHookBeanContext);
 	  } else {
 	   	throw new OperationException(ERROR_SAVING_TEMPLATE);
 	  }
@@ -907,7 +907,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 
 	private boolean persistAllXmlConfigTemplates(String saveContext) {
 		try {
-			return myTemplateManager.persistAllXmlConfigTemplates();
+			return myDataProvider.getTemplateManager().persistAllXmlConfigTemplates();
 
 		} catch (ProbableJaxbJarConflictErrorException ex) {
 			ErrorResult er = new ErrorResult();
@@ -933,7 +933,7 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 		  throw new NotFoundException(NO_TEMPLATE_FOUND_BY_THAT_ID);
 	  }
 
-	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myBeanContext);
+	  TemplateItem previousTemplateItem = new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), Fields.ALL_NESTED, myWebHookBeanContext);
 	  final ErrorResult validationResult = myTemplateValidator.validateTemplateItem(previousTemplateItem, templateItem, new ErrorResult());
 	  if (validationResult.isErrored()) {
 		  throw new UnprocessableEntityException(TEMPLATE_ITEM_CONTAINED_INVALID_DATA, validationResult);
@@ -944,16 +944,16 @@ private static final String DEFAULT_TEMPLATE = "defaultTemplate";
 	  WebHookTemplateItem templateItemConfig = buildTemplateItem(templateItem, templateConfig.getTemplates());
 
 	  templateConfig.getTemplates().getTemplates().add(templateItemConfig);
-	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
+	  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(templateConfig);
 	  if (persistAllXmlConfigTemplates("create TemplateItem")){
 		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, templateItemConfig.getId().toString());
 		  return Response.status(201)
 				  .header(
 						  "Location",
-						  myBeanContext.getApiUrlBuilder().getTemplateItemHref(templateConfig, templateItemConfigWrapper.getTemplateItem())
+						  myWebHookBeanContext.getApiUrlBuilder().getTemplateItemHref(templateConfig, templateItemConfigWrapper.getTemplateItem())
 						  )
-				  .entity(new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext))
+				  .entity(new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myWebHookBeanContext))
 				  .build();
 	  } else {
 		  throw new OperationException(ERROR_SAVING_TEMPLATE);
@@ -1019,7 +1019,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 												);
 			}
 	  }
-	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(fields), myBeanContext);
+	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(fields), myWebHookBeanContext);
 
   }
 
@@ -1035,7 +1035,7 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  if (template.getTemplateItem() == null){
 		  throw new NotFoundException("No template item found by that id");
 	  }
-	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(null), myBeanContext);
+	  return new WebHookTemplateStateRest(template.getTemplateItem(), buildState, template.getBuildStatesWithTemplate(), new Fields(null), myWebHookBeanContext);
 
   }
 
@@ -1071,17 +1071,17 @@ private WebHookTemplateItem buildTemplateItem(TemplateItem templateItem, WebHook
 	  templateConfig.setDefaultTemplate(templateItemConfig.getTemplateText());
 	  templateConfig.setDefaultBranchTemplate(templateItemConfig.getBranchTemplateText());
 
-	  myTemplateManager.registerTemplateFormatFromXmlConfig(templateConfig);
+	  myDataProvider.getTemplateManager().registerTemplateFormatFromXmlConfig(templateConfig);
 	  if (persistAllXmlConfigTemplates("create Default TemplateItem")){
 		  templateConfigWrapper = myDataProvider.getTemplateFinder().findTemplateById(templateLocator);
 		  WebHookTemplateItemConfigWrapper templateItemConfigWrapper = myDataProvider.getTemplateFinder().findTemplateByIdAndTemplateContentById(templateLocator, DEFAULT_TEMPLATE);
 		  return Response.status(201)
 				  .header(
 						  "Location",
-						  myBeanContext.getApiUrlBuilder().getTemplateItemHref(templateConfig, templateItemConfigWrapper.getTemplateItem())
+						  myWebHookBeanContext.getApiUrlBuilder().getTemplateItemHref(templateConfig, templateItemConfigWrapper.getTemplateItem())
 						  )
 				  .entity(
-						  new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myBeanContext)
+						  new TemplateItem(templateConfigWrapper, templateItemConfigWrapper.getTemplateItem().getTemplateText(), templateItemConfigWrapper.getTemplateItem().getBranchTemplateText(), templateItemConfigWrapper.getTemplateItem().getId(), new Fields(fields), myWebHookBeanContext)
 						  )
 				  .build();
 
