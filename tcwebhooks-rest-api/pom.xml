@@ -30,12 +30,12 @@
 		      <name>jcenter</name>
 		      <url>https://jcenter.bintray.com/</url>
 		    </repository>-->
-		  
+		  <!--
 		  <repository>
 		    <id>RiffPie Repo for Jersey Test addon</id>
 		    <url>http://maven.riffpie.com/releases/</url>
 		  </repository>
-		  
+		  -->
 
     <!-- <repository>
         <id>spring-milestones</id>
@@ -294,12 +294,12 @@
 		    <scope>test</scope>
 		</dependency>
 
-	    <dependency>
+	    <!-- <dependency>
 		    <groupId>com.riffpie.common.testing</groupId>
 		    <artifactId>jersey-test-support</artifactId>
 		    <version>1.0</version>
 		    <scope>test</scope>
-	    </dependency>
+	    </dependency>-->
 	    
 		<dependency>
 			<groupId>org.mockito</groupId>
