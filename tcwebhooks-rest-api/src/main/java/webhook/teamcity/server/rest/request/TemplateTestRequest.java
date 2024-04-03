@@ -19,6 +19,7 @@ import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.history.WebHookHistoryItem;
+import webhook.teamcity.server.rest.data.TemplateDataProvider;
 import webhook.teamcity.server.rest.errors.TemplatePermissionException;
 import webhook.teamcity.server.rest.errors.UnprocessableEntityException;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
@@ -38,7 +39,7 @@ public class TemplateTestRequest {
 	public static final String API_TEMPLATE_TEST_URL = Constants.API_URL + "/test/template";
 	private static final Permission templateTestPermission = Permission.CHANGE_SERVER_SETTINGS;
 	
-	@Context @NotNull private WebHookUserRequestedExecutor myWebHookUserRequestedExecutor;
+	@Context @NotNull private TemplateDataProvider myTemplateDataProvider;
 	@Context @NotNull private PermissionChecker myPermissionChecker;
 	
 	@POST
@@ -69,7 +70,7 @@ public class TemplateTestRequest {
         		.testBuildState(BuildStateEnum.findBuildState(executionRequest.getBuildStateName()))
         		.build();
 		
-        WebHookHistoryItem webHookHistoryItem = myWebHookUserRequestedExecutor.requestWebHookExecution(templateExecutionRequest);
+        WebHookHistoryItem webHookHistoryItem = myTemplateDataProvider.getWebHookUserRequestedExecutor().requestWebHookExecution(templateExecutionRequest);
         
         ErrorStatus error = null;
         if (webHookHistoryItem.getWebhookErrorStatus() != null) {
@@ -115,7 +116,7 @@ public class TemplateTestRequest {
 				.url("")
 				.build();
 		
-		WebHookRenderResult webHookRenderResult = myWebHookUserRequestedExecutor.requestWebHookPreview(templateExecutionRequest);
+		WebHookRenderResult webHookRenderResult = myTemplateDataProvider.getWebHookUserRequestedExecutor().requestWebHookPreview(templateExecutionRequest);
 		
 		if (!webHookRenderResult.getErrored()) {
 			Response.ResponseBuilder rb = Response.ok(webHookRenderResult.getHtml());

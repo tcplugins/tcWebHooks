@@ -1,18 +1,30 @@
 package webhook.teamcity.server.rest.jersey;
 
-import javax.ws.rs.ext.Provider;
-
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectableBeanProvider;
 import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 
-@Service
-@SuppressWarnings("squid:S1191")
+@Component
+@Configuration
 public class WebHookUserRequestedExecutorProvider implements JerseyInjectableBeanProvider {
+	
+	private final WebHookUserRequestedExecutor myExecutor;
 
-  @Override
-  public Class<?> getBeanClass() {
-    return WebHookUserRequestedExecutor.class;
-  }
+	public WebHookUserRequestedExecutorProvider(WebHookUserRequestedExecutor executor) {
+		myExecutor = executor;
+	}
+
+	@Bean
+	public WebHookUserRequestedExecutor getBean() {
+		return this.myExecutor;
+	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return WebHookUserRequestedExecutor.class;
+	}
+
 }

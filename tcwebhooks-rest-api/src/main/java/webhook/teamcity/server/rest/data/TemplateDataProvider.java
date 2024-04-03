@@ -17,6 +17,7 @@ import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
+import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 
 @JerseyInjectable
 @Component
@@ -26,12 +27,14 @@ public class TemplateDataProvider extends DataProvider {
 	@NotNull private final WebHookPayloadManager myPayloadManager;
 	@NotNull private final TemplateFinder myTemplateFinder;
 	@NotNull private final WebHookManager myWebHookManager;
+	@NotNull private final WebHookUserRequestedExecutor myWebHookUserRequestedExecutor;
 	
 	public TemplateDataProvider(SBuildServer server, 
 			RootUrlHolder rootUrlHolder,
 			PermissionChecker permissionChecker, 
 			WebHookPayloadManager payloadManager,
-			WebHookTemplateManager templateManager, 
+			WebHookTemplateManager templateManager,
+			WebHookUserRequestedExecutor userRequestedExecutor,
 			TemplateFinder templateFinder, 
 			ProjectManager projectManager,
 			WebHookManager webHookManager, 
@@ -41,10 +44,11 @@ public class TemplateDataProvider extends DataProvider {
 		super(server, rootUrlHolder, permissionChecker, projectManager,
 				projectIdResolver, securityContext);
 		
-		this.myWebHookManager = webHookManager;
-		this.myTemplateManager = templateManager;
 		this.myPayloadManager = payloadManager;
+		this.myTemplateManager = templateManager;
 		this.myTemplateFinder = templateFinder;
+		this.myWebHookManager = webHookManager;
+		this.myWebHookUserRequestedExecutor = userRequestedExecutor;
 	}
 	
 	public List<WebHookTemplateConfigWrapper> getWebHookTemplates(){
@@ -73,6 +77,10 @@ public class TemplateDataProvider extends DataProvider {
 	
 	public WebHookTemplateManager getTemplateManager() {
 		return this.myTemplateManager;
+	}
+	
+	public WebHookUserRequestedExecutor getWebHookUserRequestedExecutor() {
+		return myWebHookUserRequestedExecutor;
 	}
 	
 	public TemplateFinder getTemplateFinder() {
