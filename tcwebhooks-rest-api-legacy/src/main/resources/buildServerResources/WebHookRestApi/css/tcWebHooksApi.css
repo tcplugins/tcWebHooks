@@ -1,0 +1,138 @@
+
+body .jumbotron .container {
+	background: url("../../../../img/icons/teamcity.svg") no-repeat 90% 50%;
+}
+
+ul.indexcrumb { 
+	padding-left: 5px; 
+}
+
+ul.indexcrumb li { 
+	padding-right: 0; 
+	padding-left: 0; 
+	margin-left:0; 
+	margin-right:0; 
+}
+
+div.alert pre { 
+	padding-top: 1em; 
+	margin-top: 1em; 
+}
+
+div.filterTableContainer {
+	background-color:white; 
+	float:left; 
+	margin:0; 
+	padding:0;
+	padding-right: 40px; 
+	width:70%;
+}
+
+div.filterDocsContainer {
+	background-color:white; 
+	float:right; 
+	margin:0; 
+	padding:0;
+	width:25%;
+}
+
+div.noFilterWarning {
+	margin-top: 1em;
+}
+
+div.addNewFilter {
+	float:right;
+	padding: 2em 0 2em 2em;
+}
+
+div.filterDocsContainer div.filterDocsItem {
+	margin-bottom: 2em;
+}
+
+div.filterDocsItem h3 {
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+div.filterDocsItem p {
+	padding-top: 0.25em;
+	margin-top: 0;
+}
+
+dl.regexExample dt {
+	font-style: italic;
+}
+
+dl.regexExample dt code {
+	font-weight: bold;
+	font-style: normal;
+	font-size: 120%; 
+}
+
+table.filterTable {
+	border:none;
+}
+
+table.filterTable td {
+	padding-left: 2em;
+}
+
+table.filterTable th {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+table.filterTable tr {
+	border-left: 1px solid #ccc;
+}
+
+table.filterTable tr.blankline, table.filterTable tr.blankline td {
+	border-left: none;
+	border-right: none;
+	background: white;
+}
+	
+table.filterTable tr.filterHeading th {
+	text-align: left;
+	padding-left: 1.5em;
+	padding-top: 0.75em;
+	padding-bottom: 0.75em;
+	
+}
+
+table.filterTable tr td.filterTableBuildTitle {
+	font-weight: bold;
+	padding-top: 1.5em;
+	padding-bottom: 1.5em;
+	padding-left: 1em;
+}
+
+tr.filterHeading {
+	background-color: rgb(245, 245, 245);
+}
+
+#repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit, #fixPluginDialogSubmit {
+	background-color: red;
+	background-image: linear-gradient(to bottom, #e06667, #e50000);
+}
+
+table#debRepoHeader {
+	margin-top:1em;
+}
+
+table#debRepoHeader th {
+	text-alight:right;
+}
+
+table#debRepoHeader, table#debRepoHeader tr, table#debRepoHeader th, table#debRepoHeader td {
+	border: none;
+}
+
+ul.editArchitectures {
+    list-style-type: none;
+    -webkit-columns: 3;
+    -moz-columns: 3;
+    columns: 3;
+    margin-top: 0px;
+    padding-left: 0px;
+}

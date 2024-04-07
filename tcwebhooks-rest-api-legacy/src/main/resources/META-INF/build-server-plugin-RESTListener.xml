@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+               http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+               http://www.springframework.org/schema/context
+               http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       default-autowire="constructor">
+
+	<context:component-scan base-package="jetbrains.buildServer.server.rest"/>
+	
+	<bean id="webHookTeamCityRestApiZipPluginFixer"
+        class="webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer"
+        init-method="findRestApiZipPlugins" 
+        />
+
+	<bean id="restApiJarHealthReport" class="webhook.teamcity.server.RestApiJarHealthReport"/>
+	<bean id="restApiCleanupRestartRequiredHealthReport" class="webhook.teamcity.server.RestApiCleanupRestartRequiredHealthReport"/>
+	<bean id="webHookRestApiAdminPage" class="webhook.teamcity.server.rest.web.WebHookRestApiAdminPage"/>
+	<bean id="webHookRestApiActionController" class="webhook.teamcity.server.rest.web.WebHookRestApiActionController"/>
+	<bean id="fixPluginZipFileAction" class="webhook.teamcity.server.rest.web.action.FixPluginZipFileAction"/>
+
+	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
+
+	<bean id="mainConfigManager" class="webhook.teamcity.server.rest.util.mainconfig.MainConfigManager"/>
+	<bean id="mainConfigManagerProvider" class="webhook.teamcity.server.rest.jersey.MainConfigManagerProvider"/>
+	<bean id="dataProvider" class="webhook.teamcity.server.rest.data.DataProvider"/>
+	<bean id="templateDataProviderProvider" class="webhook.teamcity.server.rest.jersey.TemplateDataProviderProvider"/>
+	<bean id="webHookDataProviderProvider" class="webhook.teamcity.server.rest.jersey.WebHookDataProviderProvider"/>
+	<bean id="webHookParameterDataProviderProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterDataProviderProvider"/>
+	<bean id="statisticsDataProviderProvider" class="webhook.teamcity.server.rest.jersey.StatisticsDataProviderProvider"/>
+	<bean id="templateFinder" class="webhook.teamcity.server.rest.data.TemplateFinder"/>
+	<bean id="webHookManager" class="webhook.teamcity.server.rest.data.WebHookManager"/>
+	<bean id="webHookParameterFinder" class="webhook.teamcity.server.rest.data.WebHookParameterFinder"/>
+	<bean id="beanContextProvider" class="webhook.teamcity.server.rest.jersey.BeanContextProvider"/>
+	<bean id="templateManagerProvider" class="webhook.teamcity.server.rest.jersey.TemplateManagerProvider"/>
+	<bean id="templateValidatorProvider" class="webhook.teamcity.server.rest.jersey.TemplateValidatorProvider"/>
+	<bean id="webHookParameterValidatorProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterValidatorProvider"/>
+	<bean id="webHookConfigurationValidatorProvider" class="webhook.teamcity.server.rest.jersey.WebHookConfigurationValidatorProvider"/>
+	<bean id="webHookParameterStoreProvider" class="webhook.teamcity.server.rest.jersey.WebHookParameterStoreProvider"/>
+	<bean id="webHookSettingsManagerProvider" class="webhook.teamcity.server.rest.jersey.WebHookSettingsManagerProvider"/>
+	<bean id="webHookUserRequestedExecutorProvider" class="webhook.teamcity.server.rest.jersey.WebHookUserRequestedExecutorProvider"/>
+	<bean id="webHookPluginDataResolverProvider" class="webhook.teamcity.server.rest.jersey.WebHookPluginDataResolverProvider"/>
+	<bean id="webHookWebLinks" class="webhook.teamcity.server.rest.WebHookWebLinks"/>
+</beans>
