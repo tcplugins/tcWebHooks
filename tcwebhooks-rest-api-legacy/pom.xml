@@ -7,7 +7,7 @@
 		<version>${currentVersion}</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>tcwebhooks-rest-api</artifactId>
+	<artifactId>tcwebhooks-rest-api-legacy</artifactId>
 <!-- 	<pluginRepositories>
       <pluginRepository>
          <id>miredot</id>
