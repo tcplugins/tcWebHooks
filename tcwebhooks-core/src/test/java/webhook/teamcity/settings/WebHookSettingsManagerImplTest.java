@@ -53,6 +53,10 @@ public class WebHookSettingsManagerImplTest {
 		
 		projectSettings = new WebHookProjectSettings();
 		projectSettings.readFrom(ConfigLoaderUtil.getFullConfigElement(new File("src/test/resources/project-settings-test-elastic.xml")).getChild("webhooks"));
+		projectSettings.getWebHooksConfigs().forEach(c -> {
+			c.setProjectInternalId("project01");
+			c.setProjectExternalId("MyProject");
+		});
 		
 		when(projectSettingsManager.getSettings("project01", "webhooks")).thenReturn(projectSettings);
 		

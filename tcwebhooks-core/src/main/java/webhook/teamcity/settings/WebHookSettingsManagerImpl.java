@@ -48,7 +48,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	private Map<String, WebHookProjectSettings> projectSettingsMap;
 
 	/** A Map of webhook uniqueKey to {@link WebHookConfigEnhanced} */
-	private Map<String, WebHookConfigEnhanced> webhooksEnhanced = new LinkedHashMap<>();
+	private Map<WebHookCacheKey, WebHookConfigEnhanced> webhooksEnhanced = new LinkedHashMap<>();
 
 
 	public WebHookSettingsManagerImpl(
@@ -484,8 +484,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 				addTagIfPresent(configEnhanced, c.getTriggerFilters(), "filters", TagType.FILTER);
 				addTagIfPresent(configEnhanced, c.getParams(), "parameters", TagType.PARAMETER);
 
-				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
-				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
+				this.webhooksEnhanced.put(c.getCacheKey(), configEnhanced);
+				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getCacheKey() + "' " + configEnhanced.toString());
 			}
 		} else {
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);

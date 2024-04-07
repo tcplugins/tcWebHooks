@@ -540,6 +540,11 @@ public class WebHookConfig {
 		this.url = url;
 	}
 
+	/**
+	 * A unique key, within this project.
+	 * If a project is copied, then this key may be duplicated.
+	 * Use <code>getCacheKey</code> as a globally unique id for this webhook
+	 */
 	public String getUniqueKey() {
 		if (this.uniqueKey == null) {
 			this.uniqueKey = generateRandomKey();
@@ -550,6 +555,10 @@ public class WebHookConfig {
 
 	public void setUniqueKey(String uniqueKey) {
 		this.uniqueKey = uniqueKey;
+	}
+
+	public WebHookCacheKey getCacheKey() {
+		return new WebHookCacheKey(projectInternalId, uniqueKey);
 	}
 
 	public String getEnabledListAsString(){
