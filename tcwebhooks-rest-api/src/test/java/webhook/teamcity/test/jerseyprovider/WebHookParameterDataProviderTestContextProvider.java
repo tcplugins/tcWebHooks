@@ -81,7 +81,7 @@ public class WebHookParameterDataProviderTestContextProvider implements Injectab
 	  projectManager = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectManager.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
-	  dataProvider = new WebHookParameterDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, projectIdResolver, webHookParameterFinder, securityContext);
+	  dataProvider = new WebHookParameterDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, projectManager, projectIdResolver, securityContext, webHookParameterFinder, null);
 	  return dataProvider;
   }
   

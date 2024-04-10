@@ -4,7 +4,7 @@
   <info>
     <name>tcWebHooks-rest-api</name>
     <display-name>Web Hooks REST API (tcWebHooks)</display-name>
-    <version>${majorVersion}</version>
+    <version>${majorVersion}-legacy</version>
     <description>REST API for configuring tcWebhooks plugin.
            This plugin adds support for configuring the tcWebHook Templates feature, with plans to support configuring Webhooks in future.
         
@@ -18,6 +18,8 @@
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
+  <!--  Requires TeamCity version between 2019.1 and 2023.11.x -->
+  <requirements min-build="66605" max-build="156000" />
   <deployment use-separate-classloader="true"/>
   <dependencies>
     <plugin name="tcWebHooks"/>

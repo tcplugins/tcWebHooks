@@ -83,7 +83,7 @@ public class TemplateDataProviderTestContextProvider implements InjectableProvid
 	  webHookParameterFinder = ContextLoader.getCurrentWebApplicationContext().getBean(WebHookParameterFinder.class);
 	  //projectIdResolver = ContextLoader.getCurrentWebApplicationContext().getBean(ProjectIdResolver.class);
 	  
-	  dataProvider = new TemplateDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, templateFinder, projectManager, webHookManager, projectIdResolver, securityContext);
+	  dataProvider = new TemplateDataProvider(sBuildServer, new TestUrlHolder(), permissionChecker, payloadManager, templateManager, null, templateFinder, projectManager, webHookManager, projectIdResolver, securityContext);
 	  return dataProvider;
   }
   

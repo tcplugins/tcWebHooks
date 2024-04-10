@@ -18,5 +18,7 @@
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
+  <!--  Requires TeamCity version between 2019.1 or newer -->
+  <requirements min-build="66605" />
   <deployment use-separate-classloader="true" />
 </teamcity-plugin>

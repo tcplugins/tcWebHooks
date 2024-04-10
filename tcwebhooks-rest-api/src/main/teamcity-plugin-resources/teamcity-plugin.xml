@@ -18,6 +18,8 @@
       <url>http://netwolfuk.wordpress.com/teamcity-plugins/</url>
     </vendor>
   </info>
+  <!--  Requires minimum TeamCity version 2024.03 EAP -->
+  <requirements min-build="156166" />
   <deployment use-separate-classloader="true"/>
   <dependencies>
     <plugin name="tcWebHooks"/>

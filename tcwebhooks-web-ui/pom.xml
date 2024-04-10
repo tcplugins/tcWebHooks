@@ -159,22 +159,22 @@
 	</repositories>  
   
   <dependencies>
-	  	<dependency>
-	  		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-	  		<artifactId>tcwebhooks-core</artifactId>
-	  		<version>${currentVersion}</version>
-	  		<scope>compile</scope>
-	  	</dependency>
-  	
-	    <!--<dependency>
-	      <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
-	      <artifactId>tcwebhooks-core</artifactId>
-	      <version>${currentVersion}</version>
-	      <type>test-jar</type>
-	      <scope>test</scope>
-	    </dependency>-->
-  	
-  		<dependency>
+		<dependency>
+			<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+			<artifactId>tcwebhooks-core</artifactId>
+			<version>${currentVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+			<artifactId>tcwebhooks-core</artifactId>
+			<version>${currentVersion}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junitVersion}</version>
@@ -194,7 +194,7 @@
 			<version>${teamcityVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!--  Required for jetbrains.buildServer.util.Pager -->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>

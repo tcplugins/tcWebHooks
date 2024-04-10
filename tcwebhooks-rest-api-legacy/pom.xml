@@ -127,7 +127,7 @@
 		          <execution>
 		            <phase>package</phase>
 		            <configuration>
-		              <tasks>
+		              <target>
 		    			 
 						<echo message="Attempting to build dist-REST zip file" />
 						<mkdir dir="${project.build.directory}/dist-REST" />
@@ -148,11 +148,11 @@
 		    			</copy>
 		    			
 		    			<echo message=" - Creating REST ZIP file" />
-		    			<zip destfile="${project.build.directory}/tcWebHooks-REST-API-${version}.zip" 
+		    			<zip destfile="${project.build.directory}/tcWebHooks-REST-API-${version}-legacy.zip" 
 		    				 basedir="${project.build.directory}/dist-REST"
 		    			 />
 		
-		               </tasks>
+		               </target>
 		            </configuration>
 		            <goals>
 		              <goal>run</goal>

@@ -77,7 +77,7 @@ public class MockingBeanContextProvider implements InjectableProvider<Context, T
 
   public WebHookBeanContext getValue() {
     //return new WebHookBeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new SimplePathTransformer(request, headers, myRequestPathTransformInfo)));
-    return new WebHookBeanContext(myFactory, myServiceLocator, new WebHookApiUrlBuilder(new PathTransformer() {
+    return new WebHookBeanContext(null, new WebHookApiUrlBuilder(new PathTransformer() {
 		
 		@Override
 		public String transform(String path) {
