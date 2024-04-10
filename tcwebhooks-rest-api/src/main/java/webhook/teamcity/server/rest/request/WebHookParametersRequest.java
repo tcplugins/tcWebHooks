@@ -13,13 +13,11 @@ import javax.ws.rs.core.Context;
 
 import org.jetbrains.annotations.NotNull;
 
-import jetbrains.buildServer.ServiceLocator;
-import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
 import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.errors.OperationException;
 import jetbrains.buildServer.server.rest.model.Fields;
-import jetbrains.buildServer.server.rest.model.PagerData;
+import jetbrains.buildServer.server.rest.model.SinglePagePagerData;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import webhook.teamcity.server.rest.data.WebHookParameterDataProvider;
@@ -31,12 +29,10 @@ import webhook.teamcity.server.rest.errors.WebHookPermissionException;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameters;
 import webhook.teamcity.server.rest.model.template.ErrorResult;
-import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
-import webhook.teamcity.settings.project.WebHookParameterStore;
 
 @Path(WebHookParametersRequest.API_PARAMETERS_URL)
-public class WebHookParametersRequest {
+public class WebHookParametersRequest extends BaseRequest {
 
 	@Context
 	@NotNull
@@ -46,22 +42,6 @@ public class WebHookParametersRequest {
 	@NotNull
 	private WebHookParameterValidator myWebHookParameterValidator;
 	
-	@Context
-	@NotNull
-	private WebHookParameterStore myWebHookParameterStore;
-
-	@Context
-	@NotNull
-	private ServiceLocator myServiceLocator;
-	
-	@Context
-	@NotNull
-	private BeanContext myBeanContext;
-	
-	@Context
-	@NotNull
-	private PermissionChecker myPermissionChecker;
-
 	public static final String API_PARAMETERS_URL = Constants.API_URL + "/parameters";
 	private static final String PARAMETER_CONTAINED_INVALID_DATA = "Parameter contained invalid data";
 
@@ -84,7 +64,7 @@ public class WebHookParametersRequest {
 		
 		SProject sProject = resolveProject(projectExternalId);
 		checkParameterReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookParameterFinder().getAllWebHookParameters(sProject, new PagerData(getHref(sProject.getExternalId())), new Fields(fields), myBeanContext);
+		return this.myDataProvider.getWebHookParameterFinder().getAllWebHookParameters(sProject, new SinglePagePagerData(getHref(sProject.getExternalId())), new Fields(fields), myWebHookApiUrlBuilder);
 	}
 	
 	@GET
@@ -98,7 +78,7 @@ public class WebHookParametersRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkParameterReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, parameterLocator, new Fields(fields), myBeanContext);
+		return this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, parameterLocator, new Fields(fields), myWebHookApiUrlBuilder);
 	}
 	
 	@POST
@@ -120,8 +100,8 @@ public class WebHookParametersRequest {
 		if (this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, newParameter.getName()) != null) {
 			throw new BadRequestException("Parameter name already exists in this project");
 		}
-		WebHookParameter persistedParameter = myWebHookParameterStore.addWebHookParameter(sProject.getProjectId(), newParameter);
-		return new ProjectWebhookParameter(persistedParameter, new Fields(fields), myBeanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, persistedParameter));
+		WebHookParameter persistedParameter = myDataProvider.getWebHookParameterStore().addWebHookParameter(sProject.getProjectId(), newParameter);
+		return new ProjectWebhookParameter(persistedParameter, new Fields(fields), myWebHookApiUrlBuilder.getProjectParameterHref(projectExternalId, persistedParameter));
 	}
 	
 	@PUT
@@ -142,21 +122,21 @@ public class WebHookParametersRequest {
 		if (validationResult.isErrored()) {
 			throw new UnprocessableEntityException(PARAMETER_CONTAINED_INVALID_DATA, validationResult);
 		}
-		WebHookParameter existingParameter = this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, parameterId, new Fields(fields), myBeanContext); 
+		WebHookParameter existingParameter = this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, parameterId, new Fields(fields), myWebHookApiUrlBuilder); 
 		if (existingParameter == null) {
 			throw new NotFoundException("No Parameter with that ID exists in this project");
 		}
 		
 		updatedParameter.setId(existingParameter.getId());
-		WebHookParameter webHookParameterByName = myWebHookParameterStore.findWebHookParameter(sProject, updatedParameter.getName());
+		WebHookParameter webHookParameterByName = myDataProvider.getWebHookParameterStore().findWebHookParameter(sProject, updatedParameter.getName());
 		if (webHookParameterByName != null && !webHookParameterByName.getId().equals(updatedParameter.getId())) {
 			validationResult.addError("name", String.format("An existing parameter with id '%s' exists with the same name '%s'", webHookParameterByName.getId(), webHookParameterByName.getName()));
 			throw new UnprocessableEntityException(PARAMETER_CONTAINED_INVALID_DATA, validationResult);
 		}
 		
-		if (myWebHookParameterStore.updateWebHookParameter(sProject.getProjectId(), updatedParameter, "")) {
-			WebHookParameter webHookParameterById = myWebHookParameterStore.getWebHookParameterById(sProject, existingParameter.getId());
-			return new ProjectWebhookParameter(webHookParameterById, new Fields(fields), myBeanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, webHookParameterById));
+		if (myDataProvider.getWebHookParameterStore().updateWebHookParameter(sProject.getProjectId(), updatedParameter, "")) {
+			WebHookParameter webHookParameterById = myDataProvider.getWebHookParameterStore().getWebHookParameterById(sProject, existingParameter.getId());
+			return new ProjectWebhookParameter(webHookParameterById, new Fields(fields), myWebHookApiUrlBuilder.getProjectParameterHref(projectExternalId, webHookParameterById));
 		} else {
 			throw new OperationException("An error occured updating the prarameter");
 		}
@@ -173,13 +153,13 @@ public class WebHookParametersRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkParameterWritePermission(sProject.getProjectId());
-		ProjectWebhookParameter webhookParameter = this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, parameterLocator, new Fields(fields), myBeanContext);
-		this.myWebHookParameterStore.removeWebHookParameter(sProject.getProjectId(), webhookParameter);
+		ProjectWebhookParameter webhookParameter = this.myDataProvider.getWebHookParameterFinder().findWebhookParameter(sProject, parameterLocator, new Fields(fields), myWebHookApiUrlBuilder);
+		myDataProvider.getWebHookParameterStore().removeWebHookParameter(sProject.getProjectId(), webhookParameter);
 		return webhookParameter;
 	}
 	private void checkParameterReadPermission(String projectInternalId) {
 		try {
-			myPermissionChecker.checkProjectPermission(Permission.VIEW_PROJECT, projectInternalId);
+			myDataProvider.getPermissionChecker().checkProjectPermission(Permission.VIEW_PROJECT, projectInternalId);
 		} catch (AuthorizationFailedException e) {
 			throw new WebHookPermissionException(
 					"Reading parameters requires 'VIEW_PROJECT' permission.");
@@ -196,7 +176,7 @@ public class WebHookParametersRequest {
 
 	private void checkParameterWritePermission(String projectInternalId) {
 		try {
-			myPermissionChecker.checkProjectPermission(Permission.EDIT_PROJECT, projectInternalId);
+			myDataProvider.getPermissionChecker().checkProjectPermission(Permission.EDIT_PROJECT, projectInternalId);
 		} catch (AuthorizationFailedException e) {
 			throw new WebHookPermissionException(
 					"Updating parameters requires 'EDIT_PROJECT' permission.");

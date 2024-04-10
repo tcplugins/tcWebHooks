@@ -16,9 +16,10 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSearchFilter;
@@ -51,7 +52,7 @@ public class WebHookManager {
 		return webhookSettingsManager.getSettings(sProject.getProjectId());
 	}
 	
-	public ProjectWebhook findWebHookById(String projectExternalId, String webHookLocator, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+	public ProjectWebhook findWebHookById(String projectExternalId, String webHookLocator, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext) {
 
 		if (StringUtils.isEmpty(webHookLocator)) {
 			throw new BadRequestException("Empty webhook locator is not supported.");
@@ -77,7 +78,7 @@ public class WebHookManager {
 		return this.webhookSettingsManager.getTemplateUsageCount(templateId);
 	}
 
-	private ProjectWebhook getWebHookConfigById(String projectExternalId, final Fields fields, final BeanContext beanContext, final String singleValue) {
+	private ProjectWebhook getWebHookConfigById(String projectExternalId, final Fields fields, final WebHookBeanContext beanContext, final String singleValue) {
 		for (WebHookConfig webHookConfig : getWebHookProjectSettings(projectExternalId).getWebHooksConfigs()) {
 			
 			if (singleValue.equals(webHookConfig.getUniqueKey())) {
@@ -110,11 +111,11 @@ public class WebHookManager {
 		throw new NotFoundException("Could not find a webhook with that id");
 	}
 	
-	public List<ProjectWebhook> searchForWebHooks(WebHookSearchFilter webHookSearchFilter, Fields fields, BeanContext beanContext) {
+	public List<ProjectWebhook> searchForWebHooks(WebHookSearchFilter webHookSearchFilter, Fields fields, WebHookBeanContext beanContext, PermissionChecker permissionChecker) {
 		List<WebHookSearchResult> results = this.webhookSettingsManager.findWebHooks(webHookSearchFilter);
 		List<ProjectWebhook> foundWebhooks = new ArrayList<>();
 		for (WebHookSearchResult webhook : results) {
-			if (beanContext.getSingletonService(PermissionChecker.class).isPermissionGranted(Permission.EDIT_PROJECT, webhook.getWebHookConfigEnhanced().getProjectInternalId())) {
+			if (permissionChecker.isPermissionGranted(Permission.EDIT_PROJECT, webhook.getWebHookConfigEnhanced().getProjectInternalId())) {
 				foundWebhooks.add(new ProjectWebhook(webhook.getWebHookConfig(), webhook.getWebHookConfigEnhanced().getProjectExternalId(), fields, beanContext, getBuildTypeExternalIds(webhook.getWebHookConfig().getEnabledBuildTypesSet())));
 			}
 		}
@@ -132,7 +133,7 @@ public class WebHookManager {
 		return externalExternalIds;
 	}
 	
-	public ProjectWebhooks build(WebHookProjectSettings webHookProjectSettings, final String projectExternalId, final @NotNull Fields fields, @NotNull final BeanContext beanContext){
+	public ProjectWebhooks build(WebHookProjectSettings webHookProjectSettings, final String projectExternalId, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext){
 		ProjectWebhooks projectWebhooks = new ProjectWebhooks();
 		projectWebhooks.setEnabled(webHookProjectSettings.isEnabled());
 		projectWebhooks.setProjectId(projectExternalId);
@@ -143,7 +144,7 @@ public class WebHookManager {
 		return projectWebhooks;
 	}
 	
-	public ProjectWebhooks getWebHookList(final String projectExternalId, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+	public ProjectWebhooks getWebHookList(final String projectExternalId, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext) {
 		WebHookProjectSettings webHookProjectSettings = getWebHookProjectSettings(projectExternalId);
 		return build(webHookProjectSettings, projectExternalId, fields, beanContext);
 	}

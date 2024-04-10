@@ -19,7 +19,8 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @XmlRootElement(name = "parameters")
@@ -51,26 +52,26 @@ public class ProjectWebhookParameters {
 	public String prevHref;
 
 	public ProjectWebhookParameters(@NotNull final List<WebHookParameter> webhookParameters, @NotNull String projectExternalId,
-			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final WebHookApiUrlBuilder myWebHookApiUrlBuilder) {
 		
 		this.projectId = ValueWithDefault.decideDefault(fields.isIncluded("projectId", false, true), projectExternalId);
 
 		if (Boolean.TRUE.equals(fields.isIncluded("parameters", true, true))) {
 			final ArrayList<ProjectWebhookParameter> result = new ArrayList<>(parameters.size());
 			for (WebHookParameter parameter : webhookParameters) {
-				result.add(new ProjectWebhookParameter(parameter, fields, beanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, parameter)));
+				result.add(new ProjectWebhookParameter(parameter, fields, myWebHookApiUrlBuilder.getProjectParameterHref(projectExternalId, parameter)));
 			}
 			parameters = result;
 			if (pagerData != null) {
 				href = ValueWithDefault.decideDefault(fields.isIncluded("href"),
-						beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getHref()));
+						myWebHookApiUrlBuilder.transformRelativePath(pagerData.getHref()));
 				nextHref = ValueWithDefault.decideDefault(fields.isIncluded("nextHref"),
 						pagerData.getNextHref() != null
-								? beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getNextHref())
+								? myWebHookApiUrlBuilder.transformRelativePath(pagerData.getNextHref())
 								: null);
 				prevHref = ValueWithDefault.decideDefault(fields.isIncluded("prevHref"),
 						pagerData.getPrevHref() != null
-								? beanContext.getApiUrlBuilder().transformRelativePath(pagerData.getPrevHref())
+								? myWebHookApiUrlBuilder.transformRelativePath(pagerData.getPrevHref())
 								: null);
 			}
 			count = ValueWithDefault.decideIncludeByDefault(fields.isIncluded("count"), parameters.size());

@@ -17,14 +17,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
-import webhook.teamcity.server.rest.util.BeanContext;
 
 @Path(Constants.API_URL)
-public class WebHooksIndexRequest {
+public class WebHooksIndexRequest extends BaseRequest {
 	
-	@Context
-	@NotNull
-	private BeanContext myBeanContext;
 	@Context
 	@NotNull
 	private WebHookPluginDataResolver myWebHookPluginDataResolver;
@@ -35,7 +31,7 @@ public class WebHooksIndexRequest {
 		return new WebHooksIndexItems(
 				myWebHookPluginDataResolver.getWebHooksCoreVersion(), 
 				myWebHookPluginDataResolver.getWebHooksRestApiVersion(), 
-				myBeanContext.getApiUrlBuilder()
+				myWebHookBeanContext.getApiUrlBuilder()
 			); 
 	}
 	

@@ -18,7 +18,6 @@ package jetbrains.buildServer.server.rest.jersey;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
-import com.sun.jersey.spi.inject.Errors;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -184,25 +183,25 @@ public class ExceptionMapperUtil {
   }
 
   public static String addKnownExceptionsData(final Throwable e, String result) {
-    if (e instanceof Errors.ErrorMessagesException) { //error message does not contain details
-      final List<Errors.ErrorMessage> messages = ((Errors.ErrorMessagesException)e).messages;
-      if (messages != null) {
-        try {
-          final Field field = Errors.ErrorMessage.class.getDeclaredField("message");
-          field.setAccessible(true);
-          result += " (messages: ";
-          for (Errors.ErrorMessage errorMessage : messages) {
-            // the data is not accessible otherwise
-            result += "\"" + field.get(errorMessage) + "\",";
-          }
-          result += ")";
-        } catch (NoSuchFieldException e1) {
-          //ignore
-        } catch (IllegalAccessException e1) {
-          //ignore
-        }
-      }
-    }
+//    if (e instanceof Errors.ErrorMessagesException) { //error message does not contain details
+//      final List<Errors.ErrorMessage> messages = ((Errors.ErrorMessagesException)e).messages;
+//      if (messages != null) {
+//        try {
+//          final Field field = Errors.ErrorMessage.class.getDeclaredField("message");
+//          field.setAccessible(true);
+//          result += " (messages: ";
+//          for (Errors.ErrorMessage errorMessage : messages) {
+//            // the data is not accessible otherwise
+//            result += "\"" + field.get(errorMessage) + "\",";
+//          }
+//          result += ")";
+//        } catch (NoSuchFieldException e1) {
+//          //ignore
+//        } catch (IllegalAccessException e1) {
+//          //ignore
+//        }
+//      }
+//    }
     return result;
   }
 

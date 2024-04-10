@@ -11,8 +11,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.sun.jersey.spi.resource.Singleton;
-
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -25,7 +23,6 @@ import webhook.teamcity.server.rest.util.mainconfig.MainConfigManager;
  */
 
 @Path(WebHooksConfigRequest.BASE_URI)
-@Singleton
 public class WebHooksConfigRequest implements ApiRequest {
 	static final String BASE_URI = Constants.API_URL + "/server";
 	private static final Permission mainConfigReadPermission = Permission.CHANGE_SERVER_SETTINGS;

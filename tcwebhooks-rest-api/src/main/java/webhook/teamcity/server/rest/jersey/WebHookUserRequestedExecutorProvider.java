@@ -1,47 +1,30 @@
 package webhook.teamcity.server.rest.jersey;
 
-import java.lang.reflect.Type;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
-
-import org.jetbrains.annotations.NotNull;
-
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.InjectableProvider;
-
+import jetbrains.buildServer.server.rest.jersey.provider.annotated.JerseyInjectableBeanProvider;
 import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 
-@Provider
-@SuppressWarnings("squid:S1191")
-public class WebHookUserRequestedExecutorProvider implements InjectableProvider<Context, Type>, Injectable<WebHookUserRequestedExecutor> {
-  private final WebHookUserRequestedExecutor webHookUserRequestedExecutor;
+@Component
+@Configuration
+public class WebHookUserRequestedExecutorProvider implements JerseyInjectableBeanProvider {
+	
+	private final WebHookUserRequestedExecutor myExecutor;
 
-  /**
-   * Injected by Spring
-   * @param webHookUserRequestedExecutor
-   */
-  public WebHookUserRequestedExecutorProvider(
-			@NotNull final WebHookUserRequestedExecutor webHookUserRequestedExecutor
-		  ) {
-	  this.webHookUserRequestedExecutor = webHookUserRequestedExecutor;
-  }
+	public WebHookUserRequestedExecutorProvider(WebHookUserRequestedExecutor executor) {
+		myExecutor = executor;
+	}
 
-  public ComponentScope getScope() {
-    return ComponentScope.Singleton;
-  }
+	@Bean
+	public WebHookUserRequestedExecutor getBean() {
+		return this.myExecutor;
+	}
 
-  public Injectable<WebHookUserRequestedExecutor> getInjectable(final ComponentContext ic, final Context context, final Type type) {
-    if (type.equals(WebHookUserRequestedExecutor.class)) {
-      return this;
-    }
-    return null;
-  }
-
-  public WebHookUserRequestedExecutor getValue() {
-    return webHookUserRequestedExecutor;
-  }
+	@Override
+	public Class<?> getBeanClass() {
+		return WebHookUserRequestedExecutor.class;
+	}
 
 }

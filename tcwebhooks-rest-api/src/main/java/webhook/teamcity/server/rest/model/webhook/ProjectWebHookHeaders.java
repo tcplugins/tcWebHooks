@@ -19,7 +19,8 @@ import jetbrains.buildServer.server.rest.util.ValueWithDefault;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 
@@ -52,7 +53,7 @@ public class ProjectWebHookHeaders {
 	public String prevHref;
 
 	public ProjectWebHookHeaders(@NotNull final WebHookConfig config, @NotNull final List<WebHookHeaderConfig> webhookHeaders, @NotNull String projectExternalId,
-			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final BeanContext beanContext) {
+			@Nullable final PagerData pagerData, final @NotNull Fields fields, @NotNull final WebHookBeanContext beanContext) {
 		
 		for(WebHookHeaderConfig header : webhookHeaders ) {
 			count++;

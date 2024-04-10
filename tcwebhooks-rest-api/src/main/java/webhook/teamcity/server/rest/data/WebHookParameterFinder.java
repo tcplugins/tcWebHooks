@@ -11,9 +11,10 @@ import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.server.rest.model.PagerData;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameters;
-import webhook.teamcity.server.rest.util.BeanContext;
+import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 import webhook.teamcity.settings.project.WebHookParameterStore;
 import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
@@ -35,16 +36,16 @@ public class WebHookParameterFinder {
 		return Locator.createEmptyLocator().setDimension("id", webhookParameter.getId()).getStringRepresentation();
 	}
 
-	public ProjectWebhookParameters getAllWebHookParameters(SProject sProject, PagerData pagerData, Fields fields, BeanContext myBeanContext) {
+	public ProjectWebhookParameters getAllWebHookParameters(SProject sProject, PagerData pagerData, Fields fields, WebHookApiUrlBuilder myWebHookApiUrlBuilder) {
 		return new ProjectWebhookParameters(
 				myWebHookParameterStore.getOwnWebHookParameters(sProject),
 				sProject.getExternalId(), 
 				pagerData, 
 				fields, 
-				myBeanContext);
+				myWebHookApiUrlBuilder);
 	}
 	
-	public ProjectWebhookParameter findWebhookParameter(SProject sProject, String paramLocator, Fields fields, BeanContext myBeanContext) {
+	public ProjectWebhookParameter findWebhookParameter(SProject sProject, String paramLocator, Fields fields, @NotNull WebHookApiUrlBuilder myApiUrlBuilder) {
 		
 		if (StringUtils.isEmpty(paramLocator)) {
 			throw new BadRequestException("Empty parameter locator is not supported.");
@@ -63,7 +64,7 @@ public class WebHookParameterFinder {
 				return new ProjectWebhookParameter(
 						param, 
 						fields,
-						myBeanContext.getApiUrlBuilder().getProjectParameterHref(sProject.getExternalId(), param)
+						myApiUrlBuilder.getProjectParameterHref(sProject.getExternalId(), param)
 					);
 			}
 			throw new NotFoundException(
@@ -78,7 +79,7 @@ public class WebHookParameterFinder {
 				return new ProjectWebhookParameter(
 						param, 
 						fields,
-						myBeanContext.getApiUrlBuilder().getProjectParameterHref(sProject.getExternalId(), param)
+						myApiUrlBuilder.getProjectParameterHref(sProject.getExternalId(), param)
 					);
 			}
 			throw new NotFoundException(
@@ -92,7 +93,7 @@ public class WebHookParameterFinder {
 				return new ProjectWebhookParameter(
 						param, 
 						fields,
-						myBeanContext.getApiUrlBuilder().getProjectParameterHref(sProject.getExternalId(), param)
+						myApiUrlBuilder.getProjectParameterHref(sProject.getExternalId(), param)
 					);
 			}
 			throw new NotFoundException(

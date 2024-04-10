@@ -25,6 +25,7 @@ import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
+import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.data.WebHookConfigurationValidator;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookManager;
@@ -38,7 +39,6 @@ import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookParameters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
-import webhook.teamcity.server.rest.util.BeanContext;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookSearchFilter;
 import webhook.teamcity.settings.WebHookSearchFilter.WebHookSearchFilterBuilder;
@@ -46,7 +46,7 @@ import webhook.teamcity.settings.WebHookUpdateResult;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @Path(WebHooksRequest.API_WEBHOOKS_URL)
-public class WebHooksRequest {
+public class WebHooksRequest extends BaseRequest {
 
 	@Context
 	@NotNull
@@ -56,14 +56,6 @@ public class WebHooksRequest {
 	@NotNull
 	private WebHookConfigurationValidator myWebHookValidator;
 
-	@Context
-	@NotNull
-	private ServiceLocator myServiceLocator;
-	
-	@Context
-	@NotNull
-	private BeanContext myBeanContext;
-	
 	@Context
 	@NotNull
 	private PermissionChecker myPermissionChecker;
@@ -128,7 +120,7 @@ public class WebHooksRequest {
 			}
 			locator.checkLocatorFullyProcessed();
 		}
-		List<ProjectWebhook> found = myDataProvider.getWebHookManager().searchForWebHooks(searchFilterBuilder.build(), new Fields(fields), myBeanContext);
+		List<ProjectWebhook> found = myDataProvider.getWebHookManager().searchForWebHooks(searchFilterBuilder.build(), new Fields(fields), this.myWebHookBeanContext, myDataProvider.getPermissionChecker());
 		projectWebhooks.setWebhooks(found);
 		projectWebhooks.setCount(found.size());
 		return projectWebhooks;
@@ -143,7 +135,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookManager().getWebHookList(projectExternalId, new Fields(fields), myBeanContext);
+		return this.myDataProvider.getWebHookManager().getWebHookList(projectExternalId, new Fields(fields), this.myWebHookBeanContext);
 	}
 	
 	@GET
@@ -157,7 +149,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext); // Throws permissionDenied or notFound
+		return this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), this.myWebHookBeanContext); // Throws permissionDenied or notFound
 		
 	}
 	
@@ -176,7 +168,7 @@ public class WebHooksRequest {
 		}
 		WebHookConfig config = webhook.toWebHookConfig(this.myDataProvider.getProjectIdResolver(), this.myDataProvider.getBuildTypeIdResolver());
 		WebHookUpdateResult result = myDataProvider.getWebHookManager().addWebHookToProjectSettings(sProject.getProjectId(), config);
-		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookManager().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
+		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), this.myWebHookBeanContext, this.myDataProvider.getWebHookManager().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
 	}
 	
 	@PUT
@@ -202,7 +194,7 @@ public class WebHooksRequest {
 		}
 		WebHookConfig config = webhook.toWebHookConfig(this.myDataProvider.getProjectIdResolver(), this.myDataProvider.getBuildTypeIdResolver());
 		WebHookUpdateResult result = myDataProvider.getWebHookManager().updateWebHookInProjectSettings(sProject.getProjectId(), config);
-		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookManager().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
+		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), this.myWebHookBeanContext, this.myDataProvider.getWebHookManager().getBuildTypeExternalIds(config.getEnabledBuildTypesSet()));
 	}
 	
 	@DELETE
@@ -219,7 +211,7 @@ public class WebHooksRequest {
 		}
 		
 		WebHookUpdateResult result = myDataProvider.getWebHookManager().deleteWebHookFromProjectSettings(sProject.getProjectId(), existingWebhookConfig);
-		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), myBeanContext, this.myDataProvider.getWebHookManager().getBuildTypeExternalIds(result.getWebHookConfig().getEnabledBuildTypesSet()));
+		return new ProjectWebhook(result.getWebHookConfig(), sProject.getExternalId(), new Fields(fields), this.myWebHookBeanContext, this.myDataProvider.getWebHookManager().getBuildTypeExternalIds(result.getWebHookConfig().getEnabledBuildTypesSet()));
 	}
 	
 	@GET
@@ -233,7 +225,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext).getFilters(); // Throws permissionDenied or notFound
+		return this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), this.myWebHookBeanContext).getFilters(); // Throws permissionDenied or notFound
 	}
 	
 	@GET
@@ -248,7 +240,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		ProjectWebHookFilters filters = this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext).getFilters(); // Throws permissionDenied or notFound
+		ProjectWebHookFilters filters = this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), this.myWebHookBeanContext).getFilters(); // Throws permissionDenied or notFound
 		
 		final Locator locator = new Locator(filterLocator, "id", Locator.LOCATOR_SINGLE_VALUE_UNUSED_NAME);
 		Integer filterId = null;
@@ -275,7 +267,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		return this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext).getParameters(); // Throws permissionDenied or notFound
+		return this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), this.myWebHookBeanContext).getParameters(); // Throws permissionDenied or notFound
 	}
 	
 	@GET
@@ -290,7 +282,7 @@ public class WebHooksRequest {
 	{
 		SProject sProject = resolveProject(projectExternalId);
 		checkWebHookReadPermission(sProject.getProjectId());
-		ProjectWebHookParameters parameters = this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), myBeanContext).getParameters(); // Throws permissionDenied or notFound
+		ProjectWebHookParameters parameters = this.myDataProvider.getWebHookManager().findWebHookById(projectExternalId, webhookLocator, new Fields(fields), this.myWebHookBeanContext).getParameters(); // Throws permissionDenied or notFound
 		
 		final Locator locator = new Locator(parameterLocator, "id", Locator.LOCATOR_SINGLE_VALUE_UNUSED_NAME);
 		Integer parameterId = null;
