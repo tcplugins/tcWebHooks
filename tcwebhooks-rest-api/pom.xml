@@ -25,10 +25,10 @@
 			<id>Local Repo (tcwebhooks-core)</id>
 			<url>file://${basedir}/../tcwebhooks-core/local-mvn-repo</url>
 		</repository>
-		<repository>
+<!--		<repository>
 			<id>RiffPie Repo for Jersey Test addon</id>
 			<url>http://maven.riffpie.com/releases/</url>
-		</repository>		
+		</repository>	-->	
 	</repositories>
 	<build>
 		<defaultGoal>package</defaultGoal>

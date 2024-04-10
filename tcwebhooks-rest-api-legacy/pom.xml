@@ -31,10 +31,10 @@
 		      <url>https://jcenter.bintray.com/</url>
 		    </repository>-->
 		  
-		  <repository>
+<!--		  <repository>
 		    <id>RiffPie Repo for Jersey Test addon</id>
 		    <url>http://maven.riffpie.com/releases/</url>
-		  </repository>
+		  </repository>-->
 		  
 
     <!-- <repository>
