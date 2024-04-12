@@ -139,19 +139,10 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		when(projectManager.findProjectById(eq("project01"))).thenReturn(sProject);
 		when(projectManager.findProjectById(eq("project02"))).thenReturn(sProject2);
 		when(projectManager.findProjectById(eq("project03"))).thenReturn(sProject3);
-		
-		projectSettings = new WebHookProjectSettings();
-		projectSettings.readFrom(ConfigLoaderUtil.getFullConfigElement(new File("src/test/resources/project-settings-test-elastic.xml")).getChild("webhooks"));
 
-		projectSettings2 = new WebHookProjectSettings();
-		projectSettings2.readFrom(ConfigLoaderUtil.getFullConfigElement(new File("src/test/resources/project-settings-test-slack.xml")).getChild("webhooks"));
-		
-		projectSettings3 = new WebHookProjectSettings();
-		projectSettings3.readFrom(ConfigLoaderUtil.getFullConfigElement(new File("src/test/resources/project-settings-test-all-states-enabled-with-filters.xml")).getChild("webhooks"));
-		
-		when(projectSettingsManager.getSettings("project01", "webhooks")).thenReturn(projectSettings);
-		when(projectSettingsManager.getSettings("project02", "webhooks")).thenReturn(projectSettings2);
-		when(projectSettingsManager.getSettings("project03", "webhooks")).thenReturn(projectSettings3);
+		projectSettings = configureProjectSettings("project01", "MyProject", "src/test/resources/project-settings-test-elastic.xml");
+		projectSettings2 = configureProjectSettings("project02", "MyProject2", "src/test/resources/project-settings-test-slack.xml");
+		projectSettings3 = configureProjectSettings("project03", "MyProject3", "src/test/resources/project-settings-test-all-states-enabled-with-filters.xml");
 
 		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
 				BuildStateEnum.BUILD_STARTED,
@@ -205,7 +196,18 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		when(webHookMainSettings.getWebHookMainConfig()).thenReturn(webHookMainConfig);
 		reportAssembler = new StatisticsReportAssemblerImpl(serverSettings, sBuildServer, webHookPluginDataResolver, webHookSettingsManager, webHookMainSettings, framework.getWebHookTemplateManager());
 	}
-	
+
+	private WebHookProjectSettings configureProjectSettings(String projectInternalId, String projectExternalId, String pathname) throws JDOMException, IOException {
+		WebHookProjectSettings settings = new WebHookProjectSettings();
+		settings.readFrom(ConfigLoaderUtil.getFullConfigElement(new File(pathname)).getChild("webhooks"));
+		settings.getWebHooksConfigs().forEach(c -> {
+			c.setProjectInternalId(projectInternalId);
+			c.setProjectExternalId(projectExternalId);
+		});
+		when(projectSettingsManager.getSettings(projectInternalId, "webhooks")).thenReturn(settings);
+		return settings;
+	}
+
 	@Test
 	public void testAssembleStatisticsReports() {
 		List<StatisticsEntity> stats = statisticsManager.getUnreportedHistoricalStatisticsEntities(LocalDate.parse("2020-11-01"), LocalDate.parse("2020-11-05"));
