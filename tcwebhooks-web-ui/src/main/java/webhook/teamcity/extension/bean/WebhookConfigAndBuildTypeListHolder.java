@@ -15,7 +15,6 @@ import webhook.teamcity.history.GeneralisedWebAddress;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
-import webhook.teamcity.settings.WebHookCacheKey;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookConfigEnhanced.Tag;
@@ -24,7 +23,6 @@ import webhook.teamcity.settings.WebHookConfigEnhanced.Tag;
 public class WebhookConfigAndBuildTypeListHolder {
 	private String url;
 	private String uniqueKey;
-	private WebHookCacheKey cacheKey;
 	private boolean enabled;
 	private String payloadTemplate;
 	private String payloadFormatForWeb = "Unknown";
@@ -53,7 +51,6 @@ public class WebhookConfigAndBuildTypeListHolder {
 	public WebhookConfigAndBuildTypeListHolder(WebHookConfig config, Collection<WebHookPayload> registeredPayloads, List<WebHookPayloadTemplate> templateList) {
 		url = config.getUrl();
 		uniqueKey = config.getUniqueKey();
-		cacheKey = config.getCacheKey();
 		enabled = config.getEnabled();
 		hideSecureValues = config.isHideSecureValues();
 		payloadTemplate = config.getPayloadTemplate();

@@ -15,7 +15,6 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
-import webhook.teamcity.settings.WebHookCacheKey;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -27,7 +26,7 @@ public class ProjectWebHooksBean {
 	@Getter private String 	sensibleProjectName;
 	@Getter private String 	sensibleProjectFullName;
 	@Getter private boolean webHooksEnabledForProject;
-	private Map<WebHookCacheKey, WebhookConfigAndBuildTypeListHolder> webHookList;
+	private Map<String, WebhookConfigAndBuildTypeListHolder> webHookList;
 
 	public Collection<WebhookConfigAndBuildTypeListHolder> getWebHookList(){
 		return webHookList.values();
@@ -161,7 +160,7 @@ public class ProjectWebHooksBean {
 													)
 										);
 		}
-		bean.webHookList.put(holder.getCacheKey(), holder);
+		bean.webHookList.put(holder.getUniqueKey(), holder);
 	}
 	
 	private static void addWebHookConfigHolder(ProjectWebHooksBean bean,
@@ -176,7 +175,7 @@ public class ProjectWebHooksBean {
 					)
 					);
 		}
-		bean.webHookList.put(holder.getCacheKey(), holder);
+		bean.webHookList.put(holder.getUniqueKey(), holder);
 	}
 
 }
