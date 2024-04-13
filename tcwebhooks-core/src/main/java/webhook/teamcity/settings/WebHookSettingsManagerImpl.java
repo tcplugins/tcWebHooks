@@ -302,6 +302,12 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		}
 		return projectGroupedResults;
 	}
+	
+    @Override
+    public void handleProjectChangedEvent(String projectInternalId) {
+        this.rebuildWebHooksEnhanced(projectInternalId);
+    }
+
 
 	/** 
 	 * Perform the search and add any matching records to the <code>webhookResultList</code>.
