@@ -87,7 +87,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	@Override
 	public WebHookProjectSettings getSettings(String projectInternalId) {
-		return (WebHookProjectSettings) myProjectSettingsManager.getSettings(projectInternalId, WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+		WebHookProjectSettings webHookProjectSettings = (WebHookProjectSettings) myProjectSettingsManager.getSettings(projectInternalId, WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+		for (WebHookConfig whc : webHookProjectSettings.getWebHooksConfigs()) {
+			if (whc.getProjectInternalId() == null) {
+				whc.setProjectInternalId(projectInternalId);
+			}
+		}
+		return webHookProjectSettings;
 	}
 
 	@Override
@@ -133,7 +139,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (result.updated) {
 			if (persist(projectInternalId, "Deleted existing WebHook")) {
 				result.updated = true;
-				this.webhooksEnhanced.remove(webHookId);
+				this.webhooksEnhanced.remove(new WebHookCacheKey(webHookId, projectInternalId));
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
 				result.updated = false;
@@ -148,7 +154,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (result.updated) {
 			if (persist(projectInternalId, "Deleted existing WebHook")) {
 				result.updated = true;
-				this.webhooksEnhanced.remove(config.getUniqueKey());
+				this.webhooksEnhanced.remove(config.getCacheKey());
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
 				result.updated = false;
@@ -248,7 +254,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		for (Map.Entry<String, WebHookProjectSettings> entry : this.projectSettingsMap.entrySet()) {
 			List<WebHookSearchResult> webhookResultList = new ArrayList<>();
 			for (WebHookConfig c : entry.getValue().getWebHooksConfigs()) {
-				addMatchingWebHook(filter, webhookResultList, this.webhooksEnhanced.get(c.getUniqueKey()));
+				addMatchingWebHook(filter, webhookResultList, this.webhooksEnhanced.get(c.getCacheKey()));
 			}
 			if ( !webhookResultList.isEmpty()) {
 				projectGroupedResults.put(entry.getKey(), webhookResultList);
