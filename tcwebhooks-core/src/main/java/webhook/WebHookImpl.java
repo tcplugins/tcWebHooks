@@ -123,7 +123,8 @@ public class WebHookImpl implements WebHook {
 		}
 	}
 	
-	@Override
+    @Override
+    @SuppressWarnings("deprecation")
 	public void post() throws IOException {
 		if ((this.enabled) && (!this.getExecutionStats().isErrored())){
 			HttpPost httppost = new HttpPost(this.url);
