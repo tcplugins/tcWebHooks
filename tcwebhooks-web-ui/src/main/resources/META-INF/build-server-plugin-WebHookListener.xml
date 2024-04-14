@@ -403,6 +403,11 @@
 		class="webhook.teamcity.statistics.StatisticsSnapshotScheduler"
 		init-method="requestDeferredRegistration"
 		/>
+		
+	<bean id="webHookProjectSettingsReloadScheduler"
+		class="webhook.teamcity.settings.WebHookProjectSettingsReloadScheduler"
+		init-method="requestDeferredRegistration"
+		/>
 	
 	<bean id="legacyEmptyWebHookTemplate"
 		class="webhook.teamcity.payload.template.LegacyEmptyWebHookTemplate"

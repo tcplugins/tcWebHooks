@@ -366,20 +366,26 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	
 	@Override
 	public void projectRestored(String projectId) {
-	    Loggers.SERVER.info("WebHookListener :: Handling projectRestored event for project: " + projectId);
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectRestored event for project: " + projectId);
 	    this.mySettings.handleProjectChangedEvent(projectId);
 	}
 	
 	@Override
 	public void projectMoved(SProject project, SProject originalParentProject) {
-	    Loggers.SERVER.info("WebHookListener :: Handling projectMoved event for project: " + project.getProjectId());
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectMoved event for project: " + project.getProjectId());
 	    this.mySettings.handleProjectChangedEvent(project.getProjectId());
 	}
 	
 	@Override
 	public void projectExternalIdChanged(SProject project, java.lang.String oldExternalId, java.lang.String newExternalId) {
-	    Loggers.SERVER.info("WebHookListener :: Handling projectExternalIdChanged event for project: " + project.getProjectId());
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectExternalIdChanged event for project: " + project.getProjectId());
 	    this.mySettings.handleProjectChangedEvent(project.getProjectId());
+	}
+	
+	@Override
+	public void projectCreated(String projectId, SUser user) {
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectCreated event for project: " + projectId);
+	    this.mySettings.handleProjectChangedEvent(projectId);
 	}
 
 	@Override
