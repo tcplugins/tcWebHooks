@@ -30,6 +30,7 @@ import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookFactory;
 import webhook.teamcity.WebHookListener;
+import webhook.teamcity.WebHookSettingsEventHandler;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.executor.WebHookExecutor;
@@ -116,6 +117,8 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	
 	private WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class); 
+	private WebHookSettingsEventHandler settingsEventHandler = mock(WebHookSettingsEventHandler.class);
+
 
 
 	
@@ -156,7 +159,7 @@ public class WebHookSemiMockingFrameworkImpl implements WebHookMockingFramework 
 		webHookExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		webHookStatisticsExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 		
-		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookExecutor, webHookStatisticsExecutor);
+		webHookListener = new WebHookListener(sBuildServer, projectSettingsManager, configSettings, webHookTemplateManager, webHookFactory, webHookExecutor, webHookStatisticsExecutor, settingsEventHandler);
 		when(projectSettingsManager.getTemplateUsageCount((String)any())).thenReturn(0);
 		when(projectManager.findProjectById("project01")).thenReturn(sProject);
 		when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
