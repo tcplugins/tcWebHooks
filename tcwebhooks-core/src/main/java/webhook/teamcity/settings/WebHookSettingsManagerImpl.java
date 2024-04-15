@@ -305,9 +305,36 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
     @Override
     public void handleProjectChangedEvent(String projectInternalId) {
+        if (!this.projectSettingsMap.containsKey(projectInternalId)) {
+            SProject sProject = this.myProjectManager.findProjectById(projectInternalId);
+            if (sProject != null && !sProject.isArchived()) {
+                this.projectSettingsMap.put(sProject.getProjectId(), getSettings(sProject.getProjectId()));
+            }
+        }
         this.rebuildWebHooksEnhanced(projectInternalId);
     }
+    
 
+    @Override
+    public void removeAllWebHooksFromCacheForProject(String projectInternalId) {
+        WebHookProjectSettings p = this.projectSettingsMap.remove(projectInternalId);
+        if (p != null) {
+            Loggers.SERVER.info(String.format("Removed project from webhook cache: projectId: '%s'", projectInternalId));
+        }
+        List<WebHookCacheKey> keysForDeletion = new ArrayList<>();
+        for (WebHookCacheKey k : this.webhooksEnhanced.keySet()) {
+            if (projectInternalId.equals(k.getProjectInternalId())) {
+                keysForDeletion.add(k);
+            }
+        }
+        for (WebHookCacheKey k : keysForDeletion) {
+            WebHookConfigEnhanced w = this.webhooksEnhanced.remove(k);
+            if (w != null) {
+                Loggers.SERVER.info(String.format("Removed webhook from webhook cache: projectId: '%s', webHookId: '%s'", w.getProjectInternalId(), w.getWebHookConfig().getUniqueKey()));
+            }
+        }
+        Loggers.SERVER.info("Removed webhooks for project from cache with project id: " + projectInternalId);
+    }
 
 	/** 
 	 * Perform the search and add any matching records to the <code>webhookResultList</code>.

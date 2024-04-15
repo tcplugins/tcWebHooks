@@ -58,12 +58,14 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	private final WebHookFactory webHookFactory;
 	private final WebHookExecutor webHookExecutor;
 	private final WebHookStatisticsExecutor webHookStatisticsExecutor;
+	private final WebHookSettingsEventHandler webHookSettingsEventHandler;
 
 
 	public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings,
 							WebHookMainSettings configSettings, WebHookTemplateManager manager,
 							WebHookFactory factory, WebHookExecutor executor,
-							WebHookStatisticsExecutor statisticsExecutor) {
+							WebHookStatisticsExecutor statisticsExecutor,
+							WebHookSettingsEventHandler settingsEventHandler) {
 
 		myBuildServer = sBuildServer;
 		mySettings = settings;
@@ -72,6 +74,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		webHookFactory = factory;
 		webHookExecutor = executor;
 		webHookStatisticsExecutor = statisticsExecutor;
+		webHookSettingsEventHandler = settingsEventHandler;
 
 		Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
 	}
@@ -367,13 +370,13 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	@Override
 	public void projectRestored(String projectId) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectRestored event for project: " + projectId);
-	    this.mySettings.handleProjectChangedEvent(projectId);
+	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, projectId);
 	}
 	
 	@Override
 	public void projectMoved(SProject project, SProject originalParentProject) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectMoved event for project: " + project.getProjectId());
-	    this.mySettings.handleProjectChangedEvent(project.getProjectId());
+	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId());
 	}
 	
 	@Override
@@ -385,7 +388,25 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	@Override
 	public void projectCreated(String projectId, SUser user) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectCreated event for project: " + projectId);
-	    this.mySettings.handleProjectChangedEvent(projectId);
+	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, projectId);
+	}
+	
+	@Override
+	public void projectRemoved(String projectId) {
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectRemoved event for project: " + projectId);
+	    this.mySettings.removeAllWebHooksFromCacheForProject(projectId);
+	}
+	
+	@Override
+	public void projectArchived(String projectId) {
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectArchived event for project: " + projectId);
+	    this.mySettings.removeAllWebHooksFromCacheForProject(projectId);
+	}
+	
+	@Override
+	public void projectDearchived(String projectId) {
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectDearchived event for project: " + projectId);
+	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, projectId);
 	}
 
 	@Override

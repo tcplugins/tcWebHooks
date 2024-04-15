@@ -5,8 +5,6 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.joda.time.LocalDateTime;
-
 import com.google.common.primitives.Ints;
 
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
@@ -17,9 +15,23 @@ import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookSettingsEventHandler;
 import webhook.teamcity.WebHookSettingsEventType;
 
+/**
+ * {@link WebHookSettingsEventHandler} implementation where events are stored in a {@link DelayQueue}
+ * and then issued to the {@link WebHookProjectSettingsReloadTask} after 10 seconds.
+ * <p>
+ * The DelayQueue supports de-duplication of events by checking if an "equal" event
+ * is already in the queue when {@link DelayQueue#add(Delayed)} is called.
+ * <p>
+ * TeamCity sometimes generates the same events a few milliseconds apart. We can use
+ * this to build a window of time where events for the same project and with a timestamp
+ * of plus or minus 1000ms from ours can be treated as "the same".
+ * <p>
+ * The DelayQueue won't allow events to be emitted from the queue until they timeout, 
+ * and we have set the timeout at 10 seconds. So a flood of events over a 2 second range will 
+ * be de-duped to 1, and then after 10 seconds our thread will handle it as a single event. 
+ */
 public class WebHookProjectSettingsReloadScheduler implements DeferrableService, WebHookSettingsEventHandler {
 	
-	LocalDateTime lastRun = null;
 	private final ScheduledExecutorService myExecutorService;
 	private final DeferrableServiceManager myDeferrableServiceManager;
 	private final WebHookSettingsManager myWebHookSettingsManager;
@@ -84,17 +96,23 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 
     @Override
     public void handleEvent(WebHookSettingsEventType eventType, String projectInternalId) {
-        this.queue.add(new DelayEvent(projectInternalId, 10000));
+        if (eventType.equals(WebHookSettingsEventType.PROJECT_CHANGED)) {
+            this.queue.add(new DelayEvent(projectInternalId, 10000, 1000));
+        }
     }
     
     @Data
     public static class DelayEvent implements Delayed {
         private String data;
         private long startTime;
+        private long startTimeWindowBegin;
+        private long startTimeWindowEnd;
 
-        public DelayEvent(String data, long delayInMilliseconds) {
+        public DelayEvent(String data, long delayInMilliseconds, int windowTimeMs) {
             this.data = data;
             this.startTime = System.currentTimeMillis() + delayInMilliseconds;
+            this.startTimeWindowBegin = this.startTime - windowTimeMs;
+            this.startTimeWindowEnd = this.startTime + windowTimeMs;
         }
 
         @Override
@@ -103,10 +121,38 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
             return unit.convert(diff, TimeUnit.MILLISECONDS);
         }
 
+        /**
+         * Use compareTo as a way to fudge equality.
+         * <p>
+         * The DelayQueue supports de-duplication of events by checking if an "equal" event
+         * is already in the queue.
+         * <p>
+         * TeamCity sometimes generates the same events a few milliseconds apart. We can use
+         * this to build a window of time where events for the same project and with a timestamp
+         * of plus or minus 1000ms from ours can be treated as "the same".
+         * <p>
+         * The DelayQueue won't allow events to be emitted from the queue until they timeout, 
+         * and we have set the timeout at 10 seconds. So a flood of events over a 2 second range will 
+         * be de-duped to 1, and then after 10 seconds our thread will handle it as a single event. 
+         */
         @Override
         public int compareTo(Delayed o) {
-            return Ints.saturatedCast(
-              this.startTime - ((DelayEvent) o).startTime);
+            DelayEvent e = (DelayEvent)o;
+            if (e.getData().equals(this.data)) {
+                // Same projectId.
+                // Check if the time from o falls within the window we would consider to be an overlap (plus or minus 1000 ms)  
+                if (this.startTimeWindowBegin < e.startTime && this.startTimeWindowEnd > e.startTime) {
+                    Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Ignoring duplicate event for project " + e.getData());
+                    return 0; // Pretend it the same event because it's in our window.
+                } else {
+                    // If it doesn't fall in our window, use the difference in time as a compare point.
+                    return Ints.saturatedCast(
+                        this.startTime - ((DelayEvent) o).startTime);
+                }
+            } else {
+                // Use the difference in projectId as the compare point.
+                return this.data.compareTo(e.getData());
+            }
         }
 
     }

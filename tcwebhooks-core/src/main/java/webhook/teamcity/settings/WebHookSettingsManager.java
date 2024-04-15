@@ -42,5 +42,6 @@ public interface WebHookSettingsManager {
 	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForProjects(List<SProject> sProjects);
 	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForBuild(List<SProject> projectPath, SBuildType buildType);
 	public List<WebHookConfigEnhanced> getWebHooksForProject(SProject project);
+	public void removeAllWebHooksFromCacheForProject(String projectInternalId);
 	public void handleProjectChangedEvent(String projectInternalId);
 }
