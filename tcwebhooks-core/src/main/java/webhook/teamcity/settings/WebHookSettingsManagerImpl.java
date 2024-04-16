@@ -48,7 +48,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	private Map<String, WebHookProjectSettings> projectSettingsMap;
 
 	/** A Map of webhook uniqueKey to {@link WebHookConfigEnhanced} */
-	private Map<WebHookCacheKey, WebHookConfigEnhanced> webhooksEnhanced = new LinkedHashMap<>();
+	private Map<String, WebHookConfigEnhanced> webhooksEnhanced = new LinkedHashMap<>();
 
 
 	public WebHookSettingsManagerImpl(
@@ -139,7 +139,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (result.updated) {
 			if (persist(projectInternalId, "Deleted existing WebHook")) {
 				result.updated = true;
-				this.webhooksEnhanced.remove(new WebHookCacheKey(webHookId, projectInternalId));
+				this.webhooksEnhanced.remove(webHookId);
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
 				result.updated = false;
@@ -154,7 +154,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (result.updated) {
 			if (persist(projectInternalId, "Deleted existing WebHook")) {
 				result.updated = true;
-				this.webhooksEnhanced.remove(config.getCacheKey());
+				this.webhooksEnhanced.remove(config.getUniqueKey());
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
 				result.updated = false;
@@ -210,7 +210,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		} catch (AccessDeniedException | PersistFailedException ex) {
 			Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
 			return false;
-		}			
+		}
 	}
 
 	@Override
@@ -254,7 +254,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		for (Map.Entry<String, WebHookProjectSettings> entry : this.projectSettingsMap.entrySet()) {
 			List<WebHookSearchResult> webhookResultList = new ArrayList<>();
 			for (WebHookConfig c : entry.getValue().getWebHooksConfigs()) {
-				addMatchingWebHook(filter, webhookResultList, this.webhooksEnhanced.get(c.getCacheKey()));
+				addMatchingWebHook(filter, webhookResultList, this.webhooksEnhanced.get(c.getUniqueKey()));
 			}
 			if ( !webhookResultList.isEmpty()) {
 				projectGroupedResults.put(entry.getKey(), webhookResultList);
@@ -321,13 +321,14 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
         if (p != null) {
             Loggers.SERVER.info(String.format("Removed project from webhook cache: projectId: '%s'", projectInternalId));
         }
-        List<WebHookCacheKey> keysForDeletion = new ArrayList<>();
-        for (WebHookCacheKey k : this.webhooksEnhanced.keySet()) {
-            if (projectInternalId.equals(k.getProjectInternalId())) {
+        List<String> keysForDeletion = new ArrayList<>();
+        for (String k : this.webhooksEnhanced.keySet()) {
+            WebHookConfigEnhanced e = this.webhooksEnhanced.get(k);
+            if (projectInternalId.equals(e.getProjectInternalId())) {
                 keysForDeletion.add(k);
             }
         }
-        for (WebHookCacheKey k : keysForDeletion) {
+        for (String k : keysForDeletion) {
             WebHookConfigEnhanced w = this.webhooksEnhanced.remove(k);
             if (w != null) {
                 Loggers.SERVER.info(String.format("Removed webhook from webhook cache: projectId: '%s', webHookId: '%s'", w.getProjectInternalId(), w.getWebHookConfig().getUniqueKey()));
@@ -477,8 +478,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	private void rebuildWebHooksEnhanced(String projectInternalId) {
 		SProject sProject = myProjectManager.findProjectById(projectInternalId);
 		if (Objects.nonNull(sProject)) {
+		    boolean persistRequired = false;
+		    WebHookProjectSettings webHookProjectSettings = getSettings(projectInternalId);
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
-			for (WebHookConfig c : getWebHooksConfigs(projectInternalId)) {
+			for (WebHookConfig whc : getWebHooksConfigs(projectInternalId)) {
+			    WebHookConfig c = checkForConflictingUniqueId(whc, projectInternalId);
 				String templateName = "Missing template";
 				String templateFormat = "";
 				String templateFormatDescription = "Unknown payload format";
@@ -523,15 +527,39 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 				addTagIfPresent(configEnhanced, c.getTriggerFilters(), "filters", TagType.FILTER);
 				addTagIfPresent(configEnhanced, c.getParams(), "parameters", TagType.PARAMETER);
 
-				this.webhooksEnhanced.put(c.getCacheKey(), configEnhanced);
-				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getCacheKey() + "' " + configEnhanced.toString());
+				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
+				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
+				if (!whc.getUniqueKey().equals(c.getUniqueKey())) {
+				    persistRequired = true;
+				    WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(whc.getUniqueKey(), projectInternalId);
+				    if (deleteResult.isUpdated()) {
+				        WebHookUpdateResult addResult = webHookProjectSettings.addNewWebHook(c);
+				        if (!addResult.isUpdated()) {
+				            Loggers.SERVER.warn("Problem re-keying webhook. Failed to recreate old webhook with id: " + whc.getUniqueKey());
+				        }
+				    } else {
+				        Loggers.SERVER.warn("Problem re-keying webhook. Failed to remove old webhook with id: " + whc.getUniqueKey());
+				    }
+				}
+			}
+			if (persistRequired) {
+			    persist(projectInternalId, "Conflicting WebHook ids remapped");
 			}
 		} else {
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);
 		}
 	}
 	
-	private Set<BuildStateEnum> determineEnabledBuildStates(WebHookConfig c, WebHookPayloadTemplate template) {
+	private WebHookConfig checkForConflictingUniqueId(WebHookConfig origConfig, String projectInternalId) {
+	    if (this.webhooksEnhanced.containsKey(origConfig.getUniqueKey()) &&  ! projectInternalId.equals(webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId())) {
+            WebHookConfig newWebHook = origConfig.cloneWithNewUniqueId();
+            Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: WebHook uniqueId selected as candidate for updating to avoid conflict with existing webhooks. projectId: '%s', oldUniqueId: '%s', newUniqueId: '%s'", projectInternalId, origConfig.getUniqueKey(), newWebHook.getUniqueKey()));
+            return newWebHook;
+        }
+        return origConfig;
+    }
+
+    private Set<BuildStateEnum> determineEnabledBuildStates(WebHookConfig c, WebHookPayloadTemplate template) {
 		if(Objects.nonNull(c.isEnabledForAllBuildsInProject())) {
 			return new HashSet<>(template.getSupportedBuildStates());
 		} else {

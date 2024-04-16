@@ -557,10 +557,6 @@ public class WebHookConfig {
 		this.uniqueKey = uniqueKey;
 	}
 
-	public WebHookCacheKey getCacheKey() {
-		return new WebHookCacheKey(projectInternalId, uniqueKey);
-	}
-
 	public String getEnabledListAsString(){
 		if (Boolean.FALSE.equals(this.enabled)){
 			return "Disabled";
@@ -810,6 +806,12 @@ public class WebHookConfig {
 		configCopy.setProjectInternalId(this.getProjectInternalId());
 		configCopy.setProjectExternalId(this.getProjectExternalId());
 		return configCopy;
+	}
+	
+	public WebHookConfig cloneWithNewUniqueId() {
+	    WebHookConfig configCopy = new WebHookConfig(this.getAsElement()) ;
+	    configCopy.setUniqueKey(generateRandomKey());
+	    return configCopy;
 	}
 
 	public String getProjectInternalId() {
