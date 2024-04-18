@@ -322,10 +322,9 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
             Loggers.SERVER.info(String.format("Removed project from webhook cache: projectId: '%s'", projectInternalId));
         }
         List<String> keysForDeletion = new ArrayList<>();
-        for (String k : this.webhooksEnhanced.keySet()) {
-            WebHookConfigEnhanced e = this.webhooksEnhanced.get(k);
-            if (projectInternalId.equals(e.getProjectInternalId())) {
-                keysForDeletion.add(k);
+        for (Map.Entry<String,WebHookConfigEnhanced> e : this.webhooksEnhanced.entrySet()) {
+            if (projectInternalId.equals(e.getValue().getProjectInternalId())) {
+                keysForDeletion.add(e.getKey());
             }
         }
         for (String k : keysForDeletion) {
@@ -503,43 +502,12 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 							c.getUrl()));
 				}
 
-				WebHookConfigEnhanced configEnhanced = WebHookConfigEnhanced.builder()
-						.payloadFormat(templateFormat)
-						.payloadFormatDescription(templateFormatDescription)
-						.projectExternalId(sProject.getExternalId())
-						.projectInternalId(sProject.getProjectId())
-						.templateId(c.getPayloadTemplate())
-						.templateDescription(templateName)
-						.buildStates(enabledBuildStates)
-						.webHookConfig(c)
-						.generalisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(c.getUrl()))
-						.build();
-				configEnhanced.addTag(templateFormat, TagType.FORMAT)
-						.addTag(Boolean.TRUE.equals(c.getEnabled()) ? "enabled" : "disabled", TagType.WEBHOOK_ENABLED)
-						.addTag(Boolean.TRUE.equals(c.isHideSecureValues()) ? "hideSecure" : "showSecure", TagType.SHOW_SECURE)
-						.addTag(c.getPayloadTemplate(), TagType.TEMPLATE_ID)
-						.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress(), TagType.GENERALISED_URL);
-				if (c.getAuthenticationConfig() != null) {
-					configEnhanced.addTag("authenticated", TagType.AUTHENTICATED)
-					              .addTag(c.getAuthenticationConfig().getType(), TagType.AUTHENTICATION_TYPE);
-				}
-				addTagIfPresent(configEnhanced, c.getHeaders(), "headers", TagType.HEADER);
-				addTagIfPresent(configEnhanced, c.getTriggerFilters(), "filters", TagType.FILTER);
-				addTagIfPresent(configEnhanced, c.getParams(), "parameters", TagType.PARAMETER);
+				WebHookConfigEnhanced configEnhanced = createdEnhancedConfig(sProject, c, templateName, templateFormat, templateFormatDescription, enabledBuildStates);
 
 				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
 				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
 				if (!whc.getUniqueKey().equals(c.getUniqueKey())) {
-				    persistRequired = true;
-				    WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(whc.getUniqueKey(), projectInternalId);
-				    if (deleteResult.isUpdated()) {
-				        WebHookUpdateResult addResult = webHookProjectSettings.addNewWebHook(c);
-				        if (!addResult.isUpdated()) {
-				            Loggers.SERVER.warn("Problem re-keying webhook. Failed to recreate old webhook with id: " + whc.getUniqueKey());
-				        }
-				    } else {
-				        Loggers.SERVER.warn("Problem re-keying webhook. Failed to remove old webhook with id: " + whc.getUniqueKey());
-				    }
+				    persistRequired = recreateConflictingWebHook(projectInternalId, webHookProjectSettings, whc, c);
 				}
 			}
 			if (persistRequired) {
@@ -549,6 +517,49 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);
 		}
 	}
+
+    private WebHookConfigEnhanced createdEnhancedConfig(SProject sProject, WebHookConfig whc, String templateName,
+            String templateFormat, String templateFormatDescription, Set<BuildStateEnum> enabledBuildStates) {
+        WebHookConfigEnhanced configEnhanced = WebHookConfigEnhanced.builder()
+        		.payloadFormat(templateFormat)
+        		.payloadFormatDescription(templateFormatDescription)
+        		.projectExternalId(sProject.getExternalId())
+        		.projectInternalId(sProject.getProjectId())
+        		.templateId(whc.getPayloadTemplate())
+        		.templateDescription(templateName)
+        		.buildStates(enabledBuildStates)
+        		.webHookConfig(whc)
+        		.generalisedWebAddress(myWebAddressTransformer.getGeneralisedHostName(whc.getUrl()))
+        		.build();
+        configEnhanced.addTag(templateFormat, TagType.FORMAT)
+        		.addTag(Boolean.TRUE.equals(whc.getEnabled()) ? "enabled" : "disabled", TagType.WEBHOOK_ENABLED)
+        		.addTag(Boolean.TRUE.equals(whc.isHideSecureValues()) ? "hideSecure" : "showSecure", TagType.SHOW_SECURE)
+        		.addTag(whc.getPayloadTemplate(), TagType.TEMPLATE_ID)
+        		.addTag(configEnhanced.getGeneralisedWebAddress().getGeneralisedAddress(), TagType.GENERALISED_URL);
+        if (whc.getAuthenticationConfig() != null) {
+        	configEnhanced.addTag("authenticated", TagType.AUTHENTICATED)
+        	              .addTag(whc.getAuthenticationConfig().getType(), TagType.AUTHENTICATION_TYPE);
+        }
+        addTagIfPresent(configEnhanced, whc.getHeaders(), "headers", TagType.HEADER);
+        addTagIfPresent(configEnhanced, whc.getTriggerFilters(), "filters", TagType.FILTER);
+        addTagIfPresent(configEnhanced, whc.getParams(), "parameters", TagType.PARAMETER);
+        return configEnhanced;
+    }
+
+    private boolean recreateConflictingWebHook(String projectInternalId, WebHookProjectSettings webHookProjectSettings, WebHookConfig origConfig, WebHookConfig newConfig) {
+        boolean persistRequired;
+        persistRequired = true;
+        WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(origConfig.getUniqueKey(), projectInternalId);
+        if (deleteResult.isUpdated()) {
+            WebHookUpdateResult addResult = webHookProjectSettings.addNewWebHook(newConfig);
+            if (!addResult.isUpdated()) {
+                Loggers.SERVER.warn("Problem re-keying webhook. Failed to recreate old webhook with id: " + origConfig.getUniqueKey());
+            }
+        } else {
+            Loggers.SERVER.warn("Problem re-keying webhook. Failed to remove old webhook with id: " + origConfig.getUniqueKey());
+        }
+        return persistRequired;
+    }
 	
 	private WebHookConfig checkForConflictingUniqueId(WebHookConfig origConfig, String projectInternalId) {
 	    if (this.webhooksEnhanced.containsKey(origConfig.getUniqueKey()) &&  ! projectInternalId.equals(webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId())) {
