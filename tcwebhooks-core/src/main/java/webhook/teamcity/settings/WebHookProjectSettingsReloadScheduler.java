@@ -63,6 +63,15 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 		this.shuttingDown = true;
 	}
 	
+	@Override
+	public void handleEvent(WebHookSettingsEvent event) {
+	    if (WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType())) {
+	        this.queue.add(new DelayEvent(event, 10000, 1000));
+	    } else if (WebHookSettingsEventType.BUILD_TYPE_DELETED.equals(event.getEventType())) {
+	        this.queue.add(new DelayEvent(event, 1000, 1000));
+	    }
+	}
+	
 	
 	public class WebHookProjectSettingsReloadTask implements Runnable {
 		
@@ -80,8 +89,8 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 			while(! this.myWebHookProjectSettingsReloadScheduler.shuttingDown) {
 	            try {
 	                DelayEvent object = queue.take();
-	                Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Handling deferred WebHookSettings reload event: " + object);
-	                this.myWebHookSettingsManager.handleProjectChangedEvent(object.data);
+	                Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Handling deferred WebHookSettings reload event: " + object.getTypeAndEvent());
+	                this.myWebHookSettingsManager.handleProjectChangedEvent(object);
 	            } catch (InterruptedException e) {
 	                Loggers.SERVER.warn("WebHookProjectSettingsReloadTask interrupted. Deferred reloading of WebHookSettings will no longer be undertaken. This should only happen when TeamCity is shutting down. If not, please report as a bug in tcWebHooks");
 	                Thread.currentThread().interrupt();  // set interrupt flag
@@ -94,22 +103,17 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 	}
 
 
-    @Override
-    public void handleEvent(WebHookSettingsEventType eventType, String projectInternalId) {
-        if (eventType.equals(WebHookSettingsEventType.PROJECT_CHANGED)) {
-            this.queue.add(new DelayEvent(projectInternalId, 10000, 1000));
-        }
-    }
-    
     @Data
-    public static class DelayEvent implements Delayed {
-        private String data;
+    public static class DelayEvent implements Delayed, WebHookSettingsEvent {
+        private WebHookSettingsEvent event;
+        private String typeAndEvent;
         private long startTime;
         private long startTimeWindowBegin;
         private long startTimeWindowEnd;
 
-        public DelayEvent(String data, long delayInMilliseconds, int windowTimeMs) {
-            this.data = data;
+        public DelayEvent(WebHookSettingsEvent event, long delayInMilliseconds, int windowTimeMs) {
+            this.event = event;
+            this.typeAndEvent = String.format("%s:%s:%s", event.getEventType().toString(), event.getProjectInternalId(), event.getBuildTypeInternalId());
             this.startTime = System.currentTimeMillis() + delayInMilliseconds;
             this.startTimeWindowBegin = this.startTime - windowTimeMs;
             this.startTimeWindowEnd = this.startTime + windowTimeMs;
@@ -138,11 +142,11 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
         @Override
         public int compareTo(Delayed o) {
             DelayEvent e = (DelayEvent)o;
-            if (e.getData().equals(this.data)) {
-                // Same projectId.
+            if (e.getTypeAndEvent().equals(this.getTypeAndEvent())) {
+                // Same type and data.
                 // Check if the time from o falls within the window we would consider to be an overlap (plus or minus 1000 ms)  
                 if (this.startTimeWindowBegin < e.startTime && this.startTimeWindowEnd > e.startTime) {
-                    Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Ignoring duplicate event for project " + e.getData());
+                    Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Ignoring duplicate event for project " + e.getTypeAndEvent());
                     return 0; // Pretend it the same event because it's in our window.
                 } else {
                     // If it doesn't fall in our window, use the difference in time as a compare point.
@@ -150,9 +154,28 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
                         this.startTime - ((DelayEvent) o).startTime);
                 }
             } else {
-                // Use the difference in projectId as the compare point.
-                return this.data.compareTo(e.getData());
+                // Use the difference in TypeAndEvent as the compare point.
+                return this.typeAndEvent.compareTo(e.getTypeAndEvent());
             }
+        }
+
+        @Override
+        public WebHookSettingsEventType getEventType() {
+            return this.event.getEventType();
+        }
+        @Override
+        public Object getBaggage() {
+            return this.event.getBaggage();
+        }
+
+        @Override
+        public String getProjectInternalId() {
+            return this.event.getProjectInternalId();
+        }
+
+        @Override
+        public String getBuildTypeInternalId() {
+            return this.event.getBuildTypeInternalId();
         }
 
     }

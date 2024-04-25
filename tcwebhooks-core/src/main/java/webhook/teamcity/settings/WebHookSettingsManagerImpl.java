@@ -23,6 +23,8 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookListener;
+import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEvent;
+import webhook.teamcity.WebHookSettingsEventType;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.history.WebAddressTransformer;
 import webhook.teamcity.payload.WebHookPayload;
@@ -304,16 +306,35 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	}
 	
     @Override
-    public void handleProjectChangedEvent(String projectInternalId) {
-        if (!this.projectSettingsMap.containsKey(projectInternalId)) {
-            SProject sProject = this.myProjectManager.findProjectById(projectInternalId);
-            if (sProject != null && !sProject.isArchived()) {
-                this.projectSettingsMap.put(sProject.getProjectId(), getSettings(sProject.getProjectId()));
+    public void handleProjectChangedEvent(WebHookSettingsEvent event) {
+        if (WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType())) {
+            if (!this.projectSettingsMap.containsKey(event.getProjectInternalId())) {
+                SProject sProject = this.myProjectManager.findProjectById(event.getProjectInternalId());
+                if (sProject != null && !sProject.isArchived()) {
+                    this.projectSettingsMap.put(sProject.getProjectId(), getSettings(sProject.getProjectId()));
+                }
+                this.rebuildWebHooksEnhanced(event.getProjectInternalId());
+            }
+        } else if (WebHookSettingsEventType.BUILD_TYPE_DELETED.equals(event.getEventType())) {
+            SBuildType sBuildType = (SBuildType) event.getBaggage();
+            if (sBuildType != null && this.projectSettingsMap.containsKey(sBuildType.getProjectId())) {
+                handleBuildTypeDeleteEvent(sBuildType);
+                this.rebuildWebHooksEnhanced(sBuildType.getProjectId());
             }
         }
-        this.rebuildWebHooksEnhanced(projectInternalId);
     }
     
+
+    private void handleBuildTypeDeleteEvent(SBuildType sBuildType) {
+        for (WebHookSearchResult w : this.findWebHooks(WebHookSearchFilter.builder().buildTypeExternalId(sBuildType.getExternalId()).build())) {
+            if (w.getWebHookConfig().isSpecificBuildTypeEnabled(sBuildType)) {
+                WebHookConfig c = w.getWebHookConfig().copy();
+                c.getEnabledBuildTypesSet().remove(sBuildType.getInternalId());
+                this.updateWebHook(sBuildType.getProjectId(), c);
+                Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Handling SBuildType deleted event for webhook. Build removed from WebHook Configuation. BuildType: '%s (%s)', webHookId: '%s'", sBuildType.getExternalId(), sBuildType.getInternalId(), c.getUniqueKey()));
+            }
+        }
+    }
 
     @Override
     public void removeAllWebHooksFromCacheForProject(String projectInternalId) {

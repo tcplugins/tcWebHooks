@@ -7,6 +7,7 @@ import java.util.Set;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildState;
+import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEvent;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.content.ExtraParameters;
 
@@ -43,5 +44,5 @@ public interface WebHookSettingsManager {
 	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForBuild(List<SProject> projectPath, SBuildType buildType);
 	public List<WebHookConfigEnhanced> getWebHooksForProject(SProject project);
 	public void removeAllWebHooksFromCacheForProject(String projectInternalId);
-	public void handleProjectChangedEvent(String projectInternalId);
+	public void handleProjectChangedEvent(WebHookSettingsEvent settingsEvent);
 }
