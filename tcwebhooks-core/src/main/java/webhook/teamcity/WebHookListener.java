@@ -29,6 +29,7 @@ import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
 import webhook.WebHook;
+import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEventImpl;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.executor.WebHookStatisticsExecutor;
@@ -370,31 +371,31 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	@Override
 	public void projectRestored(String projectId) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectRestored event for project: " + projectId);
-	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, projectId);
+	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
 	}
 	
 	@Override
 	public void projectMoved(SProject project, SProject originalParentProject) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectMoved event for project: " + project.getProjectId());
-	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId());
+	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId(), null, null));
 	}
 	
 	@Override
 	public void projectExternalIdChanged(SProject project, java.lang.String oldExternalId, java.lang.String newExternalId) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectExternalIdChanged event for project: " + project.getProjectId());
-	    this.mySettings.handleProjectChangedEvent(project.getProjectId());
+	    this.mySettings.handleProjectChangedEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId(), null, null));
 	}
 	
 	@Override
 	public void projectCreated(String projectId, SUser user) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectCreated event for project: " + projectId);
-	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, projectId);
+	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
 	}
 	
 	@Override
-	public void projectRemoved(String projectId) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectRemoved event for project: " + projectId);
-	    this.mySettings.removeAllWebHooksFromCacheForProject(projectId);
+	public void projectRemoved(SProject project) {
+	    Loggers.SERVER.debug("WebHookListener :: Handling projectRemoved event for project: " + project.getProjectId());
+	    this.mySettings.removeAllWebHooksFromCacheForProject(project.getProjectId());
 	}
 	
 	@Override
@@ -406,9 +407,15 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	@Override
 	public void projectDearchived(String projectId) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectDearchived event for project: " + projectId);
-	    this.webHookSettingsEventHandler.handleEvent(WebHookSettingsEventType.PROJECT_CHANGED, projectId);
+	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
 	}
-
+	
+	@Override
+	public void buildTypeUnregistered(SBuildType buildType) {
+	    Loggers.SERVER.debug(String.format("WebHookListener :: Handling buildTypeUnregistered event for buildType: %s (%s)", buildType.getExternalId(), buildType.getInternalId()));
+	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.BUILD_TYPE_DELETED, buildType.getProjectId(), buildType.getBuildTypeId(), buildType));
+	}
+	
 	@Override
 	public void reportStatistics(WebHookConfig reportingWebhookConfig, StatisticsReport statisticsReport) {
 		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
