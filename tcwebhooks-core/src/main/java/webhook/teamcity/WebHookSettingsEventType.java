@@ -1,5 +1,5 @@
 package webhook.teamcity;
 
 public enum WebHookSettingsEventType {
-    PROJECT_CHANGED, BUILD_TYPE_DELETED;
+    PROJECT_CHANGED, BUILD_TYPE_DELETED, PROJECT_PERSISTED;
 }

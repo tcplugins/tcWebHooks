@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -307,7 +309,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
     @Override
     public void handleProjectChangedEvent(WebHookSettingsEvent event) {
-        if (WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType())) {
+        if (WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType()) || WebHookSettingsEventType.PROJECT_PERSISTED.equals(event.getEventType())) {
             if (!this.projectSettingsMap.containsKey(event.getProjectInternalId())) {
                 SProject sProject = this.myProjectManager.findProjectById(event.getProjectInternalId());
                 if (sProject != null && !sProject.isArchived()) {
@@ -584,12 +586,59 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
 	private WebHookConfig checkForConflictingUniqueId(WebHookConfig origConfig, String projectInternalId) {
 	    if (this.webhooksEnhanced.containsKey(origConfig.getUniqueKey()) &&  ! projectInternalId.equals(webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId())) {
+	        // Have the same unique ID, but on a different project.
+	        // Therefore, generate a new UniqueId for this WebHook.
             WebHookConfig newWebHook = origConfig.cloneWithNewUniqueId();
             Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: WebHook uniqueId selected as candidate for updating to avoid conflict with existing webhooks. projectId: '%s', oldUniqueId: '%s', newUniqueId: '%s'", projectInternalId, origConfig.getUniqueKey(), newWebHook.getUniqueKey()));
+            Set<String> btRemappings = mapOldBuildTypesToNewBuildTypes(origConfig, webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId(), newWebHook, projectInternalId);
+            if (!btRemappings.isEmpty()) {
+                newWebHook.clearAllEnabledBuildsInProject();
+                btRemappings.forEach(newWebHook::enableBuildInProject);
+                Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Remapping buildTypdIds for WebHook. projectId: '%s', newUniqueId: '%s', oldIds: %s, newIds: %s", projectInternalId, newWebHook.getUniqueKey(), origConfig.getEnabledBuildTypesSet(), newWebHook.getEnabledBuildTypesSet()));
+            }
             return newWebHook;
         }
         return origConfig;
     }
+	
+	protected Set<String> mapOldBuildTypesToNewBuildTypes(WebHookConfig oldWebHookConfig, String oldProjectInternalId, WebHookConfig newWebHookConfig, String newProjectInternalId) {
+	    Set<String> newBts = new TreeSet<>();
+	    SProject oldSProject = this.myProjectManager.findProjectById(oldProjectInternalId);
+	    SProject newSProject = this.myProjectManager.findProjectById(newProjectInternalId);
+	    if (oldSProject == null || newSProject == null) {
+	        return newBts;
+	    }
+	    Map<String,SBuildType> oldBtIdsToOldBTs = oldSProject.getBuildTypes().stream().collect(Collectors.toMap(b -> b.getInternalId() , b -> b));
+	    Map<String,SBuildType> newBtIdsToNewBTs = newSProject.getBuildTypes().stream().collect(Collectors.toMap(b -> b.getInternalId() , b -> b));
+	    
+	    oldWebHookConfig.getEnabledBuildTypesSet().forEach(bt -> {
+	        if (oldBtIdsToOldBTs.containsKey(bt)) {
+	            newBtIdsToNewBTs.forEach((s,b) -> {
+	                if (fuzzyNameMatcher(oldSProject.getExternalId(), 
+	                        oldBtIdsToOldBTs.get(bt).getExternalId(), 
+	                        newSProject.getExternalId(), 
+	                        b.getExternalId())) {
+	                    newBts.add(s);
+	                }
+	            });
+	        }
+	    });
+	    return newBts;
+	}
+	
+	protected static boolean fuzzyNameMatcher(String oldProjectExtId, String oldBuildTypeExtId, String newProjectExtId, String newBuildTypeExtId) {
+	    // first try to match by removing the projectExternalId
+	    if (oldBuildTypeExtId.toLowerCase().startsWith(oldProjectExtId.toLowerCase()) && 
+	            newBuildTypeExtId.toLowerCase().startsWith(newProjectExtId.toLowerCase()) &&
+	            oldBuildTypeExtId.substring(oldProjectExtId.length()).equalsIgnoreCase(
+	                    newBuildTypeExtId.substring(newProjectExtId.length())
+	            )
+	        )
+	    {
+	        return true;
+	    }
+	    return false;
+	}
 
     private Set<BuildStateEnum> determineEnabledBuildStates(WebHookConfig c, WebHookPayloadTemplate template) {
 		if(Objects.nonNull(c.isEnabledForAllBuildsInProject())) {
