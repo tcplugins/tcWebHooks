@@ -594,7 +594,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
             if (!btRemappings.isEmpty()) {
                 newWebHook.clearAllEnabledBuildsInProject();
                 btRemappings.forEach(newWebHook::enableBuildInProject);
-                Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Remapping buildTypdIds for WebHook. projectId: '%s', newUniqueId: '%s', oldIds: %s, newIds: %s", projectInternalId, newWebHook.getUniqueKey(), origConfig.getEnabledBuildTypesSet(), newWebHook.getEnabledBuildTypesSet()));
+                Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Remapping buildTypeIds for updated WebHook. projectId: '%s', newUniqueId: '%s', oldBuildTypeIds: %s, newBuildTypeIds: %s", projectInternalId, newWebHook.getUniqueKey(), origConfig.getEnabledBuildTypesSet(), newWebHook.getEnabledBuildTypesSet()));
             }
             return newWebHook;
         }
