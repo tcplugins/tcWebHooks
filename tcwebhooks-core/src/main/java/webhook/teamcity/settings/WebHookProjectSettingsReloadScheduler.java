@@ -67,6 +67,8 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 	public void handleEvent(WebHookSettingsEvent event) {
 	    if (WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType())) {
 	        this.queue.add(new DelayEvent(event, 10000, 1000));
+	    } else if (WebHookSettingsEventType.PROJECT_PERSISTED.equals(event.getEventType())) {
+	            this.queue.add(new DelayEvent(event, 1000, 1000));
 	    } else if (WebHookSettingsEventType.BUILD_TYPE_DELETED.equals(event.getEventType())) {
 	        this.queue.add(new DelayEvent(event, 1000, 1000));
 	    }

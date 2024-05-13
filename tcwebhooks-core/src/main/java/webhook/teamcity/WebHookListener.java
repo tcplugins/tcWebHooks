@@ -388,8 +388,14 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	
 	@Override
 	public void projectCreated(String projectId, SUser user) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectCreated event for project: " + projectId);
-	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
+	    //Loggers.SERVER.debug("WebHookListener :: Handling projectCreated event for project: " + projectId);
+	    //this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
+	}
+	
+	@Override
+	public void projectPersisted(String projectId) {
+        Loggers.SERVER.debug("WebHookListener :: Handling projectPersisted event for project: " + projectId);
+        this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_PERSISTED, projectId, null, null));
 	}
 	
 	@Override
