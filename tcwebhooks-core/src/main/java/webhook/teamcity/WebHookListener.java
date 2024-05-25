@@ -153,11 +153,11 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 			WebHookProjectSettings projSettings = mySettings.getSettings(project.getProjectId());
 			if (projSettings.isEnabled()){
 				for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
-					if (Boolean.FALSE.equals(whc.isEnabledForSubProjects()) && !myProject.getProjectId().equals(project.getProjectId())){
+					if (!whc.isEnabledForSubProjects().booleanValue() && !myProject.getProjectId().equals(project.getProjectId())){
 						// Sub-projects are disabled and we are a subproject.
 						if (Loggers.ACTIVITIES.isDebugEnabled()){
 							Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
-									+ ":: subprojects not enabled. myProject is: " + myProject.getProjectId() + ". webhook project is: " + project.getProjectId());
+									+ ":: subprojects not enabled. myProject is: " + myProject.getProjectId() + ". webhook project is: " + project.getProjectId()+ " : " + whc.getUniqueKey());
 						}
 						continue;
 					}
@@ -167,16 +167,17 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 							whc.setProjectExternalId(project.getExternalId());
 							whc.setProjectInternalId(project.getProjectId());
 							configs.add(whc);
+							Loggers.ACTIVITIES.debug("WebHookListener :: WebHook added to list of enabled webhooks. Enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
 						} else {
-							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate());
+							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate() + " for " + whc.getUniqueKey());
 						}
 					} else if (whc.getEnabled().booleanValue() && !whc.isEnabledForBuildState(state)) {
 						if (Loggers.ACTIVITIES.isDebugEnabled()) {
-							Loggers.ACTIVITIES.debug("WebHookListener :: WebHook skipped. Not enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")");
+							Loggers.ACTIVITIES.debug("WebHookListener :: WebHook skipped. Not enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
 						}
 					} else {
 						Loggers.ACTIVITIES.debug(this.getClass().getSimpleName()
-								+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")");
+								+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
 					}
 				}
 			} else {

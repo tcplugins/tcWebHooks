@@ -58,8 +58,7 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 	
 	@Override
 	public void run() {
-		Loggers.SERVER.debug("AbstractWebHookExecutor :: Starting runner for webhook: " + whc.getUniqueKey() 
-						+  " : " + webhook.getExecutionStats().getTrackingIdAsString());
+		Loggers.SERVER.debug("AbstractWebHookExecutor :: Starting runner for webhook: " + webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey() + " : " + state.getShortName());
 		
 		try {
 			this.webhook = getWebHookContent();
@@ -104,8 +103,7 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 			errorCallback(new RuntimeException(ex));
 		}
 		
-		Loggers.SERVER.debug("AbstractWebHookExecutor :: Finishing runner for webhook: " + whc.getUniqueKey() 
-		+  " : " + webhook.getExecutionStats().getTrackingIdAsString());
+		Loggers.SERVER.debug("AbstractWebHookExecutor :: Finishing runner for webhook: " + webhook.getExecutionStats().getTrackingIdAsString() + " : " + whc.getUniqueKey() + " : " + state.getShortName());
 	}
 
 	

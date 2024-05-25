@@ -39,7 +39,7 @@ public class WebHookServiceMessageHandlerTest {
 		Mockito.verify(webhookListener).serviceMessageReceived(runningBuild, Collections.singletonMap("foo", "bar"));
 	}
 	
-	@Test
+	//@Test Removed so that TeamCity does not trigger it twice.
 	@SuppressWarnings("java:S2699")
 	public void testOutputServiceMessage() {
 		System.out.println(TEAMCITY_SERVICE_MESSAGE_PREFIX + WebHookServiceMessageHandler.SERVICE_MESSAGE_NAME + " foo='bar'" + TEAMCITY_SERVICE_MESSAGE_SUFFIX);
