@@ -153,7 +153,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 			WebHookProjectSettings projSettings = mySettings.getSettings(project.getProjectId());
 			if (projSettings.isEnabled()){
 				for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
-					if ( !whc.isEnabledForSubProjects() && !myProject.getProjectId().equals(project.getProjectId())){
+					if (Boolean.FALSE.equals(whc.isEnabledForSubProjects()) && !myProject.getProjectId().equals(project.getProjectId())){
 						// Sub-projects are disabled and we are a subproject.
 						if (Loggers.ACTIVITIES.isDebugEnabled()){
 							Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
@@ -384,12 +384,6 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	public void projectExternalIdChanged(SProject project, java.lang.String oldExternalId, java.lang.String newExternalId) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectExternalIdChanged event for project: " + project.getProjectId());
 	    this.mySettings.handleProjectChangedEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId(), null, null));
-	}
-	
-	@Override
-	public void projectCreated(String projectId, SUser user) {
-	    //Loggers.SERVER.debug("WebHookListener :: Handling projectCreated event for project: " + projectId);
-	    //this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
 	}
 	
 	@Override

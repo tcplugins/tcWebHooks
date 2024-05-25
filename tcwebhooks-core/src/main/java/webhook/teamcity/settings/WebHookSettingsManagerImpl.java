@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
+import jetbrains.buildServer.serverSide.BuildTypeIdentity;
 import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.PersistFailedException;
@@ -590,7 +591,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	        // Therefore, generate a new UniqueId for this WebHook.
             WebHookConfig newWebHook = origConfig.cloneWithNewUniqueId();
             Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: WebHook uniqueId selected as candidate for updating to avoid conflict with existing webhooks. projectId: '%s', oldUniqueId: '%s', newUniqueId: '%s'", projectInternalId, origConfig.getUniqueKey(), newWebHook.getUniqueKey()));
-            Set<String> btRemappings = mapOldBuildTypesToNewBuildTypes(origConfig, webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId(), newWebHook, projectInternalId);
+            Set<String> btRemappings = mapOldBuildTypesToNewBuildTypes(origConfig, webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId(), projectInternalId);
             if (!btRemappings.isEmpty()) {
                 newWebHook.clearAllEnabledBuildsInProject();
                 btRemappings.forEach(newWebHook::enableBuildInProject);
@@ -601,15 +602,15 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
         return origConfig;
     }
 	
-	protected Set<String> mapOldBuildTypesToNewBuildTypes(WebHookConfig oldWebHookConfig, String oldProjectInternalId, WebHookConfig newWebHookConfig, String newProjectInternalId) {
+	protected Set<String> mapOldBuildTypesToNewBuildTypes(WebHookConfig oldWebHookConfig, String oldProjectInternalId, String newProjectInternalId) {
 	    Set<String> newBts = new TreeSet<>();
 	    SProject oldSProject = this.myProjectManager.findProjectById(oldProjectInternalId);
 	    SProject newSProject = this.myProjectManager.findProjectById(newProjectInternalId);
 	    if (oldSProject == null || newSProject == null) {
 	        return newBts;
 	    }
-	    Map<String,SBuildType> oldBtIdsToOldBTs = oldSProject.getBuildTypes().stream().collect(Collectors.toMap(b -> b.getInternalId() , b -> b));
-	    Map<String,SBuildType> newBtIdsToNewBTs = newSProject.getBuildTypes().stream().collect(Collectors.toMap(b -> b.getInternalId() , b -> b));
+	    Map<String,SBuildType> oldBtIdsToOldBTs = oldSProject.getBuildTypes().stream().collect(Collectors.toMap(BuildTypeIdentity::getInternalId, b -> b));
+	    Map<String,SBuildType> newBtIdsToNewBTs = newSProject.getBuildTypes().stream().collect(Collectors.toMap(BuildTypeIdentity::getInternalId, b -> b));
 	    
 	    oldWebHookConfig.getEnabledBuildTypesSet().forEach(bt -> {
 	        if (oldBtIdsToOldBTs.containsKey(bt)) {
@@ -628,7 +629,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
 	protected static boolean fuzzyNameMatcher(String oldProjectExtId, String oldBuildTypeExtId, String newProjectExtId, String newBuildTypeExtId) {
 	    // first try to match by removing the projectExternalId
-	    if (oldBuildTypeExtId.toLowerCase().startsWith(oldProjectExtId.toLowerCase()) && 
+	    if (oldBuildTypeExtId.toLowerCase().startsWith(oldProjectExtId.toLowerCase()) &&  //NOSONAR
 	            newBuildTypeExtId.toLowerCase().startsWith(newProjectExtId.toLowerCase()) &&
 	            oldBuildTypeExtId.substring(oldProjectExtId.length()).equalsIgnoreCase(
 	                    newBuildTypeExtId.substring(newProjectExtId.length())
@@ -657,13 +658,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	@SuppressWarnings("rawtypes")
 	private void addTagIfPresent(WebHookConfigEnhanced config, Collection collection, String tagName, TagType tagType) {
 		if (collection != null && !collection.isEmpty()) {
-			config.addTag(new Tag(tagName, tagType));
-		}
-	}
-	
-	@SuppressWarnings("rawtypes")
-	private void addTagIfPresent(WebHookConfigEnhanced config, Map map, String tagName, TagType tagType) {
-		if (map != null && !map.isEmpty()) {
 			config.addTag(new Tag(tagName, tagType));
 		}
 	}

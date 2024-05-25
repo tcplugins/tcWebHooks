@@ -1,6 +1,5 @@
 package webhook.teamcity.exception;
 
-@SuppressWarnings("serial")
 public class StatisticsFileOperationException extends Exception {
 
 	public StatisticsFileOperationException(String message, Throwable e) {

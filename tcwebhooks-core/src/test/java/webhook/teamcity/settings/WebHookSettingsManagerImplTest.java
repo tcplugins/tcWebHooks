@@ -3,7 +3,6 @@ package webhook.teamcity.settings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -159,8 +158,7 @@ public class WebHookSettingsManagerImplTest {
 	public void testMapOldBuildTypesToNewBuildTypes() {
 	    WebHookSettingsManagerImpl webHookSettingsManagerImpl = new WebHookSettingsManagerImpl(projectManager, configActionFactory, projectSettingsManager, null, null, null);
 	    WebHookConfig whc01 = webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().formatShortName("jsonTemplate").build()).get(0).getWebHookConfig();
-	    WebHookConfig whc02 = whc01.cloneWithNewUniqueId();
-	    Set<String> renamedBuildTypeIds = webHookSettingsManagerImpl.mapOldBuildTypesToNewBuildTypes(whc01, "project01", whc02, "project02");
+	    Set<String> renamedBuildTypeIds = webHookSettingsManagerImpl.mapOldBuildTypesToNewBuildTypes(whc01, "project01",  "project02");
 	    assertTrue(renamedBuildTypeIds.contains("bt200"));
 	}
 	
