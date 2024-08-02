@@ -9,7 +9,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 
 public class MicrosftTeams01XmlWebHookTemplate extends AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate {
 	
-	private static final String CONF_PROPERTIES = "webhook/teamcity/payload/template/MicrosoftTeams02WebHookTemplate.xml";
+	private static final String CONF_PROPERTIES = "webhook/teamcity/payload/template/MicrosoftTeams01WebHookTemplate.xml";
 	
 	public MicrosftTeams01XmlWebHookTemplate(
 			WebHookTemplateManager templateManager,
@@ -22,7 +22,7 @@ public class MicrosftTeams01XmlWebHookTemplate extends AbstractXmlBasedWebHookTe
 
 	@Override
 	public String getLoggingName() {
-		return "MicrosoftTeams02XmlWebHookTemplate";
+		return "MicrosoftTeams01XmlWebHookTemplate";
 	}
 
 	@Override
