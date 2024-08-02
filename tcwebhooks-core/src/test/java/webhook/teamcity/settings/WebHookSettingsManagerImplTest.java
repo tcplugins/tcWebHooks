@@ -30,6 +30,7 @@ import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.MicrosftTeams01XmlWebHookTemplate;
+import webhook.teamcity.payload.template.MicrosftTeams02XmlWebHookTemplate;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelperImpl;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookSemiMockingFrameworkImpl;
@@ -104,6 +105,15 @@ public class WebHookSettingsManagerImplTest {
                                         		        );
 		microsftTeams01XmlWebHookTemplate.register();
 		
+		MicrosftTeams02XmlWebHookTemplate microsftTeams02XmlWebHookTemplate = new MicrosftTeams02XmlWebHookTemplate(
+				framework.getWebHookTemplateManager(),
+				framework.getWebHookPayloadManager(),
+				new WebHookTemplateJaxHelperImpl(),
+				framework.getProjectIdResolver(),
+				null
+				);
+		microsftTeams02XmlWebHookTemplate.register();
+		
 		webHookSettingsManager = new WebHookSettingsManagerImpl(
 														projectManager, 
 														null, projectSettingsManager, 
@@ -124,7 +134,8 @@ public class WebHookSettingsManagerImplTest {
 	public void testFindWebHooksByTemplateId() {
 		assertEquals(0, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().templateId("elasticsearch").build()).size());
 		assertEquals(0, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().templateId("flowdock").build()).size());
-		assertEquals(2, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().templateId("microsoft-teams-2").build()).size());
+		assertEquals(1, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().templateId("microsoft-teams").build()).size());
+		assertEquals(1, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().templateId("microsoft-teams-2").build()).size());
 	}
 	
 	@Test
@@ -142,7 +153,8 @@ public class WebHookSettingsManagerImplTest {
 	@Test
 	public void testFindWebHooksBySearch() {
 		assertEquals(2, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("jsonTemplate").build()).size());
-		assertEquals(2, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("microsoft-teams-2").build()).size());
+		assertEquals(2, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("microsoft-teams").build()).size());
+		assertEquals(1, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("microsoft-teams-2").build()).size());
 		assertEquals(2, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("buildevent").build()).size());
 		assertEquals(2, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("buildevent").build()).size());
 		assertEquals(0, webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().textSearch("blahblah").build()).size());
@@ -150,7 +162,8 @@ public class WebHookSettingsManagerImplTest {
 
 	@Test
 	public void testGetTemplateUsageCount() {
-		assertEquals(2, webHookSettingsManager.getTemplateUsageCount("microsoft-teams-2"));
+		assertEquals(1, webHookSettingsManager.getTemplateUsageCount("microsoft-teams"));
+		assertEquals(1, webHookSettingsManager.getTemplateUsageCount("microsoft-teams-2"));
 		assertEquals(0, webHookSettingsManager.getTemplateUsageCount("something"));
 	}
 	
@@ -167,5 +180,10 @@ public class WebHookSettingsManagerImplTest {
 	    assertTrue(WebHookSettingsManagerImpl.fuzzyNameMatcher("Project1", "Project1_Build01", "Project02", "Project02_Build01"));
 	    assertTrue(WebHookSettingsManagerImpl.fuzzyNameMatcher("project1", "Project1_Build01", "Project02", "Project02_Build01"));
 	    assertTrue(WebHookSettingsManagerImpl.fuzzyNameMatcher("Project1", "Project1Build01", "Project02", "Project02Build01"));
+	}
+	
+	@Test
+	public void Testing() {
+		
 	}
 }
