@@ -310,14 +310,23 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
     @Override
     public void handleProjectChangedEvent(WebHookSettingsEvent event) {
-        if (WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType()) || WebHookSettingsEventType.PROJECT_PERSISTED.equals(event.getEventType())) {
-            if (!this.projectSettingsMap.containsKey(event.getProjectInternalId())) {
+        if (
+             (      // PROJECT_CHANGED or PROJECT_PERSISTED and unseen project 
+               (     WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType()) 
+                     || WebHookSettingsEventType.PROJECT_PERSISTED.equals(event.getEventType())
+               ) && !this.projectSettingsMap.containsKey(event.getProjectInternalId())
+             )
+             ||
+             (      // PROJECT_CHANGED and seen project before
+                     WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType())
+                     && this.projectSettingsMap.containsKey(event.getProjectInternalId())
+             )
+           ) {
                 SProject sProject = this.myProjectManager.findProjectById(event.getProjectInternalId());
                 if (sProject != null && !sProject.isArchived()) {
                     this.projectSettingsMap.put(sProject.getProjectId(), getSettings(sProject.getProjectId()));
                 }
                 this.rebuildWebHooksEnhanced(event.getProjectInternalId());
-            }
         } else if (WebHookSettingsEventType.BUILD_TYPE_DELETED.equals(event.getEventType())) {
             SBuildType sBuildType = (SBuildType) event.getBaggage();
             if (sBuildType != null && this.projectSettingsMap.containsKey(sBuildType.getProjectId())) {
@@ -504,6 +513,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		    boolean persistRequired = false;
 		    WebHookProjectSettings webHookProjectSettings = getSettings(projectInternalId);
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
+			List<String> existingProjectWebHookIds = getWebHooksForProject(sProject).stream().map(c -> c.getWebHookConfig().getUniqueKey()).collect(Collectors.toList());
+			List<String> newProjectWebHookIds = new ArrayList<>();
 			for (WebHookConfig whc : getWebHooksConfigs(projectInternalId)) {
 			    WebHookConfig c = checkForConflictingUniqueId(whc, projectInternalId);
 				String templateName = "Missing template";
@@ -527,12 +538,18 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 				}
 
 				WebHookConfigEnhanced configEnhanced = createdEnhancedConfig(sProject, c, templateName, templateFormat, templateFormatDescription, enabledBuildStates);
+				newProjectWebHookIds.add(configEnhanced.getWebHookConfig().getUniqueKey());
 
 				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
 				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
 				if (!whc.getUniqueKey().equals(c.getUniqueKey())) {
 				    persistRequired = recreateConflictingWebHook(projectInternalId, webHookProjectSettings, whc, c);
 				}
+			}
+			existingProjectWebHookIds.removeAll(newProjectWebHookIds);
+			if (!existingProjectWebHookIds.isEmpty()) {
+			    Loggers.SERVER.warn(String.format("WebHookSettingsManagerImpl :: Found the following webhooks in the cache that no-longer map to webhooks in project '%s'. WebHooks with ids '%s' will be removed from the cache.", sProject.getExternalId(), existingProjectWebHookIds));
+			    existingProjectWebHookIds.forEach(whec -> this.webhooksEnhanced.remove(whec));
 			}
 			if (persistRequired) {
 			    persist(projectInternalId, "Conflicting WebHook ids remapped");

@@ -50,6 +50,7 @@ public abstract class WebHookSettingsManagerTestBase {
 	SBuildType sBuildType02;
 	protected WebHookSettingsManager webHookSettingsManager;
 	protected WebHookProjectSettings projectSettings;
+	protected WebHookProjectSettings project02Settings;
 
 	@Before
 	public void setup() throws JDOMException, IOException {
@@ -81,7 +82,11 @@ public abstract class WebHookSettingsManagerTestBase {
 			c.setProjectExternalId("MyProject");
 		}
 		
+		
+		project02Settings = new WebHookProjectSettings();
+		
 		when(projectSettingsManager.getSettings("project01", "webhooks")).thenReturn(projectSettings);
+		when(projectSettingsManager.getSettings("project02", "webhooks")).thenReturn(project02Settings);
 		
 		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
 														BuildStateEnum.BUILD_STARTED,
