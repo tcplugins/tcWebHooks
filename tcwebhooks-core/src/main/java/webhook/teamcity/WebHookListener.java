@@ -369,6 +369,10 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		mySettings.initialise();
 	}
 	
+	/**
+	 * Generated when project configuration reloaded from disk
+	 * This appears to be the only event we get when configuration is reloaded after a VCS update.
+	 */
 	@Override
 	public void projectRestored(String projectId) {
 	    Loggers.SERVER.debug("WebHookListener :: Handling projectRestored event for project: " + projectId);
