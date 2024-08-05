@@ -416,12 +416,6 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 	
 	@Override
-	public void buildTypeUnregistered(SBuildType buildType) {
-	    Loggers.SERVER.debug(String.format("WebHookListener :: Handling buildTypeUnregistered event for buildType: %s (%s)", buildType.getExternalId(), buildType.getInternalId()));
-	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.BUILD_TYPE_DELETED, buildType.getProjectId(), buildType.getBuildTypeId(), buildType));
-	}
-	
-	@Override
 	public void reportStatistics(WebHookConfig reportingWebhookConfig, StatisticsReport statisticsReport) {
 		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
 		reportingWebhook.setEnabledForBuildState(BuildStateEnum.REPORT_STATISTICS, reportingWebhook.isEnabled());
