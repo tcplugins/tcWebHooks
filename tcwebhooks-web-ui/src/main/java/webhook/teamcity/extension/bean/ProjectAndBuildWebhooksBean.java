@@ -5,10 +5,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.Constants;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.extension.bean.BuildWebhooksBean.WebHookConfigWithGeneralisedAddressWrapper;
 import webhook.teamcity.history.GeneralisedWebAddress;

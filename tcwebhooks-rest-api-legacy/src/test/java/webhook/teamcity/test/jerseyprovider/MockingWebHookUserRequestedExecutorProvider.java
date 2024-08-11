@@ -1,6 +1,6 @@
 package webhook.teamcity.test.jerseyprovider;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -19,7 +19,7 @@ import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
-import jetbrains.buildServer.log.Loggers;
+import webhook.teamcity.Loggers;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.settings.WebHookConfig;

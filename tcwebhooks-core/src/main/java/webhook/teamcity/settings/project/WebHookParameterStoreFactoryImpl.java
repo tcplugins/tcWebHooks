@@ -1,7 +1,7 @@
 package webhook.teamcity.settings.project;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityCoreFacade;
 
 public class WebHookParameterStoreFactoryImpl implements WebHookParameterStoreFactory {

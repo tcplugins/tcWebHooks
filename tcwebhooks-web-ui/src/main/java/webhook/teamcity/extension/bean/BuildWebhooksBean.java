@@ -5,8 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildType;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.history.GeneralisedWebAddress;
 import webhook.teamcity.history.GeneralisedWebAddressType;

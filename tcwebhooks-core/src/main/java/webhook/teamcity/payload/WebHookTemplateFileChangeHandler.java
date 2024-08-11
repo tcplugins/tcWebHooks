@@ -7,10 +7,10 @@ import javax.xml.bind.JAXBException;
 
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FileWatcher;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.settings.WebHookConfigChangeHandler;
 import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;

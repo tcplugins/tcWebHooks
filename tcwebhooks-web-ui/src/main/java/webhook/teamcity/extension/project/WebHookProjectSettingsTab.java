@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.controllers.admin.projects.EditProjectTab;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;

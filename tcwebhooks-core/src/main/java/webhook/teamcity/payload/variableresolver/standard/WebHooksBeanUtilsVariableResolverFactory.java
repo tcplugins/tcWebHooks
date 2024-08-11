@@ -1,16 +1,16 @@
 package webhook.teamcity.payload.variableresolver.standard;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SProject;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
+import webhook.teamcity.payload.variableresolver.VariableResolver;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 import webhook.teamcity.settings.secure.WebHookSecretResolver;
 import webhook.teamcity.settings.secure.WebHookSecretResolverFactory;
-import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHooksBeanUtilsVariableResolverFactory implements VariableResolverFactory {
 	
