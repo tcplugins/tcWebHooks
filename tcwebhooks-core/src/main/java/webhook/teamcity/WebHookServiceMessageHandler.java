@@ -3,7 +3,6 @@ package webhook.teamcity;
 import java.util.Collections;
 import java.util.List;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.BuildMessage1;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTranslator;

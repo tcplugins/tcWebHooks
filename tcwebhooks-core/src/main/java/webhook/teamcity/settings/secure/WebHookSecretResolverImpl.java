@@ -2,9 +2,9 @@ package webhook.teamcity.settings.secure;
 
 import org.apache.commons.lang3.StringUtils;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.impl.SecureDataStorage;
+import webhook.teamcity.Loggers;
 
 /**
  * WebHookSecretResolver implementation for TeamCity 2017.1 or higher.

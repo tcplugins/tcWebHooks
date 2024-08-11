@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.joda.time.LocalDateTime;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.settings.WebHookMainSettings;
 
 public class StatisticsSnapshotScheduler implements DeferrableService {

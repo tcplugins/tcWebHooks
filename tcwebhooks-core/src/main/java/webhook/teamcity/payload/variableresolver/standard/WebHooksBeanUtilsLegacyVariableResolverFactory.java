@@ -1,6 +1,6 @@
 package webhook.teamcity.payload.variableresolver.standard;
 
-import jetbrains.buildServer.log.Loggers;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 

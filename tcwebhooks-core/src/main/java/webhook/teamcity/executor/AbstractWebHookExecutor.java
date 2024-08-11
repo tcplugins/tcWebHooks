@@ -64,7 +64,6 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 			this.webhook = getWebHookContent();
 			
 			doPost(webhook, whc.getPayloadTemplate());
-			Loggers.ACTIVITIES.debug(CLASS_NAME + whc.getPayloadTemplate());
 			this.webHookHistoryItem = buildWebHookHistoryItem(null);
 			webHookHistoryRepository.addHistoryItem(this.webHookHistoryItem);
 

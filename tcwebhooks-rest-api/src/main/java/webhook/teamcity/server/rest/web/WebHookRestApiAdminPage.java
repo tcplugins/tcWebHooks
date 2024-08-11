@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.controllers.admin.AdminPage;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
 import lombok.Data;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.server.WebHookTeamCityRestApiZipPluginFixer;
 import webhook.teamcity.server.pluginfixer.JarReport;
 

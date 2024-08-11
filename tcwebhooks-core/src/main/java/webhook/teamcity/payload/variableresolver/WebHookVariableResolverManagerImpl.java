@@ -7,7 +7,7 @@ import java.util.TreeMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import jetbrains.buildServer.log.Loggers;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookContentResolutionException;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.payload.PayloadTemplateEngineType;

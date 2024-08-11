@@ -6,9 +6,9 @@ import static webhook.teamcity.BuildStateEnum.BUILD_FAILED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FINISHED;
 import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
 import static webhook.teamcity.BuildStateEnum.BUILD_INTERRUPTED;
-import static webhook.teamcity.BuildStateEnum.CHANGES_LOADED;
 import static webhook.teamcity.BuildStateEnum.BUILD_STARTED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
+import static webhook.teamcity.BuildStateEnum.CHANGES_LOADED;
 import static webhook.teamcity.BuildStateEnum.RESPONSIBILITY_CHANGED;
 
 import java.util.ArrayList;
@@ -21,16 +21,15 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import jetbrains.buildServer.log.Loggers;
-import jetbrains.buildServer.serverSide.SBuildType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import org.jdom.DataConversionException;
 import org.jdom.Element;
 
+import jetbrains.buildServer.serverSide.SBuildType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.PayloadTemplateEngineType;

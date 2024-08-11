@@ -1,7 +1,7 @@
 package webhook.teamcity.settings.secure;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SBuildServer;
+import webhook.teamcity.Loggers;
 
 public class WebHookSecretResolverFactory {
 	
