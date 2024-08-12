@@ -548,8 +548,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			}
 			existingProjectWebHookIds.removeAll(newProjectWebHookIds);
 			if (!existingProjectWebHookIds.isEmpty()) {
-			    Loggers.SERVER.warn(String.format("WebHookSettingsManagerImpl :: Found the following webhooks in the cache that no-longer map to webhooks in project '%s'. WebHooks with ids '%s' will be removed from the cache.", sProject.getExternalId(), existingProjectWebHookIds));
-			    existingProjectWebHookIds.forEach(whec -> this.webhooksEnhanced.remove(whec));
+			    Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Found the following webhooks in the cache that no-longer map to webhooks in project '%s'. WebHooks with ids '%s' will be removed from the cache.", sProject.getExternalId(), existingProjectWebHookIds));
+			    existingProjectWebHookIds.forEach(whec -> {
+			        Loggers.SERVER.debug(String.format("WebHookSettingsManagerImpl :: Removing webhook from cache: '%s'", this.webhooksEnhanced.get(whec)));
+			        this.webhooksEnhanced.remove(whec);
+			    });
 			}
 			if (persistRequired) {
 			    persist(projectInternalId, "Conflicting WebHook ids remapped");
