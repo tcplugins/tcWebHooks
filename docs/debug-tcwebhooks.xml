@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+  <Appenders>
+    <DelegateAppender>
+      <Console name="CONSOLE-WARN" target="SYSTEM_ERR">
+        <PatternLayout pattern="[%d] %6p [%30.30t] - %30.30c - %m%n" charset="UTF-8" />
+        <SpringErrorsFilter minLevel="WARN" />
+      </Console>
+    </DelegateAppender>
+    <DelegateAppender>
+      <Console name="CONSOLE-ERROR" target="SYSTEM_ERR">
+        <PatternLayout pattern="[%d] %6p [%30.30t] - %30.30c - %m%n" charset="UTF-8" />
+        <SpringErrorsFilter minLevel="ERROR" />
+      </Console>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL" fileName="${sys:teamcity_logs}/teamcity-server.log" filePattern="${sys:teamcity_logs}/teamcity-server.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="10" fileIndex="min" />
+        <!--REPLACE PREVIOUS LINE WITH UNCOMMENTED LINE TO STORE MORE LOGS-->
+        <!-- <DefaultRolloverStrategy max="20" fileIndex="min"/> -->
+        <Filters>
+          <CategoryFilter denyCategory="javasvn.output" />
+          <CategoryFilter maxDenyLevel="INFO" denyCategory="jetbrains.buildServer.plugins.spring.SpringPluginLoader$TeamCityPlugin*" />
+          <CategoryFilter maxDenyLevel="INFO" denyCategory="jetbrains.buildServer.vcs.impl.VcsContentCache" />
+          <CategoryFilter maxDenyLevel="DEBUG" denyCategory="jetbrains.buildServer.LDAP" />
+          <CategoryFilter maxDenyLevel="INFO" denyCategory="jetbrains.buildServer.maintenance.WebDispatcherServlet" />
+          <CategoryFilter maxDenyLevel="DEBUG" denyCategory="jetbrains.buildServer.CLEANUP" />
+          <CategoryFilter maxDenyLevel="INFO" denyCategory="jetbrains.buildServer.AUTH*" />
+          <CategoryFilter maxDenyLevel="INFO" denyCategory="jetbrains.buildServer.nuget.*" />
+          <CategoryFilter maxDenyLevel="DEBUG" denyCategory="jetbrains.buildServer.web.ResponseFragmentFilter*" />
+        </Filters>
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL.NODES" fileName="${sys:teamcity_logs}/teamcity-nodes.log" filePattern="${sys:teamcity_logs}/teamcity-nodes.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m %n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL.VCS" fileName="${sys:teamcity_logs}/teamcity-vcs.log" filePattern="${sys:teamcity_logs}/teamcity-vcs.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%15.15t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+        <!--REPLACE PREVIOUS LINE WITH UNCOMMENTED LINE TO STORE MORE LOGS-->
+        <!-- <DefaultRolloverStrategy max="20" fileIndex="min"/> -->
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL.VCS_STATES" fileName="${sys:teamcity_logs}/teamcity-vcs-states.log" filePattern="${sys:teamcity_logs}/teamcity-vcs-states.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%15.15t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL.VCS.REMOTE.RUN" fileName="${sys:teamcity_logs}/teamcity-remote-run.log" filePattern="${sys:teamcity_logs}/teamcity-remote-run.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%15.15t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="5" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL.WS" fileName="${sys:teamcity_logs}/teamcity-ws.log" filePattern="${sys:teamcity_logs}/teamcity-ws.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%15.15t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ACTIVITIES.LOG" fileName="${sys:teamcity_logs}/teamcity-activities.log" filePattern="${sys:teamcity_logs}/teamcity-activities.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="CLOUDS.LOG" fileName="${sys:teamcity_logs}/teamcity-clouds.log" filePattern="${sys:teamcity_logs}/teamcity-clouds.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%15.15t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="10" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="SQL.LOG" fileName="${sys:teamcity_logs}/teamcity-sql.log" filePattern="${sys:teamcity_logs}/teamcity-sql.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30t - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="CLEANUP.LOG" fileName="${sys:teamcity_logs}/teamcity-cleanup.log" filePattern="${sys:teamcity_logs}/teamcity-cleanup.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="SVN.LOG" fileName="${sys:teamcity_logs}/teamcity-svn.log" filePattern="${sys:teamcity_logs}/teamcity-svn.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="10" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="TFS.LOG" fileName="${sys:teamcity_logs}/teamcity-tfs.log" filePattern="${sys:teamcity_logs}/teamcity-tfs.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="STARTEAM.LOG" fileName="${sys:teamcity_logs}/teamcity-starteam.log" filePattern="${sys:teamcity_logs}/teamcity-starteam.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="CLEARCASE.LOG" fileName="${sys:teamcity_logs}/teamcity-clearcase.log" filePattern="${sys:teamcity_logs}/teamcity-clearcase.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="AUTH.LOG" fileName="${sys:teamcity_logs}/teamcity-auth.log" filePattern="${sys:teamcity_logs}/teamcity-auth.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%30.30t] - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="AGENT_STATISTICS.LOG" fileName="${sys:teamcity_logs}/teamcity-agent-statistics.log" filePattern="${sys:teamcity_logs}/teamcity-agent-statistics.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="%m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="XMLRPC.LOG" fileName="${sys:teamcity_logs}/teamcity-xmlrpc.log" filePattern="${sys:teamcity_logs}/teamcity-xmlrpc.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="LDAP.LOG" fileName="${sys:teamcity_logs}/teamcity-ldap.log" filePattern="${sys:teamcity_logs}/teamcity-ldap.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="VCS-CONTENT-CACHE" fileName="${sys:teamcity_logs}/vcs-content-cache.log" filePattern="${sys:teamcity_logs}/vcs-content-cache.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] [%t] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="REST.LOG" fileName="${sys:teamcity_logs}/teamcity-rest.log" filePattern="${sys:teamcity_logs}/teamcity-rest.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%15.15t] - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="FREEMARKER.LOG" fileName="${sys:teamcity_logs}/teamcity-freemarker.log" filePattern="${sys:teamcity_logs}/teamcity-freemarker.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="NOTIFICATIONS.LOG" fileName="${sys:teamcity_logs}/teamcity-notifications.log" filePattern="${sys:teamcity_logs}/teamcity-notifications.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="AGENTPUSH.LOG" fileName="${sys:teamcity_logs}/teamcity-agentPush.log" filePattern="${sys:teamcity_logs}/teamcity-agentPush.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="DIAG.LOG" fileName="${sys:teamcity_logs}/teamcity-diagnostics.log" filePattern="${sys:teamcity_logs}/teamcity-diagnostics.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="NUGET.LOG" fileName="${sys:teamcity_logs}/teamcity-nuget.log" filePattern="${sys:teamcity_logs}/teamcity-nuget.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="1" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ROLL.VERSIONED_SETTINGS" fileName="${sys:teamcity_logs}/teamcity-versioned-settings.log" filePattern="${sys:teamcity_logs}/teamcity-versioned-settings.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="FLAKY_TESTS.LOG" fileName="${sys:teamcity_logs}/teamcity-flaky-tests.log" filePattern="${sys:teamcity_logs}/teamcity-flaky-tests.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ISSUE_TRACKERS.LOG" fileName="${sys:teamcity_logs}/teamcity-issue-trackers.log" filePattern="${sys:teamcity_logs}/teamcity-issue-trackers.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="COMMIT_STATUS.LOG" fileName="${sys:teamcity_logs}/teamcity-commit-status.log" filePattern="${sys:teamcity_logs}/teamcity-commit-status.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="PULL_REQUESTS.LOG" fileName="${sys:teamcity_logs}/teamcity-pull-requests.log" filePattern="${sys:teamcity_logs}/teamcity-pull-requests.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="DISK_USAGE.LOG" fileName="${sys:teamcity_logs}/teamcity-diskusage.log" filePattern="${sys:teamcity_logs}/teamcity-diskusage.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="SEARCH.LOG" fileName="${sys:teamcity_logs}/teamcity-search.log" filePattern="${sys:teamcity_logs}/teamcity-search.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p [%30.30t] - %30.30c [%X{SEARCH_PLUGIN.INDEX_NAME}] - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="10" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="ARTIFACTS.LOG" fileName="${sys:teamcity_logs}/teamcity-artifacts.log" filePattern="${sys:teamcity_logs}/teamcity-artifacts.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="TRIGGERS.LOG" fileName="${sys:teamcity_logs}/teamcity-triggers.log" filePattern="${sys:teamcity_logs}/teamcity-triggers.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+    <DelegateAppender>
+      <RollingFile name="TCWEBHOOKS.LOG" fileName="${sys:teamcity_logs}/teamcity-tcwebhooks.log" filePattern="${sys:teamcity_logs}/teamcity-tcwebhooks.log.%i" append="true" createOnDemand="true">
+        <PatternLayout pattern="[%d] %6p - %30.30c - %m%n" charset="UTF-8" />
+        <SizeBasedTriggeringPolicy size="10 MB" />
+        <DefaultRolloverStrategy max="3" fileIndex="min" />
+      </RollingFile>
+    </DelegateAppender>
+  </Appenders>
+  <!-- loggers -->
+  <Loggers>
+    <Logger name="jetbrains.buildServer.nuget" level="INFO" additivity="false">
+      <AppenderRef ref="NUGET.LOG" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.agentpush" level="INFO" additivity="false">
+      <AppenderRef ref="AGENTPUSH.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.AUTH" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL" />
+      <AppenderRef ref="AUTH.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.buildTriggers.vcs.clearcase" level="INFO" additivity="false">
+      <AppenderRef ref="CLEARCASE.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.buildTriggers.vcs.starteam" level="INFO" additivity="false">
+      <AppenderRef ref="STARTEAM.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.buildTriggers.vcs.tfs" level="INFO" additivity="false">
+      <AppenderRef ref="TFS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.XMLRPC" level="INFO" additivity="false">
+      <AppenderRef ref="XMLRPC.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.AGENTSSTATISTICS" level="INFO" additivity="false">
+      <AppenderRef ref="AGENT_STATISTICS.LOG" />
+    </Logger>
+    <Logger name="javasvn.output" level="INFO" additivity="false">
+      <AppenderRef ref="SVN.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.SQL" level="INFO" additivity="false">
+      <AppenderRef ref="SQL.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.CLEANUP" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL" />
+      <AppenderRef ref="CLEANUP.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.LDAP" level="INFO" additivity="false">
+      <AppenderRef ref="LDAP.LOG" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.vcs.impl.VcsContentCache" level="INFO" additivity="false">
+      <AppenderRef ref="VCS-CONTENT-CACHE" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.server.rest" level="INFO" additivity="false">
+      <AppenderRef ref="REST.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.server.graphql" level="INFO" additivity="false">
+      <AppenderRef ref="REST.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.clouds.jetbrains.buildServer.serverSide.impl.FlushQueueVirtualAction" level="INFO" additivity="false">
+      <AppenderRef ref="CLOUDS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.clouds" level="INFO" additivity="false">
+      <AppenderRef ref="CLOUDS.LOG" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.ACTIVITIES" level="INFO">
+      <AppenderRef ref="ACTIVITIES.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.VCS" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.VCS" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.buildTriggers.vcs" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.VCS" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.VCS_STATES" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.VCS_STATES" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.buildTriggers.vcs.remoteRun" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.VCS.REMOTE.RUN" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.notification" level="INFO" additivity="false">
+      <AppenderRef ref="NOTIFICATIONS.LOG" />
+      <AppenderRef ref="CONSOLE-ERROR" />
+    </Logger>
+    <Logger name="freemarker.runtime" level="OFF" additivity="false">
+      <AppenderRef ref="FREEMARKER.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.WEBSOCKET" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.WS" />
+    </Logger>
+    <Logger name="net.sf.packtag.implementation.yui.JavaScriptErrorReporter" level="OFF" />
+    <Logger name="jetbrains.buildServer.diagnostic" level="INFO" additivity="false">
+      <AppenderRef ref="DIAG.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.VERSIONED_SETTINGS" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.VERSIONED_SETTINGS" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.serverSide.impl.versionedSettings" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.VERSIONED_SETTINGS" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.serverSide.flakyTestDetector" level="WARN" additivity="false">
+      <AppenderRef ref="FLAKY_TESTS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.ISSUE_TRACKERS" level="INFO" additivity="false">
+      <AppenderRef ref="ISSUE_TRACKERS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.COMMIT_STATUS" level="INFO" additivity="false">
+      <AppenderRef ref="COMMIT_STATUS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.PULL_REQUESTS" level="INFO" additivity="false">
+      <AppenderRef ref="PULL_REQUESTS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.serverSide.statistics.diskusage" level="ERROR" additivity="false">
+      <AppenderRef ref="DISK_USAGE.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.SERVER.nodesCommunication" level="INFO" additivity="false">
+      <AppenderRef ref="ROLL.NODES" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.serverSide.search" level="INFO" additivity="false">
+      <AppenderRef ref="SEARCH.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.serverSide.build.index" level="INFO" additivity="false">
+      <AppenderRef ref="SEARCH.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.ARTIFACTS" level="ERROR" additivity="false">
+      <AppenderRef ref="ARTIFACTS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.util.amazon" level="ERROR" additivity="false">
+      <AppenderRef ref="ARTIFACTS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.artifacts" level="ERROR" additivity="false">
+      <AppenderRef ref="ARTIFACTS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.TRIGGERS" level="INFO" additivity="false">
+      <AppenderRef ref="TRIGGERS.LOG" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.SERVER.tcWebHooks" level="DEBUG" additivity="false">
+      <AppenderRef ref="TCWEBHOOKS.LOG" />
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="jetbrains.buildServer.SERVER.tcwebhooks" level="DEBUG" additivity="false">
+      <AppenderRef ref="TCWEBHOOKS.LOG" />
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="com.jetbrains.teamcity" level="WARN">
+      <!-- new UI overview plugin -->
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="jetbrains.buildServer" level="INFO">
+      <!-- Set level above to DEBUG to enable debug logging -->
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="org.springframework" level="WARN">
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="org.springframework.web.servlet.PageNotFound" level="ERROR" additivity="false">
+      <AppenderRef ref="ROLL" />
+    </Logger>
+    <Logger name="org.apache.maven.cli.logging" level="ERROR" />
+    <Root level="INFO">
+      <appender-ref ref="CONSOLE-WARN" />
+    </Root>
+  </Loggers>
+</Configuration>
+
