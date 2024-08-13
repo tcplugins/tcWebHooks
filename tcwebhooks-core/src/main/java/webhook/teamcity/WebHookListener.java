@@ -28,6 +28,9 @@ import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
+import jetbrains.buildServer.util.positioning.PositionAware;
+import jetbrains.buildServer.util.positioning.PositionConstraint;
+import webhook.Constants;
 import webhook.WebHook;
 import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEventImpl;
 import webhook.teamcity.executor.WebHookExecutor;
@@ -46,7 +49,7 @@ import webhook.teamcity.statistics.WebHooksStatisticsReportEventListener;
  * WebHookListner
  * Listens for Server events and then triggers the execution of webhooks if configured.
  */
-public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener {
+public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener, PositionAware {
 
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
@@ -448,5 +451,15 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	public void testsUnmuted(SUser user, Map<MuteInfo, Collection<STest>> unmutedGroups) {
 		this.processTestEvent(BuildStateEnum.TESTS_UNMUTED, user, unmutedGroups);
 	}
+
+    @Override
+    public PositionConstraint getConstraint() {
+        return PositionConstraint.last();
+    }
+
+    @Override
+    public String getOrderId() {
+        return Constants.PLUGIN_NAME;
+    }
 
 }
