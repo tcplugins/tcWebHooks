@@ -8,13 +8,23 @@
         </thead>
         <tbody>
     <c:forEach items="${projectWebHooksAndTemplates}" var="parent">
-        <tr><td><a href="editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
-            <td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
-            <c:set var="parentTemplateCount" value="${parentTemplateCount + fn:length(parent.templates.templateList)}"/>
-            <td><a href="../webhooks/templates.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.templates.templateList)} templates available</a></td>
-            <c:set var="parentParameterCount" value="${parentParameterCount + fn:length(parent.parameters.parameterList)}"/>
-            <td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
-        </tr>
+        <c:set var="parentTemplateCount" value="${parentTemplateCount + fn:length(parent.templates.templateList)}"/>
+        <c:set var="parentParameterCount" value="${parentParameterCount + fn:length(parent.parameters.parameterList)}"/>
+        <c:if test="${not showLinksToOldEditPage}">
+	        <tr><td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
+	            <td><a href="../webhooks/index.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
+	            <td><a href="../webhooks/templates.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.templates.templateList)} templates available</a></td>
+	            <td><a href="../webhooks/index.html?projectId=${parent.parameters.project.externalId}#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
+	        </tr>
+        </c:if>
+        
+        <c:if test="${showLinksToOldEditPage}">
+	        <tr><td><a href="../admin/editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks"><c:out value="${parent.webhooks.sensibleProjectName}"/></a></td>
+	            <td><a href="../admin/editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks">${fn:length(parent.webhooks.webHookList)} webhooks configured</a></td>
+	            <td><a href="../webhooks/templates.html?projectId=${parent.webhooks.externalProjectId}">${fn:length(parent.templates.templateList)} templates available</a></td>
+	            <td><a href="../admin/editProject.html?projectId=${parent.webhooks.externalProjectId}&tab=tcWebHooks#parameters">${fn:length(parent.parameters.parameterList)} parameters configured</a></td>
+	        </tr>
+        </c:if>
     </c:forEach>
     </tbody>
     </table>
