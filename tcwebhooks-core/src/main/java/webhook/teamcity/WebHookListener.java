@@ -416,6 +416,12 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 	
 	@Override
+	public void buildTypeDeleted(String buildTypeId) {
+	    Loggers.SERVER.debug(String.format("WebHookListener :: Handling buildTypeDeleted event for buildType: %s", buildTypeId));
+	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.BUILD_TYPE_DELETED, null, buildTypeId, null));
+	}
+	
+	@Override
 	public void reportStatistics(WebHookConfig reportingWebhookConfig, StatisticsReport statisticsReport) {
 		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
 		reportingWebhook.setEnabledForBuildState(BuildStateEnum.REPORT_STATISTICS, reportingWebhook.isEnabled());
