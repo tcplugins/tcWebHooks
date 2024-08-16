@@ -328,10 +328,12 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
                 }
                 this.rebuildWebHooksEnhanced(event.getProjectInternalId());
         } else if (WebHookSettingsEventType.BUILD_TYPE_DELETED.equals(event.getEventType())) {
-            SBuildType sBuildType = (SBuildType) event.getBaggage();
+            SBuildType sBuildType = this.myProjectManager.findBuildTypeById(event.getBuildTypeInternalId());
             if (sBuildType != null && this.projectSettingsMap.containsKey(sBuildType.getProjectId())) {
                 handleBuildTypeDeleteEvent(sBuildType);
                 this.rebuildWebHooksEnhanced(sBuildType.getProjectId());
+            } else {
+                Loggers.SERVER.warn(String.format("WebHookSettingsManagerImpl :: Unable to handle BUILD_TYPE_DELETED because buildType was not found with internal id '%s'", event.getBuildTypeInternalId()));
             }
         }
     }
