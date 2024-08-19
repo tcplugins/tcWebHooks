@@ -836,4 +836,15 @@ public class WebHookConfig {
 	public void setHideSecureValues(boolean hideSecureValues) {
 		this.hideSecureValues = hideSecureValues;
 	}
+
+    @Override
+    public String toString() {
+        return "WebHookConfig [enabled=" + enabled + ", id=" + uniqueKey + ", url=" + url + ", template="
+                + payloadTemplate + ", buildStates=" + states.getEnabledNotifiableBuildStates() + ", allBuildTypesEnabled=" + allBuildTypesEnabled
+                + ", subProjectsEnabled=" + subProjectsEnabled + ", buildTypes=" + enabledBuildTypesSet
+                + ", projectInternalId=" + projectInternalId
+                + "]";
+    }
+	
+	
 }

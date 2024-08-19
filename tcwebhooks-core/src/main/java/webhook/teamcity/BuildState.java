@@ -7,9 +7,11 @@ import static webhook.teamcity.BuildStateEnum.BUILD_FIXED;
 import static webhook.teamcity.BuildStateEnum.BUILD_SUCCESSFUL;
 import static webhook.teamcity.BuildStateEnum.REPORT_STATISTICS;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BuildState {
 
@@ -40,8 +42,16 @@ public class BuildState {
 		states.put(BuildStateEnum.REPORT_STATISTICS, 		new SimpleBuildState(BuildStateEnum.REPORT_STATISTICS, 			false)); 
 	}
 	
+	/**
+	 * Get a Set of all the possible buildStates. Regardless of whether they are enabled or not.
+	 * @return Set of all possible build states.
+	 */
 	public Set<BuildStateEnum> getStateSet(){
 		return states.keySet();
+	}
+	
+	public Set<BuildStateEnum> getEnabledNotifiableBuildStates() {
+	    return Arrays.stream(BuildStateEnum.getNotifyStates()).filter(this::enabled).collect(Collectors.toSet());
 	}
 	
     /**
@@ -50,11 +60,10 @@ public class BuildState {
      * to notify.
      * 
      * @param currentBuildState
-     * @param buildStatesToNotify
      * @return Whether or not the webhook should trigger for the current build state.
      */
     public boolean enabled(BuildStateEnum currentBuildState) {
-    	return states.get(currentBuildState).isEnabled();
+    	return states.containsKey(currentBuildState) && states.get(currentBuildState).isEnabled();
 	}
     
     public boolean enabled(BuildStateEnum currentBuildState, boolean success, boolean changed){
@@ -153,7 +162,7 @@ public class BuildState {
     /**
      * Convert build state Integer into short string 
      * 
-     * @param  Build state as an Integer constant.
+     * @param  Build state as an enum.
      * @return A string representing the shortname of the state. Is used in messages.
      */
 	public String getShortName(BuildStateEnum state) {
@@ -170,6 +179,12 @@ public class BuildState {
 		return state.getDescriptionSuffix();
 	}
 
+	/**
+	 * Determines whether all states are enabled. Eg, for any state whether the webhook is enabled.
+	 * This handles cases where BUILD_BROKEN or BUILD_FIXED are enabled, which means that the webhook
+	 * might not fire depending on the build status delta.
+	 * @return Whether every buildState is effectively enabled.
+	 */
 	public boolean allEnabled() {
 		boolean areAllEnbled = true;
 		for (Map.Entry<BuildStateEnum,BuildStateInterface> state : states.entrySet()){
