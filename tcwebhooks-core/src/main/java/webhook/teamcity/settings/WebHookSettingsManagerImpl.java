@@ -663,18 +663,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	    return false;
 	}
 
-    private Set<BuildStateEnum> determineEnabledBuildStates(WebHookConfig c, WebHookPayloadTemplate template) {
-		if(Objects.nonNull(c.isEnabledForAllBuildsInProject())) {
-			return new HashSet<>(template.getSupportedBuildStates());
-		} else {
-			Set<BuildStateEnum> enabled = new HashSet<>();
-			for (BuildStateEnum s : c.getBuildStates().getStateSet()) {
-				if (template.getSupportedBuildStates().contains(s)) {
-					enabled.add(s);
-				}
-			}
-			return enabled;
-		}
+	private Set<BuildStateEnum> determineEnabledBuildStates(WebHookConfig c, WebHookPayloadTemplate template) {
+		return c.getBuildStates().getEnabledNotifiableBuildStates()
+		        .stream()
+		        .filter(s -> template.getSupportedBuildStates().contains(s))
+		        .collect(Collectors.toSet());
 	}
 
 	@SuppressWarnings("rawtypes")
