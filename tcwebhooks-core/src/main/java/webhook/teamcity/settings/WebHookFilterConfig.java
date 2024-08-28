@@ -17,10 +17,10 @@ public class WebHookFilterConfig {
 	public static final String XML_ATTR_ENABLED = "enabled";
 	
 	
-	String value;
-	String regex;
-	boolean enabled;
-	Pattern pattern; 
+	private String value;
+	private String regex;
+	private boolean enabled;
+	private transient Pattern pattern; 
 	
 	
 	public static WebHookFilterConfig create(String value, String regex, boolean enabled){

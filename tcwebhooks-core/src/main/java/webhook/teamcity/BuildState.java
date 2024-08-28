@@ -50,6 +50,9 @@ public class BuildState {
 		return states.keySet();
 	}
 	
+	public Set<BuildStateEnum> getEnabledBuildStates() {
+	    return Arrays.stream(BuildStateEnum.values()).filter(this::enabled).collect(Collectors.toSet());
+	}
 	public Set<BuildStateEnum> getEnabledNotifiableBuildStates() {
 	    return Arrays.stream(BuildStateEnum.getNotifyStates()).filter(this::enabled).collect(Collectors.toSet());
 	}

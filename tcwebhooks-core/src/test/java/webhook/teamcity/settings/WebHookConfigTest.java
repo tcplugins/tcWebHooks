@@ -208,7 +208,7 @@ public class WebHookConfigTest {
 	public void testWebHookElementFiltersSerialisation(){
 		assertTrue(webhookWithFilters.getTriggerFilters().size() == 1);
 		WebHookConfig newTestFilterConfig = new WebHookConfig(webhookWithFilters.getAsElement());
-		assertEquals(webhookWithFilters.getTriggerFilters().get(0).regex, newTestFilterConfig.getTriggerFilters().get(0).regex);
+		assertEquals(webhookWithFilters.getTriggerFilters().get(0).getRegex(), newTestFilterConfig.getTriggerFilters().get(0).getRegex());
 	}
 	
 	@Test
