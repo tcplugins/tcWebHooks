@@ -1,0 +1,45 @@
+<settings>
+	<webhooks enabled="true">
+		<webhook url="http://localhost:58001/auth/200" enabled="true"
+			template="legacy-json">
+			<states>
+				<state type="buildStarted" enabled="true" />
+				<state type="changesLoaded" enabled="true" />
+				<state type="beforeBuildFinish" enabled="true" />
+				<state type="buildFinished" enabled="true" />
+				<state type="buildBroken" enabled="false" />
+				<state type="buildInterrupted" enabled="true" />
+				<state type="buildSuccessful" enabled="true" />
+				<state type="buildFixed" enabled="false" />
+				<state type="buildFailed" enabled="true" />
+				<state type="responsibilityChanged" enabled="true" />
+			</states>
+			<parameters>
+				<param name="color" value="red" />
+				<param name="notify" value="1" />
+				<param name="branchName" value="${branchDisplayName}"
+					secure="false" included-in-legacy-payloads="true"
+					force-resolve-teamcity-variable="true" template-engine="VELOCITY" />
+			</parameters>
+			<auth type="bearer" enabled="true" preemptive="true">
+				<auth-parameters>
+					<param name="bearer" value="${test.thing1}" />
+				</auth-parameters>
+			</auth>
+			<headers>
+				<header name="zxc" value="zxczxczxcxzc" />
+			</headers>
+			<trigger-filters>
+				<filter value="${branchDisplayName}" regex="^master$"
+					enabled="true" />
+				<filter value="${buildInternalTypeId}" regex="^bt\d$"
+					enabled="true" />
+			</trigger-filters>
+			<build-types enabled-for-all="false"
+				enabled-for-subprojects="true">
+				<build-type id="bt1" />
+				<build-type id="bt2" />
+			</build-types>
+		</webhook>
+	</webhooks>
+</settings>
