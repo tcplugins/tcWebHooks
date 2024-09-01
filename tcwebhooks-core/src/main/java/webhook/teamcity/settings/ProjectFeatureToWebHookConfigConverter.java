@@ -73,6 +73,9 @@ public class ProjectFeatureToWebHookConfigConverter {
         return builder.build();
     }
     
+    public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
+        return new WebHookProjectFeature(webhook);
+    }
 
     private void populateHeaders(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.headers(
@@ -111,9 +114,6 @@ public class ProjectFeatureToWebHookConfigConverter {
             .authType(authConfig.getType());
         }
     }
-    public SProjectFeatureDescriptor convert(String featureId, WebHookConfig webhook) {
-        return new WebHookProjectFeature(featureId, webhook);
-    }
 
     private static void populateBuildStates(WebHookConfigBuilder builder, String enabledBuildStates) {
         BuildState buildStates = new BuildState();
@@ -150,14 +150,24 @@ public class ProjectFeatureToWebHookConfigConverter {
         private String id;
         private WebHookConfig webHookConfig;
 
-        public WebHookProjectFeature(String id, WebHookConfig webHookConfig) {
-            this.id = id;
+        public WebHookProjectFeature(WebHookConfig webHookConfig) {
+            this.id = webHookConfig.getUniqueKey();
             this.webHookConfig = webHookConfig;
         }
 
         @Override
         public String getType() {
             return "tcWebHook";
+        }
+        
+        @Override
+        public String getProjectId() {
+            return this.webHookConfig.getProjectInternalId();
+        }
+
+        @Override
+        public String getId() {
+            return this.id;
         }
 
         @Override
@@ -216,16 +226,6 @@ public class ProjectFeatureToWebHookConfigConverter {
 
         private String getEnabledBuildStatesAsStrings() {
             return this.webHookConfig.getBuildStates().getEnabledBuildStates().stream().map(BuildStateEnum::getShortName).collect(Collectors.joining(","));
-        }
-
-        @Override
-        public String getProjectId() {
-            return this.webHookConfig.getProjectInternalId();
-        }
-
-        @Override
-        public String getId() {
-            return this.id;
         }
 
     }
