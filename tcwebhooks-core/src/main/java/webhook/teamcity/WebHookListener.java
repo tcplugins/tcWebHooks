@@ -1,5 +1,6 @@
 package webhook.teamcity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -418,6 +419,12 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	public void buildTypeUnregistered(SBuildType buildType) {
 	    Loggers.SERVER.debug(String.format("WebHookListener :: Handling buildTypeUnregistered event for buildType: %s (%s)", buildType.getExternalId(), buildType.getInternalId()));
 	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.BUILD_TYPE_DELETED, buildType.getProjectId(), buildType.getBuildTypeId(), buildType));
+	}
+	
+	@Override
+	public void statisticValuePublished(SBuild build, String valueTypeKey, BigDecimal value) {
+	    // TODO Auto-generated method stub
+	    Loggers.SERVER.info(String.format("statisticValuePublished :: '%s'. Value '%s' -> '%s'", build.getBuildTypeName(), valueTypeKey, value));
 	}
 	
 	@Override
