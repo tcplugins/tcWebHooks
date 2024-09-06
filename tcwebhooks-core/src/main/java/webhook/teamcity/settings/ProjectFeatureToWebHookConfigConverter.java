@@ -41,7 +41,7 @@ public class ProjectFeatureToWebHookConfigConverter {
      */
     
     private static final String TRUE_VALUE = "true";
-    private static final String ID_KEY = "id";
+    public static final String ID_KEY = "id";
     private static final String URL_KEY = "url";
     private static final String ENABLED_KEY = "enabled";
     private static final String TEMPLATE_KEY = "teamplate";

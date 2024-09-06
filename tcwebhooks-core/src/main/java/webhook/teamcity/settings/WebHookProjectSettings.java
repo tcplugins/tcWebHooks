@@ -23,6 +23,11 @@ public class WebHookProjectSettings implements ProjectSettings {
 	public WebHookProjectSettings(){
 		webHooksConfigs = new CopyOnWriteArrayList<>();
 	}
+	
+	public WebHookProjectSettings(List<WebHookConfig> webHookConfigs) {
+		this.webHooksConfigs =new CopyOnWriteArrayList<>();
+		this.webHooksConfigs.addAll(webHookConfigs);
+	}
 
     @SuppressWarnings("unchecked")
 	public void readFrom(Element rootElement)
@@ -249,5 +254,6 @@ public class WebHookProjectSettings implements ProjectSettings {
 	public List<WebHookConfig> getWebHooksConfigs() {
 		return webHooksConfigs;
 	}
+	
 	
 }

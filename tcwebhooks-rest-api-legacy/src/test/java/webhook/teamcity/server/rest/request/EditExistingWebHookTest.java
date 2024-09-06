@@ -18,8 +18,11 @@ import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookParameters;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
+import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
+import webhook.testframework.util.ConfigLoaderUtil;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
@@ -38,6 +41,9 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
 	
 	@Autowired
 	private ProjectSettingsManager projectSettingsManager;
+	
+	@Autowired
+	private WebHookSettingsManager webHookSettingsManager;
 	
 	private WebResource webResource;
 	
@@ -64,15 +70,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testUpdateParameters() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -100,15 +99,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testDeleteParameter() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -131,15 +123,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testDeleteParameters() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -162,15 +147,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testAddFilter() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-bearer-auth.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-bearer-auth.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -198,15 +176,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testAddFilters() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-bearer-auth.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-bearer-auth.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -239,15 +210,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testUpdateFilters() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -276,15 +240,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testUpdateFiltersFailsWhenFilterMalformed() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -310,15 +267,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testDeleteFilter() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -340,15 +290,8 @@ public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testDeleteFilters() throws IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "TestProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+    	this.webHookSettingsManager.addNewWebHook("TestProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/TestProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);

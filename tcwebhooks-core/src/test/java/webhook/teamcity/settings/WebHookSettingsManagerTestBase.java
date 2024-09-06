@@ -43,7 +43,7 @@ public abstract class WebHookSettingsManagerTestBase {
 	@Mock
 	protected ConfigActionFactory configActionFactory;
 	@Mock
-	protected ProjectSettingsManager projectSettingsManager;
+	protected WebHookFeaturesStore webhookFeaturesStore;
 	@Mock
 	SBuildType sBuildType01;
 	@Mock
@@ -85,8 +85,8 @@ public abstract class WebHookSettingsManagerTestBase {
 		
 		project02Settings = new WebHookProjectSettings();
 		
-		when(projectSettingsManager.getSettings("project01", "webhooks")).thenReturn(projectSettings);
-		when(projectSettingsManager.getSettings("project02", "webhooks")).thenReturn(project02Settings);
+		when(webhookFeaturesStore.getWebHookConfigs(sProject)).thenReturn(projectSettings);
+		when(webhookFeaturesStore.getWebHookConfigs(sProject02)).thenReturn(project02Settings);
 		
 		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
 														BuildStateEnum.BUILD_STARTED,
@@ -122,7 +122,7 @@ public abstract class WebHookSettingsManagerTestBase {
 		
 		webHookSettingsManager = new WebHookSettingsManagerImpl(
 														projectManager, 
-														configActionFactory, projectSettingsManager, 
+														configActionFactory, webhookFeaturesStore, 
 														framework.getWebHookTemplateManager(), 
 														framework.getWebHookPayloadManager(), 
 														new WebAddressTransformerImpl());

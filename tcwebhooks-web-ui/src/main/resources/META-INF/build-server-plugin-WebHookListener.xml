@@ -184,6 +184,10 @@
      <bean id="webHookProjectSettings" 
      	class="webhook.teamcity.settings.WebHookProjectSettings" 
      	/>
+     	
+     <bean id="webHookFeaturesStore" 
+     	class="webhook.teamcity.settings.WebHookProjectFeaturesStore" 
+     	/>
 
      <bean id="webHookProjectSettingsFactory" 
      	class="webhook.teamcity.settings.WebHookProjectSettingsFactory" 

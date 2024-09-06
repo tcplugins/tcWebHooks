@@ -44,6 +44,7 @@ import webhook.teamcity.payload.format.WebHookPayloadJsonVelocityTemplate;
 import webhook.teamcity.payload.template.ElasticSearchXmlWebHookTemplate;
 import webhook.teamcity.payload.template.LegacyJsonWebHookTemplate;
 import webhook.teamcity.payload.template.SlackComXmlWebHookTemplate;
+import webhook.teamcity.settings.WebHookFeaturesStore;
 import webhook.teamcity.settings.WebHookMainConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 import webhook.teamcity.settings.WebHookProjectSettings;
@@ -95,7 +96,7 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 	WebHookHistoryRepository webHookHistoryRepository;
 
 	@Mock
-	private ProjectSettingsManager projectSettingsManager;
+	private WebHookFeaturesStore webhookFeaturesStore;
 	
 	@Spy
 	private WebHookSettingsManager webHookSettingsManager;
@@ -140,9 +141,9 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		when(projectManager.findProjectById(eq("project02"))).thenReturn(sProject2);
 		when(projectManager.findProjectById(eq("project03"))).thenReturn(sProject3);
 
-		projectSettings = configureProjectSettings("project01", "MyProject", "src/test/resources/project-settings-test-elastic.xml");
-		projectSettings2 = configureProjectSettings("project02", "MyProject2", "src/test/resources/project-settings-test-slack.xml");
-		projectSettings3 = configureProjectSettings("project03", "MyProject3", "src/test/resources/project-settings-test-all-states-enabled-with-filters.xml");
+		projectSettings = configureProjectSettings(sProject, "MyProject", "src/test/resources/project-settings-test-elastic.xml");
+		projectSettings2 = configureProjectSettings(sProject2, "MyProject2", "src/test/resources/project-settings-test-slack.xml");
+		projectSettings3 = configureProjectSettings(sProject3, "MyProject3", "src/test/resources/project-settings-test-all-states-enabled-with-filters.xml");
 
 		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
 				BuildStateEnum.BUILD_STARTED,
@@ -182,7 +183,7 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		
 		webHookSettingsManager = new WebHookSettingsManagerImpl(
 				projectManager, 
-				null, projectSettingsManager, 
+				null, webhookFeaturesStore, 
 				framework.getWebHookTemplateManager(), 
 				framework.getWebHookPayloadManager(), 
 				new WebAddressTransformerImpl());
@@ -197,14 +198,14 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		reportAssembler = new StatisticsReportAssemblerImpl(serverSettings, sBuildServer, webHookPluginDataResolver, webHookSettingsManager, webHookMainSettings, framework.getWebHookTemplateManager());
 	}
 
-	private WebHookProjectSettings configureProjectSettings(String projectInternalId, String projectExternalId, String pathname) throws JDOMException, IOException {
+	private WebHookProjectSettings configureProjectSettings(SProject sProject, String projectExternalId, String pathname) throws JDOMException, IOException {
 		WebHookProjectSettings settings = new WebHookProjectSettings();
 		settings.readFrom(ConfigLoaderUtil.getFullConfigElement(new File(pathname)).getChild("webhooks"));
 		settings.getWebHooksConfigs().forEach(c -> {
-			c.setProjectInternalId(projectInternalId);
-			c.setProjectExternalId(projectExternalId);
+			c.setProjectInternalId(sProject.getProjectId());
+			c.setProjectExternalId(sProject.getProjectId());
 		});
-		when(projectSettingsManager.getSettings(projectInternalId, "webhooks")).thenReturn(settings);
+		when(webhookFeaturesStore.getWebHookConfigs(sProject)).thenReturn(settings);
 		return settings;
 	}
 
