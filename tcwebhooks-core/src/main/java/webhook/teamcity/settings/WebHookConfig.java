@@ -441,7 +441,7 @@ public class WebHookConfig {
 			el.addContent(filtersEl);
 		}
 
-		if (!this.extraParameters.getWebHookParameters().isEmpty()){
+		if (this.extraParameters != null && !this.extraParameters.getWebHookParameters().isEmpty()){
 			Element paramsEl = new Element(EL_PARAMETERS);
 			for (WebHookParameter i : this.extraParameters.getAll()){
 				paramsEl.addContent(this.getParameterAsElement(i));
