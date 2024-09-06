@@ -29,11 +29,10 @@ import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.users.User;
-import jetbrains.buildServer.util.positioning.PositionAware;
-import jetbrains.buildServer.util.positioning.PositionConstraint;
-import webhook.Constants;
 import webhook.WebHook;
 import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEventImpl;
+import webhook.teamcity.executor.WebHookBuildStatisticsEventCollator;
+import webhook.teamcity.executor.WebHookBuildStatisticsEventListener;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.executor.WebHookStatisticsExecutor;
@@ -50,7 +49,7 @@ import webhook.teamcity.statistics.WebHooksStatisticsReportEventListener;
  * WebHookListner
  * Listens for Server events and then triggers the execution of webhooks if configured.
  */
-public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener, PositionAware {
+public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener, WebHookBuildStatisticsEventListener {
 
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
@@ -64,13 +63,15 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	private final WebHookExecutor webHookExecutor;
 	private final WebHookStatisticsExecutor webHookStatisticsExecutor;
 	private final WebHookSettingsEventHandler webHookSettingsEventHandler;
+	private final WebHookBuildStatisticsEventCollator myWebHookBuildStatisticsEventCollator;
 
 
 	public WebHookListener(SBuildServer sBuildServer, WebHookSettingsManager settings,
 							WebHookMainSettings configSettings, WebHookTemplateManager manager,
 							WebHookFactory factory, WebHookExecutor executor,
 							WebHookStatisticsExecutor statisticsExecutor,
-							WebHookSettingsEventHandler settingsEventHandler) {
+							WebHookSettingsEventHandler settingsEventHandler,
+							WebHookBuildStatisticsEventCollator webHookBuildStatisticsEventCollator) {
 
 		myBuildServer = sBuildServer;
 		mySettings = settings;
@@ -80,12 +81,15 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		webHookExecutor = executor;
 		webHookStatisticsExecutor = statisticsExecutor;
 		webHookSettingsEventHandler = settingsEventHandler;
+		myWebHookBuildStatisticsEventCollator = webHookBuildStatisticsEventCollator;
+		
 
 		Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
 	}
 
 	public void register(){
 		myBuildServer.addListener(this);
+		myWebHookBuildStatisticsEventCollator.registerAsBuildStatisticsEventListener(this);
 		Loggers.SERVER.debug(WEB_HOOK_LISTENER + "Registering");
 	}
 
@@ -213,6 +217,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	@Override
 	public void beforeBuildFinish(SRunningBuild sRunningBuild) {
+	    regsisterInterestedBuildStatisticsWebHooks(sRunningBuild);
 		processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, Collections.emptyMap());
 	}
 
@@ -368,6 +373,11 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 				comment);
 	}
 
+    @Override
+    public void buildStatisticsPublished(WebHookBuildStatisticsEvent event) {
+        processBuildEvent(event.getBuild(), BuildStateEnum.BUILD_STATISTICS_PUBLISHED, Collections.emptyMap());
+    }
+
 	@Override
 	public void serverStartup() {
 		mySettings.initialise();
@@ -422,9 +432,18 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 	
 	@Override
-	public void statisticValuePublished(SBuild build, String valueTypeKey, BigDecimal value) {
+	public void statisticValuePublished(SBuild sBuild, String valueTypeKey, BigDecimal value) {
 	    // TODO Auto-generated method stub
-	    Loggers.SERVER.info(String.format("statisticValuePublished :: '%s'. Value '%s' -> '%s'", build.getBuildTypeName(), valueTypeKey, value));
+	    Loggers.SERVER.info(String.format("statisticValuePublished :: '%s'. Value '%s' -> '%s'", sBuild.getBuildTypeName(), valueTypeKey, value));
+	    myWebHookBuildStatisticsEventCollator.handleEvent(sBuild, valueTypeKey, value);
+	}
+	
+	private void regsisterInterestedBuildStatisticsWebHooks(SBuild sBuild) {
+	    for (WebHookConfig whc : getListOfEnabledWebHooks(BuildStateEnum.BUILD_STATISTICS_PUBLISHED, sBuild.getBuildType().getProjectId())){
+	        WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+	        //WebHookBuildStatisticsRequest buildStatisticsRequest = new WebHookBuildStatisticsRequest();
+	        //myWebHookBuildStatisticsEventCollator.registerInterestInBuild(buildStatisticsRequest);
+	    }
 	}
 	
 	@Override
@@ -458,15 +477,5 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	public void testsUnmuted(SUser user, Map<MuteInfo, Collection<STest>> unmutedGroups) {
 		this.processTestEvent(BuildStateEnum.TESTS_UNMUTED, user, unmutedGroups);
 	}
-
-    @Override
-    public PositionConstraint getConstraint() {
-        return PositionConstraint.last();
-    }
-
-    @Override
-    public String getOrderId() {
-        return Constants.PLUGIN_NAME;
-    }
 
 }

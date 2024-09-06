@@ -19,7 +19,7 @@ public interface WebHookBuildStatisticsEventCollator {
      * @param buildStatisticsEventListener
      * @return
      */
-    boolean registerAsBuildStatisticsEventListener(WebHookBuildStatisticsEventListener buildStatisticsEventListener); 
+    void registerAsBuildStatisticsEventListener(WebHookBuildStatisticsEventListener buildStatisticsEventListener); 
     /**
      * Tell the {@link WebHookBuildStatisticEventCollator} that future events for this build are of interest to a webhook.
      * @param webHookBuildStatisticsRequest

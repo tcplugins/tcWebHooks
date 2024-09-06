@@ -1,10 +1,12 @@
 package webhook.teamcity.executor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import jetbrains.buildServer.serverSide.SBuild;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -17,15 +19,16 @@ public interface WebHookBuildStatisticsEventListener {
     
     
     
-    @Data
+    @Data @Builder
     public class WebHookBuildStatisticsRequest {
+        @Builder.Default
+        private Instant time = Instant.now(); 
         private long buildId;
         private String webhookConfigId;
         private List<String> requiredStatistics;
         private Map<String,BigDecimal> statistics;
         private int interMessageTimeoutSeconds;
         private int timeToLiveTimeoutSeconds;
-        private String reason;
     }
     
     @Data

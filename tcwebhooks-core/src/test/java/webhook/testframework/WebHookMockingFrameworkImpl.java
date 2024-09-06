@@ -43,6 +43,7 @@ import webhook.teamcity.auth.AbstractWebHookAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
+import webhook.teamcity.executor.WebHookBuildStatisticsEventCollator;
 import webhook.teamcity.executor.WebHookExecutor;
 import webhook.teamcity.executor.WebHookRunnerFactory;
 import webhook.teamcity.executor.WebHookSerialExecutorImpl;
@@ -152,12 +153,13 @@ public class WebHookMockingFrameworkImpl implements WebHookMockingFramework {
 	private WebHookStatisticsExecutor webHookStatisticsExecutor = new WebHookSerialExecutorImpl(webHookRunnerFactory);
 	private ProjectIdResolver projectIdResolver = mock(ProjectIdResolver.class);
 	private WebHookSettingsEventHandler settingsEventHandler = mock(WebHookSettingsEventHandler.class);
+    private WebHookBuildStatisticsEventCollator buildStatisticsEventCollator = mock(WebHookBuildStatisticsEventCollator.class);
 
 	
 	private WebHookMockingFrameworkImpl() {
 		webHookImpl = new TestingWebHookFactory().getWebHook();
 		spyWebHook = spy(webHookImpl);   
-		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, webHookExecutor, webHookStatisticsExecutor, settingsEventHandler);
+		whl = new WebHookListener(sBuildServer, settings, configSettings, templateManager, factory, webHookExecutor, webHookStatisticsExecutor, settingsEventHandler, buildStatisticsEventCollator );
 		projSettings = new WebHookProjectSettings();
 //		when(factory.getWebHook(webHookConfig,null)).thenReturn(webHookImpl);
 //		when(factory.getWebHook()).thenReturn(webHookImpl);
