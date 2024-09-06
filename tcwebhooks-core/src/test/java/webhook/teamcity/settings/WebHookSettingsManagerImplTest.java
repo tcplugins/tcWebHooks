@@ -55,7 +55,7 @@ public class WebHookSettingsManagerImplTest extends WebHookSettingsManagerTestBa
 	
 	@Test
 	public void testMapOldBuildTypesToNewBuildTypes() {
-	    WebHookSettingsManagerImpl webHookSettingsManagerImpl = new WebHookSettingsManagerImpl(projectManager, configActionFactory, projectSettingsManager, null, null, null);
+	    WebHookSettingsManagerImpl webHookSettingsManagerImpl = new WebHookSettingsManagerImpl(projectManager, configActionFactory, webhookFeaturesStore, null, null, null);
 	    WebHookConfig whc01 = webHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().formatShortName("jsonTemplate").build()).get(0).getWebHookConfig();
 	    Set<String> renamedBuildTypeIds = webHookSettingsManagerImpl.mapOldBuildTypesToNewBuildTypes(whc01, "project01",  "project02");
 	    assertTrue(renamedBuildTypeIds.contains("bt200"));

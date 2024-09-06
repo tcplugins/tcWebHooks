@@ -27,13 +27,19 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.server.rest.model.template.Templates;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
+import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
+import webhook.testframework.util.ConfigLoaderUtil;
 
 public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTest {
 	
 	@Autowired
 	ProjectSettingsManager projectSettingsManager;
+	
+	@Autowired
+	WebHookSettingsManager webHookSettingsManager;
 	
 	WebResource webResource;
 	
@@ -60,15 +66,8 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testJsonWebHooksRequestUsingRegisteredWebHook() throws JAXBException, IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-		framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
-		
-		Element webhooksParent = new Element("webhooks");
-		framework.getWebHookProjectSettings().writeTo(webhooksParent);
-		projectSettingsManager.readFrom(webhooksParent, "testProject");
+		WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
+		webHookSettingsManager.addNewWebHook("testProject", confg);
 		
 		ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -78,15 +77,8 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testShortJsonWebHooksRequestUsingRegisteredWebHook() throws JAXBException, IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "testProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branch-and-auth.xml"));
+		webHookSettingsManager.addNewWebHook("testProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -97,15 +89,8 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testJsonWebHooksRequestUsingRegisteredWebHookWithFiltersAndParameters() throws JAXBException, IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "testProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+		webHookSettingsManager.addNewWebHook("testProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);
@@ -117,15 +102,8 @@ public class ViewExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTes
     @Test
     public void testShortJsonWebHooksRequestUsingRegisteredWebHookWithFiltersAndParameters() throws JAXBException, IOException, JDOMException {
     	
-    	SortedMap<String, String> map = new TreeMap<>();
-    	ExtraParameters  extraParameters  = new ExtraParameters(map); 
-    	
-    	WebHookMockingFramework framework = WebHookMockingFrameworkImpl.create(BuildStateEnum.BUILD_FINISHED, extraParameters);
-    	framework.loadWebHookProjectSettingsFromConfigXml(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
-    	
-    	Element webhooksParent = new Element("webhooks");
-    	framework.getWebHookProjectSettings().writeTo(webhooksParent);
-    	projectSettingsManager.readFrom(webhooksParent, "testProject");
+    	WebHookConfig confg = ConfigLoaderUtil.getFirstWebHookInConfig(new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled-with-branchNameAndBuildNameFilter.xml"));
+		webHookSettingsManager.addNewWebHook("testProject", confg);
     	
     	ProjectWebhooks responseMsg = webResource.path(API_WEBHOOKS_URL + "/testProject").queryParam("fields","$short").accept(MediaType.APPLICATION_JSON_TYPE).get(ProjectWebhooks.class);
     	prettyPrint(responseMsg);

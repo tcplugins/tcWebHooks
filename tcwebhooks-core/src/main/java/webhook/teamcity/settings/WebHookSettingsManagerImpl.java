@@ -43,7 +43,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ConfigActionFactory myConfigActionFactory;
-	@NotNull private final ProjectSettingsManager myProjectSettingsManager;
+	//@NotNull private final ProjectSettingsManager myProjectSettingsManager;
+	@NotNull private final WebHookFeaturesStore myWebHookFeaturesStore;
 	@NotNull private final WebHookTemplateManager myWebHookTemplateManager;
 	@NotNull private final WebHookPayloadManager myWebHookPayloadManager;
 	@NotNull private final WebAddressTransformer myWebAddressTransformer;
@@ -58,14 +59,16 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public WebHookSettingsManagerImpl(
 			@NotNull final ProjectManager projectManager,
 			@NotNull final ConfigActionFactory configActionFactory,
-			@NotNull final ProjectSettingsManager projectSettingsManager,
+			//@NotNull final ProjectSettingsManager projectSettingsManager,
+			@NotNull final WebHookFeaturesStore webHookFeaturesStore,
 			@NotNull final WebHookTemplateManager webHookTemplateManager,
 			@NotNull final WebHookPayloadManager webHookPayloadManager,
 			@NotNull final WebAddressTransformer webAddressTransformer)
 	{
 		this.myProjectManager = projectManager;
 		this.myConfigActionFactory = configActionFactory;
-		this.myProjectSettingsManager = projectSettingsManager;
+		//this.myProjectSettingsManager = projectSettingsManager;
+		this.myWebHookFeaturesStore = webHookFeaturesStore;
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookPayloadManager = webHookPayloadManager;
 		this.myWebAddressTransformer = webAddressTransformer;
@@ -91,7 +94,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	@Override
 	public WebHookProjectSettings getSettings(String projectInternalId) {
-		WebHookProjectSettings webHookProjectSettings = (WebHookProjectSettings) myProjectSettingsManager.getSettings(projectInternalId, WebHookListener.WEBHOOKS_SETTINGS_ATTRIBUTE_NAME);
+		SProject sProject = this.myProjectManager.findProjectById(projectInternalId);
+		WebHookProjectSettings webHookProjectSettings = myWebHookFeaturesStore.getWebHookConfigs(sProject);
 		for (WebHookConfig whc : webHookProjectSettings.getWebHooksConfigs()) {
 			if (whc.getProjectInternalId() == null) {
 				whc.setProjectInternalId(projectInternalId);
@@ -105,6 +109,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			Boolean enabled, BuildState buildState, String template, boolean buildTypeAll,
 			boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig,
 			ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
+
+		SProject sProject = myProjectManager.findProjectById(projectInternalId);
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
 												projectInternalId, projectExternalId, url,
 												enabled, buildState, template, buildTypeAll,
@@ -113,7 +119,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 												filters, headers, hideSecureValues
 											);
 		if (result.updated) {
-			if (persist(projectInternalId, "Added new WebHook")) {
+			if (persist(sProject, "Added new WebHook")) {
 				result.updated = true;
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
@@ -125,9 +131,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
 	@Override
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, WebHookConfig config) {
-		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(config);
+		SProject sProject = myProjectManager.findProjectById(projectInternalId);
+		WebHookUpdateResult result = this.myWebHookFeaturesStore.addWebHookConfig(sProject, config);
 		if (result.updated) {
-			if (persist(projectInternalId, "Added new WebHook")) {
+			if (persist(sProject, "Added new WebHook")) {
 				result.updated = true;
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
@@ -139,9 +146,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	@Override
 	public WebHookUpdateResult deleteWebHook(String webHookId, String projectInternalId) {
-		WebHookUpdateResult result = getSettings(projectInternalId).deleteWebHook(webHookId, projectInternalId);
+		SProject sProject = myProjectManager.findProjectById(projectInternalId);
+		WebHookUpdateResult result = this.myWebHookFeaturesStore.deleteWebHook(sProject, webHookId);
 		if (result.updated) {
-			if (persist(projectInternalId, "Deleted existing WebHook")) {
+			if (persist(sProject, "Deleted existing WebHook")) {
 				result.updated = true;
 				this.webhooksEnhanced.remove(webHookId);
 				rebuildWebHooksEnhanced(projectInternalId);
@@ -154,9 +162,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
 	@Override
 	public WebHookUpdateResult deleteWebHook(String projectInternalId, WebHookConfig config) {
-		WebHookUpdateResult result = getSettings(projectInternalId).deleteWebHook(config.getUniqueKey(), projectInternalId);
+		SProject sProject = myProjectManager.findProjectById(projectInternalId);
+		WebHookUpdateResult result = this.myWebHookFeaturesStore.deleteWebHook(sProject,config);
 		if (result.updated) {
-			if (persist(projectInternalId, "Deleted existing WebHook")) {
+			if (persist(sProject, "Deleted existing WebHook")) {
 				result.updated = true;
 				this.webhooksEnhanced.remove(config.getUniqueKey());
 				rebuildWebHooksEnhanced(projectInternalId);
@@ -171,9 +180,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	@Override
 	public WebHookUpdateResult updateWebHook(String projectInternalId, WebHookConfig config) {
-		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(config);
+		SProject sProject = myProjectManager.findProjectById(projectInternalId);
+		WebHookUpdateResult result = this.myWebHookFeaturesStore.updateWebHookConfig(sProject, config);
 		if (result.updated) {
-			if (persist(projectInternalId, "Edited existing WebHook")) {
+			if (persist(sProject, "Edited existing WebHook")) {
 				result.updated = true;
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
@@ -188,6 +198,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			BuildState buildState, String template, boolean buildTypeAll, boolean buildSubProjects,
 			Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, 
 			List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
+		
+		SProject sProject = myProjectManager.findProjectById(projectInternalId);
 		WebHookUpdateResult result = getSettings(projectInternalId).updateWebHook(
 				projectInternalId, webHookId, url, enabled,
 				buildState, template, buildTypeAll, buildSubProjects,
@@ -195,7 +207,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 				filters, headers, hideSecureValues
 				);
 		if (result.updated) {
-			if (persist(projectInternalId, "Edited existing WebHook")) {
+			if (persist(sProject, "Edited existing WebHook")) {
 				result.updated = true;
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
@@ -205,14 +217,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		return result;
 	}
 	
-	private boolean persist(String projectInternalId, String message) {
+	private boolean persist(SProject project, String message) {
 		try {
-			SProject project = this.myProjectManager.findProjectById(projectInternalId);
 			ConfigAction cause = myConfigActionFactory.createAction(project, message);
 			project.persist(cause);
 			return true;
 		} catch (AccessDeniedException | PersistFailedException ex) {
-			Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
+			Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + project.getProjectId(), ex);
 			return false;
 		}
 	}
@@ -556,7 +567,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			    });
 			}
 			if (persistRequired) {
-			    persist(projectInternalId, "Conflicting WebHook ids remapped");
+			    persist(sProject, "Conflicting WebHook ids remapped");
 			}
 		} else {
 			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);
