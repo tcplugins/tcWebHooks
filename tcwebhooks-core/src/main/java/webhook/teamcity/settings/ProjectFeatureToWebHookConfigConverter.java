@@ -100,9 +100,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         parameters.entrySet().stream().filter(e -> e.getKey().startsWith(WEBHOOK_PARAMETER_KEY_PREFIX)).forEach(p -> {
             extraParameters.add(gson.fromJson(p.getValue(), WebHookParameterModel.class));
         });
-        if (!extraParameters.isEmpty()) {
-            builder.extraParameters(extraParameters);
-        }
+        builder.extraParameters(extraParameters);
     }
 
     private void populateAuthentication(WebHookConfigBuilder builder, String json) {
