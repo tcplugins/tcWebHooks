@@ -60,6 +60,7 @@ public class MockSProject implements SProject {
 	private List<SProject> parentPath = new ArrayList<>();
 	private List<SProject> childProjects = new ArrayList<>();
 	private List<SProjectFeatureDescriptor> features = new ArrayList<>();
+	private int persistCount = 0;
 
 	public MockSProject(String name, String description, String projectId, String projectExternalId, 
 						SBuildType buildType)
@@ -128,6 +129,10 @@ public class MockSProject implements SProject {
 	public File getConfigDirectory() {
 		return this.configDirectory;
 	}
+	
+	public void setConfigDirectory(File configDirectory) {
+		this.configDirectory = configDirectory;
+	}
 
 	public File getConfigurationFile() {
 		// TODO Auto-generated method stub
@@ -150,8 +155,12 @@ public class MockSProject implements SProject {
 	}
 
 	public void persist() throws PersistFailedException {
-		// TODO Auto-generated method stub
+		this.persistCount++;
 
+	}
+	
+	public int getPersistCount() {
+		return persistCount;
 	}
 
 	public void removeBuildType(String arg0) {
@@ -604,8 +613,7 @@ public class MockSProject implements SProject {
 
 	@Override
 	public void persist(ConfigAction arg0) throws PersistFailedException {
-		// TODO Auto-generated method stub
-		
+		this.persistCount++;
 	}
 
 	@Override

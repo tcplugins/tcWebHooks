@@ -197,7 +197,12 @@
 		class="webhook.teamcity.settings.WebHookMainSettings"
 		init-method="register"
 		/>
-
+		
+	<bean id="pluginSettingsToProjectFeaturesMigrator"
+		class="webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator"
+		init-method="requestDeferredRegistration"
+		/>
+		
 	<bean id="webHookPayloadManager"
 		class="webhook.teamcity.payload.WebHookPayloadManager"
 		/>
