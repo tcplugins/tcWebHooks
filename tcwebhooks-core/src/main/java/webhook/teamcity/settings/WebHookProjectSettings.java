@@ -118,7 +118,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     	return tmpString.toString();
     }
 
-    protected WebHookUpdateResult deleteWebHook(String webHookId, String projectId){
+    public WebHookUpdateResult deleteWebHook(String webHookId, String projectId){
     	WebHookConfig configToDelete = null;
     	boolean updateSuccess = false;
     	
