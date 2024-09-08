@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 
@@ -97,6 +98,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		teamcityTempConfigDir.toFile().deleteOnExit();
 		new File(teamcityTempConfigDir.toFile().toString() + "/internal.properties").createNewFile();
 		when(myServerPaths.getConfigDir()).thenReturn(teamcityTempConfigDir.toString());
+		when(myServerPaths.getSystemDir()).thenReturn(teamcityTempConfigDir.toString());
 		
 		File tempProjectDir = new File(teamcityTempConfigDir.toFile().toString() + "/projects/FirstProject");
 		File pluginSettingsDir = new File(tempProjectDir.toString() + "/pluginData/");
@@ -191,7 +193,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
 				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
-		migrator.attemptMigration(false);
+		migrator.attemptMigration(false, LocalDateTime.now(), null);
 		
 		//Save should be attempted
 		verify(myWebHookFeaturesStore).addWebHookConfig(projectCaptor.capture(), webHookConfigCaptor.capture());
