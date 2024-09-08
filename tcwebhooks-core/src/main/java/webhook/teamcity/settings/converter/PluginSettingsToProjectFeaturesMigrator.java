@@ -1,5 +1,6 @@
 package webhook.teamcity.settings.converter;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -15,8 +16,10 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jdom.JDOMException;
 
 import jetbrains.buildServer.serverSide.ConfigAction;
@@ -88,71 +91,141 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private final DeferrableServiceManager myDeferrableServiceManager;
 	private ScheduledFuture<?> future;
 
-	private static final String propertyKey = "teamcity.plugin.tcWebHooks.pluginSettingsToProjectFeaturesMigation";
+	private static final String TEAMCITY_INTERNAL_PROPERTY_KEY = "teamcity.plugin.tcWebHooks.pluginSettingsToProjectFeaturesMigration";
+	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+	private static final DateTimeFormatter logDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
 	
 	
 	
 	public void executeAutomatedMigration() {
 		// If our migration was started or completed, we don't want to attempt it again.
-		if (TeamCityProperties.getPropertyOrNull(propertyKey) != null) {
-			Loggers.SERVER.info("Skipping tcWebHooks ProjectFeatures migration. Migration is already marked as completed");
+		String existingMigrationResult = TeamCityProperties.getPropertyOrNull(TEAMCITY_INTERNAL_PROPERTY_KEY);
+		if (existingMigrationResult != null) {
+			Loggers.SERVER.info(String.format("Skipping tcWebHooks ProjectFeatures migration. Migration is already marked as '%s'", existingMigrationResult));
 		} else {
-			try {
-				markMigrationAs("started");
-				attemptMigration(true);
-			} catch (ProjectFeatureMigrationException e) {
-				Loggers.SERVER.warn("Failed to complete tcWebHooks PluginSettings to ProjectFeatures migration.", e);
-			}
+		    LocalDateTime now = LocalDateTime.now();
+		    String fileName = getReportFileName(now);
+		    try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+    			try {
+    				markMigrationAs("started");
+    				writer.write("Starting PluginSettings To ProjectFeatures Migration at " + now.format(dateTimeFormatter) );
+    				writer.write("\n----------------------------------------------------------------------------------------\n");
+    				attemptMigration(true, now, writer);
+    				markMigrationAs("completed");
+    				addSectionToReport(writer, String.format("tcWebHooks PluginSettings to ProjectFeatures migration completed see '%s' for a report.", fileName));
+    			} catch (ProjectFeatureMigrationException e) {
+    			    addToReport(writer, "Failed to complete tcWebHooks PluginSettings to ProjectFeatures migration.", e);
+    				Loggers.SERVER.warn("Failed to complete tcWebHooks PluginSettings to ProjectFeatures migration.", e);
+    			}
+		    } catch (IOException e1) {
+                Loggers.SERVER.warn("Failed to create migration report at: " + fileName);
+            }
 		}
 		
 	}
 
-	protected void attemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration) throws ProjectFeatureMigrationException {
-		Map<SProject, WebHookProjectSettings> projectsForMigration = getProjectsThatRequireMigration();
+	private void addToReport(BufferedWriter writer, String string) {
+	    addToReport(writer, string, null);
+	}
+	
+    private void addToReport(BufferedWriter writer, String string, Exception e) {
+        if (e != null) {
+            Loggers.SERVER.warn(string, e);
+        } else {
+            Loggers.SERVER.info(string);
+        }
+        if (writer != null) {
+            try {
+                writer.write(LocalDateTime.now().format(logDateTimeFormatter) + " : " + string + "\n");
+                if (e != null) {
+                    writer.write(ExceptionUtils.getStackTrace(e));
+                }
+                writer.flush();
+            } catch (IOException e1) {
+                // do nothing
+            }
+        }
+    }
+    
+    private void addSectionToReport(BufferedWriter writer, String string) {
+        if (writer != null) {
+            try {
+                writer.write("\n\n" + LocalDateTime.now().format(logDateTimeFormatter) + " : " + string + "\n");
+                writer.flush();
+            } catch (IOException e1) {
+                // do nothing
+            }
+        }
+    }
+    
+    private void addWarningToReport(BufferedWriter writer, String string) {
+        Loggers.SERVER.warn(string);
+        if (writer != null) {
+            try {
+                writer.write(LocalDateTime.now().format(logDateTimeFormatter) + " : " + string + "\n");
+                writer.flush();
+            } catch (IOException e1) {
+                // do nothing
+            }
+        }
+    }
+
+
+    private String getReportFileName(LocalDateTime now) {
+        return this.myServerPaths.getSystemDir() + File.separator + "tcWebHooks-ProjectFeatures-migration-report-" + now.format(dateTimeFormatter) + ".txt";
+    }
+
+    protected void attemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, BufferedWriter writer) throws ProjectFeatureMigrationException {
+		Map<SProject, WebHookProjectSettings> projectsForMigration = getProjectsThatRequireMigration(writer);
 		if (projectsForMigration.isEmpty()) {
-			Loggers.SERVER.info("No projects require tcWebHooks ProjectFeature migration. Marking migration as completed.");
+			addToReport(writer, "No projects require tcWebHooks ProjectFeature migration. Marking migration as completed.");
 			markMigrationAs("completed");
 			return;
 		}
+        addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
 		for (Map.Entry<SProject, WebHookProjectSettings> e : projectsForMigration.entrySet()) {
 			if (checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
-				Loggers.SERVER.warn(String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
-				continue;
+                addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
 			} else if (checkIfProjectHasVcsEnabledAndSyncEnabled(e.getKey())) {
-				Loggers.SERVER.warn(String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", e.getKey().getExternalId()));
-				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration);
+                addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", e.getKey().getExternalId()));
+				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
 			} else {
-				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration);
+				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
 			}
 		}
 	}
 
-	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration) throws ProjectFeatureMigrationException {
-		try {
-			backupExistingPluginSettings(project);
+	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, BufferedWriter writer) throws ProjectFeatureMigrationException {
+		addSectionToReport(writer, String.format("Starting migration of project '%s'. There are '%s' webhooks to migrate", project.getExternalId(), webhookSettings.getWebHooksAsList().size()));
+	    try {
+			backupExistingPluginSettings(project, now, writer);
 		} catch (IOException e) {
 			throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", project.getExternalId()), e);
 		}
 		WebHookProjectSettings webHookProjectSettings =  (WebHookProjectSettings) this.myProjectSettingsManager.getSettings(project.getProjectId(), "webhooks");
+		addToReport(writer, "Existing webhook IDs in ProjectFeatures: " + this.myWebHookSettingsManager.getWebHooksForProject(project).stream().map(w -> w.getWebHookConfig().getUniqueKey()).collect(Collectors.joining(", ")));
+		addToReport(writer, "Existing webhook IDs in ProjectSettingsManager: " + webHookProjectSettings.getWebHooksAsList().stream().map(w -> w.getUniqueKey()).collect(Collectors.joining(", ")));
+		addToReport(writer, "Existing webhook IDs found in plugins-settings.xml file: " + webhookSettings.getWebHooksAsList().stream().map(w -> w.getUniqueKey()).collect(Collectors.joining(", ")));
 		for (WebHookConfig w : webhookSettings.getWebHooksAsList()) {
 			
-			List<WebHookSearchResult> result = this.myWebHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().projectExternalId(project.getExternalId()).webhookId(w.getUniqueKey()).build());
+			List<WebHookSearchResult> result = this.myWebHookSettingsManager.findWebHooks(WebHookSearchFilter.builder().webhookId(w.getUniqueKey()).build());
 			if (!result.isEmpty()) {
-				Loggers.SERVER.warn(String.format("WebHook with id '%s' in project '%s' already exists. Will not migrate this webhook", w.getUniqueKey(), project.getExternalId()));
+				addWarningToReport(writer, String.format("WebHook with id '%s' in project '%s' already exists. Will not migrate this webhook", w.getUniqueKey(), project.getExternalId()));
 			} else {
 				WebHookUpdateResult addResult = this.myWebHookFeaturesStore.addWebHookConfig(project, w);
 				if (!addResult.isUpdated()) {
 					throw new ProjectFeatureMigrationException("Unable to add webhook from Plugin Settings as a ProjectFeature", addResult.getWebHookConfig());
 				} else {
-					Loggers.SERVER.info(String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
+				    addToReport(writer, String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
 				}
 				WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
 				if (!deleteResult.isUpdated() && failIfCantRemoveWebhookFromCurrentConfiguration) {
 					throw new ProjectFeatureMigrationException("Unable to delete existing webhook from Project Settings", deleteResult.getWebHookConfig());
 				} else if (!deleteResult.isUpdated()){
-					Loggers.SERVER.warn(String.format("Unable to delete existing webhook from Plugin Settings. WebHook id '%s', ProjectId: '%s'", w.getUniqueKey(), project.getExternalId()));
+				    addWarningToReport(writer, String.format("Unable to delete existing webhook from Plugin Settings. WebHook id '%s', ProjectId: '%s'", w.getUniqueKey(), project.getExternalId()));
 				} else {
-					Loggers.SERVER.info(String.format("Deleted webHook from PluginSettings. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
+				    addToReport(writer, String.format("Deleted webHook from PluginSettings. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
 				}
 			}
 		}
@@ -164,21 +237,19 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		}
 	}
 
-	private void backupExistingPluginSettings(SProject project) throws IOException {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
-		LocalDateTime now = LocalDateTime.now();
+	private void backupExistingPluginSettings(SProject project, LocalDateTime now, BufferedWriter writer) throws IOException {
 		File projectConfigDir = project.getConfigDirectory();
 		File projectPluginsConfigDir = new File(projectConfigDir,"pluginData");
 		File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
 		File projectPluginSettingsBackupFile = new File(projectPluginsConfigDir, String.format("plugin-settings-%s.xml", now.format(dateTimeFormatter)));
 		FileUtils.copyFile(projectPluginSettingsFile, projectPluginSettingsBackupFile);
-		Loggers.SERVER.info(String.format("Backed up existing plugin-settings file in project '%s'. Copied from '%s' to '%s'", project.getExternalId(), projectPluginSettingsFile, projectPluginSettingsBackupFile));
+        addToReport(writer, String.format("Backed up existing plugin-settings.xml file in project '%s'. Copied from '%s' to '%s'", project.getExternalId(), projectPluginSettingsFile, projectPluginSettingsBackupFile));
 	}
 
 	private boolean checkIfProjectHasVcsEnabledAndSyncDisabled(SProject key) {
 		Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
 		Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
-		if (vs.isPresent() && Boolean.valueOf(vs.get().getParameters().get("enabled")) && !Boolean.valueOf(vs.get().getParameters().get("twoWaySynchronization"))) {
+		if (Boolean.TRUE.equals(vs.isPresent() && Boolean.valueOf(vs.get().getParameters().get("enabled"))) && Boolean.FALSE.equals(Boolean.valueOf(vs.get().getParameters().get("twoWaySynchronization")))) {
 			return true;
 		}
 		return false;
@@ -187,7 +258,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private boolean checkIfProjectHasVcsEnabledAndSyncEnabled(SProject key) {
 		Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
 		Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
-		if (vs.isPresent() && Boolean.valueOf(vs.get().getParameters().get("enabled")) && Boolean.valueOf(vs.get().getParameters().get("twoWaySynchronization"))) {
+		if (vs.isPresent() && Boolean.TRUE.equals(Boolean.valueOf(vs.get().getParameters().get("enabled"))) && Boolean.TRUE.equals(Boolean.valueOf(vs.get().getParameters().get("twoWaySynchronization")))) {
 			return true;
 		}
 		return false;
@@ -198,13 +269,13 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		Properties teamcityInternalProperties = new Properties();
 		try {
 			teamcityInternalProperties.load(new FileInputStream(teamcityInternalPropertiesFilename));
-			teamcityInternalProperties.put(propertyKey, status);
-			teamcityInternalProperties.store(new FileWriter(teamcityInternalPropertiesFilename), String.format("Set tcWebHooks migration '%s' flag to TeamCity's internal.properties file", status));
+			teamcityInternalProperties.put(TEAMCITY_INTERNAL_PROPERTY_KEY, status);
+			teamcityInternalProperties.store(new FileWriter(teamcityInternalPropertiesFilename), String.format("Set tcWebHooks migration '%s' flag in TeamCity's internal.properties file", status));
 		} catch (IOException e) {
 			throw new ProjectFeatureMigrationException("Unable to set migration status flag in internal.properties file", e);
 		}
 	}
-	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration() {
+	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration(BufferedWriter writer) {
 		Map<SProject, WebHookProjectSettings> projectsThatRequireMigrations = new LinkedHashMap<>();
 		for (SProject project : myProjectManager.getActiveProjects()) {
 			File projectConfigDir = project.getConfigDirectory();
@@ -218,23 +289,27 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 							projectsThatRequireMigrations.put(project, webhooks);
 						} else {
 							Loggers.SERVER.info(String.format(
-									"pluginData/plugin-settings.xml for project '%s' does not contain a webhooks XML element. No webhook migration will be attempted for this project.",
+									"File '%s' for project '%s' does not contain a webhooks XML element. No webhook migration will be attempted for this project.",
+									projectPluginSettingsFile.toString(),
 									project.getExternalId()));
 						}
 					} catch (JDOMException | IOException e) {
 						Loggers.SERVER.info(String.format(
-								"pluginData/plugin-settings.xml for project '%s' is not readable as plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
+								"File '%s' for project '%s' is not readable as a plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
+								projectPluginSettingsFile.toString(),
 								project.getExternalId(),
 								e.getMessage()));
 					}
 				} else {
 					Loggers.SERVER.info(String.format(
-							"pluginData/plugin-settings.xml for project '%s' does not exist. No webhook migration will be attempted for this project.",
+							"File '%s' for project '%s' does not exist. No webhook migration will be attempted for this project.",
+							projectPluginSettingsFile.toString(),
 							project.getExternalId()));
 				}
 			} else {
 				Loggers.SERVER.info(String.format(
-						"pluginData directory for project '%s' does not exist or is not writable. No webhook migration will be attempted for this project.",
+						"Directory '%s' for project '%s' does not exist or is not writable. No webhook migration will be attempted for this project.",
+						projectPluginsConfigDir.toString(),
 						project.getExternalId()));
 			}
 			
