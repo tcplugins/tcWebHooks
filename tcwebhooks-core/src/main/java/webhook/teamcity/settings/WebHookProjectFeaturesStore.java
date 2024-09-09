@@ -7,11 +7,8 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
-import jetbrains.buildServer.serverSide.ProjectsModelListener;
-import jetbrains.buildServer.serverSide.ProjectsModelListenerAdapter;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
-import jetbrains.buildServer.util.EventDispatcher;
 import webhook.teamcity.Loggers;
 public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     
