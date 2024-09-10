@@ -71,7 +71,7 @@ public class WebHookConfig {
 	private static final String ATTR_ENABLED_FOR_ALL = "enabled-for-all";
 	private static final String ATTR_ENABLED_FOR_SUBPROJECTS = "enabled-for-subprojects";
 	private static final String LOG_PREFIX_WEB_HOOK_CONFIG = "WebHookConfig :: ";
-	private ExtraParameters extraParameters;
+	@Builder.Default private ExtraParameters extraParameters = new ExtraParameters();
 	@Builder.Default private Boolean enabled = true;
 	@Builder.Default private String uniqueKey = generateRandomKey();
 	private String url;
@@ -149,14 +149,16 @@ public class WebHookConfig {
 			Element eStates = e.getChild(EL_STATES);
 			List<Element> statesList = eStates.getChildren(EL_STATE);
 			if ( ! statesList.isEmpty()){
-				for(Element eState : statesList)
-				{
-					try {
-						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue(ATTR_TYPE)),
-										  eState.getAttribute(ATTR_ENABLED).getBooleanValue());
-					} catch (DataConversionException e1) {
-						Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
-					}
+				for(Element eState : statesList) {
+				    // Load build states from config, except "buildFinished"
+				    if (!BuildStateEnum.BUILD_FINISHED.getShortName().equals(eState.getAttributeValue(ATTR_TYPE))) {
+    					try {
+    						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue(ATTR_TYPE)),
+    										  eState.getAttribute(ATTR_ENABLED).getBooleanValue());
+    					} catch (DataConversionException e1) {
+    						Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
+    					}
+				    }
 				}
 			}
 		}
@@ -415,10 +417,12 @@ public class WebHookConfig {
 
 		Element statesEl = new Element(EL_STATES);
 		for (BuildStateEnum state : states.getStateSet()){
-			Element e = new Element(EL_STATE);
-			e.setAttribute(ATTR_TYPE, state.getShortName());
-			e.setAttribute(ATTR_ENABLED, Boolean.toString(states.enabled(state)));
-			statesEl.addContent(e);
+		    if (!BuildStateEnum.BUILD_FINISHED.equals(state)) {
+		        Element e = new Element(EL_STATE);
+		        e.setAttribute(ATTR_TYPE, state.getShortName());
+		        e.setAttribute(ATTR_ENABLED, Boolean.toString(states.enabled(state)));
+		        statesEl.addContent(e);
+		    }
 		}
 		el.addContent(statesEl);
 

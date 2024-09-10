@@ -25,9 +25,10 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         SProjectFeatureDescriptor features = converter.convert(webhook);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        System.out.print(gson.toJson(webhook));
+        //System.out.print(gson.toJson(convertedWebHook));
         assertEquals(gson.toJson(webhook), gson.toJson(convertedWebHook));
         //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
-        System.out.print(gson.toJson(convertedWebHook));
     }
 
 }

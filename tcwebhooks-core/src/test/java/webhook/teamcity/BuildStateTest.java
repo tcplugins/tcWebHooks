@@ -142,11 +142,10 @@ public class BuildStateTest {
 		state.disable(BUILD_INTERRUPTED);
 		state.disable(RESPONSIBILITY_CHANGED);
 		state.disable(BEFORE_BUILD_FINISHED);
-		state.disable(BUILD_FINISHED);
-		state.enable(BUILD_FAILED);
-		state.enable(BUILD_SUCCESSFUL);
-		state.enable(BUILD_FIXED);
-		state.enable(BUILD_BROKEN);
+		state.disable(BUILD_FAILED);
+		state.disable(BUILD_SUCCESSFUL);
+		state.disable(BUILD_FIXED);
+		state.disable(BUILD_BROKEN);
 		assertTrue(state.noneEnabled());
 	}
 	
