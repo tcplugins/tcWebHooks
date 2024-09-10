@@ -40,13 +40,13 @@ public class ProjectFeatureToWebHookConfigConverter {
      *
      */
     
+    private static final String ENABLED = "enabled";
     private static final String TRUE_VALUE = "true";
-    public static final String ID_KEY = "id";
+    static final String ID_KEY = "id";
     private static final String URL_KEY = "url";
-    private static final String ENABLED_KEY = "enabled";
+    private static final String ENABLED_KEY = ENABLED;
     private static final String TEMPLATE_KEY = "template";
     private static final String ENABLED_BUILDS_KEY = "enabledBuilds";
-    private static final String ENABLED_BUILD_STATES_KEY = "enabledBuildStates";
     private static final String ALL_PROJECT_BUILDS_ENABLED_KEY = "allProjectBuildsEnabled";
     private static final String SUB_PROJECT_BUILDS_ENABLED_KEY = "subProjectBuildsEnabled";
     private static final String HIDE_SECURE_VALUES_KEY = "hideSecureValues";
@@ -55,7 +55,7 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static final String WEBHOOK_PARAMETER_KEY_PREFIX = "parameter_";
     private static final String AUTHENTICATION_KEY = "authentication";
     
-    private static final Gson gson = new GsonBuilder().setExclusionStrategies().create();
+    private static final Gson gson = new GsonBuilder().create();
 
 
     
@@ -64,7 +64,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         WebHookConfigBuilder builder = WebHookConfig.builder();
         populateSimpleParameters(builder, parameters);
         populateBuildTyepIds(builder, parameters.get(ENABLED_BUILDS_KEY));
-        populateBuildStates(builder, parameters.get(ENABLED_BUILD_STATES_KEY));
+        populateBuildStates(builder, parameters);
         builder.projectInternalId(projectFeatureDescriptor.getProjectId());
         populateAuthentication(builder, parameters.get(AUTHENTICATION_KEY));
         populateWebHookParameters(builder, parameters);
@@ -73,9 +73,6 @@ public class ProjectFeatureToWebHookConfigConverter {
         return builder.build();
     }
     
-    public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
-        return new WebHookProjectFeature(webhook);
-    }
 
     private void populateHeaders(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.headers(
@@ -100,7 +97,9 @@ public class ProjectFeatureToWebHookConfigConverter {
         parameters.entrySet().stream().filter(e -> e.getKey().startsWith(WEBHOOK_PARAMETER_KEY_PREFIX)).forEach(p -> {
             extraParameters.add(gson.fromJson(p.getValue(), WebHookParameterModel.class));
         });
-        builder.extraParameters(extraParameters);
+        if (!extraParameters.isEmpty()) {
+            builder.extraParameters(extraParameters);
+        }
     }
 
     private void populateAuthentication(WebHookConfigBuilder builder, String json) {
@@ -112,18 +111,18 @@ public class ProjectFeatureToWebHookConfigConverter {
             .authType(authConfig.getType());
         }
     }
+    public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
+        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook);
+    }
 
-    private static void populateBuildStates(WebHookConfigBuilder builder, String enabledBuildStates) {
+    private static void populateBuildStates(WebHookConfigBuilder builder, Map<String, String> parameters) {
         BuildState buildStates = new BuildState();
-        if (enabledBuildStates != null) {
-            Arrays.stream(enabledBuildStates.split(","))
+        Arrays.stream(BuildStateEnum.values())
             .forEach(s -> {
-                BuildStateEnum state = BuildStateEnum.findBuildState(s.trim());
-                if (state != null) {
-                    buildStates.enable(state);
+                if (parameters.containsKey(s.getShortName()) && parameters.get(s.getShortName()).equals(ENABLED)) {
+                    buildStates.enable(s);
                 }
             });
-        }
         builder.states(buildStates);
     }
 
@@ -145,27 +144,18 @@ public class ProjectFeatureToWebHookConfigConverter {
 
     public static class WebHookProjectFeature implements SProjectFeatureDescriptor {
         
+        private static final String DISABLED = "disabled";
         private String id;
         private WebHookConfig webHookConfig;
 
-        public WebHookProjectFeature(WebHookConfig webHookConfig) {
-            this.id = webHookConfig.getUniqueKey();
+        public WebHookProjectFeature(String id, WebHookConfig webHookConfig) {
+            this.id = id;
             this.webHookConfig = webHookConfig;
         }
 
         @Override
         public String getType() {
             return "tcWebHook";
-        }
-        
-        @Override
-        public String getProjectId() {
-            return this.webHookConfig.getProjectInternalId();
-        }
-
-        @Override
-        public String getId() {
-            return this.id;
         }
 
         @Override
@@ -183,7 +173,7 @@ public class ProjectFeatureToWebHookConfigConverter {
             if (CollectionUtils.isNotEmpty(this.webHookConfig.getEnabledBuildTypesSet())) {
                 parameters.put(ENABLED_BUILDS_KEY, this.webHookConfig.getEnabledBuildTypesSet().stream().collect(Collectors.joining(",")));
             }
-            parameters.put(ENABLED_BUILD_STATES_KEY, getEnabledBuildStatesAsStrings());
+            addBuildStates(parameters);
             addTriggerFilters(parameters);
             addHeaders(parameters);
             addWebHookParameters(parameters);
@@ -193,6 +183,14 @@ public class ProjectFeatureToWebHookConfigConverter {
             return parameters;
         }
 
+
+        private void addBuildStates(Map<String, String> parameters) {
+            BuildState buildStates = this.webHookConfig.getBuildStates();
+            Arrays.stream(BuildStateEnum.getNotifyStates()).forEach(state -> {
+                parameters.put(state.getShortName(), buildStates.enabled(state) ? ENABLED : DISABLED);
+            });
+            parameters.put(BuildStateEnum.REPORT_STATISTICS.getShortName(), buildStates.enabled(BuildStateEnum.REPORT_STATISTICS) ? ENABLED : DISABLED);
+        }
 
         private String getAuthenticationAsJson() {
             return gson.toJson(this.webHookConfig.getAuthenticationConfig());
@@ -216,14 +214,22 @@ public class ProjectFeatureToWebHookConfigConverter {
 
         private void addWebHookParameters(Map<String, String> parameters) {
             int count = 0;
-            for (WebHookParameterModel parameter : this.webHookConfig.getParams()) {
-                count++;
-                parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count, gson.toJson(parameter));
+            if (this.webHookConfig.getParams() != null) {
+                for (WebHookParameterModel parameter : this.webHookConfig.getParams()) {
+                    count++;
+                    parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count, gson.toJson(parameter));
+                }
             }
         }
 
-        private String getEnabledBuildStatesAsStrings() {
-            return this.webHookConfig.getBuildStates().getEnabledBuildStates().stream().map(BuildStateEnum::getShortName).collect(Collectors.joining(","));
+        @Override
+        public String getProjectId() {
+            return this.webHookConfig.getProjectInternalId();
+        }
+
+        @Override
+        public String getId() {
+            return this.id;
         }
 
     }

@@ -33,7 +33,7 @@ public class BuildState {
 		states.put(BuildStateEnum.BUILD_BROKEN, 			new SimpleBuildState(BuildStateEnum.BUILD_BROKEN, 				false));
 		states.put(BuildStateEnum.BUILD_FIXED, 				new SimpleBuildState(BuildStateEnum.BUILD_FIXED, 				false));
 		
-		states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 			false)); 
+		//states.put(BuildStateEnum.BUILD_FINISHED, 			new SimpleBuildState(BuildStateEnum.BUILD_FINISHED, 			false)); 
 		states.put(BuildStateEnum.BUILD_PINNED, 			new SimpleBuildState(BuildStateEnum.BUILD_PINNED, 				false)); 
 		states.put(BuildStateEnum.BUILD_UNPINNED, 			new SimpleBuildState(BuildStateEnum.BUILD_UNPINNED, 			false)); 
 		states.put(BuildStateEnum.TESTS_MUTED, 			new SimpleBuildState(BuildStateEnum.TESTS_MUTED, 			false)); 
@@ -60,14 +60,26 @@ public class BuildState {
     /**
      * Takes the currentBuildState, for which the WebHook is being triggered
      * and compares it against the build states for which this WebHook is configured
-     * to notify.
+     * to notify.<br>
+     * If webhook is triggering on TeamCity's Finished event, any of the "finished" states are valid.
      * 
      * @param currentBuildState
      * @return Whether or not the webhook should trigger for the current build state.
      */
     public boolean enabled(BuildStateEnum currentBuildState) {
+        if (BuildStateEnum.BUILD_FINISHED.equals(currentBuildState)) {
+            return isAnyFinishedStateEnabled();
+        }
     	return states.containsKey(currentBuildState) && states.get(currentBuildState).isEnabled();
 	}
+
+    public boolean isAnyFinishedStateEnabled() {
+        // If webhook is triggering on finished event, any of the "finished" states are valid.
+        return states.get(BUILD_FAILED).isEnabled() 
+                || states.get(BUILD_FIXED).isEnabled() 
+                || states.get(BUILD_SUCCESSFUL).isEnabled() 
+                || states.get(BUILD_FIXED).isEnabled();
+    }
     
     public boolean enabled(BuildStateEnum currentBuildState, boolean success, boolean changed){
     	if (currentBuildState != BuildStateEnum.BUILD_FINISHED){
@@ -149,14 +161,14 @@ public class BuildState {
     }
     
     public BuildState enable(BuildStateEnum currentBuildState){
-    	if (currentBuildState != null) {
+    	if (currentBuildState != null && !BuildStateEnum.BUILD_FINISHED.equals(currentBuildState)) {
     		states.get(currentBuildState).enable();
     	}
     	return this;
     }
 
     public BuildState disable(BuildStateEnum currentBuildState){
-    	if (currentBuildState != null) {
+    	if (currentBuildState != null && !BuildStateEnum.BUILD_FINISHED.equals(currentBuildState)) {
     		states.get(currentBuildState).disable();
     	}
     	return this;
@@ -217,18 +229,8 @@ public class BuildState {
 	public boolean noneEnabled() {
 		int enabled = 0;
 		for (Map.Entry<BuildStateEnum,BuildStateInterface> state : states.entrySet()){
-			if (
-				   state.getKey().equals(BUILD_BROKEN)
-				|| state.getKey().equals(BUILD_FIXED)
-				|| state.getKey().equals(BUILD_SUCCESSFUL)
-				|| state.getKey().equals(BUILD_FAILED)
-			)
-			{
-				continue;
-			}
-			
 			if (state.getKey().equals(BUILD_FINISHED)){
-				if (finishEnabled()){
+				if (isAnyFinishedStateEnabled()){
 					enabled++;
 				}
 				continue;
@@ -239,14 +241,4 @@ public class BuildState {
 		return enabled == 0;
 	}
 	
-	
-	private boolean finishEnabled(){
-		// If finished is disabled, who cares what the other finish states are set to.
-		if (! states.get(BUILD_FINISHED).isEnabled()){
-			return false;
-		}
-		
-		// If it's enabled, check its sub-settings.
-		return states.get(BUILD_FAILED).isEnabled() || states.get(BUILD_SUCCESSFUL).isEnabled();
-	}
 }
