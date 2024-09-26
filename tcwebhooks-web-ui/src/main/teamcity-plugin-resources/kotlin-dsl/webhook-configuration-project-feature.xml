@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dsl-extension kind="projectFeature" type="tcWebHook"
+	generateDslJar="true">
+
+	<class name="WebHookConfiguration">
+		<description>
+			A description of a class.
+		</description>
+	</class>
+
+	<function name="webHookConfiguration">
+		<description>
+			A description of a called function.
+		</description>
+	</function>
+
+	<params>
+		<param name="webHookId" type="string" mandatory="true">
+			<description>
+				WebHook Id. Must be unique across the whole of teamcity. Suggestion: use a
+				name like 'ProjectIdentifier_WebHook_01'
+			</description>
+		</param>
+		<param name="url" type="string" mandatory="true">
+			<description>
+				WebHook URL. The URL to which the webhook will be POST'd.
+			</description>
+		</param>
+		<param name="template" type="string" mandatory="true">
+			<description>
+				The templateId referring to the template this webhook will use.
+			</description>
+		</param>
+		<param name="allProjectBuildsEnabled"
+			dslName="allProjectBuilds" type="boolean" trueValue="true"
+			falseValue="false" mandatory="false">
+			<description>
+				A flag to instruct the webhook to run against all builds in this
+				project. If only selected builds are required, set this to false and
+				add a
+			</description>
+		</param>
+		<param name="subProjectBuildsEnabled"
+			dslName="subProjectBuilds" type="boolean" trueValue="true"
+			falseValue="false" mandatory="false">
+			<description>
+				A flag to instruct the webhook to run against all builds sub-projects of this
+				project. If only selected builds are required, set this to false and
+				add a
+			</description>
+		</param>
+		<param name="buildType" mandatory="false" ref="BUILD_TYPE">
+			<description>
+				Build Type references for which this webhook should run.
+			</description>
+		</param>
+	</params>
+
+</dsl-extension>
