@@ -91,6 +91,7 @@
 		<module>tcwebhooks-rest-api</module>
 		<module>tcwebhooks-rest-api-legacy</module>
 		<module>tcwebhooks-web-ui</module>
+		<module>tcwebhooks-kotlin-dsl</module>
 	</modules>
 
 	<dependencies>
