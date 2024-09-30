@@ -9,6 +9,13 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>tcwebhooks-kotlin-dsl</artifactId>
+	<!--
+		Set the version to 1.0-SNAPSHOT
+		The idea is that it will have the same version all the time, and can be 
+		imported into one's kotlin settings project and will be refreshed often
+		since it is a "SNAPSHOT" release.
+	 -->
+	<version>1.0-SNAPSHOT</version>
 
 	<properties>
 		<kotlin.version>1.8.0</kotlin.version>

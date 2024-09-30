@@ -120,6 +120,7 @@
 						<echo message="Attempting to build dist-core zip file" />
 						<mkdir dir="${project.build.directory}/dist-core" />
 						<mkdir dir="${project.build.directory}/dist-core/server" />
+						<mkdir dir="${project.build.directory}/dist-core/kotlin-dsl" />
 						
 						<echo message=" - Copying resources to dist-core" />
 						<copy todir="${project.build.directory}/dist-core/">
@@ -133,6 +134,12 @@
 						<copy todir="${project.build.directory}/dist-core/server/">
 							  <fileset dir="${project.build.directory}/">
 		    						<include name="*-jar-with-dependencies.jar" />
+		    				  </fileset>
+		    			</copy>
+						<echo message=" - Copying kotlin-dsl jars to dist-core/kotlin-dsl" />
+						<copy todir="${project.build.directory}/dist-core/kotlin-dsl/">
+							  <fileset dir="${project.basedir}/../tcwebhooks-kotlin-dsl/target/">
+		    						<include name="tcwebhooks-kotlin-dsl-*.jar" />
 		    				  </fileset>
 		    			</copy>
 		    			

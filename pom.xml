@@ -88,10 +88,10 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>tcwebhooks-core</module>
+		<module>tcwebhooks-kotlin-dsl</module>
 		<module>tcwebhooks-rest-api</module>
 		<module>tcwebhooks-rest-api-legacy</module>
 		<module>tcwebhooks-web-ui</module>
-		<module>tcwebhooks-kotlin-dsl</module>
 	</modules>
 
 	<dependencies>
