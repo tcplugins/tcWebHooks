@@ -6,15 +6,16 @@ import jetbrains.buildServer.configs.kotlin.*
  * A description of a class.
  *
  *
- * @see webHookConfiguration
+ * @see webHookConfigurationNew
  */
-open class WebHookConfiguration() : ProjectFeature() {
+@TeamCityDsl
+open class WebHookConfigurationNew() : ProjectFeature() {
 
     init {
         type = "tcWebHook"
     }
 
-    constructor(init: WebHookConfiguration.() -> Unit): this() {
+    constructor(init: WebHookConfigurationNew.() -> Unit): this() {
         init()
     }
 
@@ -72,10 +73,10 @@ open class WebHookConfiguration() : ProjectFeature() {
  * A description of a called function.
  *
  *
- * @see WebHookConfiguration
+ * @see WebHookConfigurationNew
  */
-fun ProjectFeatures.webHookConfiguration(init: WebHookConfiguration.() -> Unit): WebHookConfiguration {
-    val result = WebHookConfiguration(init)
+fun ProjectFeatures.webHookConfigurationNew(init: WebHookConfigurationNew.() -> Unit): WebHookConfigurationNew {
+    val result = WebHookConfigurationNew(init)
     feature(result)
     return result
 }
