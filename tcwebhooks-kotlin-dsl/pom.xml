@@ -95,7 +95,7 @@
 			<url>
 				http://teamcity-test-main.local.lan:8111/app/dsl-plugins-repository</url>
 			<snapshots>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
