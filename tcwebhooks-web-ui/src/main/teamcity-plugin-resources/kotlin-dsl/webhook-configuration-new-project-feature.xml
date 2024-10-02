@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dsl-extension kind="projectFeature" type="tcWebHook"
-	generateDslJar="false">
+	generateDslJar="true">
 
-	<class name="WebHookConfigurationNew">
+	<class name="WebHookConfigurationReallyNew">
 		<description>
 			A description of a class.
 		</description>
 	</class>
 
-	<function name="webHookConfigurationNew">
+	<function name="webHookConfigurationReallyNew">
 		<description>
 			A description of a called function.
 		</description>
@@ -17,42 +17,108 @@
 	<params>
 		<param name="webHookId" type="string" mandatory="true">
 			<description>
-				WebHook Id. Must be unique across the whole of teamcity. Suggestion: use a
+				WebHook Id. Must be unique across the whole of teamcity.
+				Suggestion: use a
 				name like 'ProjectIdentifier_WebHook_01'
 			</description>
 		</param>
 		<param name="url" type="string" mandatory="true">
 			<description>
-				WebHook URL. The URL to which the webhook will be POST'd.
+				WebHook URL. The URL to which the webhook will be
+				POST'd.
 			</description>
 		</param>
 		<param name="template" type="string" mandatory="true">
 			<description>
-				The templateId referring to the template this webhook will use.
+				The templateId referring to the template this webhook
+				will use.
 			</description>
 		</param>
-		<param name="allProjectBuildsEnabled"
-			dslName="allProjectBuilds" type="boolean" trueValue="true"
-			falseValue="false" mandatory="false">
-			<description>
-				A flag to instruct the webhook to run against all builds in this
-				project. If only selected builds are required, set this to false and
-				add a
-			</description>
+		<param name="authentication" dslName="authentication"
+			type="compound">
+			<description>Authentication type to use</description>
+			<option name="bearer" value="bearer">
+				<param name="bearerToken" dslName="token" mandatory = "true">
+					<description>
+						Bearer token to use for Bearer Authentication
+					</description>
+				</param>
+				<param name="bearerPreemptive" dslName="preemptive" mandatory = "false" type="boolean">
+					<description>
+						Whether to enable pre-emptive authentication (defaults to true). Without pre-emptive enabled, the webhook will get a 401 and then re-send the request with authentication enabled. 
+					</description>
+				</param>
+			</option>
+			<option name="basic" value="basicAuth">
+				<param name="basicAuthUsername" dslName="username" mandatory = "false">
+					<description>
+						Username for Basic Authentication
+					</description>
+				</param>
+				<param name="basicAuthPassword" dslName="password" mandatory = "false">
+					<description>
+						Password for Basic Authentication
+					</description>
+				</param>
+				<param name="basicAuthRealm" dslName="realm" mandatory = "false">
+					<description>
+						Realm to use for Basic Authentication
+					</description>
+				</param>
+				<param name="basicAuthPreemptive" dslName="preemptive" mandatory = "false" type="boolean">
+					<description>
+						Whether to enable pre-emptive authentication (defaults to true). Without pre-emptive enabled, the webhook will get a 401 and then re-send the request with authentication enabled. 
+					</description>
+				</param>
+			</option>
 		</param>
-		<param name="subProjectBuildsEnabled"
-			dslName="subProjectBuilds" type="boolean" trueValue="true"
-			falseValue="false" mandatory="false">
+		<param name="buildTypes" dslName="buildTypes" type="compound"
+			mandatory="true">
 			<description>
-				A flag to instruct the webhook to run against all builds sub-projects of this
-				project. If only selected builds are required, set this to false and
-				add a
+				Specifies to which system a status should be published
 			</description>
-		</param>
-		<param name="buildType" mandatory="false" ref="BUILD_TYPE">
-			<description>
-				Build Type references for which this webhook should run.
-			</description>
+			<option name="allProjectBuilds"
+				value="bitbucketCloudPublisher">
+				<description>
+					Publish status to Bitbucket Cloud
+				</description>
+				<param name="bitbucketUsername" dslName="userName"
+					deprecated="true">
+					<description>
+						A username for Bitbucket Cloud connection
+					</description>
+				</param>
+			</option>
+			<param name="allProjectBuildsEnabled"
+				dslName="allProjectBuilds" type="boolean" trueValue="true"
+				falseValue="false" mandatory="false">
+				<description>
+					A flag to instruct the webhook to run against all
+					builds in this
+					project. If only selected builds are required, set
+					this to false
+					and
+					add a
+				</description>
+			</param>
+			<param name="subProjectBuildsEnabled"
+				dslName="subProjectBuilds" type="boolean" trueValue="true"
+				falseValue="false" mandatory="false">
+				<description>
+					A flag to instruct the webhook to run against all
+					builds
+					sub-projects of this
+					project. If only selected builds are
+					required, set this to false and
+					add a
+				</description>
+			</param>
+			<param name="buildType" mandatory="false" ref="BUILD_TYPE">
+				<description>
+					Build Type references for which this webhook should
+					run.
+				</description>
+			</param>
 		</param>
 	</params>
 
