@@ -7,48 +7,43 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
+import jetbrains.buildServer.serverSide.ProjectsModelListener;
+import jetbrains.buildServer.serverSide.ProjectsModelListenerAdapter;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import jetbrains.buildServer.util.EventDispatcher;
 import webhook.teamcity.Loggers;
-public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
+public class WebHookProjectFeaturesStore extends ProjectsModelListenerAdapter implements WebHookFeaturesStore, ProjectsModelListener{
     
     
     private static final String PROJECT_FEATURE_TYPE = "tcWebHooks";
     private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter = new ProjectFeatureToWebHookConfigConverter();
+    private @NotNull WebHookSettingsCache myWebHookSettingsCache;
 
     
-//    public WebHookProjectFeaturesStore(
-//            @NotNull EventDispatcher<ProjectsModelListener> events) {
-//        super();
-//        events.addListener(new ProjectsModelListenerAdapter() {
-//            @Override
-//            public void projectFeatureAdded(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
-//                //resetCache();
-//            }
-//
-//            @Override
-//            public void projectFeatureRemoved(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
-//                //resetCache();
-//            }
-//
-//            @Override
-//            public void projectFeatureChanged(@NotNull SProject project, @NotNull SProjectFeatureDescriptor before, @NotNull SProjectFeatureDescriptor after) {
-//                //resetCache();
-//            }
-//        });
-//
-//    }
+    public WebHookProjectFeaturesStore(
+            @NotNull EventDispatcher<ProjectsModelListener> eventDispatcher,
+            @NotNull WebHookSettingsCache webHookSettingsManager) {
+        super();
+        this.myWebHookSettingsCache = webHookSettingsManager;
+        eventDispatcher.addListener(this);
+    }
     
+    @Override
+    public void projectFeatureAdded(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
+        this.myWebHookSettingsCache.refreshCache(project);
+    }
     
-//    Map<String, String> params = ChatClientConfigFactory.asMap(chatClientConfig);
-//    SProject sProject = teamCityCore.findProjectByIntId(chatClientConfig.getProjectInternalId());
-//    sProject.addFeature(PROJECT_FEATURE_TYPE, params);
-//    teamCityCore.persist(chatClientConfig.getProjectInternalId(), "ChatClientConfig added");
-//    Loggers.SERVER.info("ChatClientConfig " + chatClientConfig.getClientType() + " : " + chatClientConfig.getConfigId() + " is created in the project " + chatClientConfig.getProjectInternalId());
-//    getChatClientConfig(chatClientConfig.getConfigId());//populate cache
-//    return chatClientConfig;
-//}
-
+    @Override
+    public void projectFeatureRemoved(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
+        this.myWebHookSettingsCache.refreshCache(project);
+    }
+    
+    @Override
+    public void projectFeatureChanged(@NotNull SProject project, @NotNull SProjectFeatureDescriptor before, @NotNull SProjectFeatureDescriptor after) {
+        this.myWebHookSettingsCache.refreshCache(project);
+    }
+    
 
     @Override
     public WebHookUpdateResult addWebHookConfig(@NotNull SProject sProject, @NotNull WebHookConfig webHookConfig) {
