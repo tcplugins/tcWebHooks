@@ -24,6 +24,7 @@
  	<bean id="projectManager" class="webhook.teamcity.test.springmock.MockProjectManager"/>
  	<bean id="projectSettingsManager" class="webhook.teamcity.test.springmock.MockProjectSettingsManager"/>
  	<bean id="configActionFactory" class="webhook.teamcity.test.springmock.MockConfigActionFactory"/>
+ 	<bean id="eventDispatcher" class="webhook.teamcity.test.springmock.MockEventDispatcher"/>
 	
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
 

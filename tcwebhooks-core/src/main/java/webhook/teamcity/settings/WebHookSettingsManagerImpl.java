@@ -37,7 +37,7 @@ import webhook.teamcity.settings.WebHookConfigEnhanced.Tag;
 import webhook.teamcity.settings.WebHookConfigEnhanced.TagType;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
-public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer {
+public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer, WebHookSettingsCache {
 
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ConfigActionFactory myConfigActionFactory;
@@ -88,6 +88,13 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			projectSettings.put(sProject.getProjectId(), getSettings(sProject.getProjectId()));
 		}
 		return projectSettings;
+	}
+	
+	@Override
+	public void refreshCache(SProject project) {
+	    Loggers.SERVER.info("Rebuilding webhook settings cache for project " + project.getExternalId());
+	    this.projectSettingsMap.put(project.getProjectId(), getSettings(project.getProjectId()));
+	    this.rebuildWebHooksEnhanced(project.getProjectId());
 	}
 
 	@Override
