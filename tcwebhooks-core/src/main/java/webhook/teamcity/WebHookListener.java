@@ -197,6 +197,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	@Override
 	public void buildStarted(SRunningBuild sRunningBuild){
+	    regsisterInterestedBuildStatisticsWebHooks(sRunningBuild);
 		processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_STARTED, Collections.emptyMap());
 	}
 
@@ -206,18 +207,45 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 
 	@Override
-	public void buildFinished(SRunningBuild sRunningBuild){
-		processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_FINISHED, Collections.emptyMap());
-	}
+    public void buildFinished(SRunningBuild sRunningBuild) {
+        BuildStateEnum state = BuildStateEnum.BUILD_FINISHED;
+        Loggers.SERVER.debug(
+                ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sRunningBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
+        for (WebHookConfig whc : getListOfEnabledWebHooks(state, sRunningBuild.getProjectId())) {
+            if (!myWebHookBuildStatisticsEventCollator.isInterestedInBuild(whc.getUniqueKey(),
+                    sRunningBuild.getBuildId())) {
+                WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+                webHookExecutor.execute(wh, whc, sRunningBuild, state, null, null, false, Collections.emptyMap());
+            } else {
+                Loggers.SERVER.info(String.format(
+                        "WebHookListener :: buildFinished event will be ignored because StatisticsEventCollator is interested in this build. webHookConfigId: '%s', buildId: '%s', buildTypeId: '%s'",
+                        whc.getUniqueKey(), sRunningBuild.getBuildId(), sRunningBuild.getBuildTypeExternalId()));
+                myWebHookBuildStatisticsEventCollator.setSBuild(sRunningBuild);
+            }
+        }
+    }
 
-	@Override
-	public void buildInterrupted(SRunningBuild sRunningBuild) {
-		processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_INTERRUPTED, Collections.emptyMap());
-	}
+    @Override
+    public void buildInterrupted(SRunningBuild sRunningBuild) {
+        BuildStateEnum state = BuildStateEnum.BUILD_INTERRUPTED;
+        Loggers.SERVER.debug(
+                ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sRunningBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
+        for (WebHookConfig whc : getListOfEnabledWebHooks(state, sRunningBuild.getProjectId())) {
+            if (!myWebHookBuildStatisticsEventCollator.isInterestedInBuild(whc.getUniqueKey(),
+                    sRunningBuild.getBuildId())) {
+                WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+                webHookExecutor.execute(wh, whc, sRunningBuild, state, null, null, false, Collections.emptyMap());
+            } else {
+                Loggers.SERVER.info(String.format(
+                        "WebHookListener :: buildInterrupted event will be ignored because StatisticsEventCollator is interested in this build. webHookConfigId: '%s', buildId: '%s', buildTypeId: '%s'",
+                        whc.getUniqueKey(), sRunningBuild.getBuildId(), sRunningBuild.getBuildTypeExternalId()));
+                myWebHookBuildStatisticsEventCollator.setSBuild(sRunningBuild);
+            }
+        }
+    }
 
 	@Override
 	public void beforeBuildFinish(SRunningBuild sRunningBuild) {
-	    regsisterInterestedBuildStatisticsWebHooks(sRunningBuild);
 		processBuildEvent(sRunningBuild, BuildStateEnum.BEFORE_BUILD_FINISHED, Collections.emptyMap());
 	}
 
@@ -375,7 +403,9 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
     @Override
     public void buildStatisticsPublished(WebHookBuildStatisticsEvent event) {
-        processBuildEvent(event.getBuild(), BuildStateEnum.BUILD_STATISTICS_PUBLISHED, Collections.emptyMap());
+        SBuild myBuild = myBuildServer.findBuildInstanceById(event.getRequest().getBuildId());
+        Loggers.SERVER.info(String.format("WebHookListener :: Sending BUILD_FINISHED event due to buildStatisticsPublished event. buildId: '%d', buildTypeId: '%s', webHookConfigId: '%s', reason: '%s'", event.getRequest().getBuildId(), myBuild.getBuildTypeExternalId(), event.getRequest().getWebhookConfigId(), event.getReason()));
+        processBuildEvent(myBuild, BuildStateEnum.BUILD_FINISHED, Collections.emptyMap());
     }
 
 	@Override
@@ -431,21 +461,45 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.BUILD_TYPE_DELETED, buildType.getProjectId(), buildType.getBuildTypeId(), buildType));
 	}
 	
+	/**
+	 * Notifies the {@link WebHookBuildStatisticsEventCollator} that a statistic has been published.
+	 * If we have a webhook that has registered an interest in build statistics then these events will be 
+	 * collated and a build finished event will be fired once the collation has completed.
+	 * @see WebHookBuildStatisticsEventCollator
+	 */
 	@Override
 	public void statisticValuePublished(SBuild sBuild, String valueTypeKey, BigDecimal value) {
-	    // TODO Auto-generated method stub
 	    Loggers.SERVER.info(String.format("statisticValuePublished :: '%s'. Value '%s' -> '%s'", sBuild.getBuildTypeName(), valueTypeKey, value));
 	    myWebHookBuildStatisticsEventCollator.handleEvent(sBuild, valueTypeKey, value);
 	}
 	
+	/**
+	 * Finds WebHooks that have a WebHookParameter defined on the webhook (does not currently support WebHookProjectParameters or ProjectParamters)
+	 * named "waitForBuildStatistics". If so, it creates a placeholder in the {@link WebHookBuildStatisticsEventCollator} so that 
+	 * statistics events are captured for that webhook to use when buildFinished events are triggered.
+	 */
 	private void regsisterInterestedBuildStatisticsWebHooks(SBuild sBuild) {
-	    for (WebHookConfig whc : getListOfEnabledWebHooks(BuildStateEnum.BUILD_STATISTICS_PUBLISHED, sBuild.getBuildType().getProjectId())){
-	        WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-	        //WebHookBuildStatisticsRequest buildStatisticsRequest = new WebHookBuildStatisticsRequest();
-	        //myWebHookBuildStatisticsEventCollator.registerInterestInBuild(buildStatisticsRequest);
+	    if (!this.myWebHookBuildStatisticsEventCollator.isServiceEnabled()) {
+	        return;
+	    }
+	    for (WebHookConfig whc : getListOfEnabledWebHooks(BuildStateEnum.BUILD_FINISHED, sBuild.getBuildType().getProjectId())){
+	        if(whc.getParams().containsKey("waitForBuildStatistics")) {
+	            WebHookBuildStatisticsRequest buildStatisticsRequest = WebHookBuildStatisticsRequest.builder()
+	                    .buildId(sBuild.getBuildId())
+	                    .webhookConfigId(whc.getUniqueKey())
+	                    .failureTimeoutSeconds(myMainSettings.getFailureTimeout())
+	                    .extraParameters(whc.getParams())
+	                    .build();
+                Loggers.SERVER.info(String.format("WebHookListener :: Registering with StatisticsEventCollator for build. webHookConfigId: '%s', buildId: '%s', buildTypeId: '%s'" ,  whc.getUniqueKey(), sBuild.getBuildId(), sBuild.getBuildTypeExternalId()));
+	            myWebHookBuildStatisticsEventCollator.registerInterestInBuild(buildStatisticsRequest);
+	        }
 	    }
 	}
 	
+	/**
+	 * Handles the events for WebHook Plugin Statistics reporting (note: these are not build statistics. 
+	 * See {@link #regsisterInterestedBuildStatisticsWebHooks(SBuild)}. 
+	 */
 	@Override
 	public void reportStatistics(WebHookConfig reportingWebhookConfig, StatisticsReport statisticsReport) {
 		WebHook reportingWebhook = webHookFactory.getWebHook(reportingWebhookConfig, myMainSettings.getProxyConfigForUrl(reportingWebhookConfig.getUrl()));
@@ -453,6 +507,10 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		webHookStatisticsExecutor.execute(reportingWebhook, reportingWebhookConfig, BuildStateEnum.REPORT_STATISTICS, statisticsReport, myBuildServer.getProjectManager().getRootProject(), false);
 	}
 
+	/**
+     * Handles the events for WebHook Plugin Statistics reporting (note: these are not build statistics. 
+     * See {@link #regsisterInterestedBuildStatisticsWebHooks(SBuild)}. 
+     */
 	@Override
 	public void reportStatistics(StatisticsReport statisticsReport) {
 		for (WebHookConfig whc : getListOfEnabledWebHooks(BuildStateEnum.REPORT_STATISTICS, myBuildServer.getProjectManager().getRootProject().getProjectId())){

@@ -11,5 +11,6 @@
       <reporting enabled="true" frequency="5"/>
     </statistics>
     <http-timeout connect="50" response="55"/>
+    <build-statistics-collator enabled="true" check-interval="20" failure-timeout="600" /> 
   </webhooks>
 </server>

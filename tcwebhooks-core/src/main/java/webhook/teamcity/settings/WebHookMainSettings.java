@@ -17,6 +17,10 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	protected static final String ATTRIBUTENAME_MIN_POOL_SIZE = "minPoolSize";
 	protected static final String ATTRIBUTENAME_MAX_POOL_SIZE = "maxPoolSize";
 	protected static final String ATTRIBUTENAME_QUEUE_SIZE = "queueSize";
+	
+	protected static final String ELEMENTNAME_BUILD_STATISTICS_COLLATOR = "build-statistics-collator";
+	protected static final String ATTRIBUTENAME_CHECK_INTERVAL = "check-interval";
+	protected static final String ATTRIBUTENAME_FAILURE_TIMEOUT = "failure-timeout";
 	private static final String NAME = WebHookMainSettings.class.getName();
 	private WebHookMainConfig webHookMainConfig;
 	private SBuildServer server;
@@ -104,7 +108,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
 					tempConfig.setQueueSize(Integer.valueOf(dedicatedThreadPoolElement.getAttributeValue(ATTRIBUTENAME_QUEUE_SIZE)));
 				}
 			}
-
+			
 			Element proxyElement = webhooksElement.getChild("proxy");
 			if(proxyElement != null)
 			{
@@ -136,6 +140,19 @@ public class WebHookMainSettings implements MainConfigProcessor {
 						Loggers.SERVER.debug(NAME + ":readFrom :: noProxyUrl " + url);
 					}
 				}
+				
+			}
+			Element buildStatisticsCollator = webhooksElement.getChild(ELEMENTNAME_BUILD_STATISTICS_COLLATOR);
+			if (buildStatisticsCollator != null) {
+			    if (buildStatisticsCollator.getAttribute(ATTRIBUTENAME_ENABLED) != null) {
+			        tempConfig.setBuildStatisticsCollator(Boolean.parseBoolean(buildStatisticsCollator.getAttributeValue(ATTRIBUTENAME_ENABLED)));
+			    }
+			    if (buildStatisticsCollator.getAttribute(ATTRIBUTENAME_CHECK_INTERVAL) != null) {
+			        tempConfig.setCheckInterval(Integer.valueOf(buildStatisticsCollator.getAttributeValue(ATTRIBUTENAME_CHECK_INTERVAL)));
+			    }
+			    if (buildStatisticsCollator.getAttribute(ATTRIBUTENAME_FAILURE_TIMEOUT) != null) {
+			        tempConfig.setFailureTimeout(Integer.valueOf(buildStatisticsCollator.getAttributeValue(ATTRIBUTENAME_FAILURE_TIMEOUT)));
+			    }
 			}
 		}
 		this.webHookMainConfig = tempConfig;
@@ -169,13 +186,14 @@ public class WebHookMainSettings implements MainConfigProcessor {
 
 		if(webHookMainConfig.getInfoUrlAsElement() != null){
 			webhooksElement.addContent(webHookMainConfig.getInfoUrlAsElement());
-			Loggers.SERVER.debug(NAME + "writeTo :: infoText " + webHookMainConfig.getWebhookInfoText());
-			Loggers.SERVER.debug(NAME + "writeTo :: InfoUrl  " + webHookMainConfig.getWebhookInfoUrl());
-			Loggers.SERVER.debug(NAME + "writeTo :: show-reading  " + webHookMainConfig.getWebhookShowFurtherReading().toString());
 		}
 
 		if (webHookMainConfig.getStatisticsAsElement() != null) {
 			webhooksElement.addContent(webHookMainConfig.getStatisticsAsElement());
+		}
+		
+		if (webHookMainConfig.getBuildStatisticsCollatorAsElement() != null) {
+		    webhooksElement.addContent(webHookMainConfig.getBuildStatisticsCollatorAsElement());
 		}
 
 		parentElement.addContent(webhooksElement);
@@ -231,6 +249,18 @@ public class WebHookMainSettings implements MainConfigProcessor {
 
 	public boolean isAssembleStatisticsEnabled() {
 		return this.webHookMainConfig.isAssembleStatistics();
+	}
+	
+	public boolean isBuildStatisticsCollatorEnabled() {
+	    return this.webHookMainConfig.isBuildStatisticsCollatorEnabled();
+	}
+	
+	public int getFailureTimeout() {
+	    return this.webHookMainConfig.getFailureTimeout();
+	}
+	
+	public int getCheckInterval() {
+	    return this.webHookMainConfig.getCheckInterval();
 	}
 
 }

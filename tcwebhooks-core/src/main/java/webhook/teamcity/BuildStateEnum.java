@@ -21,9 +21,8 @@ public enum BuildStateEnum {
 	TESTS_MUTED			("testsMuted", 			"has had some tests muted",							"Tests Muted",						"Tests Muted"), 
 	TESTS_UNMUTED			("testsUnmuted",			"has had some tests unmuted",						"Tests Unmuted",					"Tests Unmuted"),
 	REPORT_STATISTICS		("reportStatistics",		"reported statistics",					"Statistics Reported",				"Statistics Reported"), 
-	SERVICE_MESSAGE_RECEIVED("serviceMessageReceived",	"received a service message",			"Service Message Received",			"Service Message Received"), 
-	BUILD_STATISTICS_PUBLISHED("buildStatisticsPublished", "published statistics", "Build Statistics Published", "Statistics Published");
-    
+	SERVICE_MESSAGE_RECEIVED("serviceMessageReceived",	"received a service message",			"Service Message Received",			"Service Message Received") 
+    ;
     private final String shortName;
     private final String descriptionSuffix;
     private final String shortDescription;
@@ -94,7 +93,7 @@ public enum BuildStateEnum {
 				BUILD_ADDED_TO_QUEUE, BUILD_REMOVED_FROM_QUEUE, BUILD_STARTED, 
 				CHANGES_LOADED, BUILD_INTERRUPTED, BEFORE_BUILD_FINISHED, BUILD_SUCCESSFUL, 
 				BUILD_FAILED, BUILD_FIXED, BUILD_BROKEN, RESPONSIBILITY_CHANGED, 
-				BUILD_PINNED, BUILD_UNPINNED, TESTS_MUTED, TESTS_UNMUTED, SERVICE_MESSAGE_RECEIVED, BUILD_STATISTICS_PUBLISHED };
+				BUILD_PINNED, BUILD_UNPINNED, TESTS_MUTED, TESTS_UNMUTED, SERVICE_MESSAGE_RECEIVED };
 	}
 	
 	public static boolean isAFinishedState(String state) {

@@ -49,6 +49,14 @@ public class WebHookMainConfig {
 	@Setter private Integer minPoolSize = null;
 	@Setter private Integer maxPoolSize = null;
 	@Setter private Integer queueSize = null;
+	
+	@Setter private Boolean buildStatisticsCollator = null;
+
+	private static final int BUILD_STATISTIC_FAILURE_TIMEOUT_DEFAULT = 3600; // 1 hour
+	@Setter private Integer failureTimeout = null;
+	
+	private static final int BUILD_STATISTIC_CHECK_INTERVAL_DEFAULT = 10; // 10 seconds
+	@Setter private Integer checkInterval = null;
 
 
 	private Pattern singleHostPattern;
@@ -211,7 +219,34 @@ public class WebHookMainConfig {
 				.setAttribute("connect", String.valueOf(getHttpConnectionTimeout()))
 				.setAttribute("response", String.valueOf(this.getHttpResponseTimeout()));
 	}
+	
+	public Element getBuildStatisticsCollatorAsElement() {
+	    if (this.buildStatisticsCollator == null) {
+	        return null;
+	    }
+	    Element e =  new Element(WebHookMainSettings.ELEMENTNAME_BUILD_STATISTICS_COLLATOR)
+	            .setAttribute(WebHookMainSettings.ATTRIBUTENAME_ENABLED, String.valueOf(isBuildStatisticsCollatorEnabled()));
+	    if (this.checkInterval != null) {
+	        e.setAttribute(WebHookMainSettings.ATTRIBUTENAME_CHECK_INTERVAL, String.valueOf(getCheckInterval()));
+	    }
+	    if (this.failureTimeout != null) {
+	        e.setAttribute(WebHookMainSettings.ATTRIBUTENAME_FAILURE_TIMEOUT, String.valueOf(getFailureTimeout()));
+	    }
+	    return e;
+	}
+	
+	public int getFailureTimeout() {
+	    return defaultIfNull(this.failureTimeout, BUILD_STATISTIC_FAILURE_TIMEOUT_DEFAULT);
+    }
 
+    public int getCheckInterval() {
+        return defaultIfNull(this.checkInterval, BUILD_STATISTIC_CHECK_INTERVAL_DEFAULT);
+    }
+
+    public boolean isBuildStatisticsCollatorEnabled() {
+	    return defaultIfNull(this.buildStatisticsCollator, Boolean.FALSE);
+	}
+ 
 	public boolean isAssembleStatistics() {
 		return defaultIfNull(this.assembleStatistics, Boolean.TRUE);
 	}

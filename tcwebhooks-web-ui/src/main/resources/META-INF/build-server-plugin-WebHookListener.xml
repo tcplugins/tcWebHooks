@@ -44,6 +44,11 @@
         class="webhook.teamcity.history.WebHookHistoryRepositoryImpl"
         />
         
+	<bean id="webHookBuildStatisticsEventCollator"
+        class="webhook.teamcity.executor.WebHookBuildStatisticsEventCollatorImpl"
+        init-method="requestDeferredRegistration"
+        />
+        
 	<bean id="webHookSecureValuesHelperService"
         class="webhook.teamcity.extension.util.WebHookSecureValuesHelperService"
         />

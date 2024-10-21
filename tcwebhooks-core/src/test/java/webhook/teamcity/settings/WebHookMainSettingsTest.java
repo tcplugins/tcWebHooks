@@ -46,7 +46,9 @@ public class WebHookMainSettingsTest {
 		assertEquals(10, whms.getWebHookMainConfig().getMinPoolSize());
 		assertEquals(20, whms.getWebHookMainConfig().getMaxPoolSize());
 		assertEquals(1000, whms.getWebHookMainConfig().getQueueSize());
-
+		assertEquals(Boolean.TRUE, whms.getWebHookMainConfig().isBuildStatisticsCollatorEnabled());
+		assertEquals(20, whms.getWebHookMainConfig().getCheckInterval());
+		assertEquals(600, whms.getWebHookMainConfig().getFailureTimeout());
 	}
 
 	/*
@@ -108,6 +110,8 @@ public class WebHookMainSettingsTest {
 		assertEquals(20, threadElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_MAX_POOL_SIZE).getIntValue());
 		assertEquals(1000, threadElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_QUEUE_SIZE).getIntValue());
 
+		Element buildStatsElement = webHooksElement.getChild(WebHookMainSettings.ELEMENTNAME_BUILD_STATISTICS_COLLATOR);
+		assertEquals(true, buildStatsElement.getAttribute(WebHookMainSettings.ATTRIBUTENAME_ENABLED).getBooleanValue());
 
 	}
 
@@ -147,6 +151,14 @@ public class WebHookMainSettingsTest {
 		assertEquals(1, whms.getWebHookMainConfig().getMinPoolSize());
 		assertEquals(50, whms.getWebHookMainConfig().getMaxPoolSize());
 		assertEquals(3000, whms.getWebHookMainConfig().getQueueSize());
+	}
+	
+	@Test
+	public void testBuildStatisticsDefaultValues() {
+	    WebHookMainSettings whms = new WebHookMainSettings(server);
+	    assertEquals(Boolean.FALSE, whms.getWebHookMainConfig().isBuildStatisticsCollatorEnabled());
+	    assertEquals(10, whms.getWebHookMainConfig().getCheckInterval());
+	    assertEquals(3600, whms.getWebHookMainConfig().getFailureTimeout());
 	}
 
 	private Element getFullConfigElement() throws JDOMException, IOException{
