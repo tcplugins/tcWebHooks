@@ -53,5 +53,6 @@ public interface WebHookBuildStatisticsEventCollator {
     boolean isInterestedInBuild(String webHookConfigId, long buildId);
     void setSBuild(SBuild sBuild);
     boolean isServiceEnabled();
+    void removeAllForBuild(long buildId);
 
 }

@@ -212,36 +212,24 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
         Loggers.SERVER.debug(
                 ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sRunningBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
         for (WebHookConfig whc : getListOfEnabledWebHooks(state, sRunningBuild.getProjectId())) {
-            if (!myWebHookBuildStatisticsEventCollator.isInterestedInBuild(whc.getUniqueKey(),
-                    sRunningBuild.getBuildId())) {
-                WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-                webHookExecutor.execute(wh, whc, sRunningBuild, state, null, null, false, Collections.emptyMap());
-            } else {
+            if (myWebHookBuildStatisticsEventCollator.isInterestedInBuild(whc.getUniqueKey(), sRunningBuild.getBuildId())) {
                 Loggers.SERVER.info(String.format(
                         "WebHookListener :: buildFinished event will be ignored because StatisticsEventCollator is interested in this build. webHookConfigId: '%s', buildId: '%s', buildTypeId: '%s'",
                         whc.getUniqueKey(), sRunningBuild.getBuildId(), sRunningBuild.getBuildTypeExternalId()));
+                // Pass in the build, so that when the webhook does eventually trigger, it can refer to the build.
                 myWebHookBuildStatisticsEventCollator.setSBuild(sRunningBuild);
+            } else {
+                WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
+                webHookExecutor.execute(wh, whc, sRunningBuild, state, null, null, false, Collections.emptyMap());
             }
         }
     }
 
     @Override
     public void buildInterrupted(SRunningBuild sRunningBuild) {
-        BuildStateEnum state = BuildStateEnum.BUILD_INTERRUPTED;
-        Loggers.SERVER.debug(
-                ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sRunningBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
-        for (WebHookConfig whc : getListOfEnabledWebHooks(state, sRunningBuild.getProjectId())) {
-            if (!myWebHookBuildStatisticsEventCollator.isInterestedInBuild(whc.getUniqueKey(),
-                    sRunningBuild.getBuildId())) {
-                WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
-                webHookExecutor.execute(wh, whc, sRunningBuild, state, null, null, false, Collections.emptyMap());
-            } else {
-                Loggers.SERVER.info(String.format(
-                        "WebHookListener :: buildInterrupted event will be ignored because StatisticsEventCollator is interested in this build. webHookConfigId: '%s', buildId: '%s', buildTypeId: '%s'",
-                        whc.getUniqueKey(), sRunningBuild.getBuildId(), sRunningBuild.getBuildTypeExternalId()));
-                myWebHookBuildStatisticsEventCollator.setSBuild(sRunningBuild);
-            }
-        }
+        // Cleanup any builds that might be waiting. We don't want them to timeout and trigger buildFinished.
+        this.myWebHookBuildStatisticsEventCollator.removeAllForBuild(sRunningBuild.getBuildId());
+        processBuildEvent(sRunningBuild, BuildStateEnum.BUILD_INTERRUPTED, Collections.emptyMap());
     }
 
 	@Override

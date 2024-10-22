@@ -138,6 +138,15 @@ public class WebHookBuildStatisticsEventCollatorImpl implements WebHookBuildStat
         this.statisticsRequests.remove(new StatisticKey(event.getRequest().getBuildId(), event.getRequest().getWebhookConfigId()));
     }
     
+    @Override
+    public void removeAllForBuild(long buildId) {
+        for (StatisticKey key : statisticsRequests.keySet()) {
+            if (buildId == key.getBuildId()) {
+                Loggers.SERVER.debug("WebHookBuildStatisticsCollatorScheduledTask :: Removing statistics request: " + key);
+                this.statisticsRequests.remove(key);
+            }
+        }    }
+    
 
     @Override
     public void setSBuild(SBuild sBuild) {
