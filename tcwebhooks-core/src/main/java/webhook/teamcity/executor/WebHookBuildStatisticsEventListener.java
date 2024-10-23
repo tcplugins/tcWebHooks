@@ -21,9 +21,11 @@ import webhook.teamcity.payload.content.ExtraParameters;
 public interface WebHookBuildStatisticsEventListener {
 
     public static final String FAILURE_TIMEOUT_SECONDS = "buildStatisticsFailureTimeout";
+    public static final String BUILD_COMPLETED_TIMEOUT_SECONDS = "buildStatisticsLastReceivedTimeout";
     public static final String REQUIRED_BUILD_STATISTICS = "requiredBuildStatistics";
     
     public static final String ALL_REQUIRED_STATISTICS_WERE_RECEIVED_REASON =  "allRequiredStatisticsWereReceived";
+    public static final String BUILD_COMPLETED_TIMEOUT_EXPIRED_REASON =  "buildCompletedTimeoutExpired";
     public static final String FAILURE_TIMEOUT_EXPIRED_REASON =  "failureTimeoutExpired";
     
     /**
@@ -40,12 +42,14 @@ public interface WebHookBuildStatisticsEventListener {
     public class WebHookBuildStatisticsRequest {
         @Builder.Default private Instant created = Instant.now();
         private Instant updated;
+        private Instant buildCompleted;
         private ExtraParameters extraParameters;
         private long buildId;
         private String webhookConfigId;
         private List<String> requiredStatistics;
         @Builder.Default private Map<String,BigDecimal> statistics = new HashMap<>();
         private int failureTimeoutSeconds;
+        private int buildCompletedTimeoutSeconds;
         private SBuild sBuild;
         
         // overriding the auto-generated builder method to
@@ -65,6 +69,9 @@ public interface WebHookBuildStatisticsEventListener {
                 if (super.extraParameters != null && super.extraParameters.containsKey(FAILURE_TIMEOUT_SECONDS)) {
                     super.failureTimeoutSeconds(Integer.parseInt(super.extraParameters.get(FAILURE_TIMEOUT_SECONDS)));
                 }
+                if (super.extraParameters != null && super.extraParameters.containsKey(BUILD_COMPLETED_TIMEOUT_SECONDS)) {
+                    super.buildCompletedTimeoutSeconds(Integer.parseInt(super.extraParameters.get(BUILD_COMPLETED_TIMEOUT_SECONDS)));
+                }
                 if (super.extraParameters != null && super.extraParameters.containsKey(REQUIRED_BUILD_STATISTICS)) {
                     super.requiredStatistics(Arrays.asList(super.extraParameters.get(REQUIRED_BUILD_STATISTICS).split(",")));
                 }
@@ -78,6 +85,10 @@ public interface WebHookBuildStatisticsEventListener {
         }
         public boolean totalElapsedTimeExpired(Instant now) {
             return now.isAfter(this.created.plus(this.failureTimeoutSeconds, ChronoUnit.SECONDS));
+        }
+        public boolean buildCompletedTimeoutExpired(Instant now) {
+            return sBuild != null && now.isAfter(this.buildCompleted.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))
+                    && now.isAfter(this.updated.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS));
         }
         public boolean allRequiredStatisticsWereReceived() {
             return sBuild != null && requiredStatistics != null && this.statistics.keySet().containsAll(requiredStatistics);

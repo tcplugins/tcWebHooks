@@ -95,10 +95,11 @@ public class WebHookBuildStatisticsEventCollatorImpl implements WebHookBuildStat
         }
     }
     @Synchronized
-    private void updateStatistics(StatisticKey key, SBuild sBuild) {
+    private void updateCompletedBuild(StatisticKey key, SBuild sBuild) {
         WebHookBuildStatisticsRequest req = this.statisticsRequests.get(key);
         if (req != null) {
             req.setSBuild(sBuild);
+            req.setBuildCompleted(Instant.now());
         }
     }
 
@@ -152,7 +153,7 @@ public class WebHookBuildStatisticsEventCollatorImpl implements WebHookBuildStat
     public void setSBuild(SBuild sBuild) {
         for (StatisticKey key : statisticsRequests.keySet()) {
             if (sBuild.getBuildId() == key.getBuildId()) {
-                updateStatistics(key, sBuild);
+                updateCompletedBuild(key, sBuild);
             }
         }
     }
@@ -176,6 +177,8 @@ public class WebHookBuildStatisticsEventCollatorImpl implements WebHookBuildStat
                 for (Entry<StatisticKey, WebHookBuildStatisticsRequest> r : webHookBuildStatisticsEventCollator.getEvents()) {
                     if (r.getValue().allRequiredStatisticsWereReceived()) {
                         actionableEvents.add(new WebHookBuildStatisticsEvent(r.getValue(), WebHookBuildStatisticsEventListener.ALL_REQUIRED_STATISTICS_WERE_RECEIVED_REASON));
+                    } else if (r.getValue().buildCompletedTimeoutExpired(now)) {
+                        actionableEvents.add(new WebHookBuildStatisticsEvent(r.getValue(), WebHookBuildStatisticsEventListener.BUILD_COMPLETED_TIMEOUT_EXPIRED_REASON));
                     } else if (r.getValue().totalElapsedTimeExpired(now)) {
                         actionableEvents.add(new WebHookBuildStatisticsEvent(r.getValue(), WebHookBuildStatisticsEventListener.FAILURE_TIMEOUT_EXPIRED_REASON));
                     }
