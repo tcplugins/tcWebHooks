@@ -49,6 +49,7 @@ public class WebHookMainSettingsTest {
 		assertEquals(Boolean.TRUE, whms.getWebHookMainConfig().isBuildStatisticsCollatorEnabled());
 		assertEquals(20, whms.getWebHookMainConfig().getCheckInterval());
 		assertEquals(600, whms.getWebHookMainConfig().getFailureTimeout());
+		assertEquals(300, whms.getWebHookMainConfig().getBuildCompletedTimeout());
 	}
 
 	/*

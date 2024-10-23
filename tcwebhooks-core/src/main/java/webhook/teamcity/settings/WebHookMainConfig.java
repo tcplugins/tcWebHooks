@@ -57,6 +57,9 @@ public class WebHookMainConfig {
 	
 	private static final int BUILD_STATISTIC_CHECK_INTERVAL_DEFAULT = 10; // 10 seconds
 	@Setter private Integer checkInterval = null;
+	
+	private static final int BUILD_STATISTIC_BUILD_COMPLETED_TIMEOUT_DEFAULT = 300; // 5 minutes
+	@Setter private Integer buildCompletedTimeout = null;
 
 
 	private Pattern singleHostPattern;
@@ -232,6 +235,9 @@ public class WebHookMainConfig {
 	    if (this.failureTimeout != null) {
 	        e.setAttribute(WebHookMainSettings.ATTRIBUTENAME_FAILURE_TIMEOUT, String.valueOf(getFailureTimeout()));
 	    }
+	    if (this.buildCompletedTimeout != null) {
+	    	e.setAttribute(WebHookMainSettings.ATTRIBUTENAME_BUILD_COMPLETED_TIMEOUT, String.valueOf(getBuildCompletedTimeout()));
+	    }
 	    return e;
 	}
 	
@@ -241,6 +247,10 @@ public class WebHookMainConfig {
 
     public int getCheckInterval() {
         return defaultIfNull(this.checkInterval, BUILD_STATISTIC_CHECK_INTERVAL_DEFAULT);
+    }
+    
+    public int getBuildCompletedTimeout() {
+    	return defaultIfNull(this.buildCompletedTimeout, BUILD_STATISTIC_BUILD_COMPLETED_TIMEOUT_DEFAULT);
     }
 
     public boolean isBuildStatisticsCollatorEnabled() {

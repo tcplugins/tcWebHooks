@@ -20,6 +20,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	
 	protected static final String ELEMENTNAME_BUILD_STATISTICS_COLLATOR = "build-statistics-collator";
 	protected static final String ATTRIBUTENAME_CHECK_INTERVAL = "check-interval";
+	protected static final String ATTRIBUTENAME_BUILD_COMPLETED_TIMEOUT = "build-completed-timeout";
 	protected static final String ATTRIBUTENAME_FAILURE_TIMEOUT = "failure-timeout";
 	private static final String NAME = WebHookMainSettings.class.getName();
 	private WebHookMainConfig webHookMainConfig;
@@ -153,6 +154,9 @@ public class WebHookMainSettings implements MainConfigProcessor {
 			    if (buildStatisticsCollator.getAttribute(ATTRIBUTENAME_FAILURE_TIMEOUT) != null) {
 			        tempConfig.setFailureTimeout(Integer.valueOf(buildStatisticsCollator.getAttributeValue(ATTRIBUTENAME_FAILURE_TIMEOUT)));
 			    }
+			    if (buildStatisticsCollator.getAttribute(ATTRIBUTENAME_BUILD_COMPLETED_TIMEOUT) != null) {
+			    	tempConfig.setBuildCompletedTimeout(Integer.valueOf(buildStatisticsCollator.getAttributeValue(ATTRIBUTENAME_BUILD_COMPLETED_TIMEOUT)));
+			    }
 			}
 		}
 		this.webHookMainConfig = tempConfig;
@@ -261,6 +265,10 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	
 	public int getCheckInterval() {
 	    return this.webHookMainConfig.getCheckInterval();
+	}
+	
+	public int getBuildCompletedTimeout() {
+		return this.webHookMainConfig.getBuildCompletedTimeout();
 	}
 
 }

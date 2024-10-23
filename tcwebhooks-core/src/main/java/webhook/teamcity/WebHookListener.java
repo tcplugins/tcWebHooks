@@ -476,6 +476,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	                    .buildId(sBuild.getBuildId())
 	                    .webhookConfigId(whc.getUniqueKey())
 	                    .failureTimeoutSeconds(myMainSettings.getFailureTimeout())
+	                    .buildCompletedTimeoutSeconds(myMainSettings.getBuildCompletedTimeout())
 	                    .extraParameters(whc.getParams())
 	                    .build();
                 Loggers.SERVER.info(String.format("WebHookListener :: Registering with StatisticsEventCollator for build. webHookConfigId: '%s', buildId: '%s', buildTypeId: '%s'" ,  whc.getUniqueKey(), sBuild.getBuildId(), sBuild.getBuildTypeExternalId()));

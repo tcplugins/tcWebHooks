@@ -21,7 +21,7 @@ import webhook.teamcity.payload.content.ExtraParameters;
 public interface WebHookBuildStatisticsEventListener {
 
     public static final String FAILURE_TIMEOUT_SECONDS = "buildStatisticsFailureTimeout";
-    public static final String BUILD_COMPLETED_TIMEOUT_SECONDS = "buildStatisticsLastReceivedTimeout";
+    public static final String BUILD_COMPLETED_TIMEOUT_SECONDS = "buildStatisticsBuildCompletedTimeout";
     public static final String REQUIRED_BUILD_STATISTICS = "requiredBuildStatistics";
     
     public static final String ALL_REQUIRED_STATISTICS_WERE_RECEIVED_REASON =  "allRequiredStatisticsWereReceived";
@@ -61,9 +61,6 @@ public interface WebHookBuildStatisticsEventListener {
         // extend the generated builder class to add custom logic
         private static class CustomWebHookBuildStatisticsRequestBuilder extends WebHookBuildStatisticsRequestBuilder {
 
-
-
-
             @Override
             public WebHookBuildStatisticsRequest build() {
                 if (super.extraParameters != null && super.extraParameters.containsKey(FAILURE_TIMEOUT_SECONDS)) {
@@ -87,8 +84,17 @@ public interface WebHookBuildStatisticsEventListener {
             return now.isAfter(this.created.plus(this.failureTimeoutSeconds, ChronoUnit.SECONDS));
         }
         public boolean buildCompletedTimeoutExpired(Instant now) {
-            return sBuild != null && this.updated != null && now.isAfter(this.buildCompleted.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))
-                    && now.isAfter(this.updated.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS));
+        	// The build finished a while ago and we have never received a build Statistic.
+        	if (sBuild != null && this.updated == null 
+        			&& now.isAfter(this.buildCompleted.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))) {
+        		return true;
+        	}
+        	// The build finished a while ago and it's also been a while since we got any statistics.
+        	if (sBuild != null && this.updated != null && now.isAfter(this.buildCompleted.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))
+                    && now.isAfter(this.updated.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))) {
+        		return true;
+        	}
+        	return false;
         }
         public boolean allRequiredStatisticsWereReceived() {
             return sBuild != null && requiredStatistics != null && this.statistics.keySet().containsAll(requiredStatistics);

@@ -54,6 +54,7 @@ public class WebHookBuildStatisticsEventCollatorImplTest {
         reason = null;
         ExtraParameters extraParameters = new ExtraParameters();
         extraParameters.put("webhook", WebHookBuildStatisticsEventListener.FAILURE_TIMEOUT_SECONDS, "2");
+        extraParameters.put("webhook", WebHookBuildStatisticsEventListener.BUILD_COMPLETED_TIMEOUT_SECONDS, "200");
         WebHookBuildStatisticsEventCollatorImpl collator = new WebHookBuildStatisticsEventCollatorImpl(executorServices, deferrableServiceManager, mainSettings);
         collator.registerAsBuildStatisticsEventListener(new WebHookBuildStatisticsEventListener() {
             
