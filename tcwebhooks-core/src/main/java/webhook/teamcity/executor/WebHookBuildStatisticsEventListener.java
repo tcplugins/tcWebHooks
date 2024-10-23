@@ -87,7 +87,7 @@ public interface WebHookBuildStatisticsEventListener {
             return now.isAfter(this.created.plus(this.failureTimeoutSeconds, ChronoUnit.SECONDS));
         }
         public boolean buildCompletedTimeoutExpired(Instant now) {
-            return sBuild != null && now.isAfter(this.buildCompleted.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))
+            return sBuild != null && this.updated != null && now.isAfter(this.buildCompleted.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS))
                     && now.isAfter(this.updated.plus(this.buildCompletedTimeoutSeconds, ChronoUnit.SECONDS));
         }
         public boolean allRequiredStatisticsWereReceived() {
