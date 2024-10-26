@@ -20,6 +20,7 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.SQueuedBuild;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.STest;
@@ -453,4 +454,23 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		this.processTestEvent(BuildStateEnum.TESTS_UNMUTED, user, unmutedGroups);
 	}
 
+	// ProjectFeature changed events
+    @Override
+    public void projectFeatureAdded(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
+        Loggers.SERVER.debug(String.format("WebHookListener :: Handling projectFeatureAdded event: project: '%s', feature: '%s'", project.getExternalId(), projectFeature.getType()));
+        this.mySettings.refreshCache(project);
+    }
+    
+    @Override
+    public void projectFeatureRemoved(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
+        Loggers.SERVER.debug(String.format("WebHookListener :: Handling projectFeatureRemoved event: project: '%s', feature: '%s'", project.getExternalId(), projectFeature.getType()));
+        this.mySettings.refreshCache(project);
+    }
+    
+    @Override
+    public void projectFeatureChanged(@NotNull SProject project, @NotNull SProjectFeatureDescriptor before, @NotNull SProjectFeatureDescriptor after) {
+        Loggers.SERVER.debug(String.format("WebHookListener :: Handling projectFeatureChanged event: project: '%s', feature: '%s'", project.getExternalId(), after.getType()));
+        this.mySettings.refreshCache(project);
+    }
+    
 }

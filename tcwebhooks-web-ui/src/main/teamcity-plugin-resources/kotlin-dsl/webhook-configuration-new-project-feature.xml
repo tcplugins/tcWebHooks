@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dsl-extension kind="projectFeature" type="tcWebHook"
+<dsl-extension kind="projectFeature" type="tcWebHooks"
 	generateDslJar="true">
 
 	<class name="WebHookConfigurationReallyNew">
@@ -87,7 +87,7 @@
 			</description>
 			<option name="allProjectBuilds" value="allProjectBuilds">
 				<description>
-					Publish status to Bitbucket Cloud
+					Send webhook to all build in project
 				</description>
 				<param name="subProjectBuilds" dslName="subProjectBuilds"
 					type="boolean">
