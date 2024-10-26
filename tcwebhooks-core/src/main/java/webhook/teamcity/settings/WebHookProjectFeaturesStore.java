@@ -7,44 +7,15 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
-import jetbrains.buildServer.serverSide.ProjectsModelListener;
-import jetbrains.buildServer.serverSide.ProjectsModelListenerAdapter;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
-import jetbrains.buildServer.util.EventDispatcher;
 import webhook.teamcity.Loggers;
-public class WebHookProjectFeaturesStore extends ProjectsModelListenerAdapter implements WebHookFeaturesStore, ProjectsModelListener{
+public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     
     
     private static final String PROJECT_FEATURE_TYPE = "tcWebHooks";
     private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter = new ProjectFeatureToWebHookConfigConverter();
-    private @NotNull WebHookSettingsCache myWebHookSettingsCache;
-
     
-    public WebHookProjectFeaturesStore(
-            @NotNull EventDispatcher<ProjectsModelListener> eventDispatcher,
-            @NotNull WebHookSettingsCache webHookSettingsManager) {
-        super();
-        this.myWebHookSettingsCache = webHookSettingsManager;
-        eventDispatcher.addListener(this);
-    }
-    
-    @Override
-    public void projectFeatureAdded(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
-        this.myWebHookSettingsCache.refreshCache(project);
-    }
-    
-    @Override
-    public void projectFeatureRemoved(@NotNull SProject project, @NotNull SProjectFeatureDescriptor projectFeature) {
-        this.myWebHookSettingsCache.refreshCache(project);
-    }
-    
-    @Override
-    public void projectFeatureChanged(@NotNull SProject project, @NotNull SProjectFeatureDescriptor before, @NotNull SProjectFeatureDescriptor after) {
-        this.myWebHookSettingsCache.refreshCache(project);
-    }
-    
-
     @Override
     public WebHookUpdateResult addWebHookConfig(@NotNull SProject sProject, @NotNull WebHookConfig webHookConfig) {
         Map<String, String> params = configConverter.convert(webHookConfig).getParameters();

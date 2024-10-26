@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.WebHookConfig.WebHookConfigBuilder;
@@ -66,11 +67,13 @@ public class ProjectFeatureToWebHookConfigConverter {
         populateBuildTyepIds(builder, parameters.get(ENABLED_BUILDS_KEY));
         populateBuildStates(builder, parameters);
         builder.projectInternalId(projectFeatureDescriptor.getProjectId());
-        populateAuthentication(builder, parameters.get(AUTHENTICATION_KEY));
+        populateAuthentication(builder, parameters);
         populateWebHookParameters(builder, parameters);
         populateTriggerFilters(builder, parameters);
         populateHeaders(builder, parameters);
-        return builder.build();
+        WebHookConfig config = builder.build();
+        Loggers.SERVER.debug(String.format("ProjectFeatureToWebHookConfigConverter :: Assembled WebHookConfig from projectFeatureDescriptor. webHookConfig: '%s'", config));
+        return config;
     }
     
 
@@ -102,7 +105,8 @@ public class ProjectFeatureToWebHookConfigConverter {
         }
     }
 
-    private void populateAuthentication(WebHookConfigBuilder builder, String json) {
+    private void populateAuthentication(WebHookConfigBuilder builder, Map<String, String> parameters) {
+        /*
         if (json != null) {
             WebHookAuthConfig authConfig = gson.fromJson(json, WebHookAuthConfig.class);
             builder.authEnabled(true)
@@ -110,6 +114,7 @@ public class ProjectFeatureToWebHookConfigConverter {
             .authPreemptive(authConfig.getPreemptive())
             .authType(authConfig.getType());
         }
+        */
     }
     public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
         return new WebHookProjectFeature(webhook.getUniqueKey(), webhook);

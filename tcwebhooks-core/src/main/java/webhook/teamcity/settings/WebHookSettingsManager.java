@@ -11,7 +11,7 @@ import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEvent;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.content.ExtraParameters;
 
-public interface WebHookSettingsManager {
+public interface WebHookSettingsManager extends WebHookSettingsCache {
 
 	public void initialise();
 	public boolean iswebHooksEnabledForProject(String projectInernalId);
