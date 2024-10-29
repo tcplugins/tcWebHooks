@@ -12,7 +12,7 @@ public class BearerAuthenticatorFactory extends AbstractWebHookAuthenticatorFact
 		public BearerAuthenticatorFactory(WebHookAuthenticatorProvider provider) {
 			super(provider);
 			parameterDefinition.add(
-					new WebHookAuthenticationParameter(BearerAuthenticator.KEY_BEARER, REQUIRED, NOT_HIDDEN, "Bearer Token", "The Bearer token that the webhook should send to authenticate with the webserver.")
+					new WebHookAuthenticationParameter(BearerAuthenticator.KEY_BEARER, REQUIRED, NOT_HIDDEN, "Bearer Token","bearerToken", "The Bearer token that the webhook should send to authenticate with the webserver.")
 			);
 		}
 		
@@ -36,5 +36,10 @@ public class BearerAuthenticatorFactory extends AbstractWebHookAuthenticatorFact
 		public List<WebHookAuthenticationParameter> getParameterList() {
 			return parameterDefinition;
 		}
+
+        @Override
+        public String getProjectFeaturePrefix() {
+            return getName();
+        }
 }
 

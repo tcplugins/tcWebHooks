@@ -11,6 +11,7 @@ public class WebHookAuthenticationParameter {
 	private boolean required;
 	private boolean hidden;
 	private String name;
+	private String projectFeatureKey;
 	private String toolTip;
 
 }

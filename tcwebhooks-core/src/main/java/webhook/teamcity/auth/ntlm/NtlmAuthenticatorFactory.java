@@ -10,10 +10,10 @@ public class NtlmAuthenticatorFactory extends AbstractWebHookAuthenticatorFactor
 
 		public NtlmAuthenticatorFactory(WebHookAuthenticatorProvider provider) {
 			super(provider);
-			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_USERNAME, REQUIRED, NOT_HIDDEN, "Username", "The user name.  This should not include the domain to authenticate with. For example: 'user' is correct whereas 'DOMAIN&#x5c;user' is not."));
-			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_PASS, REQUIRED, HIDDEN, "Password", "The password that the webhook should send to authenticate with the webserver."));
-			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_WORKSTATION, REQUIRED, NOT_HIDDEN, "Workstation", "The workstation the authentication request is originating from. Essentially, the computer name for the TeamCity server."));
-			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_DOMAIN, REQUIRED, NOT_HIDDEN, "Domain", "The Windows domain to authenticate within."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_USERNAME, REQUIRED, NOT_HIDDEN, "Username", "ntlmUsername", "The user name.  This should not include the domain to authenticate with. For example: 'user' is correct whereas 'DOMAIN&#x5c;user' is not."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_PASS, REQUIRED, HIDDEN, "Password", "ntlmPassword", "The password that the webhook should send to authenticate with the webserver."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_WORKSTATION, REQUIRED, NOT_HIDDEN, "Workstation", "ntlmWorkStation", "The workstation the authentication request is originating from. Essentially, the computer name for the TeamCity server."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(NtlmAuthenticator.KEY_DOMAIN, REQUIRED, NOT_HIDDEN, "Domain", "ntlmDomain", "The Windows domain to authenticate within."));
 		}
 		
 		@Override
@@ -30,6 +30,11 @@ public class NtlmAuthenticatorFactory extends AbstractWebHookAuthenticatorFactor
 		public WebHookAuthenticator getAuthenticatorInstance() {
 			return new NtlmAuthenticator();
 		}
+
+        @Override
+        public String getProjectFeaturePrefix() {
+            return getName();
+        }
 
 }
 

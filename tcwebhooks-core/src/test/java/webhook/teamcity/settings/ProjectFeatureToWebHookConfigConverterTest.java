@@ -12,6 +12,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
+import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 public class ProjectFeatureToWebHookConfigConverterTest {
@@ -19,14 +22,17 @@ public class ProjectFeatureToWebHookConfigConverterTest {
     @Test
     public void testConvert() throws JDOMException, IOException {
         //String featureId = "PROJECT_EXT_30";
+        WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
+        authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
+        authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
         WebHookConfig webhook = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
         webhook.setProjectInternalId("project02");
-        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter();
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
         SProjectFeatureDescriptor features = converter.convert(webhook);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        System.out.print(gson.toJson(webhook));
-        //System.out.print(gson.toJson(convertedWebHook));
+        //System.out.print(gson.toJson(webhook));
+        System.out.print(gson.toJson(convertedWebHook));
         assertEquals(gson.toJson(webhook), gson.toJson(convertedWebHook));
         //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
     }
