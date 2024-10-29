@@ -58,6 +58,10 @@
      	class="webhook.teamcity.settings.WebHookProjectFeaturesStore" 
      	/>
      			
+     <bean id="projectFeatureToWebHookConfigConverter" 
+     	class="webhook.teamcity.settings.ProjectFeatureToWebHookConfigConverter" 
+     	/>
+     			
      <bean id="webHookSettingsManager" 
      	class="webhook.teamcity.settings.WebHookSettingsManagerImpl" 
      	/>
@@ -82,7 +86,17 @@
 	<bean id="webHookAuthenticatorProvider"
 		class="webhook.teamcity.auth.WebHookAuthenticatorProvider"
 		/>
-			
+		
+	<bean id="usernamePasswordAuthenticatorFactory"
+		class="webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory"
+		init-method="register" 
+		/>
+		
+	<bean id="bearerAuthenticatorFactory"
+		class="webhook.teamcity.auth.bearer.BearerAuthenticatorFactory"
+		init-method="register" 
+		/>
+		
 	<bean id="webHookTemplateManager"
 		class="webhook.teamcity.payload.WebHookTemplateManager"
 		/>

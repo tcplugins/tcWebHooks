@@ -9,7 +9,10 @@ import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.template.Templates;
@@ -39,16 +42,22 @@ import static webhook.teamcity.server.rest.request.WebHooksRequest.API_WEBHOOKS_
 
 public class EditExistingWebHookTest extends WebHookAbstractSpringAwareJerseyTest {
 	
-	@Autowired
-	private ProjectSettingsManager projectSettingsManager;
+//	@Autowired
+//	private ProjectSettingsManager projectSettingsManager;
 	
 	@Autowired
 	private WebHookSettingsManager webHookSettingsManager;
 	
+	@Autowired
+	private ApplicationContext context;
+
+	
 	private WebResource webResource;
 	
 	@Before 
-	public void setup(){
+	public void setup() throws Exception{
+		super.setUp();
+		WebHookAuthenticatorProvider sc = (WebHookAuthenticatorProvider)context.getBean(WebHookAuthenticatorProvider.class);
     	webResource = resource();
     	webResource.addFilter(new LoggingFilter(System.out));
 	}

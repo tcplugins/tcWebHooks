@@ -188,7 +188,11 @@
      <bean id="webHookFeaturesStore" 
      	class="webhook.teamcity.settings.WebHookProjectFeaturesStore" 
      	/>
-
+     	
+     <bean id="projectFeatureToWebHookConfigConverter" 
+     	class="webhook.teamcity.settings.ProjectFeatureToWebHookConfigConverter" 
+     	/>
+     	
      <bean id="webHookProjectSettingsFactory" 
      	class="webhook.teamcity.settings.WebHookProjectSettingsFactory" 
      	/>

@@ -1,6 +1,8 @@
 package webhook.teamcity.settings;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +17,9 @@ import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;
+import webhook.teamcity.auth.WebHookAuthenticatorFactory;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.exception.OperationUnsupportedException;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.WebHookConfig.WebHookConfigBuilder;
 import webhook.teamcity.settings.project.WebHookParameterModel;
@@ -43,7 +48,7 @@ public class ProjectFeatureToWebHookConfigConverter {
     
     private static final String ENABLED = "enabled";
     private static final String TRUE_VALUE = "true";
-    static final String ID_KEY = "id";
+    static final String ID_KEY = "webHookId";
     private static final String URL_KEY = "url";
     private static final String ENABLED_KEY = ENABLED;
     private static final String TEMPLATE_KEY = "template";
@@ -57,8 +62,12 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static final String AUTHENTICATION_KEY = "authentication";
     
     private static final Gson gson = new GsonBuilder().create();
+    private WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
+    
 
-
+    public ProjectFeatureToWebHookConfigConverter(WebHookAuthenticatorProvider authenticatorProvider) {
+        this.myWebHookAuthenticatorProvider = authenticatorProvider;
+    }
     
     public WebHookConfig convert(SProjectFeatureDescriptor projectFeatureDescriptor) {
         Map<String, String> parameters = projectFeatureDescriptor.getParameters();
@@ -105,7 +114,32 @@ public class ProjectFeatureToWebHookConfigConverter {
         }
     }
 
+    /**
+     * Add Authentication to the WebHookConfig by reading values from ProjectFeature Parameters
+     * @param builder - {@link WebHookConfig}'s builder to add values to.
+     * @param parameters - parameters from ProjectFeature
+     */
     private void populateAuthentication(WebHookConfigBuilder builder, Map<String, String> parameters) {
+        if (parameters.containsKey("authentication")) {
+            WebHookAuthenticatorFactory authFactory = this.myWebHookAuthenticatorProvider.findAuthenticatorFactoryByProjectFeatureName(parameters.get("authentication"));
+            if (authFactory != null) {
+                builder.authEnabled(true)
+                .authType(authFactory.getName());
+                Map<String, String> authParams = new HashMap<>();
+                authFactory.getParameterList().forEach(p -> {
+                    if (parameters.containsKey(p.getProjectFeatureKey())) {
+                        authParams.put(p.getKey(), parameters.get(p.getProjectFeatureKey()));
+                    }
+                });
+                builder.authParameters(authParams);
+                if (parameters.containsKey(authFactory.getProjectFeaturePrefix() + "Preemptive")) {
+                    builder.authPreemptive(Boolean.valueOf(parameters.get(authFactory.getProjectFeaturePrefix() + "Preemptive")));
+                }
+            } else {
+                Loggers.SERVER.warn("ProjectFeatureToWebHookConfigConverter :: unsupported authentication type: " + parameters.get("authentication"));
+                throw new OperationUnsupportedException(String.format("Failed to convert ProjectFeature to WebHookConfig. No registered authentication type '%s'", parameters.get("authentication")));
+            }
+        }
         /*
         if (json != null) {
             WebHookAuthConfig authConfig = gson.fromJson(json, WebHookAuthConfig.class);
@@ -117,7 +151,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         */
     }
     public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
-        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook);
+        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook, myWebHookAuthenticatorProvider);
     }
 
     private static void populateBuildStates(WebHookConfigBuilder builder, Map<String, String> parameters) {
@@ -152,10 +186,12 @@ public class ProjectFeatureToWebHookConfigConverter {
         private static final String DISABLED = "disabled";
         private String id;
         private WebHookConfig webHookConfig;
+        private WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
 
-        public WebHookProjectFeature(String id, WebHookConfig webHookConfig) {
+        public WebHookProjectFeature(String id, WebHookConfig webHookConfig, WebHookAuthenticatorProvider webHookAuthenticatorProvider) {
             this.id = id;
             this.webHookConfig = webHookConfig;
+            this.myWebHookAuthenticatorProvider = webHookAuthenticatorProvider;
         }
 
         @Override
@@ -183,7 +219,7 @@ public class ProjectFeatureToWebHookConfigConverter {
             addHeaders(parameters);
             addWebHookParameters(parameters);
             if (this.webHookConfig.getAuthEnabled().booleanValue()) {
-                parameters.put(AUTHENTICATION_KEY, getAuthenticationAsJson());
+                parameters.putAll(getAuthenticationAsParameters(this.webHookConfig.getAuthenticationConfig()));
             }
             return parameters;
         }
@@ -197,8 +233,22 @@ public class ProjectFeatureToWebHookConfigConverter {
             parameters.put(BuildStateEnum.REPORT_STATISTICS.getShortName(), buildStates.enabled(BuildStateEnum.REPORT_STATISTICS) ? ENABLED : DISABLED);
         }
 
-        private String getAuthenticationAsJson() {
-            return gson.toJson(this.webHookConfig.getAuthenticationConfig());
+        private Map<String,String> getAuthenticationAsParameters(WebHookAuthConfig webHookAuthConfig) {
+            Map<String,String> authParams = new HashMap<>();
+            WebHookAuthenticatorFactory authFactory = myWebHookAuthenticatorProvider.findAuthenticatorFactoryByType(webHookAuthConfig.getType());
+            if (authFactory != null) {
+                authParams.put(AUTHENTICATION_KEY, authFactory.getProjectFeaturePrefix());
+                authFactory.getParameterList().stream().forEach(p -> {
+                    if (webHookAuthConfig.getParameters().containsKey(p.getKey())) {
+                        authParams.put(p.getProjectFeatureKey(), webHookAuthConfig.getParameters().get(p.getKey()));
+                    }
+                });
+                return authParams;
+            } else {
+                Loggers.SERVER.warn("ProjectFeatureToWebHookConfigConverter :: unsupported authentication type: " + webHookAuthConfig.getType());
+                throw new OperationUnsupportedException(String.format("Failed to convert WebHookConfig to ProjectFeature. No registered authentication type '%s'", webHookAuthConfig.getType()));
+            }
+            //return gson.toJson(this.webHookConfig.getAuthenticationConfig());
         }
 
         private void addTriggerFilters(Map<String, String> parameters) {

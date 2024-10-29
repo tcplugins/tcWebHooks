@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface WebHookAuthenticatorFactory {
 	public String getName();
+	public String getProjectFeaturePrefix();
 	public String getDescription();
 	public void register();
 	public WebHookAuthenticator getAuthenticatorInstance();

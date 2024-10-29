@@ -9,12 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import lombok.AllArgsConstructor;
 import webhook.teamcity.Loggers;
+
+@AllArgsConstructor
 public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     
-    
     private static final String PROJECT_FEATURE_TYPE = "tcWebHooks";
-    private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter = new ProjectFeatureToWebHookConfigConverter();
+    private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter;
     
     @Override
     public WebHookUpdateResult addWebHookConfig(@NotNull SProject sProject, @NotNull WebHookConfig webHookConfig) {
