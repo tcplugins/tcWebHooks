@@ -1,0 +1,19 @@
+<metadata modelVersion="1.1.0">
+  <groupId>org.jetbrains.teamcity</groupId>
+  <artifactId>configs-dsl-kotlin-plugins-latest</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20241025.085722</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20241025085722</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0-20241025.085722-1</value>
+        <updated>20241025085722</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
