@@ -32,6 +32,7 @@ import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
+import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import lombok.RequiredArgsConstructor;
 import webhook.teamcity.DeferrableService;
@@ -87,9 +88,10 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private final WebHookFeaturesStore myWebHookFeaturesStore;
 	private final ConfigActionFactory myConfigActionFactory;
 	private final ServerPaths myServerPaths;
-	private final ScheduledExecutorService myExecutorService;
 	private final DeferrableServiceManager myDeferrableServiceManager;
 	private ScheduledFuture<?> future;
+	private final ExecutorServices executorServices;
+
 
 	private static final String TEAMCITY_INTERNAL_PROPERTY_KEY = "teamcity.plugin.tcWebHooks.pluginSettingsToProjectFeaturesMigration";
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
@@ -183,7 +185,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 			markMigrationAs("completed");
 			return;
 		}
-        addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
+		addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
 		for (Map.Entry<SProject, WebHookProjectSettings> e : projectsForMigration.entrySet()) {
 			if (checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
                 addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
@@ -198,7 +200,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 
 	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, BufferedWriter writer) throws ProjectFeatureMigrationException {
 		addSectionToReport(writer, String.format("Starting migration of project '%s'. There are '%s' webhooks to migrate", project.getExternalId(), webhookSettings.getWebHooksAsList().size()));
-	    try {
+		try {
 			backupExistingPluginSettings(project, now, writer);
 		} catch (IOException e) {
 			throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", project.getExternalId()), e);
@@ -243,7 +245,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
 		File projectPluginSettingsBackupFile = new File(projectPluginsConfigDir, String.format("plugin-settings-%s.xml", now.format(dateTimeFormatter)));
 		FileUtils.copyFile(projectPluginSettingsFile, projectPluginSettingsBackupFile);
-        addToReport(writer, String.format("Backed up existing plugin-settings.xml file in project '%s'. Copied from '%s' to '%s'", project.getExternalId(), projectPluginSettingsFile, projectPluginSettingsBackupFile));
+		addToReport(writer, String.format("Backed up existing plugin-settings.xml file in project '%s'. Copied from '%s' to '%s'", project.getExternalId(), projectPluginSettingsFile, projectPluginSettingsBackupFile));
 	}
 
 	private boolean checkIfProjectHasVcsEnabledAndSyncDisabled(SProject key) {
@@ -325,8 +327,9 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 
 	@Override
 	public void register() {
+		ScheduledExecutorService executorService = this.executorServices.getNormalExecutorService();
 		Loggers.SERVER.info("PluginSettingsToProjectFeaturesMigrator :: Scheduling migration to start in 60 seconds.");
-		this.future =  this.myExecutorService.schedule(new PluginSettingsToProjectFeaturesMigratorScheduledTask(this), 60, TimeUnit.SECONDS);
+		this.future = executorService.schedule(new PluginSettingsToProjectFeaturesMigratorScheduledTask(this), 60, TimeUnit.SECONDS);
 
 	}
 
