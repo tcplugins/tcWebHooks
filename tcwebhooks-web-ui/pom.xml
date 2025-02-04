@@ -140,6 +140,8 @@
 						<copy todir="${project.build.directory}/dist-core/kotlin-dsl/">
 							  <fileset dir="${project.basedir}/../tcwebhooks-kotlin-dsl/target/">
 		    						<include name="tcwebhooks-kotlin-dsl-*.jar" />
+		    						<!-- Don't incude source jar for now -->
+		    						<exclude name="tcwebhooks-kotlin-dsl-*sources.jar" />
 		    				  </fileset>
 		    			</copy>
 		    			
