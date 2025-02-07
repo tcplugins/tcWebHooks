@@ -92,14 +92,14 @@
 			<id>local-mvn-repo</id>
 			<url>file://${project.basedir}/local-mvn-repo</url>
 		</repository>
-		<repository>
+<!--		<repository>
 			<id>teamcity-server</id>
 			<url>
 				http://teamcity-test-main.local.lan:8111/app/dsl-plugins-repository</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-		</repository>
+		</repository>-->
 		<repository>
 			<id>JetBrains</id>
 			<url>https://download.jetbrains.com/teamcity-repository/</url>
