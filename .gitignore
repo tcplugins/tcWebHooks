@@ -6,3 +6,4 @@
 .DS_Store
 # Java annotation processor (APT)
 .factorypath
+**/target

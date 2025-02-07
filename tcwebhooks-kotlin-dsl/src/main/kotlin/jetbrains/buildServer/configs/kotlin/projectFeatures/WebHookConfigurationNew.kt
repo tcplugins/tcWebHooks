@@ -8,6 +8,7 @@ import jetbrains.buildServer.configs.kotlin.*
  *
  * @see webHookConfigurationNew
  */
+@TeamCityDsl
 open class WebHookConfigurationNew() : ProjectFeature() {
 
     init {
@@ -122,8 +123,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
 
             /**
              * A flag to instruct the webhook to run against all
-             * builds in sub-projects of this
-             * project.
+             * builds in subprojects of this project.
              */
             var subProjectBuilds by booleanParameter()
 
@@ -135,8 +135,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
 
             /**
              * A flag to instruct the webhook to run against all
-             * builds in sub-projects of this
-             * project.
+             * builds in subprojects of this project.
              */
             var subProjectBuilds by booleanParameter()
 
@@ -156,7 +155,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
     }
 
     /**
-     * Send webhook to all build in project
+     * Send webhook to all builds in project
      */
     fun allProjectBuilds(init: BuildTypes.AllProjectBuilds.() -> Unit = {}) : BuildTypes.AllProjectBuilds {
         val result = BuildTypes.AllProjectBuilds()
@@ -183,14 +182,12 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         class EnabledBuildStates() : BuildStates("enabledBuildStates") {
 
             /**
-             * Trigger this webhook when the build is added to the
-             * queue.
+             * Trigger this webhook when the build is added to the queue.
              */
             var buildAddedToQueue by booleanParameter(trueValue = "enabled", falseValue = "disabled")
 
             /**
-             * Trigger this webhook when the build is removed from
-             * the queue by a user.
+             * Trigger this webhook when the build is removed from the queue by a user.
              */
             var buildRemovedFromQueue by booleanParameter(trueValue = "enabled", falseValue = "disabled")
 
