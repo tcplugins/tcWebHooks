@@ -84,6 +84,21 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<!--
+							Tell maven not to include a "META-INF/maven/" directory inside the jar.
+							We need to have our own "META-INF/maven" file sourced from
+							"src/main/resources/META-INF/maven" so that TeamCity can index
+							our jar.
+						-->
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
