@@ -21,7 +21,7 @@
 	<properties>
 		<kotlin.version>1.8.0</kotlin.version>
 		<teamcity.version>2022.10</teamcity.version>
-		<teamcity.dsl.version>2022.02</teamcity.dsl.version>
+		<teamcity.dsl.version>2024.03</teamcity.dsl.version>
 	</properties>
 
 

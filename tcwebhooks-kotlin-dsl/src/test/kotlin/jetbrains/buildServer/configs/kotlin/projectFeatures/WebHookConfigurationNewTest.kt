@@ -1,8 +1,6 @@
 package jetbrains.buildServer.configs.kotlin.projectFeatures
 
-import jetbrains.buildServer.configs.kotlin.ProjectFeature
-import jetbrains.buildServer.configs.kotlin.ProjectFeatures
-import jetbrains.buildServer.configs.kotlin.project
+import jetbrains.buildServer.configs.kotlin.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 
@@ -33,8 +31,21 @@ class WebHookConfigurationNewTest {
                 }
         }
 
+
+    }
+
+    @Test
+    fun getWebHookId() {
+        assertEquals(
+            "SmallKotlinProject_WebHook_01",
+            hook.webHookId
+        )
+
+        version = "2024.03"
+
         /*project {
-            name ="Test01"
+            id("test")
+            name = "Test01"
             description = "Small Kotlin based project from VCS"
 
             features {
@@ -59,14 +70,6 @@ class WebHookConfigurationNewTest {
                 }
             }
         }*/
-    }
-
-    @Test
-    fun getWebHookId() {
-        assertEquals(
-            "SmallKotlinProject_WebHook_01",
-            hook.webHookId
-        )
     }
 
     @Test
