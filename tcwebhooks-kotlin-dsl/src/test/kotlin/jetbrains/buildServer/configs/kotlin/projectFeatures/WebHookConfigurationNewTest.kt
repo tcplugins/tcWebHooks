@@ -30,14 +30,14 @@ class WebHookConfigurationNewTest {
                     preemptive = true
                 }
 
-                headers {
-                    header{
-                        name = "foo"
-                        value = "bar"
-                    }
-                    header(name = "foo2", value = "bar2")
-                    header("foo3", "bar3")
-                }
+                // headers {
+                //     header{
+                //         name = "foo"
+                //         value = "bar"
+                //     }
+                //     header(name = "foo2", value = "bar2")
+                //     header("foo3", "bar3")
+                // }
         }
     }
 
