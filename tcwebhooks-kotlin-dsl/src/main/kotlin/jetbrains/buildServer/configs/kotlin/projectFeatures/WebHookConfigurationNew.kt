@@ -19,6 +19,8 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         init()
     }
 
+    lateinit var headers: Headers
+
     /**
      * WebHook Id. Must be unique across the whole of teamcity.
      * Suggestion: use a
@@ -230,8 +232,51 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             consumer.consumePropertyError("buildStates", "mandatory 'buildStates' property is not specified")
         }
     }
-}
 
+    fun header(name: String, value: String) : Header {
+        val h = Header()
+        h.name = name
+        h.value = value
+        return h
+    }
+
+    class Headers {
+        val headers = arrayListOf<Header>()
+
+        fun headers(init: Header.() -> Unit) : Headers {
+            val h = Header()
+            h.init()
+            headers.add(h)
+            return this
+        }
+    }
+
+    class Header : Parametrized() {
+        var name by stringParameter("name")
+        var value by stringParameter("value")
+    }
+
+
+    fun header(init: Header.() -> Unit = {}) : Header {
+        val result = Header()
+        result.init()
+        return result
+    }
+
+    fun header(name: String, value:String, init: Header.() -> Unit = {}) : Header {
+        val result = Header()
+        result.init()
+        result.name = name
+        result.value = value
+        return result
+    }
+
+    fun headers(header: () -> Header) {
+        var hs = Headers.headers(header.invoke())
+        hs.add(header.invoke())
+        return hs
+    }
+}
 
 /**
  * A description of a called function.
