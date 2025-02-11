@@ -271,11 +271,11 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         return result
     }
 
-    fun headers(header: () -> Header) {
-        var hs = Headers.headers(header.invoke())
-        hs.add(header.invoke())
-        return hs
-    }
+    // fun headers(header: () -> Header) {
+    //     var hs = Headers.headers(header.invoke())
+    //     hs.add(header.invoke())
+    //     return hs
+    // }
 }
 
 /**
