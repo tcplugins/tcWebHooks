@@ -50,7 +50,7 @@ class WebHookConfigurationNewTest {
 
         version = "2024.03"
 
-        /*project {
+        project {
             id("test")
             name = "Test01"
             description = "Small Kotlin based project from VCS"
@@ -76,7 +76,7 @@ class WebHookConfigurationNewTest {
                     }
                 }
             }
-        }*/
+        }
     }
 
     @Test
