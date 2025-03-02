@@ -1,6 +1,10 @@
 package jetbrains.buildServer.configs.kotlin.projectFeatures
 
 import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.*
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 
@@ -30,14 +34,23 @@ class WebHookConfigurationNewTest {
                     preemptive = true
                 }
 
-                // headers {
-                //     header{
-                //         name = "foo"
-                //         value = "bar"
-                //     }
-                //     header(name = "foo2", value = "bar2")
-                //     header("foo3", "bar3")
-                // }
+                headers {
+                    header(name = "foo1", value = "bar1")
+//                    header{
+//                        name = "foo"
+//                        value = "bar"
+//                    }
+                    header(name = "foo2", value = "bar2")
+                    header("foo3", "bar3")
+                }
+
+                parameters {
+                    parameter("fooParam1", "barParam1")
+                    parameter(
+                        "fooParam2",
+                        "barParam2",
+                        templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY)
+                }
         }
     }
 
@@ -50,7 +63,7 @@ class WebHookConfigurationNewTest {
 
         version = "2024.03"
 
-        project {
+        /*project {
             id("test")
             name = "Test01"
             description = "Small Kotlin based project from VCS"
@@ -76,7 +89,7 @@ class WebHookConfigurationNewTest {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @Test
@@ -85,5 +98,19 @@ class WebHookConfigurationNewTest {
             "http://localhost:8111/webhooks/endpoint.html?vcs_test=1",
             hook.url
         )
+    }
+
+    @Test
+    fun getHeaders() {
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "header_0_name", value = "foo1" )))
+    }
+
+    @Test
+    fun getParameters() {
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_0_name", value = "fooParam1" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_0_value", value = "barParam1" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_name", value = "fooParam2" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_value", value = "barParam2" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_templateEngine", value = "VELOCITY" )))
     }
 }

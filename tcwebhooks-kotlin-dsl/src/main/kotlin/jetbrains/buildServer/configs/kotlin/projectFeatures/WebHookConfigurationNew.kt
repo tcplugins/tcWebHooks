@@ -1,6 +1,7 @@
 package jetbrains.buildServer.configs.kotlin.projectFeatures
 
 import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.projectFeatures.WebHookConfigurationNew.Parameter
 
 /**
  * A description of a class.
@@ -18,8 +19,6 @@ open class WebHookConfigurationNew() : ProjectFeature() {
     constructor(init: WebHookConfigurationNew.() -> Unit): this() {
         init()
     }
-
-    lateinit var headers: Headers
 
     /**
      * WebHook Id. Must be unique across the whole of teamcity.
@@ -233,49 +232,165 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         }
     }
 
-    fun header(name: String, value: String) : Header {
-        val h = Header()
-        h.name = name
-        h.value = value
-        return h
-    }
+//    fun header(name: String, value: String) : Header {
+//        val h = Header()
+//        h.name = name
+//        h.value = value
+//        return h
+//    }
 
-    class Headers {
-        val headers = arrayListOf<Header>()
-
-        fun headers(init: Header.() -> Unit) : Headers {
-            val h = Header()
-            h.init()
-            headers.add(h)
-            return this
+    class Headers(val feature: WebHookConfigurationNew, init: Headers.() -> Unit) {
+        val myHeaders = mutableMapOf<String,String>()
+        init {
+            init()
         }
+
+        fun header(name: String, value: String) {
+            // TODO: Throw exception if header added twice
+            myHeaders[name] = value
+            //this.feature.param(name, value)
+        }
+
+//        fun header(init: Header.() -> Unit = {}) {
+//            val result = Header()
+//            result.init()
+//            if (result.name != null && result.value != null) {
+//                this.feature.param(result.name, result.value)
+//            }
+//        }
     }
 
-    class Header : Parametrized() {
-        var name by stringParameter("name")
-        var value by stringParameter("value")
+    fun headers(init: Headers.() -> Unit): Headers {
+        val headers = Headers(this, init)
+        for((headerCounter, key) in headers.myHeaders.keys.withIndex()) {
+            headers.feature.param("header_${headerCounter}_name", key)
+            headers.myHeaders[key]?.let { headers.feature.param("header_${headerCounter}_value", it) }
+        }
+        return headers
+    }
+
+    class Parameters(val feature: WebHookConfigurationNew, init: Parameters.() -> Unit) {
+        val myParameters = mutableMapOf<String,Parameter>()
+        init {
+            init()
+        }
+
+        fun parameter(name: String, value: String) {
+            // TODO: Throw exception if parameter added twice
+            myParameters[name] = Parameter(
+                name,
+                value,
+                secure = null,
+                includedInLegacyPayloads = null,
+                forceResolveTeamCItyVariable = null,
+                templateEngine = null
+            )
+        }
+        fun parameter(
+            name: String,
+            value: String,
+            secure: Boolean? = null,
+            includedInLegacyPayloads: Boolean? = null,
+            forceResolveTeamCItyVariable: Boolean? = null,
+            templateEngine: TemplateEngine? = null
+            ) {
+            // TODO: Throw exception if parameter added twice
+            myParameters[name] = Parameter(
+                name,
+                value,
+                secure,
+                includedInLegacyPayloads,
+                forceResolveTeamCItyVariable,
+                templateEngine
+            )
+        }
+
+    }
+
+    fun parameters(init: Parameters.() -> Unit): Parameters {
+        val parameters = Parameters(this, init)
+        for((parameterCounter, p) in parameters.myParameters.values.withIndex()) {
+
+            parameters.feature.param("parameter_${parameterCounter}_name", p.name)
+            parameters.feature.param("parameter_${parameterCounter}_value", p.value)
+            p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
+            p.includedInLegacyPayloads?.let { parameters.feature.param("parameter_${parameterCounter}_includedInLegacyPayloads", p.includedInLegacyPayloads.toString()) }
+            p.forceResolveTeamCItyVariable?.let { parameters.feature.param("parameter_${parameterCounter}_forceResolveTeamCItyVariable", p.forceResolveTeamCItyVariable.toString()) }
+            p.templateEngine?.let { parameters.feature.param("parameter_${parameterCounter}_templateEngine", p.templateEngine.toString()) }
+        }
+        return parameters
     }
 
 
-    fun header(init: Header.() -> Unit = {}) : Header {
-        val result = Header()
-        result.init()
-        return result
+
+
+    class Parameter(
+        var name: String,
+        var value: String,
+        var secure: Boolean?,
+        var includedInLegacyPayloads: Boolean?,
+        var forceResolveTeamCItyVariable: Boolean?,
+        var templateEngine: TemplateEngine?
+        ) {
     }
 
-    fun header(name: String, value:String, init: Header.() -> Unit = {}) : Header {
-        val result = Header()
-        result.init()
-        result.name = name
-        result.value = value
-        return result
+    enum class TemplateEngine {
+        STANDARD, VELOCITY
     }
+//    fun headers(init: Headers.() -> Unit): Headers {
+//        val headers = Headers(this, init)
+//        headers.myHeaders.forEach { n, v -> headers.feature.param(n,v) }
+//
+//        return headers
+//    }
 
-    // fun headers(header: () -> Header) {
-    //     var hs = Headers.headers(header.invoke())
-    //     hs.add(header.invoke())
-    //     return hs
-    // }
+//    class Headers {
+//        constructor Headers() {
+//
+//        }
+//        fun header(name: String, value:String) : Header {
+//            // TODO find existing headers to get index, then add
+//            param(name, value)
+//            val result = Header()
+//            result.name = name
+//            result.value = value
+//            return result
+//        }
+//
+//        fun headers(init: Header.() -> Unit) : Headers {
+//            val h = Header()
+//            h.init()
+//            headers.add(h)
+//            return this
+//        }
+//    }
+
+
+
+//    fun header(init: Header.() -> Unit = {}) : Header {
+//
+//        val result = Header()
+//        result.init()
+//        return result
+//    }
+
+
+
+    /*
+        <param name="header_0_name" value="x-token" />
+        <param name="header_0_value" value="some-token-value" />
+
+        <param name="triggerFilter_0_value value="${buildInternalTypeId}" />
+        <param name="triggerFilter_0_regex value="^bt\d$" />
+        <param name="triggerFilter_0_enabled value="true" />
+     */
+
+//    fun headers(header: () -> Header) {
+//
+//        //var hs = Headers.headers(header.invoke())
+//        //hs.add(header.invoke())
+//        //return hs
+//    }
 }
 
 /**
