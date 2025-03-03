@@ -334,6 +334,41 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         ) {
     }
 
+    class TriggerFilters(val feature: WebHookConfigurationNew, init: TriggerFilters.() -> Unit) {
+        val myTriggerFilters = mutableListOf<TriggerFilter>()
+        init {
+            init()
+        }
+
+        fun triggerFilter(value: String, regex: String, enabled: boolean) {
+            // TODO: Throw exception if parameter added twice
+            myTriggerFilters.add( new TriggerFilter(
+                value,
+                regex,
+                enabled
+                )
+            )
+        }
+    }
+
+    fun triggerFilters(init: triggerFilters.() -> Unit): triggerFilters {
+        val triggerFilters = TriggerFilters(this, init)
+        for((triggerFilterCounter, p) in triggerFilters.myTriggerFilters.values.withIndex()) {
+            triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_value", p.value)
+            triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_regex", p.regex)
+            triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_enabled", p.enabled.toString())
+        }
+        return triggerFilters
+    }
+
+
+    class TriggerFilter(
+        var value: String,
+        var regex: String,
+        var enabled: boolean
+        ) {
+    }
+
     enum class TemplateEngine {
         STANDARD, VELOCITY
     }

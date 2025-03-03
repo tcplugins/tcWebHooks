@@ -54,6 +54,10 @@ class WebHookConfigurationNewTest {
                         includedInLegacyPayloads = true,
                         templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY)
                 }
+
+                triggerFilters {
+                    triggerFilter()
+                }
         }
     }
 
@@ -118,5 +122,14 @@ class WebHookConfigurationNewTest {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_includedInLegacyPayloads", value = "true" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_forceResolveTeamCityVariable", value = "true" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_templateEngine", value = "VELOCITY" )))
+    }
+
+    @Test
+    fun getTriggers() {
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_name", value = "fooTriggerFilter1" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_value", value = "barTriggerFilter1" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_name", value = "fooTriggerFilter2" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_value", value = "barTriggerFilter2" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_templateEngine", value = "VELOCITY" )))
     }
 }
