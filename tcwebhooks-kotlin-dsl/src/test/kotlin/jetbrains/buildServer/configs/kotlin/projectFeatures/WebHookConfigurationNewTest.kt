@@ -56,7 +56,18 @@ class WebHookConfigurationNewTest {
                 }
 
                 triggerFilters {
-                    triggerFilter()
+                    triggerFilter( value = "barTriggerFilter1", regex = "regex1", enabled = true)
+                    triggerFilter( 
+                        value = "barTriggerFilter2", 
+                        regex = "^bt\\d$", 
+                        enabled = false
+                    )
+                    triggerFilter( 
+                        "barTriggerFilter3", 
+                        "^master$", 
+                        false
+                    )
+                    triggerFilter("barTriggerFilter4", "^bt\\d$", true)
                 }
         }
     }
@@ -126,10 +137,17 @@ class WebHookConfigurationNewTest {
 
     @Test
     fun getTriggers() {
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_name", value = "fooTriggerFilter1" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_value", value = "barTriggerFilter1" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_name", value = "fooTriggerFilter2" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_regex", value = "regex1" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_enabled", value = "true" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_value", value = "barTriggerFilter2" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_templateEngine", value = "VELOCITY" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_regex", value = "^bt\\d$" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_1_enabled", value = "false" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_2_value", value = "barTriggerFilter3" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_2_regex", value = "^master$" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_2_enabled", value = "false" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_3_value", value = "barTriggerFilter4" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_3_regex", value = "^bt\\d$" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_3_enabled", value = "true" )))
     }
 }

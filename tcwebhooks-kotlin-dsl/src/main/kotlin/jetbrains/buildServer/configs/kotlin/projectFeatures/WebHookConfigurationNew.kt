@@ -340,9 +340,9 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             init()
         }
 
-        fun triggerFilter(value: String, regex: String, enabled: boolean) {
+        fun triggerFilter(value: String, regex: String, enabled: Boolean) {
             // TODO: Throw exception if parameter added twice
-            myTriggerFilters.add( new TriggerFilter(
+            myTriggerFilters.add(TriggerFilter(
                 value,
                 regex,
                 enabled
@@ -351,9 +351,9 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         }
     }
 
-    fun triggerFilters(init: triggerFilters.() -> Unit): triggerFilters {
+    fun triggerFilters(init: TriggerFilters.() -> Unit): TriggerFilters {
         val triggerFilters = TriggerFilters(this, init)
-        for((triggerFilterCounter, p) in triggerFilters.myTriggerFilters.values.withIndex()) {
+        for((triggerFilterCounter, p) in triggerFilters.myTriggerFilters.withIndex()) {
             triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_value", p.value)
             triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_regex", p.regex)
             triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_enabled", p.enabled.toString())
@@ -365,7 +365,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
     class TriggerFilter(
         var value: String,
         var regex: String,
-        var enabled: boolean
+        var enabled: Boolean
         ) {
     }
 
