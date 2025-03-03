@@ -282,7 +282,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
                 value,
                 secure = null,
                 includedInLegacyPayloads = null,
-                forceResolveTeamCItyVariable = null,
+                forceResolveTeamCityVariable = null,
                 templateEngine = null
             )
         }
@@ -291,7 +291,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             value: String,
             secure: Boolean? = null,
             includedInLegacyPayloads: Boolean? = null,
-            forceResolveTeamCItyVariable: Boolean? = null,
+            forceResolveTeamCityVariable: Boolean? = null,
             templateEngine: TemplateEngine? = null
             ) {
             // TODO: Throw exception if parameter added twice
@@ -300,7 +300,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
                 value,
                 secure,
                 includedInLegacyPayloads,
-                forceResolveTeamCItyVariable,
+                forceResolveTeamCityVariable,
                 templateEngine
             )
         }
@@ -315,7 +315,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             parameters.feature.param("parameter_${parameterCounter}_value", p.value)
             p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
             p.includedInLegacyPayloads?.let { parameters.feature.param("parameter_${parameterCounter}_includedInLegacyPayloads", p.includedInLegacyPayloads.toString()) }
-            p.forceResolveTeamCItyVariable?.let { parameters.feature.param("parameter_${parameterCounter}_forceResolveTeamCItyVariable", p.forceResolveTeamCItyVariable.toString()) }
+            p.forceResolveTeamCityVariable?.let { parameters.feature.param("parameter_${parameterCounter}_forceResolveTeamCityVariable", p.forceResolveTeamCityVariable.toString()) }
             p.templateEngine?.let { parameters.feature.param("parameter_${parameterCounter}_templateEngine", p.templateEngine.toString()) }
         }
         return parameters
@@ -329,7 +329,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         var value: String,
         var secure: Boolean?,
         var includedInLegacyPayloads: Boolean?,
-        var forceResolveTeamCItyVariable: Boolean?,
+        var forceResolveTeamCityVariable: Boolean?,
         var templateEngine: TemplateEngine?
         ) {
     }

@@ -49,6 +49,9 @@ class WebHookConfigurationNewTest {
                     parameter(
                         "fooParam2",
                         "barParam2",
+                        secure = true,
+                        forceResolveTeamCityVariable = true,
+                        includedInLegacyPayloads = true,
                         templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY)
                 }
         }
@@ -111,6 +114,9 @@ class WebHookConfigurationNewTest {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_0_value", value = "barParam1" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_name", value = "fooParam2" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_value", value = "barParam2" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_secure", value = "true" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_includedInLegacyPayloads", value = "true" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_forceResolveTeamCityVariable", value = "true" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_1_templateEngine", value = "VELOCITY" )))
     }
 }
