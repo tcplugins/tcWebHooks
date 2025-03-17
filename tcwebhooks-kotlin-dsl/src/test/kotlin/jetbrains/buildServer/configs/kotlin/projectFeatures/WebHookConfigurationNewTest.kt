@@ -1,9 +1,7 @@
 package jetbrains.buildServer.configs.kotlin.projectFeatures
 
 import jetbrains.buildServer.configs.kotlin.*
-import jetbrains.buildServer.configs.kotlin.*
 import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
