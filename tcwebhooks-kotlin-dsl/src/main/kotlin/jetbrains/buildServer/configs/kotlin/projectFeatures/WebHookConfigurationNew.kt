@@ -277,15 +277,9 @@ open class WebHookConfigurationNew() : ProjectFeature() {
 
         fun parameter(name: String, value: String) {
             // TODO: Throw exception if parameter added twice
-            myParameters[name] = Parameter(
-                name,
-                value,
-                secure = null,
-                includedInLegacyPayloads = null,
-                forceResolveTeamCityVariable = null,
-                templateEngine = null
-            )
+            parameter(name, value, null, null, null, null)
         }
+
         fun parameter(
             name: String,
             value: String,
@@ -304,6 +298,10 @@ open class WebHookConfigurationNew() : ProjectFeature() {
                 templateEngine
             )
         }
+
+//        fun parameter(init: Parameter.() -> Unit = {}) : Parameter {
+//            val parameter = Parameter(init)
+//        }
 
     }
 
@@ -331,41 +329,6 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         var includedInLegacyPayloads: Boolean?,
         var forceResolveTeamCityVariable: Boolean?,
         var templateEngine: TemplateEngine?
-        ) {
-    }
-
-    class TriggerFilters(val feature: WebHookConfigurationNew, init: TriggerFilters.() -> Unit) {
-        val myTriggerFilters = mutableListOf<TriggerFilter>()
-        init {
-            init()
-        }
-
-        fun triggerFilter(value: String, regex: String, enabled: Boolean) {
-            // TODO: Throw exception if parameter added twice
-            myTriggerFilters.add(TriggerFilter(
-                value,
-                regex,
-                enabled
-                )
-            )
-        }
-    }
-
-    fun triggerFilters(init: TriggerFilters.() -> Unit): TriggerFilters {
-        val triggerFilters = TriggerFilters(this, init)
-        for((triggerFilterCounter, p) in triggerFilters.myTriggerFilters.withIndex()) {
-            triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_value", p.value)
-            triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_regex", p.regex)
-            triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_enabled", p.enabled.toString())
-        }
-        return triggerFilters
-    }
-
-
-    class TriggerFilter(
-        var value: String,
-        var regex: String,
-        var enabled: Boolean
         ) {
     }
 
