@@ -8,7 +8,7 @@ import org.junit.jupiter.api.*
 
 class WebHookConfigurationNewTest {
 
-    lateinit var hook: WebHookConfigurationNew
+    private lateinit var hook: WebHookConfigurationNew
 
     @BeforeEach
     fun setup() {

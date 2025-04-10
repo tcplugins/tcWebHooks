@@ -27,21 +27,43 @@ import webhook.teamcity.settings.project.WebHookParameterModel;
 public class ProjectFeatureToWebHookConfigConverter {
     /*
      * 
-     <parameters>
-        <param name="enabled" value="true" />
-        <param name="url" value="http://localhost:58001/200" />
+      <parameters>
+        <param name="authentication" value="basicAuth" />
+        <param name="basicAuthPassword" value="myPassword" />
+        <param name="basicAuthPreemptive" value="true" />
+        <param name="basicAuthRealm" value="myRealm" />
+        <param name="basicAuthUsername" value="myUserName" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="buildStates" value="enabledBuildStates" />
+        <param name="buildTypeIds" value="RootProjectId_TcDummyDeb, RootProjectId_TcWebHooks" />
+        <param name="buildTypes" value="selectedProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
-        <!-- enabledBuildStates can be a comma separated list of enabled build states -->
-        <param name="enabledBuildStates" value="buildStarted,changesLoaded,beforeBuildFinished,buildInterrupted,buildSuccessful,buildFailed,responsiblityChanged" />
-        <param name="parameter_0" value="{'name':'colour', 'value':'red'}" />
-        <param name="parameter_1" value="{'name':'notify', 'value':'1'}"/>
-        <param name="parameter_2" value="{'name':'branchName', 'value':'${branchDisplayName}', 'secure':false, included-in-legacy-payloads:true, 'force-resolve-teamcity-variable':true, 'template-engine':'VELOCITY'}" />
-        <param name="authentication" value="{'type':'bearer', 'bearer':'${test.thing1}'}" />
-        <param name="triggerFilter_0" value="{'value':'${branchDisplayName}', 'regex':'^master$', 'enabled':true}" />
-        <param name="triggerFilter_1" value="{'value':'${buildInternalTypeId}', 'regex':'^bt\d$', 'enabled':true}" />
-        <param name="allProjectBuildsEnabled" value="false" />
-        <param name="subProjectBuildsEnabled" value="true" />
-        <param name="enabledBuilds" value="bt1,bt2" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=1" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_01" />
+      </parameters>
+      
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="this-is-my-token" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="buildStates" value="enabledBuildStates" />
+        <param name="buildTypes" value="allProjectBuilds" />
+        <param name="header_0_name" value="foo1" />
+        <param name="header_0_value" value="bar1" />
+        <param name="header_1_name" value="foo2" />
+        <param name="header_1_value" value="bar2" />
+        <param name="header_2_name" value="foo3" />
+        <param name="header_2_value" value="bar3" />
+        <param name="parameter_0_name" value="colour" />
+        <param name="parameter_0_value" value="blue" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="slack.com-compact" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=8" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_08" />
       </parameters>
      *
      */
