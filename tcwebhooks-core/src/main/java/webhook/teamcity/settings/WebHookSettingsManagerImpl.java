@@ -210,8 +210,8 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	private boolean persist(String projectInternalId, String message) {
 		try {
 			SProject project = this.myProjectManager.findProjectById(projectInternalId);
-//			ConfigAction cause = myConfigActionFactory.createAction(project, message);
-			//project.persist(cause);
+			ConfigAction cause = myConfigActionFactory.createAction(project, message);
+			project.persist(cause);
 			return true;
 		} catch (AccessDeniedException | PersistFailedException ex) {
 			LOG.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
