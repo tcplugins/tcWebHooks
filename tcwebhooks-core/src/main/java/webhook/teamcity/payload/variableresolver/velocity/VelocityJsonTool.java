@@ -9,17 +9,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
-import webhook.teamcity.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class VelocityJsonTool {
-	
+	private static final Logger LOG = Logger.getInstance(VelocityJsonTool.class.getName());
+
 	private Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
 	public Map<String,String> jsonToStringMap(String jsonString) {
 		try {
 			return gson.fromJson(jsonString, new TypeToken<Map<String,String>>(){}.getType());
 		} catch (JsonParseException ex) {
-			Loggers.SERVER.warn("WebHooks VelocityJsonTool :: Unable to parse string into JSON. Returning empty map from String: '" +
+			LOG.warn("WebHooks VelocityJsonTool :: Unable to parse string into JSON. Returning empty map from String: '" +
 									jsonString + "'");
 			return new HashMap<>();
 		}

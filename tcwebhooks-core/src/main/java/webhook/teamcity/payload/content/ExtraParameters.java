@@ -8,15 +8,16 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.parameters.ProcessingResult;
 import jetbrains.buildServer.parameters.ValueResolver;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.variableresolver.VariableMessageBuilder;
 import webhook.teamcity.settings.project.WebHookParameter;
 import webhook.teamcity.settings.project.WebHookParameterModel;
 
 public class ExtraParameters extends ArrayList<WebHookParameterModel> {
+	private static final Logger LOG = Logger.getInstance(ExtraParameters.class.getName());
 
 	public static final String TEAMCITY = "teamcity";
 	public static final String WEBHOOK = "webhook";
@@ -79,7 +80,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		WebHookParameterModel previous = getActual(context, key);
 		if (previous != null) {
 			this.remove(previous);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
+			LOG.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 		}
 		WebHookParameterModel newHookParameterModel = new WebHookParameterModel(context,
 				context,
@@ -90,7 +91,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 				FORCE_RESOLVE_TEAMCITY_VARIABLE,
 				TEMPLATE_ENGINE_TYPE);
 		add(newHookParameterModel);
-		Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
+		LOG.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
 	}
 
 	public void putAll(String context, Map<String, String> paramMap) {
@@ -104,7 +105,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 			WebHookParameterModel previous = getActual(context, parameter.getName());
 			if (previous != null) {
 				this.remove(previous);
-				Loggers.SERVER.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
+				LOG.debug("WebHookExtraParameters :: Removed existing WebHookParameter: " + previous.getContext() + " : " + previous.getName());
 			}
 			WebHookParameterModel newHookParameterModel = new WebHookParameterModel(
 					parameter.getId(),
@@ -116,7 +117,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 					parameter.getForceResolveTeamCityVariable(),
 					parameter.getTemplateEngine());
 			add(newHookParameterModel);
-			Loggers.SERVER.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
+			LOG.debug("WebHookExtraParameters :: Added WebHookParameter: " + newHookParameterModel.getContext() + " : " + newHookParameterModel.getName());
 		}
 		return this;
 	}
@@ -151,7 +152,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 				if (key.equals(param.getName())) {
 					if (Boolean.TRUE.equals(param.getSecure())) {
 						this.secureValueAccessed = true;
-						Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", "no_context", key));
+						LOG.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", "no_context", key));
 					}
 					return param.getValue();
 				}
@@ -178,7 +179,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 					&& webHookParameter.getName().equals(key)) {
 				if (Boolean.TRUE.equals(webHookParameter.getSecure())) {
 					this.secureValueAccessed = true;
-					Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", context, key));
+					LOG.debug(String.format("WebHookExtraParameters :: Secure value accessed for '%s' : '%s'", context, key));
 				}
 				return webHookParameter.getValue();
 			}
@@ -227,22 +228,22 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		if (!variablesToResolve.isEmpty()) {
 			Map<String, ProcessingResult> resolvedMap = valueResolver.resolveWithDetails(variablesToResolve);
 			for ( Entry<String, ProcessingResult> e: resolvedMap.entrySet()) {
-				Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Processing resolver result for '%s'", e.getKey()));
+				LOG.debug(String.format("WebHookExtraParameters :: Processing resolver result for '%s'", e.getKey()));
 				if (e.getValue().isModified()) {
-					Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Value was modified for '%s'. New value is '%s'", e.getKey(), e.getValue().getResult()));
+					LOG.debug(String.format("WebHookExtraParameters :: Value was modified for '%s'. New value is '%s'", e.getKey(), e.getValue().getResult()));
 					
 					WebHookParameterModel param = getActual(PROJECT, e.getKey()); // We only support forced update on PROJECT Parameters
 					if (param != null && Boolean.TRUE.equals(param.getForceResolveTeamCityVariable())) {
-						Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Found parameter with match value. Name is '%s'. New value is '%s'", param.getName(), e.getValue().getResult()));
+						LOG.debug(String.format("WebHookExtraParameters :: Found parameter with match value. Name is '%s'. New value is '%s'", param.getName(), e.getValue().getResult()));
 						param.setValue(e.getValue().getResult());
-						Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Found parameter: '%s'", param.toString()));
+						LOG.debug(String.format("WebHookExtraParameters :: Found parameter: '%s'", param.toString()));
 					}
 				} else {
-					Loggers.SERVER.debug(String.format("WebHookExtraParameters :: Value was not modified for '%s'.", e.getKey()));
+					LOG.debug(String.format("WebHookExtraParameters :: Value was not modified for '%s'.", e.getKey()));
 				}
 			}
 		} else {
-			Loggers.SERVER.debug("WebHookExtraParameters :: No force resolver parameters found. Resolving will be skipped.");
+			LOG.debug("WebHookExtraParameters :: No force resolver parameters found. Resolving will be skipped.");
 		}
 		
 	}
@@ -250,7 +251,7 @@ public class ExtraParameters extends ArrayList<WebHookParameterModel> {
 		Map<String, String> variablesToResolve = new TreeMap<>();
 		for ( WebHookParameterModel param : getProjectParameters()) { // Only PROJECT parameters are foreResolvable.
 			if (Boolean.TRUE.equals(param.getForceResolveTeamCityVariable())) {
-				Loggers.SERVER.debug(String.format("WebHookExtraParameters:: Parameter '%s' is marked as forcedResolvable. %s", param.getName(), param.toString()));
+				LOG.debug(String.format("WebHookExtraParameters:: Parameter '%s' is marked as forcedResolvable. %s", param.getName(), param.toString()));
 				variablesToResolve.put(param.getName(), param.getValue());
 			}
 		}

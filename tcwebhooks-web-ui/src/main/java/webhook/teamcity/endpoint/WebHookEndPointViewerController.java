@@ -8,6 +8,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,11 +16,10 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
-import webhook.teamcity.Loggers;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookEndPointViewerController extends BaseController {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookEndPointViewerController.class.getName());
 	
 	public static final String MY_URL = "/webhooks/endpoint-viewer.html";
 	private final WebHookEndPointContentStore endPointContentStore;
@@ -35,7 +35,7 @@ public class WebHookEndPointViewerController extends BaseController {
 		this.myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		this.myWebManager = webControllerManager;
 		this.myWebManager.registerController(MY_URL, this);
-		Loggers.SERVER.debug("WebHookEndPointViewerController:: Registering");
+		LOG.debug("WebHookEndPointViewerController:: Registering");
 	}
 
     @Nullable

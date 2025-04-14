@@ -11,18 +11,19 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.joda.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 
 @Data @NoArgsConstructor
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class StatisticsSnapshot {
+
 	@XmlAttribute
 	private LocalDate date;
 	
@@ -36,6 +37,8 @@ public class StatisticsSnapshot {
 	@Data @AllArgsConstructor @NoArgsConstructor
 	@XmlAccessorType(XmlAccessType.FIELD)
 	public static class StatisticsItem {
+		private static final Logger LOG = Logger.getInstance(StatisticsItem.class.getName());
+
 		String name;
 		int invocations;
 		
@@ -47,7 +50,7 @@ public class StatisticsSnapshot {
 				if (buildStateEnum != null && buildStateEnum.equals(statisticsItemStatus.state) && status == statisticsItemStatus.statusCode) {
 					return statisticsItemStatus.count;
 				} else if (buildStateEnum == null || statisticsItemStatus.state == null || statisticsItemStatus.statusCode == null) {
-					Loggers.SERVER.debug(
+					LOG.debug(
 							String.format("StatisticsItem :: Unexpected null item. [buildStateEnum=%s,statisticsItemStatus.state=%s,statisticsItemStatus.statusCode=%s",
 									buildStateEnum, statisticsItemStatus.state, statisticsItemStatus.statusCode));
 				}
@@ -61,7 +64,7 @@ public class StatisticsSnapshot {
 					statisticsItemStatus.count = statusCount;
 					found = true;
 				} else if (buildStateEnum == null || statisticsItemStatus.state == null || statisticsItemStatus.statusCode == null) {
-					Loggers.SERVER.debug(
+					LOG.debug(
 							String.format("StatisticsItem :: Unexpected null item. [buildStateEnum=%s,statisticsItemStatus.state=%s,statisticsItemStatus.statusCode=%s",
 									buildStateEnum, statisticsItemStatus.state, statisticsItemStatus.statusCode));
 				}

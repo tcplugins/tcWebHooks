@@ -13,12 +13,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.joda.time.LocalDate;
 
-import webhook.teamcity.Loggers;
-
 public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookHistoryRepositoryImpl.class.getName());
+
 	Map<UUID,WebHookHistoryItem> webHookHistoryItems = Collections.synchronizedMap(new MaxSizeHashMap<UUID,WebHookHistoryItem>(10000)); 
 	Comparator<WebHookHistoryItem> chronComparator = new WebHookHistoryRepositoryDateSortingCompator(SortDirection.ASC);
 	Comparator<WebHookHistoryItem> reverseChronComparator = new WebHookHistoryRepositoryDateSortingCompator(SortDirection.DESC);
@@ -245,7 +245,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 	
 	private List<WebHookHistoryItem> findAllItemsSince(Set<LocalDate> dateRange) {
 		List<WebHookHistoryItem> erroredItemsSince = new ArrayList<>();
-		Loggers.SERVER.debug("WebHookHistoryRepositoryImpl :: Waiting on synchronized block for webhookHistoryItems");
+		LOG.debug("WebHookHistoryRepositoryImpl :: Waiting on synchronized block for webhookHistoryItems");
 		synchronized (webHookHistoryItems) {
 			for (WebHookHistoryItem item : this.webHookHistoryItems.values()) {
 				if (dateRange.contains(item.getTimestamp().toLocalDate())) {
@@ -253,7 +253,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 				}
 			}
 		}
-		Loggers.SERVER.debug("WebHookHistoryRepositoryImpl :: Exited synchronized block for webhookHistoryItems");
+		LOG.debug("WebHookHistoryRepositoryImpl :: Exited synchronized block for webhookHistoryItems");
 		return erroredItemsSince;
 	}
 
@@ -263,7 +263,7 @@ public class WebHookHistoryRepositoryImpl implements WebHookHistoryRepository {
 		for (int i = numberOfDays; i > 0 ; i--) {
 			days.add(untilDate.minusDays(i));
 		}
-		Loggers.SERVER.debug(String.format("WebHookHistoryRepositoryImpl :: Resolving requested dates to: [%s]", days.toString()));
+		LOG.debug(String.format("WebHookHistoryRepositoryImpl :: Resolving requested dates to: [%s]", days.toString()));
 		return days;
 	}
 

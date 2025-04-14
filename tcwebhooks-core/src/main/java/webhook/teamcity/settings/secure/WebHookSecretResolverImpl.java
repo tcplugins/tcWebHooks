@@ -1,8 +1,8 @@
 package webhook.teamcity.settings.secure;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.lang3.StringUtils;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.impl.SecureDataStorage;
 
@@ -11,9 +11,10 @@ import jetbrains.buildServer.serverSide.impl.SecureDataStorage;
  *
  */
 public class WebHookSecretResolverImpl implements WebHookSecretResolver {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookSecretResolverImpl.class.getName());
+
 	public WebHookSecretResolverImpl() {
-		Loggers.SERVER.info("WebHookSecretResolverImpl :: Starting WebHookSecretResolver for 2017.1 and newer");
+		LOG.info("WebHookSecretResolverImpl :: Starting WebHookSecretResolver for 2017.1 and newer");
 	}
 
 	@Override
@@ -23,8 +24,8 @@ public class WebHookSecretResolverImpl implements WebHookSecretResolver {
 		}
 		// Will try to resolve the token's associated value, or will return the same token unresolved. 
 		final String value = ((SecureDataStorage) sProject).getSecureValue(token, "WebHook payload assembly");
-		
-		// If we got the same token back, a match was not found. So return null. 
+
+		// If we got the same token back, a match was not found. So return null.
 		if (!token.equals(value)) {
 			return value;
 		}

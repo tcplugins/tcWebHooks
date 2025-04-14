@@ -1,14 +1,15 @@
 package webhook.teamcity.payload.variableresolver.standard;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.variableresolver.VariableResolverFactory;
 
 public class WebHooksBeanUtilsLegacyVariableResolverFactory extends WebHooksBeanUtilsVariableResolverFactory implements VariableResolverFactory {
-	
+	private static final Logger LOG = Logger.getInstance(WebHooksBeanUtilsLegacyVariableResolverFactory.class.getName());
+
 	@Override
 	public void register() {
-		Loggers.SERVER.info("WebHooksBeanUtilsLegacyVariableResolverFactory :: Registering for type: " + getPayloadTemplateType().toString());
+		LOG.info("WebHooksBeanUtilsLegacyVariableResolverFactory :: Registering for type: " + getPayloadTemplateType().toString());
 		this.variableResolverManager.registerVariableResolverFactory(this);
 	}
 	

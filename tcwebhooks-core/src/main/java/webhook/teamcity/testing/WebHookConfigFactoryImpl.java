@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.CustomMessageTemplate;
@@ -22,6 +22,7 @@ import webhook.teamcity.testing.model.WebHookExecutionRequest;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
 public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
+	private static final Logger LOG = Logger.getInstance(WebHookConfigFactoryImpl.class.getName());
 
 	private final SBuildServer myServer;
 	private final WebHookSettingsManager myWebHookSettingsManager;
@@ -110,8 +111,8 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 			    	for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 			    		if (whc.isEnabledForSubProjects() == false && !myProject.getProjectId().equals(project.getProjectId())){
 			    			// Sub-projects are disabled and we are a subproject.
-			    			if (Loggers.SERVER.isDebugEnabled()){
-				    			Loggers.SERVER.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
+			    			if (LOG.isDebugEnabled()){
+				    			LOG.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
 				    					+ ":: subprojects not enabled. myProject is: " + myProject.getProjectId() + ". webhook project is: " + project.getProjectId());
 			    			}
 			    			continue;
@@ -129,7 +130,7 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 						}
 			    	}
 		    	} else {
-		    		Loggers.SERVER.debug("WebHookUserRequestedExecutorImpl :: WebHooks are disasbled for  " + projectExternalId);
+		    		LOG.debug("WebHookUserRequestedExecutorImpl :: WebHooks are disasbled for  " + projectExternalId);
 		    	}
 		}
     	throw new WebHookConfigNotFoundException(String.format("Webhook Configuration %s was not found", webHookConfigUniqueId));

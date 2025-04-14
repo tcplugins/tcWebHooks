@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.serverSide.SBuildServer;
@@ -17,14 +18,13 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.format.WebHookPayloadNameValuePairs;
 import webhook.teamcity.payload.util.StringUtils;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookEndPointController extends BaseController {
-	
-	
+	private static final Logger LOG = Logger.getInstance(WebHookEndPointController.class.getName());
+
 	public static final String MY_URL = "/webhooks/endpoint.html";
 	private final WebHookEndPointContentStore endPointContentStore;
 	private final WebControllerManager myWebManager;
@@ -38,16 +38,16 @@ public class WebHookEndPointController extends BaseController {
 		this.myWebManager = webControllerManager;
 		this.myWebManager.registerController(MY_URL, this);
 		authorizationInterceptor.addPathNotRequiringAuth(MY_URL);
-		Loggers.SERVER.debug("WebHookEndPointController:: Registering");
+		LOG.debug("WebHookEndPointController:: Registering");
 	}
 
     @Nullable
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	if (isPost(request)) {
-    		boolean debug = Loggers.SERVER.isDebugEnabled();
+    		boolean debug = LOG.isDebugEnabled();
     		
     		if (debug) { 
-    			Loggers.SERVER.debug(WebHookEndPointController.this.getClass().getName() + ":: Showing received content.");
+    			LOG.debug(WebHookEndPointController.this.getClass().getName() + ":: Showing received content.");
     		}
 			
 			// Read from request
@@ -56,7 +56,7 @@ public class WebHookEndPointController extends BaseController {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				buffer.append(line);
-				if (debug) Loggers.SERVER.debug(line);
+				if (debug) LOG.debug(line);
 			}
 			
 			Map<String, String> headers = new TreeMap<>();

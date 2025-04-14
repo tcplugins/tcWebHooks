@@ -7,11 +7,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import webhook.teamcity.Loggers;
 
 public class WebHookPayloadManager {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookPayloadManager.class.getName());
+
 	HashMap<String, WebHookPayload> formats = new HashMap<>();
 	Comparator<WebHookPayload> rankComparator = new WebHookPayloadRankingComparator();
 	List<WebHookPayload> orderedFormatCollection = new ArrayList<>();
@@ -19,20 +20,20 @@ public class WebHookPayloadManager {
 	
 	public WebHookPayloadManager(SBuildServer server){
 		this.server = server;
-		Loggers.SERVER.debug("WebHookPayloadManager :: Starting");
+		LOG.debug("WebHookPayloadManager :: Starting");
 	}
 	
 	public void registerPayloadFormat(WebHookPayload payloadFormat){
-		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering payload " 
+		LOG.info(this.getClass().getSimpleName() + " :: Registering payload " 
 				+ payloadFormat.getFormatShortName() 
 				+ " with rank of " + payloadFormat.getRank());
 		formats.put(payloadFormat.getFormatShortName().toLowerCase(),payloadFormat);
 		this.orderedFormatCollection.add(payloadFormat);
 		
 		Collections.sort(this.orderedFormatCollection, rankComparator);
-		Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Payloads list is " + this.orderedFormatCollection.size() + " items long. Payloads are ranked in the following order..");
+		LOG.debug(this.getClass().getSimpleName() + " :: Payloads list is " + this.orderedFormatCollection.size() + " items long. Payloads are ranked in the following order..");
 		for (WebHookPayload pl : this.orderedFormatCollection){
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: Payload Name: " + pl.getFormatShortName() + " Rank: " + pl.getRank());
+			LOG.debug(this.getClass().getSimpleName() + " :: Payload Name: " + pl.getFormatShortName() + " Rank: " + pl.getRank());
 		}
 	}
 

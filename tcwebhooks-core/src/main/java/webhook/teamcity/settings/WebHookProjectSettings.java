@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jdom.Element;
 
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.settings.ProjectSettings;
 import webhook.teamcity.BuildState;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.payload.content.ExtraParameters;
 
 
 public class WebHookProjectSettings implements ProjectSettings {
+	private static final Logger LOG = Logger.getInstance(WebHookProjectSettings.class.getName());
 	private static final String NAME = WebHookProjectSettings.class.getName();
 	private Boolean webHooksEnabled = true;
 	private CopyOnWriteArrayList<WebHookConfig> webHooksConfigs;
@@ -30,7 +31,7 @@ public class WebHookProjectSettings implements ProjectSettings {
      * Old settings should be overwritten.
      */
     {
-    	Loggers.SERVER.debug("readFrom :: " + rootElement.toString());
+    	LOG.debug("readFrom :: " + rootElement.toString());
     	CopyOnWriteArrayList<WebHookConfig> configs = new CopyOnWriteArrayList<>();
     	
     	if (rootElement.getAttribute("enabled") != null){
@@ -45,11 +46,11 @@ public class WebHookProjectSettings implements ProjectSettings {
 			for(Element e :  namedChildren)
 	        {
 				WebHookConfig whConfig = new WebHookConfig(e);
-				Loggers.SERVER.debug(e.toString());
+				LOG.debug(e.toString());
 				configs.add(whConfig);
-				Loggers.SERVER.debug(NAME + ":readFrom :: url " + whConfig.getUrl());
-				Loggers.SERVER.debug(NAME + ":readFrom :: enabled " + whConfig.getEnabled());
-				Loggers.SERVER.debug(NAME + ":readFrom :: payloadTemplate " + whConfig.getPayloadTemplate());
+				LOG.debug(NAME + ":readFrom :: url " + whConfig.getUrl());
+				LOG.debug(NAME + ":readFrom :: enabled " + whConfig.getEnabled());
+				LOG.debug(NAME + ":readFrom :: payloadTemplate " + whConfig.getPayloadTemplate());
 	        }
 			this.webHooksConfigs = configs;
     	}
@@ -60,17 +61,17 @@ public class WebHookProjectSettings implements ProjectSettings {
      * in memory. 
      */
     {
-    	Loggers.SERVER.debug(NAME + ":writeTo :: " + parentElement.toString());
+    	LOG.debug(NAME + ":writeTo :: " + parentElement.toString());
     	parentElement.setAttribute("enabled", String.valueOf(this.webHooksEnabled));
         if(webHooksConfigs != null)
         {
             for(WebHookConfig whc : webHooksConfigs){
             	Element el = whc.getAsElement();
-            	Loggers.SERVER.debug(el.toString());
+            	LOG.debug(el.toString());
                 parentElement.addContent(el);
-				Loggers.SERVER.debug(NAME + ":writeTo :: url " + whc.getUrl());
-				Loggers.SERVER.debug(NAME + ":writeTo :: enabled " + whc.getEnabled());
-				Loggers.SERVER.debug(NAME + ":writeTo :: payloadTemplate " + whc.getPayloadTemplate());
+				LOG.debug(NAME + ":writeTo :: url " + whc.getUrl());
+				LOG.debug(NAME + ":writeTo :: enabled " + whc.getEnabled());
+				LOG.debug(NAME + ":writeTo :: payloadTemplate " + whc.getPayloadTemplate());
             }
 
         }
@@ -123,7 +124,7 @@ public class WebHookProjectSettings implements ProjectSettings {
             for(WebHookConfig whc : webHooksConfigs)
             {
                 if (whc.getUniqueKey().equals(webHookId)){
-                	Loggers.SERVER.debug(NAME + ":deleteWebHook :: Deleting webhook from " + projectId + " with URL " + whc.getUrl());
+                	LOG.debug(NAME + ":deleteWebHook :: Deleting webhook from " + projectId + " with URL " + whc.getUrl());
                 	tempWebHookList.add(whc);
                 	configToDelete = whc;
                 }
@@ -200,7 +201,7 @@ public class WebHookProjectSettings implements ProjectSettings {
             		if (headers != null) {
             			whc.setHeaders(headers);
             		}
-                	Loggers.SERVER.debug(NAME + ":updateWebHook :: Updating webhook from " + projectId + " with URL " + whc.getUrl());
+                	LOG.debug(NAME + ":updateWebHook :: Updating webhook from " + projectId + " with URL " + whc.getUrl());
                    	updateSuccess = true;
                    	configToUpdate = whc;
                 }
@@ -217,18 +218,18 @@ public class WebHookProjectSettings implements ProjectSettings {
 	public WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
 		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, extraParameters, filters, headers, hideSecureValues); 
 		this.webHooksConfigs.add(newWebHook);
-		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
+		LOG.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
 		return new WebHookUpdateResult(true, newWebHook);
 	}
 	
 	public WebHookUpdateResult addNewWebHook(WebHookConfig webHookConfig) {
 		this.webHooksConfigs.add(webHookConfig);
-		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + webHookConfig.getProjectExternalId() + " with URL " + webHookConfig.getUrl());
+		LOG.debug(NAME + ":addNewWebHook :: Adding webhook to " + webHookConfig.getProjectExternalId() + " with URL " + webHookConfig.getUrl());
 		return new WebHookUpdateResult(true, webHookConfig);
 	}
     
 	public void dispose() {
-		Loggers.SERVER.debug(NAME + ":dispose() called");
+		LOG.debug(NAME + ":dispose() called");
 	}
 
 	public Integer getWebHooksCount(){

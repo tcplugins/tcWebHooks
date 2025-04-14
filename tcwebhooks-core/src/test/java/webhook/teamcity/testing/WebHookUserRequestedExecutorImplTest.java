@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jdom.JDOMException;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -27,7 +28,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.parameters.ParametersProvider;
 import jetbrains.buildServer.serverSide.ProjectManager;
@@ -88,8 +88,8 @@ import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
 
 public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestBase {
-	
-	
+	private static final Logger LOG = Logger.getInstance(WebHookUserRequestedExecutorImplTest.class.getName());
+
 	private SBuildServer server = mock(SBuildServer.class);
 	private WebHookParameterStore webHookParameterStore = mock(WebHookParameterStore.class);
 	private WebHookParameterStoreFactory webHookParameterStoreFactory = mock(WebHookParameterStoreFactory.class);
@@ -205,10 +205,10 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookRenderResult payload = executorImpl.requestWebHookPreview(webHookExecutionRequest);
 		
-		Loggers.SERVER.debug("################# " + payload);
+		LOG.debug("################# " + payload);
 		assertEquals(true, payload.getHtml().contains("http://teamcity/viewLog.html?buildTypeId=name"));
 		
-		Loggers.SERVER.debug(WebHookExecutionRequestGsonBuilder.gsonBuilder().toJson(webHookExecutionRequest));
+		LOG.debug(WebHookExecutionRequestGsonBuilder.gsonBuilder().toJson(webHookExecutionRequest));
 		
 	}
 	
@@ -245,7 +245,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				.build();
 		WebHookRenderResult payload = executorImpl.requestWebHookPreview(webHookTemplateExecutionRequest);
 		
-		Loggers.SERVER.debug("################# " + payload);
+		LOG.debug("################# " + payload);
 		assertEquals(true, payload.getHtml().contains("branch_buildId"));
 
 	}	
@@ -495,7 +495,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals("Expect 801 since there is no server running on port 12345", 801, historyItem.getWebhookErrorStatus().getErrorCode());
-		Loggers.SERVER.debug("################# " + historyItem.getWebhookErrorStatus().getMessage());
+		LOG.debug("################# " + historyItem.getWebhookErrorStatus().getMessage());
 		assertEquals(true, historyItem.getWebhookErrorStatus().getMessage().contains("Connection refused"));
 
 	}

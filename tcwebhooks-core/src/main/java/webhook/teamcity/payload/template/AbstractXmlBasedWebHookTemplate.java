@@ -7,11 +7,11 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import com.intellij.openapi.diagnostic.Logger;
 import webhook.Constants;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookPayloadManager;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
@@ -33,6 +33,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
  * the <code>webhook-templates.xml</code> file. 
  */
 public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadTemplate, DeferrableService {
+	private static final Logger LOG = Logger.getInstance(AbstractXmlBasedWebHookTemplate.class.getName());
 
 	protected WebHookPayloadManager payloadManager;
 	protected WebHookTemplateJaxHelper webHookTemplateJaxHelper;
@@ -82,10 +83,10 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 			this.templateManager.registerTemplateFormatFromSpring(template);
 		} else {
 			if (template.templateContent.isEmpty()){
-				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No regular template configurations were found.");
+				LOG.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No regular template configurations were found.");
 			}
 			if (template.branchTemplateContent.isEmpty()){
-				Loggers.SERVER.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No branch template configurations were found.");
+				LOG.error(getLoggingName() + " :: Failed to register template " + getTemplateId() + ". No branch template configurations were found.");
 			}
 		}
 	}
@@ -126,14 +127,14 @@ public abstract class AbstractXmlBasedWebHookTemplate implements WebHookPayloadT
 	            webhookEntity = webHookTemplateJaxHelper.readTemplate(in);
 	            webhookEntity.fixTemplateIds();
 	        } catch (IOException | JAXBException e) {
-	        	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ".");
-	        	Loggers.SERVER.debug(e);
+	        	LOG.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ".");
+	        	LOG.debug(e);
 	        	
 	        } finally {
 	           // close opened resources
 	        }
 	    } else {
-	    	Loggers.SERVER.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ". The file was not found in the classpath.");
+	    	LOG.error(getLoggingName() + " :: An Error occurred trying to load the template properties file: " + getXmlFileName() + ". The file was not found in the classpath.");
 	    }
 	    return webhookEntity;
 	}

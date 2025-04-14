@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 
 import javax.xml.bind.JAXBException;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FileWatcher;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
@@ -16,6 +16,7 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
 public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHookConfigChangeHandler, DeferrableService {
+	private static final Logger LOG = Logger.getInstance(WebHookTemplateFileChangeHandler.class.getName());
 
 	final WebHookTemplateManager webHookTemplateManager;
 	final WebHookPayloadManager webHookPayloadManager;
@@ -33,18 +34,18 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
 		this.serverPaths = serverPaths;
 		this.deferrableServiceManager = deferrableServiceManager;
-		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: Starting");
+		LOG.debug("WebHookTemplateFileChangeHandler :: Starting");
 	}
 	
 	@Override
 	public void requestDeferredRegistration() {
-		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Registering as a deferrable service");
+		LOG.info("WebHookTemplateFileChangeHandler :: Registering as a deferrable service");
 		deferrableServiceManager.registerService(this);
 	}
 	
 	@Override
 	public void register(){
-		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: Registering");
+		LOG.debug("WebHookTemplateFileChangeHandler :: Registering");
 		this.configFile = new File(this.serverPaths.getConfigDir() + File.separator + "webhook-templates.xml");
 		
 		this.fw = new FileWatcher(configFile);
@@ -55,7 +56,7 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 		this.fw.registerListener(this);
 		this.fw.start();
 		
-		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Watching for changes to file: " + this.configFile.getPath());
+		LOG.info("WebHookTemplateFileChangeHandler :: Watching for changes to file: " + this.configFile.getPath());
 	}
 	
 	@Override
@@ -65,8 +66,8 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 
 	@Override
 	public void changeOccured(String requestor) {
-		Loggers.SERVER.info("WebHookTemplateFileChangeHandler :: Handling change to file: " + this.configFile.getPath() + " requested by " + requestor);
-		Loggers.SERVER.debug("WebHookTemplateFileChangeHandler :: My instance is: " + this.toString() + " :: WebHookTemplateManager: " + webHookTemplateManager.toString());
+		LOG.info("WebHookTemplateFileChangeHandler :: Handling change to file: " + this.configFile.getPath() + " requested by " + requestor);
+		LOG.debug("WebHookTemplateFileChangeHandler :: My instance is: " + this.toString() + " :: WebHookTemplateManager: " + webHookTemplateManager.toString());
 		this.handleConfigFileChange();
 
 	}
@@ -77,11 +78,11 @@ public class WebHookTemplateFileChangeHandler implements ChangeListener, WebHook
 			WebHookTemplates templatesList =  webHookTemplateJaxHelper.readTemplates(configFile.getPath());
 			this.webHookTemplateManager.registerAllXmlTemplates(templatesList);
 		} catch (FileNotFoundException e) {
-			Loggers.SERVER.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. File not found: " + this.configFile.getPath());
-			Loggers.SERVER.debug(e);
+			LOG.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. File not found: " + this.configFile.getPath());
+			LOG.debug(e);
 		} catch (JAXBException e) {
-			Loggers.SERVER.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. Could not parse: " + this.configFile.getPath());
-			Loggers.SERVER.debug(e);
+			LOG.warn("WebHookTemplateFileChangeHandler :: Exception occurred attempting to reload WebHookTemplates. Could not parse: " + this.configFile.getPath());
+			LOG.debug(e);
 		}
 		
 	}

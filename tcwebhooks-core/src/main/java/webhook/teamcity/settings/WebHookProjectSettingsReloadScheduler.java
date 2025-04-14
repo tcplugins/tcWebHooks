@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.primitives.Ints;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import lombok.Data;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookSettingsEventHandler;
 import webhook.teamcity.WebHookSettingsEventType;
 
@@ -31,7 +31,8 @@ import webhook.teamcity.WebHookSettingsEventType;
  * be de-duped to 1, and then after 10 seconds our thread will handle it as a single event. 
  */
 public class WebHookProjectSettingsReloadScheduler implements DeferrableService, WebHookSettingsEventHandler {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookProjectSettingsReloadScheduler.class.getName());
+
 	private final ScheduledExecutorService myExecutorService;
 	private final DeferrableServiceManager myDeferrableServiceManager;
 	private final WebHookSettingsManager myWebHookSettingsManager;
@@ -48,13 +49,13 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 
 	@Override
 	public void requestDeferredRegistration() {
-		Loggers.SERVER.info("WebHookProjectSettingsReloadScheduler :: Registering as a deferrable service");
+		LOG.info("WebHookProjectSettingsReloadScheduler :: Registering as a deferrable service");
 		myDeferrableServiceManager.registerService(this);
 	}
 
 	@Override
 	public void register() {
-		Loggers.SERVER.info("WebHookProjectSettingsReloadScheduler :: Requesting scheduling of WebHookProjectSettingsReloadTask");
+		LOG.info("WebHookProjectSettingsReloadScheduler :: Requesting scheduling of WebHookProjectSettingsReloadTask");
 		this.myExecutorService.schedule(new WebHookProjectSettingsReloadTask(this, myWebHookSettingsManager), 10, TimeUnit.SECONDS);
 	}
 	
@@ -87,18 +88,18 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 
 		@Override
 		public void run() {
-			Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Starting task");
+			LOG.debug("WebHookProjectSettingsReloadTask :: Starting task");
 			while(! this.myWebHookProjectSettingsReloadScheduler.shuttingDown) {
 	            try {
 	                DelayEvent object = queue.take();
-	                Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Handling deferred WebHookSettings reload event: " + object.getTypeAndEvent());
+	                LOG.debug("WebHookProjectSettingsReloadTask :: Handling deferred WebHookSettings reload event: " + object.getTypeAndEvent());
 	                this.myWebHookSettingsManager.handleProjectChangedEvent(object);
 	            } catch (InterruptedException e) {
-	                Loggers.SERVER.warn("WebHookProjectSettingsReloadTask interrupted. Deferred reloading of WebHookSettings will no longer be undertaken. This should only happen when TeamCity is shutting down. If not, please report as a bug in tcWebHooks");
+	                LOG.warn("WebHookProjectSettingsReloadTask interrupted. Deferred reloading of WebHookSettings will no longer be undertaken. This should only happen when TeamCity is shutting down. If not, please report as a bug in tcWebHooks");
 	                Thread.currentThread().interrupt();  // set interrupt flag
 	                this.myWebHookProjectSettingsReloadScheduler.shuttingDown = true;
 	            } catch (Exception e) {
-	                Loggers.SERVER.warn("WebHookProjectSettingsReloadTask exception occured.", e);
+	                LOG.warn("WebHookProjectSettingsReloadTask exception occured.", e);
 	            }
 			}
 		}
@@ -148,7 +149,7 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
                 // Same type and data.
                 // Check if the time from o falls within the window we would consider to be an overlap (plus or minus 1000 ms)  
                 if (this.startTimeWindowBegin < e.startTime && this.startTimeWindowEnd > e.startTime) {
-                    Loggers.SERVER.debug("WebHookProjectSettingsReloadTask :: Ignoring duplicate event for project " + e.getTypeAndEvent());
+                    LOG.debug("WebHookProjectSettingsReloadTask :: Ignoring duplicate event for project " + e.getTypeAndEvent());
                     return 0; // Pretend it the same event because it's in our window.
                 } else {
                     // If it doesn't fall in our window, use the difference in time as a compare point.

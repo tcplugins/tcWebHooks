@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import jetbrains.buildServer.serverSide.SProject;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.util.StringSanitiser;
@@ -29,6 +29,7 @@ import webhook.teamcity.settings.secure.WebHookSecretResolver;
  */
 
 public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
+	private static final Logger LOG = Logger.getInstance(WebHooksBeanUtilsVariableResolver.class.getName());
 
 	private static final List<String> HIDDEN_FIELDS = Arrays.asList("build", "project", "buildType");
 	private static final String CAPITALISE = "capitalise(";
@@ -177,7 +178,7 @@ public class WebHooksBeanUtilsVariableResolver implements VariableResolver {
 			}
 
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName);
+			LOG.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown when trying to resolve value for " + variableName);
 		}
 		return value;
 

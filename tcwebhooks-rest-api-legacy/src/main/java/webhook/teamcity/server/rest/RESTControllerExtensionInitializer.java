@@ -17,20 +17,20 @@
 package webhook.teamcity.server.rest;
 
 import jetbrains.buildServer.server.rest.RESTControllerExtensionAdapter;
-
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
-
-import webhook.teamcity.Loggers;
 
 /**
  * @author Yegor.Yarko
  *         Date: 20.06.2010
  */
 public class RESTControllerExtensionInitializer extends RESTControllerExtensionAdapter {
+    private static final Logger LOG = Logger.getInstance(RESTControllerExtensionInitializer.class.getName());
+
     @Override
     @NotNull
     public String getPackage() {
-    	Loggers.SERVER.info("RESTControllerExtensionInitializer :: getPackage()");
+    	LOG.info("RESTControllerExtensionInitializer :: getPackage()");
         return "webhook.teamcity.server.rest";
     }
 }

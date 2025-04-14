@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,7 +29,6 @@ import jetbrains.buildServer.web.util.SessionUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import webhook.Constants;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
@@ -53,6 +53,7 @@ import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookIndexPageController extends BaseController {
+		private static final Logger LOG = Logger.getInstance(WebHookIndexPageController.class.getName());
 
 		private final WebControllerManager myWebManager;
 		private final WebHookMainSettings myMainSettings;
@@ -145,7 +146,7 @@ public class WebHookIndexPageController extends BaseController {
 
 					params.put("permissionError", "");
 					for (SProject projectParent : parentProjects){
-						Loggers.SERVER.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
+						LOG.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
 						if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
 
 							projectBean =  ProjectWebHooksBean.buildWithoutNew(this.myWebhookSettingsManager.getWebHooksForProject(currentProject), 

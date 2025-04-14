@@ -1,10 +1,11 @@
 package webhook.teamcity.settings.secure;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildServer;
 
 public class WebHookSecretResolverFactory {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookSecretResolverFactory.class.getName());
+
 	private static final int MINIMUM_SUPPORTED_VERSION = 46533;
 	private WebHookSecretResolver webHookSecretResolver;
 	
@@ -17,9 +18,9 @@ public class WebHookSecretResolverFactory {
 			}
 		} catch (NumberFormatException ex) {
 			webHookSecretResolver = new WebHookSecretResolverNoOpImpl();
-			Loggers.SERVER.debug("WebHookSecretResolverFactory:: NumberFormatException... WebHookSecretResolver is: '" + webHookSecretResolver.getClass() + "'.");
+			LOG.debug("WebHookSecretResolverFactory:: NumberFormatException... WebHookSecretResolver is: '" + webHookSecretResolver.getClass() + "'.");
 		}
-		Loggers.SERVER.debug("WebHookSecretResolverFactory:: Teamcity build is: '" + sBuildServer.getBuildNumber() + "'. WebHookSecretResolver is: '" + webHookSecretResolver.getClass() + "'.");
+		LOG.debug("WebHookSecretResolverFactory:: Teamcity build is: '" + sBuildServer.getBuildNumber() + "'. WebHookSecretResolver is: '" + webHookSecretResolver.getClass() + "'.");
 	}
 	
 	public WebHookSecretResolver getWebHookSecretResolver() {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
@@ -11,7 +12,6 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.generic.DateTool;
 
 import jetbrains.buildServer.serverSide.SProject;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.payload.variableresolver.VariableResolver;
@@ -28,7 +28,8 @@ import webhook.teamcity.settings.secure.WebHookSecretResolver;
  */
 
 public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolver, Context {
-	
+	private static final Logger LOG = Logger.getInstance(WebHooksBeanUtilsVelocityVariableResolver.class.getName());
+
 	
 	private static final String SECURE = "secure(";
 	private static final String SUFFIX = ")";
@@ -62,24 +63,24 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 				velocityContext.put(property.getKey(), property.getValue());
 			}
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown populating context from bean"); 
-			Loggers.SERVER.debug(e);
+			LOG.debug(this.getClass().getSimpleName() + " :: " + e.getClass() + " thrown populating context from bean"); 
+			LOG.debug(e);
 		} 
 		
 		if (!velocityContext.containsKey("dateTool")) {
 			velocityContext.put("dateTool", new DateTool());
 		} else {
-			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'dateTool' to Velocity context. An item of that name already exists");
+			LOG.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'dateTool' to Velocity context. An item of that name already exists");
 		}
 		if (!velocityContext.containsKey("jsonTool")) {
 		    velocityContext.put("jsonTool", new VelocityJsonTool());
 		} else {
-		    Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'jsonTool' to Velocity context. An item of that name already exists");
+		    LOG.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'jsonTool' to Velocity context. An item of that name already exists");
 		}
 		if (!velocityContext.containsKey("nullUtils")) {
 			velocityContext.put("nullUtils", new VelocityNullUtils());
 		} else {
-			Loggers.SERVER.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'nullUtils' to Velocity context. An item of that name already exists");
+			LOG.warn("WebHooksBeanUtilsVelocityVariableResolver :: Unable to add 'nullUtils' to Velocity context. An item of that name already exists");
 		}
 		
 	}
@@ -102,7 +103,7 @@ public class WebHooksBeanUtilsVelocityVariableResolver implements VariableResolv
 
 	@Override
 	public Object get(String key) {
-		Loggers.SERVER.debug(String.format("WebHooksBeanUtilsVelocityVariableResolver :: Value requested from Velocity context. 'key=%s'", key));
+		LOG.debug(String.format("WebHooksBeanUtilsVelocityVariableResolver :: Value requested from Velocity context. 'key=%s'", key));
 		if (nameMappings.containsKey(key)) {
 			// Call extraParameters.get(), so that accessing secure parameters is logged.
 			// Resolve any underscore names to dot names via the nameMappings.

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.SortedMap;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.Branch;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
@@ -26,7 +27,6 @@ import jetbrains.buildServer.vcs.SVcsModification;
 import lombok.Getter;
 import lombok.Setter;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.executor.WebHookResponsibilityHolder;
 import webhook.teamcity.payload.WebHookContentObjectSerialiser;
@@ -40,6 +40,8 @@ import webhook.teamcity.payload.variableresolver.standard.WebHooksBeanUtilsVaria
 import webhook.teamcity.payload.variableresolver.VariableResolver;
 
 public class WebHookPayloadContent {
+		private static final Logger LOG = Logger.getInstance(WebHookPayloadContent.class.getName());
+
 		private static final String MAX_CHANGE_FILE_LIST_SIZE = "maxChangeFileListSize";
 		private static final String WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE = "webhook." + MAX_CHANGE_FILE_LIST_SIZE;
 
@@ -438,11 +440,11 @@ public class WebHookPayloadContent {
 					setBranchDisplayName(getBranch().getDisplayName());
 					setBranchIsDefault(getBranch().isDefaultBranch());
 				} else {
-					Loggers.SERVER.debug("WebHookPayloadContent :: Branch is null. Either feature branch support is not configured or Teamcity does not support feature branches on this VCS");
+					LOG.debug("WebHookPayloadContent :: Branch is null. Either feature branch support is not configured or Teamcity does not support feature branches on this VCS");
 				}
 
 			} catch (NoSuchMethodError e){
-				Loggers.SERVER.debug("WebHookPayloadContent :: Could not get Branch Info by calling sRunningBuild.getBranch(). Probably an old version of TeamCity");
+				LOG.debug("WebHookPayloadContent :: Could not get Branch Info by calling sRunningBuild.getBranch(). Probably an old version of TeamCity");
 			}
 			setRootUrl(StringUtils.stripTrailingSlash(server.getRootUrl()) + "/");
 			setBuildStatusUrl(getRootUrl() + "viewLog.html?buildTypeId=" + getBuildTypeId() + "&buildId=" + getBuildId());
@@ -458,19 +460,19 @@ public class WebHookPayloadContent {
 				try {
 					this.maxChangeFileListSize = Integer.parseInt(extraParameters.get(MAX_CHANGE_FILE_LIST_SIZE));
 				} catch (NumberFormatException ex) {
-					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert 'maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+					LOG.info("WebHookPayloadContent : Unable to convert 'maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
 				}
 			} else if (teamcityProperties.containsKey(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE)) {
 				try {
 					this.maxChangeFileListSize = Integer.parseInt(teamcityProperties.get(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE));
 				} catch (NumberFormatException ex) {
-					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+					LOG.info("WebHookPayloadContent : Unable to convert 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
 				}
 			} else if (Objects.nonNull(TeamCityProperties.getPropertyOrNull(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE))){
 				try {
 					this.maxChangeFileListSize = Integer.parseInt(TeamCityProperties.getProperty(WEBHOOK_MAX_CHANGE_FILE_LIST_SIZE));
 				} catch (NumberFormatException ex) {
-					Loggers.SERVER.info("WebHookPayloadContent : Unable to convert TeamCity global property 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
+					LOG.info("WebHookPayloadContent : Unable to convert TeamCity global property 'webhook.maxChangeFileListSize' value to a valid integer. Defaut value will be used '" + this.maxChangeFileListSize + "'");
 				}
 			}
 

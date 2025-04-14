@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.serverSide.BuildTypeIdentity;
@@ -24,7 +25,6 @@ import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookListener;
 import webhook.teamcity.WebHookSettingsEventHandler.WebHookSettingsEvent;
 import webhook.teamcity.WebHookSettingsEventType;
@@ -41,6 +41,7 @@ import webhook.teamcity.settings.WebHookConfigEnhanced.TagType;
 import webhook.teamcity.settings.WebHookSearchResult.Match;
 
 public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHookSecureValuesEnquirer {
+	private static final Logger LOG = Logger.getInstance(WebHookSettingsManagerImpl.class.getName());
 
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ConfigActionFactory myConfigActionFactory;
@@ -209,11 +210,11 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	private boolean persist(String projectInternalId, String message) {
 		try {
 			SProject project = this.myProjectManager.findProjectById(projectInternalId);
-			ConfigAction cause = myConfigActionFactory.createAction(project, message);
-			project.persist(cause);
+//			ConfigAction cause = myConfigActionFactory.createAction(project, message);
+			//project.persist(cause);
 			return true;
 		} catch (AccessDeniedException | PersistFailedException ex) {
-			Loggers.SERVER.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
+			LOG.warn("WebHookSettingsManagerImpl :: Failed to persist webhook in projectId: " + projectInternalId, ex);
 			return false;
 		}
 	}
@@ -229,7 +230,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		for (WebHookConfig c : getSettings(projectInternalId).getWebHooksConfigs()) {
 			webHookConfigCopies.add(c.copy());
 		}
-		Loggers.SERVER.debug(String.format("WebHookSettingsManagerImpl :: getWebHooksConfigs. ProjectId '%s'. Found %s webhook config(s).", projectInternalId, webHookConfigCopies.size()));
+		LOG.debug(String.format("WebHookSettingsManagerImpl :: getWebHooksConfigs. ProjectId '%s'. Found %s webhook config(s).", projectInternalId, webHookConfigCopies.size()));
 		return webHookConfigCopies;
 	}
 	
@@ -334,7 +335,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
                 WebHookConfig c = w.getWebHookConfig().copy();
                 c.getEnabledBuildTypesSet().remove(sBuildType.getInternalId());
                 this.updateWebHook(sBuildType.getProjectId(), c);
-                Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Handling SBuildType deleted event for webhook. Build removed from WebHook Configuation. BuildType: '%s (%s)', webHookId: '%s'", sBuildType.getExternalId(), sBuildType.getInternalId(), c.getUniqueKey()));
+                LOG.info(String.format("WebHookSettingsManagerImpl :: Handling SBuildType deleted event for webhook. Build removed from WebHook Configuation. BuildType: '%s (%s)', webHookId: '%s'", sBuildType.getExternalId(), sBuildType.getInternalId(), c.getUniqueKey()));
             }
         }
     }
@@ -343,7 +344,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     public void removeAllWebHooksFromCacheForProject(String projectInternalId) {
         WebHookProjectSettings p = this.projectSettingsMap.remove(projectInternalId);
         if (p != null) {
-            Loggers.SERVER.info(String.format("Removed project from webhook cache: projectId: '%s'", projectInternalId));
+            LOG.info(String.format("Removed project from webhook cache: projectId: '%s'", projectInternalId));
         }
         List<String> keysForDeletion = new ArrayList<>();
         for (Map.Entry<String,WebHookConfigEnhanced> e : this.webhooksEnhanced.entrySet()) {
@@ -354,10 +355,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
         for (String k : keysForDeletion) {
             WebHookConfigEnhanced w = this.webhooksEnhanced.remove(k);
             if (w != null) {
-                Loggers.SERVER.info(String.format("Removed webhook from webhook cache: projectId: '%s', webHookId: '%s'", w.getProjectInternalId(), w.getWebHookConfig().getUniqueKey()));
+                LOG.info(String.format("Removed webhook from webhook cache: projectId: '%s', webHookId: '%s'", w.getProjectInternalId(), w.getWebHookConfig().getUniqueKey()));
             }
         }
-        Loggers.SERVER.info("Removed webhooks for project from cache with project id: " + projectInternalId);
+        LOG.info("Removed webhooks for project from cache with project id: " + projectInternalId);
     }
 
 	/** 
@@ -503,7 +504,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (Objects.nonNull(sProject)) {
 		    boolean persistRequired = false;
 		    WebHookProjectSettings webHookProjectSettings = getSettings(projectInternalId);
-			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
+			LOG.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
 			for (WebHookConfig whc : getWebHooksConfigs(projectInternalId)) {
 			    WebHookConfig c = checkForConflictingUniqueId(whc, projectInternalId);
 				String templateName = "Missing template";
@@ -518,7 +519,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 					templateFormatDescription = format.getFormatDescription();
 					enabledBuildStates = determineEnabledBuildStates(c, template);
 				} catch (NullPointerException ex) {
-					Loggers.SERVER.warn(String.format(
+					LOG.warn(String.format(
 							"WebHookSettingsManagerImpl :: Template Not Found: Webhook '%s' from Project '%s' refers to template '%s', which was not found. WebHook URL is: %s",
 							c.getUniqueKey(),
 							sProject.getExternalId(),
@@ -529,7 +530,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 				WebHookConfigEnhanced configEnhanced = createdEnhancedConfig(sProject, c, templateName, templateFormat, templateFormatDescription, enabledBuildStates);
 
 				this.webhooksEnhanced.put(c.getUniqueKey(), configEnhanced);
-				Loggers.SERVER.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
+				LOG.debug("WebHookSettingsManagerImpl :: updating webhook: '" + c.getUniqueKey() + "' " + configEnhanced.toString());
 				if (!whc.getUniqueKey().equals(c.getUniqueKey())) {
 				    persistRequired = recreateConflictingWebHook(projectInternalId, webHookProjectSettings, whc, c);
 				}
@@ -538,7 +539,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			    persist(projectInternalId, "Conflicting WebHook ids remapped");
 			}
 		} else {
-			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);
+			LOG.debug("WebHookSettingsManagerImpl :: NOT rebuilding webhook cache. Project not found: " + projectInternalId);
 		}
 	}
 
@@ -577,10 +578,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
         if (deleteResult.isUpdated()) {
             WebHookUpdateResult addResult = webHookProjectSettings.addNewWebHook(newConfig);
             if (!addResult.isUpdated()) {
-                Loggers.SERVER.warn("Problem re-keying webhook. Failed to recreate old webhook with id: " + origConfig.getUniqueKey());
+                LOG.warn("Problem re-keying webhook. Failed to recreate old webhook with id: " + origConfig.getUniqueKey());
             }
         } else {
-            Loggers.SERVER.warn("Problem re-keying webhook. Failed to remove old webhook with id: " + origConfig.getUniqueKey());
+            LOG.warn("Problem re-keying webhook. Failed to remove old webhook with id: " + origConfig.getUniqueKey());
         }
         return persistRequired;
     }
@@ -590,12 +591,12 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	        // Have the same unique ID, but on a different project.
 	        // Therefore, generate a new UniqueId for this WebHook.
             WebHookConfig newWebHook = origConfig.cloneWithNewUniqueId();
-            Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: WebHook uniqueId selected as candidate for updating to avoid conflict with existing webhooks. projectId: '%s', oldUniqueId: '%s', newUniqueId: '%s'", projectInternalId, origConfig.getUniqueKey(), newWebHook.getUniqueKey()));
+            LOG.info(String.format("WebHookSettingsManagerImpl :: WebHook uniqueId selected as candidate for updating to avoid conflict with existing webhooks. projectId: '%s', oldUniqueId: '%s', newUniqueId: '%s'", projectInternalId, origConfig.getUniqueKey(), newWebHook.getUniqueKey()));
             Set<String> btRemappings = mapOldBuildTypesToNewBuildTypes(origConfig, webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId(), projectInternalId);
             if (!btRemappings.isEmpty()) {
                 newWebHook.clearAllEnabledBuildsInProject();
                 btRemappings.forEach(newWebHook::enableBuildInProject);
-                Loggers.SERVER.info(String.format("WebHookSettingsManagerImpl :: Remapping buildTypeIds for updated WebHook. projectId: '%s', newUniqueId: '%s', oldBuildTypeIds: %s, newBuildTypeIds: %s", projectInternalId, newWebHook.getUniqueKey(), origConfig.getEnabledBuildTypesSet(), newWebHook.getEnabledBuildTypesSet()));
+                LOG.info(String.format("WebHookSettingsManagerImpl :: Remapping buildTypeIds for updated WebHook. projectId: '%s', newUniqueId: '%s', oldBuildTypeIds: %s, newBuildTypeIds: %s", projectInternalId, newWebHook.getUniqueKey(), origConfig.getEnabledBuildTypesSet(), newWebHook.getEnabledBuildTypesSet()));
             }
             return newWebHook;
         }
