@@ -97,7 +97,8 @@ public abstract class AbstractWebHookExecutor implements WebHookRunner {
 							whc.getUniqueKey(),
 							whc.getPayloadTemplate(),
 							WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE,
-							ex.getMessage()));			LOG.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
+							ex.getMessage()));
+			LOG.debug(CLASS_NAME + webhook.getExecutionStats().getTrackingIdAsString() + " :: URL: " + webhook.getUrl(), ex);
 			this.webHookHistoryItem = buildWebHookHistoryItem(new WebHookErrorStatus(ex, ex.getMessage(), 
 					WebHookExecutionException.WEBHOOK_UNEXPECTED_EXCEPTION_ERROR_CODE));
 			webHookHistoryRepository.addHistoryItem(this.webHookHistoryItem);
