@@ -11,10 +11,10 @@ import java.util.Objects;
 
 import javax.xml.bind.JAXBException;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import webhook.Constants;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.ProbableJaxbJarConflictErrorException;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.template.WebHookTemplateFromXml;
@@ -25,7 +25,8 @@ import webhook.teamcity.settings.entity.WebHookTemplateJaxHelper;
 import webhook.teamcity.settings.entity.WebHookTemplates;
 
 public class WebHookTemplateManager {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookTemplateManager.class.getName());
+
 	private static final String TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER = " items long. Templates are ranked in the following order..";
 	private static final String TEMPLATE_NAME = " :: Template Name: ";
 	private static final String TEMPLATES_LIST_IS = " :: Templates list is ";
@@ -46,25 +47,25 @@ public class WebHookTemplateManager {
 		this.webHookPayloadManager = webHookPayloadManager;
 		this.webHookTemplateJaxHelper = webHookTemplateJaxHelper;
 		this.projectIdResolver = projectIdResolver;
-		Loggers.SERVER.debug("WebHookTemplateManager :: Starting (" + toString() + ")");
+		LOG.debug("WebHookTemplateManager :: Starting (" + toString() + ")");
 	}
 	
 	public void registerTemplateFormatFromSpring(WebHookPayloadTemplate payloadTemplate){
 		synchronized (orderedTemplateCollection) {
-			Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering Spring template " 
+			LOG.info(this.getClass().getSimpleName() + " :: Registering Spring template " 
 					+ payloadTemplate.getTemplateDescription() + " (" + payloadTemplate.getTemplateId() + ")"
 					+ " with rank of " + payloadTemplate.getRank());
 			springTemplates.put(payloadTemplate.getTemplateId(),payloadTemplate);
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
+			LOG.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateDescription() + " (" + pl.getTemplateId() + ")" + " Rank: " + pl.getRank());
+				LOG.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateDescription() + " (" + pl.getTemplateId() + ")" + " Rank: " + pl.getRank());
 			}
 		}
 	}
 	
 	private void registerTemplateFormatFromXmlEntityUnsyncd(WebHookTemplateEntity payloadTemplate){
-		Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Registering XML template " 
+		LOG.info(this.getClass().getSimpleName() + " :: Registering XML template " 
 				+ payloadTemplate.getId() 
 				+ " with rank of " + payloadTemplate.getRank());
 		// Set template as belonging to _Root if no associated project id found for this template.
@@ -81,9 +82,9 @@ public class WebHookTemplateManager {
 		synchronized (orderedTemplateCollection) {
 			registerTemplateFormatFromXmlEntityUnsyncd(payloadTemplate);	
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
+			LOG.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
+				LOG.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 		}
 	}
@@ -93,20 +94,20 @@ public class WebHookTemplateManager {
 		synchronized (orderedTemplateCollection) {
 			registerTemplateFormatFromXmlEntityUnsyncd(payloadTemplate);	
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
+			LOG.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
+				LOG.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 		}
 	}
 	
 	private void unregisterAllXmlConfigTemplates(){
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + " :: un-registering all XML config templates.");
+			LOG.debug(this.getClass().getSimpleName() + " :: un-registering all XML config templates.");
 			xmlConfigTemplates.clear();
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
+			LOG.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
+				LOG.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 	}
 	
@@ -123,7 +124,7 @@ public class WebHookTemplateManager {
 				if (jaxbException.getMessage().startsWith("ClassCastException")) {
 					throw new ProbableJaxbJarConflictErrorException(jaxbException);
 				}
-				Loggers.SERVER.debug(jaxbException);
+				LOG.debug(jaxbException);
 				return false;
 			} 
 		}
@@ -307,12 +308,12 @@ public class WebHookTemplateManager {
 				xmlConfigTemplates.remove(name);
 				rebuildOrderedListOfTemplates();
 				
-				Loggers.SERVER.info(this.getClass().getSimpleName() + " :: Deleting XML template " 
+				LOG.info(this.getClass().getSimpleName() + " :: Deleting XML template " 
 						+ name);
 				rebuildOrderedListOfTemplates();
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
+				LOG.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 				for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-					Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
+					LOG.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 				}			
 				return true;
 			}
@@ -327,9 +328,9 @@ public class WebHookTemplateManager {
 				this.registerTemplateFormatFromXmlEntityUnsyncd(template);
 			}
 			rebuildOrderedListOfTemplates();
-			Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
+			LOG.debug(this.getClass().getSimpleName() + TEMPLATES_LIST_IS + this.orderedTemplateCollection.size() + TEMPLATES_ARE_RANKED_IN_THE_FOLLOWING_ORDER);
 			for (WebHookPayloadTemplate pl : this.orderedTemplateCollection){
-				Loggers.SERVER.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
+				LOG.debug(this.getClass().getSimpleName() + TEMPLATE_NAME + pl.getTemplateId() + " Rank: " + pl.getRank());
 			}
 		}
 	}

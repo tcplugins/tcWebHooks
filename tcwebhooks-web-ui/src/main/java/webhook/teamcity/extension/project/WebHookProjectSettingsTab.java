@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.controllers.admin.projects.EditProjectTab;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.web.openapi.PagePlaces;
@@ -41,6 +41,7 @@ import webhook.teamcity.settings.project.WebHookParameterStore;
 import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
 
 public class WebHookProjectSettingsTab extends EditProjectTab {
+	private static final Logger LOG = Logger.getInstance(WebHookProjectSettingsTab.class.getName());
 	private static final String TAB_TITLE = "WebHooks & Templates";
 	private final WebHookSettingsManager myWebhookSettingsManager;
 	private final WebHookPayloadManager myPayloadManager;
@@ -130,7 +131,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 
 		model.put("permissionError", "");
 		for (SProject projectParent : parentProjects){
-			Loggers.SERVER.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
+			LOG.debug("WebHookProjectSettingsTab: Assembling webhooks for project: " + projectParent.getName());
 			if (currentProject.getProjectId().equals(projectParent.getProjectId())) {
 
 				projectBean =  ProjectWebHooksBean.buildWithoutNew(this.myWebhookSettingsManager.getWebHooksForProject(currentProject), 

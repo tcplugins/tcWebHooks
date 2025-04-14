@@ -5,9 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.beanutils.BeanUtils;
 
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadManager;
@@ -20,6 +20,7 @@ import webhook.teamcity.payload.variableresolver.WebHookVariableResolverManager;
 
 
 public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implements WebHookPayload {
+	private static final Logger LOG = Logger.getInstance(WebHookPayloadNameValuePairs.class.getName());
 
 	public static final String FORMAT_SHORT_NAME = "nvpairs";
 	public static final String FORMAT_CONTENT_TYPE = "application/x-www-form-urlencoded";
@@ -62,7 +63,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 		try {
 			 contentMap = BeanUtils.describe(content);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-			Loggers.SERVER.debug("It was not possible to convert 'content' into a bean", ex );
+			LOG.debug("It was not possible to convert 'content' into a bean", ex );
 		}
 
 		if (contentMap != null && contentMap.size() > 0){
@@ -74,7 +75,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 			appendToBuilder(returnString, content.getExtraParameters(myVariableResolverFactory), "extra");
 		}
 
-		Loggers.SERVER.debug(this.getClass().getSimpleName() + ": payload is " + returnString.toString());
+		LOG.debug(this.getClass().getSimpleName() + ": payload is " + returnString.toString());
 		if (returnString.length() > 0){
 			return returnString.toString().substring(1);
 		} else {
@@ -97,7 +98,7 @@ public class WebHookPayloadNameValuePairs extends WebHookPayloadGeneric implemen
 				}
 			} catch (UnsupportedEncodingException | ClassCastException ex ) {
 				pair = "";
-				Loggers.SERVER.debug("failed to encode '" + logType + "' parameter '" + entry.getKey() + "' to URL format. Value has been converted to an empty string.", ex );
+				LOG.debug("failed to encode '" + logType + "' parameter '" + entry.getKey() + "' to URL format. Value has been converted to an empty string.", ex );
 			}
 			stringBuilder.append(pair);
 		}

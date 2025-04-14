@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +48,7 @@ import webhook.teamcity.statistics.WebHooksStatisticsReportEventListener;
  * Listens for Server events and then triggers the execution of webhooks if configured.
  */
 public class WebHookListener extends BuildServerAdapter implements WebHooksStatisticsReportEventListener {
-
+	private static final Logger LOG = Logger.getInstance(WebHookListener.class.getName());
 	private static final String WEB_HOOK_LISTENER = "WebHookListener :: ";
 	private static final String ABOUT_TO_PROCESS_WEB_HOOKS_FOR = "About to process WebHooks for ";
 	private static final String AT_BUILD_STATE = " at buildState ";
@@ -77,17 +78,17 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 		webHookStatisticsExecutor = statisticsExecutor;
 		webHookSettingsEventHandler = settingsEventHandler;
 
-		Loggers.SERVER.info(WEB_HOOK_LISTENER + "Starting");
+		LOG.info(WEB_HOOK_LISTENER + "Starting");
 	}
 
 	public void register(){
 		myBuildServer.addListener(this);
-		Loggers.SERVER.debug(WEB_HOOK_LISTENER + "Registering");
+		LOG.debug(WEB_HOOK_LISTENER + "Registering");
 	}
 
 	private void processBuildEvent(SBuild sBuild, BuildStateEnum state, Map<String, String> serviceMessageAttributes) {
 
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
+		LOG.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(state, sBuild.getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, null, null, false, serviceMessageAttributes);
@@ -95,7 +96,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	}
 	private void processQueueEvent(SQueuedBuild sBuild, BuildStateEnum state, String user, String comment) {
 
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
+		LOG.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(state, sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false);
@@ -104,7 +105,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	private void processResponsibilityEvent(BuildStateEnum state, WebHookResponsibilityHolder responsibilityHolder) {
 
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + AT_BUILD_STATE + state.getShortName());
+		LOG.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + responsibilityHolder.getSProject().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(state, responsibilityHolder.getSProject().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, state, responsibilityHolder, false);
@@ -113,7 +114,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 
 	private void processPinEvent(SBuild sBuild, BuildStateEnum state, String user, String comment) {
 
-		Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
+		LOG.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + sBuild.getBuildType().getProjectId() + AT_BUILD_STATE + state.getShortName());
 		for (WebHookConfig whc : getListOfEnabledWebHooks(state, sBuild.getBuildType().getProjectId())){
 			WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 			webHookExecutor.execute(wh, whc, sBuild, state, user, comment, false, Collections.emptyMap());
@@ -129,7 +130,7 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 				}
 			}
 			for (SProject project : projects) {
-				Loggers.SERVER.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId()+ AT_BUILD_STATE + state.getShortName());
+				LOG.debug(ABOUT_TO_PROCESS_WEB_HOOKS_FOR + project.getProjectId()+ AT_BUILD_STATE + state.getShortName());
 				for (WebHookConfig whc : getListOfEnabledWebHooks(state, project.getProjectId())){
 					WebHook wh = webHookFactory.getWebHook(whc, myMainSettings.getProxyConfigForUrl(whc.getUrl()));
 					webHookExecutor.execute(wh, whc, project, mutedOrUnmutedGroups, state, user, false);
@@ -155,8 +156,8 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 				for (WebHookConfig whc : projSettings.getWebHooksConfigs()){
 					if (!whc.isEnabledForSubProjects().booleanValue() && !myProject.getProjectId().equals(project.getProjectId())){
 						// Sub-projects are disabled and we are a subproject.
-						if (Loggers.ACTIVITIES.isDebugEnabled()){
-							Loggers.ACTIVITIES.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
+						if (LOG.isDebugEnabled()){
+							LOG.debug(this.getClass().getSimpleName() + ":getListOfEnabledWebHooks() "
 									+ ":: subprojects not enabled. myProject is: " + myProject.getProjectId() + ". webhook project is: " + project.getProjectId()+ " : " + whc.getUniqueKey());
 						}
 						continue;
@@ -167,21 +168,21 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 							whc.setProjectExternalId(project.getExternalId());
 							whc.setProjectInternalId(project.getProjectId());
 							configs.add(whc);
-							Loggers.ACTIVITIES.debug("WebHookListener :: WebHook added to list of enabled webhooks. Enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
+							LOG.debug("WebHookListener :: WebHook added to list of enabled webhooks. Enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
 						} else {
-							Loggers.ACTIVITIES.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate() + " for " + whc.getUniqueKey());
+							LOG.warn("WebHookListener :: No registered Template: " + whc.getPayloadTemplate() + " for " + whc.getUniqueKey());
 						}
 					} else if (whc.getEnabled().booleanValue() && !whc.isEnabledForBuildState(state)) {
-						if (Loggers.ACTIVITIES.isDebugEnabled()) {
-							Loggers.ACTIVITIES.debug("WebHookListener :: WebHook skipped. Not enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("WebHookListener :: WebHook skipped. Not enabled for " + state.toString() + ".  " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
 						}
 					} else {
-						Loggers.ACTIVITIES.debug(this.getClass().getSimpleName()
+						LOG.debug(this.getClass().getSimpleName()
 								+ ":processBuildEvent() :: WebHook disabled. Will not process " + whc.getUrl() + " (" + whc.getPayloadTemplate() + ")" + " : " + whc.getUniqueKey());
 					}
 				}
 			} else {
-				Loggers.ACTIVITIES.debug("WebHookListener :: WebHooks are disasbled for  " + projectId);
+				LOG.debug("WebHookListener :: WebHooks are disasbled for  " + projectId);
 			}
 		}
 		return configs;
@@ -371,49 +372,49 @@ public class WebHookListener extends BuildServerAdapter implements WebHooksStati
 	
 	@Override
 	public void projectRestored(String projectId) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectRestored event for project: " + projectId);
+	    LOG.debug("WebHookListener :: Handling projectRestored event for project: " + projectId);
 	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
 	}
 	
 	@Override
 	public void projectMoved(SProject project, SProject originalParentProject) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectMoved event for project: " + project.getProjectId());
+	    LOG.debug("WebHookListener :: Handling projectMoved event for project: " + project.getProjectId());
 	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId(), null, null));
 	}
 	
 	@Override
 	public void projectExternalIdChanged(SProject project, java.lang.String oldExternalId, java.lang.String newExternalId) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectExternalIdChanged event for project: " + project.getProjectId());
+	    LOG.debug("WebHookListener :: Handling projectExternalIdChanged event for project: " + project.getProjectId());
 	    this.mySettings.handleProjectChangedEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, project.getProjectId(), null, null));
 	}
 	
 	@Override
 	public void projectPersisted(String projectId) {
-        Loggers.SERVER.debug("WebHookListener :: Handling projectPersisted event for project: " + projectId);
+        LOG.debug("WebHookListener :: Handling projectPersisted event for project: " + projectId);
         this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_PERSISTED, projectId, null, null));
 	}
 	
 	@Override
 	public void projectRemoved(SProject project) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectRemoved event for project: " + project.getProjectId());
+	    LOG.debug("WebHookListener :: Handling projectRemoved event for project: " + project.getProjectId());
 	    this.mySettings.removeAllWebHooksFromCacheForProject(project.getProjectId());
 	}
 	
 	@Override
 	public void projectArchived(String projectId) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectArchived event for project: " + projectId);
+	    LOG.debug("WebHookListener :: Handling projectArchived event for project: " + projectId);
 	    this.mySettings.removeAllWebHooksFromCacheForProject(projectId);
 	}
 	
 	@Override
 	public void projectDearchived(String projectId) {
-	    Loggers.SERVER.debug("WebHookListener :: Handling projectDearchived event for project: " + projectId);
+	    LOG.debug("WebHookListener :: Handling projectDearchived event for project: " + projectId);
 	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.PROJECT_CHANGED, projectId, null, null));
 	}
 	
 	@Override
 	public void buildTypeUnregistered(SBuildType buildType) {
-	    Loggers.SERVER.debug(String.format("WebHookListener :: Handling buildTypeUnregistered event for buildType: %s (%s)", buildType.getExternalId(), buildType.getInternalId()));
+	    LOG.debug(String.format("WebHookListener :: Handling buildTypeUnregistered event for buildType: %s (%s)", buildType.getExternalId(), buildType.getInternalId()));
 	    this.webHookSettingsEventHandler.handleEvent(new WebHookSettingsEventImpl(WebHookSettingsEventType.BUILD_TYPE_DELETED, buildType.getProjectId(), buildType.getBuildTypeId(), buildType));
 	}
 	

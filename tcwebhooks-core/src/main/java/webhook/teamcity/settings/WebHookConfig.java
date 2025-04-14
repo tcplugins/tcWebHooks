@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +43,8 @@ import webhook.teamcity.settings.project.WebHookParameterModel;
 
 @Builder @AllArgsConstructor
 public class WebHookConfig {
+	private static final Logger LOG = Logger.getInstance(WebHookConfig.class.getName());
+
 	private static final String ATTR_KEY = "key";
 	private static final String ATTR_URL = "url";
 	private static final String ATTR_ID = "id";
@@ -156,7 +158,7 @@ public class WebHookConfig {
 						states.setEnabled(BuildStateEnum.findBuildState(eState.getAttributeValue(ATTR_TYPE)),
 										  eState.getAttribute(ATTR_ENABLED).getBooleanValue());
 					} catch (DataConversionException e1) {
-						Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
+						LOG.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
 					}
 				}
 			}
@@ -168,14 +170,14 @@ public class WebHookConfig {
 				try {
 					this.enableForAllBuildsInProject(eTypes.getAttribute(ATTR_ENABLED_FOR_ALL).getBooleanValue());
 				} catch (DataConversionException e1) {
-					Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
+					LOG.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
 				}
 			}
 			if (eTypes.getAttribute(ATTR_ENABLED_FOR_SUBPROJECTS) != null){
 				try {
 					this.enableForSubProjects(eTypes.getAttribute(ATTR_ENABLED_FOR_SUBPROJECTS).getBooleanValue());
 				} catch (DataConversionException e1) {
-					Loggers.SERVER.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
+					LOG.warn(LOG_PREFIX_WEB_HOOK_CONFIG + e1.getMessage());
 				}
 			}
 			if (Boolean.FALSE.equals(isEnabledForAllBuildsInProject())){

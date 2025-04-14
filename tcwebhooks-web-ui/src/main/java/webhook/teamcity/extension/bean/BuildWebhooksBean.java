@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildType;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.history.GeneralisedWebAddress;
@@ -20,6 +20,7 @@ import webhook.teamcity.settings.WebHookConfig;
  * Used internally by {@link ProjectAndBuildWebhooksBean} only. Don't instantiate manually.
  */
 public class BuildWebhooksBean{
+	private static final Logger LOG = Logger.getInstance(BuildWebhooksBean.class.getName());
 
 	private SBuildType sBuildType;
 	private List<WebHookConfigWithGeneralisedAddressWrapper> buildConfigs;
@@ -60,7 +61,7 @@ public class BuildWebhooksBean{
 			try {
 				url = new URL(uri);
 			} catch (MalformedURLException e) {
-				Loggers.SERVER.warn("BuildWebhooksBean :: Could not build URL from '" + url + "'" );
+				LOG.warn("BuildWebhooksBean :: Could not build URL from '" + url + "'" );
 				try {
 					url = new URL("http://unknown");
 				} catch (MalformedURLException e1) {}

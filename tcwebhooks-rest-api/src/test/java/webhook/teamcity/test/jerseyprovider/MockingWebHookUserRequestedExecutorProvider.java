@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jdom.JDOMException;
 import org.joda.time.LocalDateTime;
 
@@ -19,7 +20,6 @@ import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
-import jetbrains.buildServer.log.Loggers;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.settings.WebHookConfig;
@@ -29,6 +29,7 @@ import webhook.testframework.util.ConfigLoaderUtil;
 
 @Provider
 public class MockingWebHookUserRequestedExecutorProvider implements InjectableProvider<Context, Type>, Injectable<WebHookUserRequestedExecutor> {
+	private static final Logger LOG = Logger.getInstance(MockingWebHookUserRequestedExecutorProvider.class.getName());
 	private final WebHookUserRequestedExecutor request;
 
 	public MockingWebHookUserRequestedExecutorProvider() {
@@ -45,7 +46,7 @@ public class MockingWebHookUserRequestedExecutorProvider implements InjectablePr
 			webHookConfig = ConfigLoaderUtil.getFirstWebHookInConfig(
 					new File("../tcwebhooks-core/src/test/resources/project-settings-test-all-states-enabled.xml"));
 		} catch (IOException | JDOMException e1) {
-			Loggers.SERVER.debug(e1);
+			LOG.debug(e1);
 		}
 		WebHookExecutionStats stats = new WebHookExecutionStats("http://localhost/somewhere");
 		

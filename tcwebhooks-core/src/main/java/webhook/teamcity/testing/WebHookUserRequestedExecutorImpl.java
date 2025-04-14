@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.joda.time.LocalDateTime;
 
 import jetbrains.buildServer.responsibility.ResponsibilityEntry.State;
@@ -13,7 +14,6 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import webhook.WebHook;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.WebHookContentBuilder;
 import webhook.teamcity.WebHookExecutionException;
@@ -47,6 +47,7 @@ import webhook.teamcity.testing.model.WebHookRenderResult;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 
 public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExecutor {
+	private static final Logger LOG = Logger.getInstance(WebHookUserRequestedExecutorImpl.class.getName());
 
 	private static final String A_TESTING_USER = "a testing user";
 	private static final String A_TEST_EXECUTION_COMMENT = "A test execution comment";
@@ -167,7 +168,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		try {
 			return new WebHookRenderResult(renderer.render(wh.getPayload()), webHookPayload.getFormatShortName());
 		} catch (WebHookHtmlRendererException ex){
-			Loggers.SERVER.info(ex);
+			LOG.info(ex);
 			return new WebHookRenderResult(wh.getPayload(), ex);
 		}
 	}
@@ -245,7 +246,7 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 		try {
 			return new WebHookRenderResult(renderer.render(wh.getPayload()), webHookTemplateExecutionRequest.getFormat());
 		} catch (WebHookHtmlRendererException ex){
-			Loggers.SERVER.info(ex);
+			LOG.info(ex);
 			return new WebHookRenderResult(wh.getPayload(), ex);
 		}
 

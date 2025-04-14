@@ -9,9 +9,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import webhook.teamcity.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class JaxHelperImpl<T> implements JaxHelper<T> {
+	private static final Logger LOG = Logger.getInstance(JaxHelperImpl.class.getName());
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -39,7 +40,7 @@ public class JaxHelperImpl<T> implements JaxHelper<T> {
 		Marshaller m = context.createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		m.marshal(bean, new File(configFilePath));
-		Loggers.SERVER.debug(String.format("JaxHelperImpl :: File written to [%s]", configFilePath));
+		LOG.debug(String.format("JaxHelperImpl :: File written to [%s]", configFilePath));
 	}
 
 }

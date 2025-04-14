@@ -6,11 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import webhook.Constants;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.payload.WebHookPayload;
 import webhook.teamcity.payload.WebHookPayloadTemplate;
 import webhook.teamcity.payload.WebHookTemplateManager;
@@ -18,7 +18,8 @@ import webhook.teamcity.payload.WebHookTemplateManager.TemplateState;
 import webhook.teamcity.settings.WebHookSettingsManager;
 
 public class RegisteredWebHookTemplateBean {
-	
+	private static final Logger LOG = Logger.getInstance(RegisteredWebHookTemplateBean.class.getName());
+
 	Map<String,SimpleTemplate> templateList = new LinkedHashMap<>();
 
 	public static RegisteredWebHookTemplateBean build(
@@ -60,7 +61,7 @@ public class RegisteredWebHookTemplateBean {
 				}
 			}
 			if (! validTemplate) {
-				Loggers.SERVER.warn("RegisteredWebHookTemplateBean :: template does not appear to be valid: " + t.getTemplateDescription() + " (" + t.getTemplateId() + ")");
+				LOG.warn("RegisteredWebHookTemplateBean :: template does not appear to be valid: " + t.getTemplateDescription() + " (" + t.getTemplateId() + ")");
 			}
 		}
 		return bean;

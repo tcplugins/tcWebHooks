@@ -1,11 +1,12 @@
 package webhook.teamcity.settings.project;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import webhook.teamcity.TeamCityCoreFacade;
 
 public class WebHookParameterStoreFactoryImpl implements WebHookParameterStoreFactory {
-	
+
+	private static final Logger LOG = Logger.getInstance(WebHookParameterStoreFactoryImpl.class.getName());
 	private static final int MINIMUM_SUPPORTED_VERSION = 42002;  // TeamCity 10
 	private WebHookParameterStore webHookParameterStore;
 
@@ -19,9 +20,9 @@ public class WebHookParameterStoreFactoryImpl implements WebHookParameterStoreFa
 			}
 		} catch (NumberFormatException ex) {
 			webHookParameterStore = new WebHookParameterStoreNoOpImpl();
-			Loggers.SERVER.debug("WebHookParameterStoreFactory:: NumberFormatException... WebHookParameterStore is: '" + webHookParameterStore.getClass() + "'.");
+			LOG.debug("WebHookParameterStoreFactory:: NumberFormatException... WebHookParameterStore is: '" + webHookParameterStore.getClass() + "'.");
 		}
-		Loggers.SERVER.debug("WebHookParameterStoreFactory:: Teamcity build is: '" + sBuildServer.getBuildNumber() + "'. WebHookParameterStore is: '" + webHookParameterStore.getClass() + "'.");
+		LOG.debug("WebHookParameterStoreFactory:: Teamcity build is: '" + sBuildServer.getBuildNumber() + "'. WebHookParameterStore is: '" + webHookParameterStore.getClass() + "'.");
 	}
 	
 	@Override

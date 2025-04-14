@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -35,7 +36,6 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import lombok.Getter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticator;
@@ -46,6 +46,8 @@ import webhook.teamcity.settings.WebHookHeaderConfig;
 
 
 public class WebHookImpl implements WebHook {
+	private static final Logger LOG = Logger.getInstance(WebHookImpl.class.getName());
+
 	private String proxyHost;
 	private Integer proxyPort = 0;
 	private String proxyUsername;
@@ -156,33 +158,33 @@ public class WebHookImpl implements WebHook {
 			HttpResponse httpResponse = null;
 		    try {
 		    	this.webhookStats.setRequestStarting();
-		    	Loggers.SERVER.debug("WebHookImpl::  Connect timeout(millis): " + this.requestConfig.getConnectTimeout());
-		    	Loggers.SERVER.debug("WebHookImpl:: Response timeout(millis): " + this.requestConfig.getSocketTimeout());
+		    	LOG.debug("WebHookImpl::  Connect timeout(millis): " + this.requestConfig.getConnectTimeout());
+		    	LOG.debug("WebHookImpl:: Response timeout(millis): " + this.requestConfig.getSocketTimeout());
 		    	httpResponse = client.execute(httppost, context);
 		        this.webhookStats.setRequestCompleted(httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
 		        this.webhookStats.setResponseHeaders(httpResponse.getAllHeaders());
 		        
-		        if (Loggers.SERVER.isDebugEnabled()) {
+		        if (LOG.isDebugEnabled()) {
 		        	// Log headers
-		        	Loggers.SERVER.debug("WebHookImpl::  --- Begin Server Response Headers ---");
+		        	LOG.debug("WebHookImpl::  --- Begin Server Response Headers ---");
 		        	for (Header header : httpResponse.getAllHeaders()) {
-		        		Loggers.SERVER.debug( header.getName() + " : " + header.getValue() );
+		        		LOG.debug( header.getName() + " : " + header.getValue() );
 		        	}
-		        	Loggers.SERVER.debug("WebHookImpl::  --- End Server Response Headers ---");
+		        	LOG.debug("WebHookImpl::  --- End Server Response Headers ---");
 		        	
 		        	// Log body
-		        	Loggers.SERVER.debug("WebHookImpl::  --- Begin Server Response Body ---");
+		        	LOG.debug("WebHookImpl::  --- Begin Server Response Body ---");
 			        try {
 			        	HttpEntity responseEntity = httpResponse.getEntity();
 				        if(responseEntity != null) {
-				        	Loggers.SERVER.debug( EntityUtils.toString(responseEntity) );
+				        	LOG.debug( EntityUtils.toString(responseEntity) );
 			        	} else {
-			        		Loggers.SERVER.debug("Unable to parse response body. responseEntity is null");
+			        		LOG.debug("Unable to parse response body. responseEntity is null");
 			        	}
 			        } catch (IOException ex) {
-			        	Loggers.SERVER.debug("Unable to parse response body:" + ex.getMessage());
+			        	LOG.debug("Unable to parse response body:" + ex.getMessage());
 			        }
-			        Loggers.SERVER.debug("WebHookImpl::  --- End Server Response Body ---");
+			        LOG.debug("WebHookImpl::  --- End Server Response Body ---");
 		        }
 		    } finally {
 		        httppost.releaseConnection();
@@ -420,8 +422,8 @@ public class WebHookImpl implements WebHook {
 				this.getExecutionStats().setStatusReason(disabledReason);
 				return false;
 			} else {
-				if (Loggers.SERVER.isDebugEnabled()) {
-					Loggers.SERVER.debug("WebHookImpl: Filter match found: " + filter.getValue() + " (" + variable + ") matches using regex " + filter.getRegex() );
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("WebHookImpl: Filter match found: " + filter.getValue() + " (" + variable + ") matches using regex " + filter.getRegex() );
 				}
 			}
 			

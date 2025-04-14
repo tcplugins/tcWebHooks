@@ -2,15 +2,17 @@ package webhook.teamcity.settings;
 
 import java.util.List;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.MainConfigProcessor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 
 import org.jdom.Element;
 
 import webhook.WebHookProxyConfig;
-import webhook.teamcity.Loggers;
 
 public class WebHookMainSettings implements MainConfigProcessor {
+	private static final Logger LOG = Logger.getInstance(WebHookMainSettings.class.getName());
+
 	protected static final String ATTRIBUTENAME_ENABLED = "enabled";
 	protected static final String ATTRIBUTENAME_USE_THREADED_EXECUTOR = "useThreadedExecutor";
 	protected static final String ATTRIBUTENAME_DEDICATED_THREAD_POOL = "dedicatedThreadPool";
@@ -27,7 +29,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	}
 
 	public void register(){
-		Loggers.SERVER.debug(NAME + ":: Registering");
+		LOG.debug(NAME + ":: Registering");
 		server.registerExtension(MainConfigProcessor.class, "webhooks", this);
 	}
 
@@ -41,8 +43,8 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	 * Old settings should be overwritten.
 	 */
 	{
-		Loggers.SERVER.info("WebHookMainSettings: re-reading main settings");
-		Loggers.SERVER.debug(NAME + ":readFrom :: " + rootElement.toString());
+		LOG.info("WebHookMainSettings: re-reading main settings");
+		LOG.debug(NAME + ":readFrom :: " + rootElement.toString());
 		WebHookMainConfig tempConfig = new WebHookMainConfig();
 		Element webhooksElement = rootElement.getChild("webhooks");
 		if(webhooksElement != null){
@@ -56,12 +58,12 @@ public class WebHookMainSettings implements MainConfigProcessor {
 				&& (extraInfoElement.getAttribute("url")  != null)){
 					tempConfig.setWebhookInfoText(extraInfoElement.getAttributeValue("text"));
 					tempConfig.setWebhookInfoUrl(extraInfoElement.getAttributeValue("url"));
-					Loggers.SERVER.debug(NAME + ":readFrom :: info text " + tempConfig.getWebhookInfoText());
-					Loggers.SERVER.debug(NAME + ":readFrom :: info url  " + tempConfig.getWebhookInfoUrl());
+					LOG.debug(NAME + ":readFrom :: info text " + tempConfig.getWebhookInfoText());
+					LOG.debug(NAME + ":readFrom :: info url  " + tempConfig.getWebhookInfoUrl());
 				}
 				if (extraInfoElement.getAttribute("show-reading") != null){
 					tempConfig.setWebhookShowFurtherReading(Boolean.parseBoolean(extraInfoElement.getAttributeValue("show-reading")));
-					Loggers.SERVER.debug(NAME + ":readFrom :: show reading " + tempConfig.getWebhookShowFurtherReading().toString());
+					LOG.debug(NAME + ":readFrom :: show reading " + tempConfig.getWebhookShowFurtherReading().toString());
 				}
 			}
 
@@ -133,7 +135,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
 					for(Element e : namedChildren){
 						String url = e.getAttributeValue("url");
 						tempConfig.addNoProxyUrl(url);
-						Loggers.SERVER.debug(NAME + ":readFrom :: noProxyUrl " + url);
+						LOG.debug(NAME + ":readFrom :: noProxyUrl " + url);
 					}
 				}
 			}
@@ -146,8 +148,8 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	 * in memory.
 	 */
 	{
-		Loggers.SERVER.info("WebHookMainSettings: re-writing main settings");
-		Loggers.SERVER.debug(NAME + ":writeTo :: " + parentElement.toString());
+		LOG.info("WebHookMainSettings: re-writing main settings");
+		LOG.debug(NAME + ":writeTo :: " + parentElement.toString());
 		Element webhooksElement = new Element("webhooks");
 		if (webHookMainConfig.useThreadedExecutorIsDefined()) {
 			webhooksElement.setAttribute(ATTRIBUTENAME_USE_THREADED_EXECUTOR, Boolean.toString(webHookMainConfig.useThreadedExecutor()));
@@ -159,8 +161,8 @@ public class WebHookMainSettings implements MainConfigProcessor {
 				&& webHookMainConfig.getProxyPort() != null && webHookMainConfig.getProxyPort() > 0 )
 		{
 			webhooksElement.addContent(webHookMainConfig.getProxyAsElement());
-			Loggers.SERVER.debug(NAME + "writeTo :: proxyHost " + webHookMainConfig.getProxyHost());
-			Loggers.SERVER.debug(NAME + "writeTo :: proxyPort " + webHookMainConfig.getProxyPort().toString());
+			LOG.debug(NAME + "writeTo :: proxyHost " + webHookMainConfig.getProxyHost());
+			LOG.debug(NAME + "writeTo :: proxyPort " + webHookMainConfig.getProxyPort().toString());
 		}
 
 		if(webHookMainConfig.getTimeoutsAsElement() != null) {
@@ -169,9 +171,9 @@ public class WebHookMainSettings implements MainConfigProcessor {
 
 		if(webHookMainConfig.getInfoUrlAsElement() != null){
 			webhooksElement.addContent(webHookMainConfig.getInfoUrlAsElement());
-			Loggers.SERVER.debug(NAME + "writeTo :: infoText " + webHookMainConfig.getWebhookInfoText());
-			Loggers.SERVER.debug(NAME + "writeTo :: InfoUrl  " + webHookMainConfig.getWebhookInfoUrl());
-			Loggers.SERVER.debug(NAME + "writeTo :: show-reading  " + webHookMainConfig.getWebhookShowFurtherReading().toString());
+			LOG.debug(NAME + "writeTo :: infoText " + webHookMainConfig.getWebhookInfoText());
+			LOG.debug(NAME + "writeTo :: InfoUrl  " + webHookMainConfig.getWebhookInfoUrl());
+			LOG.debug(NAME + "writeTo :: show-reading  " + webHookMainConfig.getWebhookShowFurtherReading().toString());
 		}
 
 		if (webHookMainConfig.getStatisticsAsElement() != null) {
@@ -198,7 +200,7 @@ public class WebHookMainSettings implements MainConfigProcessor {
 	}
 
 	public void dispose() {
-		Loggers.SERVER.debug(NAME + ":dispose() called");
+		LOG.debug(NAME + ":dispose() called");
 	}
 
 	public WebHookProxyConfig getProxyConfigForUrl(String url) {
