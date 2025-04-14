@@ -24,7 +24,7 @@ public class WebHookSecretResolverImpl implements WebHookSecretResolver {
 		}
 		// Will try to resolve the token's associated value, or will return the same token unresolved. 
 		final String value = ((SecureDataStorage) sProject).getSecureValue(token, "WebHook payload assembly");
-
+		
 		// If we got the same token back, a match was not found. So return null.
 		if (!token.equals(value)) {
 			return value;
