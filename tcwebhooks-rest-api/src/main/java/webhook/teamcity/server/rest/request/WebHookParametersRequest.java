@@ -134,7 +134,7 @@ public class WebHookParametersRequest extends BaseRequest {
 			throw new UnprocessableEntityException(PARAMETER_CONTAINED_INVALID_DATA, validationResult);
 		}
 		
-		if (myDataProvider.getWebHookParameterStore().updateWebHookParameter(sProject.getProjectId(), updatedParameter, "")) {
+		if (myDataProvider.getWebHookParameterStore().updateWebHookParameter(sProject.getProjectId(), updatedParameter, "WebHookParameter updated")) {
 			WebHookParameter webHookParameterById = myDataProvider.getWebHookParameterStore().getWebHookParameterById(sProject, existingParameter.getId());
 			return new ProjectWebhookParameter(webHookParameterById, new Fields(fields), myWebHookApiUrlBuilder.getProjectParameterHref(projectExternalId, webHookParameterById));
 		} else {
