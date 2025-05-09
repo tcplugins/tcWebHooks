@@ -154,7 +154,7 @@ public class WebHookParametersRequest {
 			throw new UnprocessableEntityException(PARAMETER_CONTAINED_INVALID_DATA, validationResult);
 		}
 		
-		if (myWebHookParameterStore.updateWebHookParameter(sProject.getProjectId(), updatedParameter, "")) {
+		if (myWebHookParameterStore.updateWebHookParameter(sProject.getProjectId(), updatedParameter, "WebHookParameter updated")) {
 			WebHookParameter webHookParameterById = myWebHookParameterStore.getWebHookParameterById(sProject, existingParameter.getId());
 			return new ProjectWebhookParameter(webHookParameterById, new Fields(fields), myBeanContext.getApiUrlBuilder().getProjectParameterHref(projectExternalId, webHookParameterById));
 		} else {
