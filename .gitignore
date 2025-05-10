@@ -7,3 +7,5 @@
 # Java annotation processor (APT)
 .factorypath
 **/target
+
+.idea
