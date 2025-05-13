@@ -1,8 +1,8 @@
 package webhook.teamcity.settings.secure;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.lang3.StringUtils;
 
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.impl.SecureDataStorage;
 
@@ -11,9 +11,10 @@ import jetbrains.buildServer.serverSide.impl.SecureDataStorage;
  *
  */
 public class WebHookSecretResolverImpl implements WebHookSecretResolver {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookSecretResolverImpl.class.getName());
+
 	public WebHookSecretResolverImpl() {
-		Loggers.SERVER.info("WebHookSecretResolverImpl :: Starting WebHookSecretResolver for 2017.1 and newer");
+		LOG.info("WebHookSecretResolverImpl :: Starting WebHookSecretResolver for 2017.1 and newer");
 	}
 
 	@Override

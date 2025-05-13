@@ -7,26 +7,27 @@ import java.util.TreeMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import webhook.teamcity.WebHookContentResolutionException;
 import webhook.teamcity.WebHookExecutionException;
 import webhook.teamcity.payload.PayloadTemplateEngineType;
 
 public class WebHookVariableResolverManagerImpl implements WebHookVariableResolverManager {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookVariableResolverManagerImpl.class.getName());
+
 	Map<PayloadTemplateEngineType, VariableResolverFactory> variableResolvers = new TreeMap<>();
 	Map<String, VariableResolverFactory> variableResolversWithStringKeys = new TreeMap<>();
 	
 	@Override
 	public void registerVariableResolverFactory(VariableResolverFactory factory) {
 		if (variableResolvers.containsKey(factory.getPayloadTemplateType())) {
-			Loggers.SERVER.warn("WebHookVariableResolverManagerImpl :: Previously registered factory '" 
+			LOG.warn("WebHookVariableResolverManagerImpl :: Previously registered factory '" 
 				+ variableResolvers.get(factory.getPayloadTemplateType()).getVariableResolverFactoryName()
 				 + "' of type '"
 				+ factory.getPayloadTemplateType().toString() + "' was overridden.");
 		}
 		variableResolvers.put(factory.getPayloadTemplateType(), factory);
-		Loggers.SERVER.info("WebHookVariableResolverManagerImpl :: Registered new VariableResolverFactory '" 
+		LOG.info("WebHookVariableResolverManagerImpl :: Registered new VariableResolverFactory '" 
 				+ factory.getVariableResolverFactoryName()
 				+ "' as type '" 
 				+ factory.getPayloadTemplateType().toString() + "'");

@@ -22,13 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import lombok.Getter;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.server.pluginfixer.JarReport;
 
 public class WebHookTeamCityRestApiZipPluginFixer {
-	
+	protected static final Logger LOG = Logger.getInstance(WebHookTeamCityRestApiZipPluginFixer.class.getName());
+
 	private SBuildServer mySBuildServer;
 
 	public WebHookTeamCityRestApiZipPluginFixer(SBuildServer sBuildServer) {
@@ -71,12 +72,12 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	}
 	
 	public synchronized void findRestApiZipPlugins() {
-		Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Starting to check if rest-api.zip has jaxb jars");
+		LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Starting to check if rest-api.zip has jaxb jars");
 		File possibleLocation = findTeamCityBaseLocation();
 		this.foundApiZipFiles = new ArrayList<>();
 		
 		if (possibleLocation != null) {
-			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for teamcity in: " + possibleLocation.getAbsolutePath());
+			LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for teamcity in: " + possibleLocation.getAbsolutePath());
 			try {
 				foundApiZipFiles.addAll(findRestApiZipFileInTomcatDir(possibleLocation, "rest-api.zip")); 
 				
@@ -86,57 +87,57 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 						jarReports.put(p, new JarReport(p, restApiUnpackedDir, filenames));
 					}
 					if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames, jarReports.get(p))) {
-						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars: " + p.toFile().getAbsolutePath());
+						LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars: " + p.toFile().getAbsolutePath());
 					} else {
-						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
+						LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
 					}
-					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
+					LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
 					if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames, jarReports.get(p))) {
-						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars: " + restApiUnpackedDir);
+						LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars: " + restApiUnpackedDir);
 					} else {
-						Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);
+						LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);
 					}
 				}
 			} catch (IOException e) {
-				Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not open zip file rest-api.zip", e);
+				LOG.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not open zip file rest-api.zip", e);
 			}
 		} else {
-			Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Unable to determine teamcity install location. No attempt will be made to fix rest-api.zip");
+			LOG.warn("WebHookTeamCityRestApiZipPluginFixer :: Unable to determine teamcity install location. No attempt will be made to fix rest-api.zip");
 		}
 	}
 	
 	public synchronized JarReport fixRestApiZipPlugin(Path p) {
 		try {
 				if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames, jarReports.get(p))) {
-					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. Attempting to remove them from: " + p.toFile().getAbsolutePath());
+					LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. Attempting to remove them from: " + p.toFile().getAbsolutePath());
 					deleteFilesFromRestApiZipFile(p.toFile(), filenames, jarReports.get(p));
 					if (doesRestApiZipFileContainJaxJars(p.toFile(), filenames, jarReports.get(p))) {
-						Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. It was not possible to remove them from: " + p.toFile().getAbsolutePath());
+						LOG.warn("WebHookTeamCityRestApiZipPluginFixer :: File found does contain jars. It was not possible to remove them from: " + p.toFile().getAbsolutePath());
 					} else {
-						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from: " + p.toFile().getAbsolutePath());
-						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
+						LOG.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from: " + p.toFile().getAbsolutePath());
+						LOG.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
 						this.haveFilesBeenCleanedSinceBoot = true;
 					}
 				} else {
-					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
+					LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! File found does not contain jars. Searched in: " + p.toFile().getAbsolutePath());
 				}
 				String restApiUnpackedDir = p.toFile().getParent() + UNPACKED_LOCATION;
-				Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
+				LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Looking for unpacked jars in: " + restApiUnpackedDir);
 				if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames, jarReports.get(p))) {
-					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars. Attempting to remove them from: " + restApiUnpackedDir);
+					LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does contain jars. Attempting to remove them from: " + restApiUnpackedDir);
 					deleteFilesFromPluginsUnpackedDir(filenames, jarReports.get(p));
 					if (doFilesExistInPluginsUnpackedDir(p.toFile().getParent(), filenames, jarReports.get(p))) {
-						Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir still contains jars. It was not possible to remove them from: " + restApiUnpackedDir);
+						LOG.warn("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir still contains jars. It was not possible to remove them from: " + restApiUnpackedDir);
 					} else {
-						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from unpacked dir : " + restApiUnpackedDir);
-						Loggers.SERVER.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
+						LOG.info("WebHookTeamCityRestApiZipPluginFixer :: Successfully removed jaxb jars from unpacked dir : " + restApiUnpackedDir);
+						LOG.info("WebHookTeamCityRestApiZipPluginFixer :: Please restart TeamCity so that the updated plugin file is loaded.");
 						this.haveFilesBeenCleanedSinceBoot = true;
 					}
 				} else {
-					Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);
+					LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Hooray! Unpacked dir does not contain jars. Searched in: " + restApiUnpackedDir);
 				}
 		} catch (IOException e) {
-			Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not remove files from rest-api.zip", e);
+			LOG.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Could not remove files from rest-api.zip", e);
 		}
 		return jarReports.get(p);
 	}
@@ -145,28 +146,28 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 		
 		File teamCityHome = new File(this.mySBuildServer.getServerRootPath() + "/WEB-INF");
 		if (teamCityHome.exists() && teamCityHome.isDirectory()) {
-			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: TeamCity WEB-INF is: " + teamCityHome.getAbsolutePath());
+			LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: TeamCity WEB-INF is: " + teamCityHome.getAbsolutePath());
 			return teamCityHome;
 		}
 		
 		Map<String, String> env = System.getenv();
 		File catalinaHome = getCatalinaHomeDir(env); 
 		if (catalinaHome != null) {
-			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: CATALINA_HOME is: " + catalinaHome.getAbsolutePath());
+			LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: CATALINA_HOME is: " + catalinaHome.getAbsolutePath());
 			return catalinaHome;
 		} else {
 			for (Entry<String,String> e : env.entrySet()) {
-				Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: " + e.getKey() + " : " + e.getValue());
+				LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: " + e.getKey() + " : " + e.getValue());
 			}
 		}
 		
-		Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: CATALINA_HOME could not be determined. Next attempt: log4j.configuration property path");
+		LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: CATALINA_HOME could not be determined. Next attempt: log4j.configuration property path");
 		
 		String logLocation = System.getProperty("log4j.configuration");
 		if (logLocation != null) {
 			File tcHomeDir = getTeamCityHomeDir(logLocation.replaceFirst("file\\:", "").replace("../conf/teamcity-server-log4j.xml", "../"));
 			if (tcHomeDir != null) {
-				Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: TeamCity appears to be in: " + tcHomeDir.getAbsolutePath());
+				LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: TeamCity appears to be in: " + tcHomeDir.getAbsolutePath());
 				return tcHomeDir;
 			}
 		}
@@ -194,10 +195,10 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	}
 	
 	private File getTeamCityHomeDir(String filePath) {
-		Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Trying to determine if TeamCity is in: " + filePath);
+		LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Trying to determine if TeamCity is in: " + filePath);
 		File path = new File(filePath);
 		if (path.exists() && path.isDirectory()) {
-			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Checking dir contains webapps. Looking in: " + path.getAbsolutePath());
+			LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Checking dir contains webapps. Looking in: " + path.getAbsolutePath());
 			for (File dirname : path.listFiles()) {
 				if ("webapps".equalsIgnoreCase(dirname.getName())) {
 					return path;
@@ -210,7 +211,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 	protected boolean doesRestApiZipFileContainJaxJars(File restApiZip, String[] filenames, JarReport jarReport) throws IOException {
         // If we have a new TC version the jar conflict is resolved so just return false
 		if (mySBuildServer.getServerMajorVersion() >= 21) {
-			Loggers.SERVER.debug("TeamCity is 2021.0 or newer. Skipping ZIP file checking for " + restApiZip.getAbsolutePath());
+			LOG.debug("TeamCity is 2021.0 or newer. Skipping ZIP file checking for " + restApiZip.getAbsolutePath());
 			for (String filename : filenames) {
         		jarReport.setJarFoundInZipFile(filename, false);
 			}
@@ -227,7 +228,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         	Path path = Paths.get(restApiZip.getAbsolutePath());
         	zipDisk = new URI("jar",path.toUri().toString(), null);
     	} catch(URISyntaxException e) {
-    		Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Could not convert to JAR URI.", e);
+    		LOG.warn("WebHookTeamCityRestApiZipPluginFixer :: Could not convert to JAR URI.", e);
     	}
         boolean fileFoundInZip = false;
         
@@ -244,8 +245,8 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         		}
         	}
         } catch(IllegalArgumentException e) {
-        	Loggers.SERVER.error("WebHookTeamCityRestApiZipPluginFixer :: Could not create filesystem: " + e.getMessage());
-        	Loggers.SERVER.debug(e);
+        	LOG.error("WebHookTeamCityRestApiZipPluginFixer :: Could not create filesystem: " + e.getMessage());
+        	LOG.debug(e);
         }
         return fileFoundInZip;
 	}
@@ -267,7 +268,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 				}
 			}
 		} else {
-			Loggers.SERVER.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does not exist in: " + restPluginUnpackedDir);
+			LOG.debug("WebHookTeamCityRestApiZipPluginFixer :: Unpacked dir does not exist in: " + restPluginUnpackedDir);
 		}
 		
 		return fileExists;
@@ -291,7 +292,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
 						}
 					} catch (IOException e) {
 						jarReport.setUnpackedLocationFailureMessage(filename, e.getMessage());
-						Loggers.SERVER.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Failed to delete file from unpacked location: " + e.getMessage(), e);
+						LOG.warnAndDebugDetails("WebHookTeamCityRestApiZipPluginFixer :: Failed to delete file from unpacked location: " + e.getMessage(), e);
 					}
 				}
 			}
@@ -311,7 +312,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         	Path path = Paths.get(restApiZip.getAbsolutePath());
         	zipDisk = new URI("jar",path.toUri().toString().replace("\\","/"), null);
     	} catch(URISyntaxException e) {
-    		Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer :: Could not convert to JAR URI.", e);
+    		LOG.warn("WebHookTeamCityRestApiZipPluginFixer :: Could not convert to JAR URI.", e);
     	}
 		boolean fileDeletedInZip = false;
 		
@@ -350,14 +351,14 @@ public class WebHookTeamCityRestApiZipPluginFixer {
         if (name != null && matcher.matches(name)) {
         	matchedPaths.add(file);
             numMatches++;
-            Loggers.SERVER.debug("Found file: " + file);
+            LOG.debug("Found file: " + file);
         }
     }
 
     // Prints the total number of
     // matches to standard out.
     List<Path> getResults() {
-    	Loggers.SERVER.debug("Matched: "
+    	LOG.debug("Matched: "
             + numMatches);
         return matchedPaths;
     }
@@ -383,7 +384,7 @@ public class WebHookTeamCityRestApiZipPluginFixer {
     @Override
     public FileVisitResult visitFileFailed(Path file,
             IOException exc) {
-        Loggers.SERVER.warn("WebHookTeamCityRestApiZipPluginFixer ::Visiting file failed", exc);
+        LOG.warn("WebHookTeamCityRestApiZipPluginFixer ::Visiting file failed", exc);
         return CONTINUE;
     	}
     }

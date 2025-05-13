@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -19,7 +20,6 @@ import org.joda.time.format.DateTimeFormat;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.exception.StatisticsFileOperationException;
 import webhook.teamcity.history.WebHookHistoryItem;
 import webhook.teamcity.history.WebHookHistoryRepository;
@@ -28,7 +28,8 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 
 public class StatisticsManagerImpl implements StatisticsManager {
-	
+	private static final Logger LOG = Logger.getInstance(StatisticsManagerImpl.class.getName());
+
 	private static final String YEAR_MONTH_DATE = "yyyy-MM-dd";
 	private static final Pattern STATISTICS_FILENAME_PATTERN = Pattern.compile("stats-\\d{4}-\\d{2}-\\d{2}\\.xml");
 	
@@ -87,26 +88,26 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
 
 	private void findAndUpdateStatsForDate(LocalDateTime dateTime) {
-		Loggers.SERVER.debug("StatisticsManagerImpl :: Starting findAndUpdateStatsForDate for date: " + dateTime);
+		LOG.debug("StatisticsManagerImpl :: Starting findAndUpdateStatsForDate for date: " + dateTime);
 		StatisticsEntity previousStatisticsEntity = loadLastStatisticsEntity(dateTime.toLocalDate());
-		Loggers.SERVER.debug("StatisticsManagerImpl :: Loaded previous stats from time:  " + previousStatisticsEntity.getLastUpdated());
+		LOG.debug("StatisticsManagerImpl :: Loaded previous stats from time:  " + previousStatisticsEntity.getLastUpdated());
 		
 		List<WebHookHistoryItem> allItemsForDate = webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(dateTime.toLocalDate(), 0).get(dateTime.toLocalDate());
-		Loggers.SERVER.debug(String.format("StatisticsManagerImpl :: Found %s items from repository for date %s ", allItemsForDate.size(), dateTime.toLocalDate()));
+		LOG.debug(String.format("StatisticsManagerImpl :: Found %s items from repository for date %s ", allItemsForDate.size(), dateTime.toLocalDate()));
 		List<WebHookHistoryItem> newItemsForDate = new ArrayList<>();
 		for (WebHookHistoryItem item :allItemsForDate) {
 			if (item.getTimestamp().isAfter(previousStatisticsEntity.getLastUpdated())) {
 				newItemsForDate.add(item);
 			}
 		}
-		Loggers.SERVER.debug(String.format("StatisticsManagerImpl :: Filtered items contains %s items from repository newer than %s ", newItemsForDate.size(), previousStatisticsEntity.getLastUpdated()));
+		LOG.debug(String.format("StatisticsManagerImpl :: Filtered items contains %s items from repository newer than %s ", newItemsForDate.size(), previousStatisticsEntity.getLastUpdated()));
 		
 		StatisticsEntity updatedPayload = this.buildStatisticsEntity(previousStatisticsEntity, newItemsForDate, dateTime);
-		Loggers.SERVER.debug(String.format("StatisticsManagerImpl :: New payload data created with time: %s ", updatedPayload.getLastUpdated()));
+		LOG.debug(String.format("StatisticsManagerImpl :: New payload data created with time: %s ", updatedPayload.getLastUpdated()));
 		try {
 			myJaxHelpher.writeFile(updatedPayload, StatisticsEntity.class, getConfigFilePath(dateTime.toLocalDate()));
 		} catch (JAXBException ex) {
-			Loggers.SERVER.warn(String.format("StatisticsManagerImpl :: Unable to update WebHook Statistics file for date '%s'", dateTime), ex);
+			LOG.warn(String.format("StatisticsManagerImpl :: Unable to update WebHook Statistics file for date '%s'", dateTime), ex);
 		}
 	}
 	
@@ -163,10 +164,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
 				markStatisticsAsReported(unreportedStats);
 				myStatisticsEventListener.reportStatistics(report);
 			} catch (RuntimeException ex) {
-				Loggers.SERVER.warn("StatisticsManagerImpl :: Unable to send WebHooks statistics report", ex);
+				LOG.warn("StatisticsManagerImpl :: Unable to send WebHooks statistics report", ex);
 			}
 		} else {
-			Loggers.SERVER.debug(String.format("StatisticsManagerImpl :: Skipping report sending. Only %s days of reports to send.", unreportedStats.size()));
+			LOG.debug(String.format("StatisticsManagerImpl :: Skipping report sending. Only %s days of reports to send.", unreportedStats.size()));
 		}
 		// Mark stats as sent for all included dates.
 		
@@ -178,7 +179,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 			try {
 				myJaxHelpher.writeFile(entity, StatisticsEntity.class, getConfigFilePath(entity.statisticsSnapshot.getDate()));
 			} catch (JAXBException ex) {
-				Loggers.SERVER.warn(String.format("StatisticsManagerImpl :: Unable to mark WebHook Statistics file as reported for date '%s'", entity.statisticsSnapshot.getDate()), ex);
+				LOG.warn(String.format("StatisticsManagerImpl :: Unable to mark WebHook Statistics file as reported for date '%s'", entity.statisticsSnapshot.getDate()), ex);
 			}
 		}
 		
@@ -231,7 +232,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 				LocalDate fileDate = LocalDate.parse(file.getName().substring(6,16), DateTimeFormat.forPattern(YEAR_MONTH_DATE));
 				if (fileDate.isBefore(oneYearAgo)) {
 					filesForDeletion.add(file);
-					Loggers.SERVER.debug(String.format("StatisticsManagerImpl :: Added file '%s' to delete list. It is older than '%s'", 
+					LOG.debug(String.format("StatisticsManagerImpl :: Added file '%s' to delete list. It is older than '%s'", 
 							file.getName(), oneYearAgo.toString()));
 				}
 			}
@@ -240,9 +241,9 @@ public class StatisticsManagerImpl implements StatisticsManager {
 		for (File file : filesForDeletion) {
 			try {
 				Files.delete(file.toPath());
-				Loggers.SERVER.info(String.format("StatisticsManagerImpl :: Removed old webhook statistics file '%s'.", file.getName()));
+				LOG.info(String.format("StatisticsManagerImpl :: Removed old webhook statistics file '%s'.", file.getName()));
 			} catch (IOException e) {
-				Loggers.SERVER.info("StatisticsManagerImpl :: Failed to remove old webhook statistics file.", e);
+				LOG.info("StatisticsManagerImpl :: Failed to remove old webhook statistics file.", e);
 			}
 		}
 	}

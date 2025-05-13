@@ -3,14 +3,15 @@ package webhook.teamcity;
 import java.util.Collections;
 import java.util.List;
 
-import jetbrains.buildServer.log.Loggers;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.messages.BuildMessage1;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTranslator;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 
 public class WebHookServiceMessageHandler implements ServiceMessageTranslator {
-	
+	private static final Logger LOG = Logger.getInstance(WebHookServiceMessageHandler.class.getName());
+
 	public static final String SERVICE_MESSAGE_NAME = "sendWebhook";
 	
 	private final WebHookListener myWebHookListener;
@@ -22,7 +23,7 @@ public class WebHookServiceMessageHandler implements ServiceMessageTranslator {
 	@Override
 	public List<BuildMessage1> translate(SRunningBuild runningBuild, BuildMessage1 originalMessage, ServiceMessage serviceMessage) {
 		myWebHookListener.serviceMessageReceived(runningBuild, serviceMessage.getAttributes());
-		Loggers.SERVER.debug("WebHookServiceMessageHandler :: WebHook service message event received for buildType : " + runningBuild.getBuildTypeExternalId() + " with build id "  + runningBuild.getBuildId());
+		LOG.debug("WebHookServiceMessageHandler :: WebHook service message event received for buildType : " + runningBuild.getBuildTypeExternalId() + " with build id "  + runningBuild.getBuildId());
 		
 		return Collections.singletonList(originalMessage);
 	}

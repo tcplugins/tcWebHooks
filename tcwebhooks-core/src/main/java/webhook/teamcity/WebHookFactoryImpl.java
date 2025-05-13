@@ -3,6 +3,7 @@ package webhook.teamcity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.intellij.openapi.diagnostic.Logger;
 import webhook.WebHook;
 import webhook.WebHookImpl;
 import webhook.WebHookProxyConfig;
@@ -14,6 +15,7 @@ import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.WebHookMainSettings;
 
 public class WebHookFactoryImpl implements WebHookFactory {
+	private static final Logger LOG = Logger.getInstance(WebHookFactoryImpl.class.getName());
 
 	final WebHookMainSettings myMainSettings;
 	final WebHookAuthenticatorProvider myAuthenticatorProvider;
@@ -41,7 +43,7 @@ public class WebHookFactoryImpl implements WebHookFactory {
 				auth.setWebHookAuthConfig(webHookConfig.getAuthenticationConfig());
 				webHook.setAuthentication(auth);
 			} else {
-				Loggers.SERVER.warn("Could not enable authentication type '" + webHookConfig.getAuthenticationConfig().getType() + "' for URL " + webHookConfig.getUrl() );
+				LOG.warn("Could not enable authentication type '" + webHookConfig.getAuthenticationConfig().getType() + "' for URL " + webHookConfig.getUrl() );
 			}
 		}
 		

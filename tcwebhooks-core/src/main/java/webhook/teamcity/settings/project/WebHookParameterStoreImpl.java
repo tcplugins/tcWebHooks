@@ -9,14 +9,15 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityCoreFacade;
 
 public class WebHookParameterStoreImpl implements WebHookParameterStore {
+	private static final Logger LOG = Logger.getInstance(WebHookParameterStoreImpl.class.getName());
 
     private static final String PROJECT_FEATURE_TYPE = "tcWebHookParameter";
 
@@ -32,7 +33,7 @@ public class WebHookParameterStoreImpl implements WebHookParameterStore {
         SProject sProject = teamCityCore.findProjectByIntId(projectInternalId);
         SProjectFeatureDescriptor featureDescriptor = sProject.addFeature(PROJECT_FEATURE_TYPE, params);
         teamCityCore.persist(projectInternalId, "WebHookParameter added");
-        Loggers.SERVER.info("WebHookParameter '" + webhookParameter.getName() + "' is created in the project " + projectInternalId);
+        LOG.info("WebHookParameter '" + webhookParameter.getName() + "' is created in the project " + projectInternalId);
         return fromProjectFeature(featureDescriptor);
     }
 
@@ -72,7 +73,7 @@ public class WebHookParameterStoreImpl implements WebHookParameterStore {
     	}
 		SProjectFeatureDescriptor feature = project.findFeatureById(webhookParameter.getId());
 		if (feature == null) {
-			Loggers.SERVER.warn("WebHookParameterStoreImpl :: Unable to find existing WebHookParameter instance "
+			LOG.warn("WebHookParameterStoreImpl :: Unable to find existing WebHookParameter instance "
 					+ " to update with ID: " + webhookParameter.getName());
 			return false;
 		}
