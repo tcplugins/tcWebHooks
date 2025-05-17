@@ -10,6 +10,8 @@ import jetbrains.buildServer.responsibility.ResponsibilityEntry.State;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
+
 import webhook.WebHook;
 import webhook.WebHookExecutionStats;
 import webhook.teamcity.BuildStateEnum;
@@ -465,6 +467,16 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 
 		@Override
 		public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SBuildType buildType, String templateName) {
+			return WebHookTemplateContent.create(
+					state.getShortName(),
+					myWebHookTemplateConfig.getDefaultTemplate().getTemplateContent(),
+					true,
+					myWebHookTemplateConfig.getPreferredDateTimeFormat()
+				);
+			}
+
+		@Override
+		public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SProject sProject, String templateName) {
 			return WebHookTemplateContent.create(
 					state.getShortName(),
 					myWebHookTemplateConfig.getDefaultTemplate().getTemplateContent(),
