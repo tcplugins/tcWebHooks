@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jdom.JDOMException;
 import org.junit.Test;
 
@@ -38,6 +39,26 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         //System.out.print(gson.toJson(webhook));
         System.out.print(gson.toJson(convertedWebHook));
         assertEquals(gson.toJson(webhook), gson.toJson(convertedWebHook));
+        //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
+    }
+    
+    @Test
+    public void testAndValidateConvert() throws JDOMException, IOException {
+        //String featureId = "PROJECT_EXT_30";
+        WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
+        authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
+        authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
+        WebHookConfig webhook = ConfigLoaderUtil.getSpecificWebHookInConfig(2, new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
+        webhook.setProjectInternalId("project02");
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
+        SProjectFeatureDescriptor features = converter.convert(webhook);
+        WebHookConfig convertedWebHook = converter.convert(features);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        //System.out.print(gson.toJson(webhook));
+        System.out.print(gson.toJson(features.getParameters()));
+        System.out.print(gson.toJson(convertedWebHook));
+        assertEquals(gson.toJson(webhook), gson.toJson(convertedWebHook));
+        
         //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
     }
     

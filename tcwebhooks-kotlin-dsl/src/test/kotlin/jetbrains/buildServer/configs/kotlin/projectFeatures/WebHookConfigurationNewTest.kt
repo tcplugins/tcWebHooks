@@ -13,18 +13,53 @@ class WebHookConfigurationNewTest {
     @BeforeEach
     fun setup() {
 
+        val airTouchDiscoveryConsole : BuildType =
+            BuildType {
+                name = "AirTouch Discovery Console"
+                params {
+                    param("vcs.project.name", "airtouch-discovery-console")
+                }
+            }
+        val anotherExampleBuildType : BuildType =
+            BuildType {
+                name = "My Example Build Type"
+                params {
+                    param("vcs.project.name", "my-example-build-type")
+                }
+            }
+
         hook = WebHookConfigurationNew {
                 webHookId = "SmallKotlinProject_WebHook_01"
                 template = "legacy-json"
                 url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
-                buildTypes = selectedProjectBuilds {
+//                buildTypes = selectedProjectBuilds {
+//                    subProjectBuilds = true
+//                    buildTypeIds = "01, 02"
+//                }
+
+                buildTypes  = allProjectBuilds {
                     subProjectBuilds = true
-                    buildTypeIds = "01, 02"
                 }
-                buildStates = enabledBuildStates {
+
+                buildTypes  = selectedProjectBuilds {
+                    subProjectBuilds = true
+
+                    // Use an already defined build type.
+                    buildType{airTouchDiscoveryConsole}
+
+                    // Just pass the build type ID, as that's all we use anyway
+                    buildTypeId{anotherExampleBuildType.id}
+                }
+
+                buildStates {
                     buildAddedToQueue = true
                     buildRemovedFromQueue = true
+                    testsMuted = true
+                    testsUnmuted = false
+                    buildPinned = true
+                    buildFixed = true
                 }
+
                 authentication = basic {
                     username = "myUserName"
                     password = "myPassword"
@@ -34,12 +69,12 @@ class WebHookConfigurationNewTest {
 
                 headers {
                     header(name = "foo1", value = "bar1")
-                    header(
-                        name = "foo",
-                        value = "bar"
-                    )
                     header(name = "foo2", value = "bar2")
                     header("foo3", "bar3")
+                    header(
+                        name = "foo4",
+                        value = "bar4"
+                    )
                 }
 
                 parameters {
@@ -60,11 +95,6 @@ class WebHookConfigurationNewTest {
                         includedInLegacyPayloads = false,
                         templateEngine = WebHookConfigurationNew.TemplateEngine.STANDARD
                     )
-                }
-                // It's not possible to add a new parameters block.
-                // It will simply overwrite the previous one.
-                parameters {
-                    //parameter("fooParam4", "barParam4")
                 }
         }
     }
@@ -116,6 +146,16 @@ class WebHookConfigurationNewTest {
     }
 
     @Test
+    fun getEnabledBuildStates() {
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildAddedToQueue", value = "enabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildRemovedFromQueue", value = "enabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "testsMuted", value = "enabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "testsUnmuted", value = "disabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildPinned", value = "enabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildFixed", value = "enabled" )))
+    }
+
+    @Test
     fun getHeaders() {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "header_0_name", value = "foo1" )))
     }
@@ -138,5 +178,23 @@ class WebHookConfigurationNewTest {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_2_templateEngine", value = "STANDARD" )))
 //        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_3_name", value = "fooParam1" )))
 //        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_3_value", value = "barParam1" )))
+    }
+
+    @Test
+    fun validateWebHook() {
+        val consumer = Consumer()
+        hook.validate(consumer)
+        assertFalse(consumer.errorsReported())
+    }
+
+    @Test
+    fun validationFailsWhenMoreThanOneParameterBlockAdded() {
+        hook.parameters {
+            parameter("fooParam100", "barParam100")
+        }
+        val consumer = Consumer()
+        hook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("parameters function was called more than once."))
     }
 }

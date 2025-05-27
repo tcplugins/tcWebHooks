@@ -1,7 +1,7 @@
 package jetbrains.buildServer.configs.kotlin.projectFeatures
 
 import jetbrains.buildServer.configs.kotlin.*
-import jetbrains.buildServer.configs.kotlin.projectFeatures.WebHookConfigurationNew.Parameter
+import jetbrains.buildServer.configs.kotlin.ui.id
 
 /**
  * A description of a class.
@@ -10,7 +10,7 @@ import jetbrains.buildServer.configs.kotlin.projectFeatures.WebHookConfiguration
  * @see webHookConfigurationNew
  */
 @TeamCityDsl
-open class WebHookConfigurationNew() : ProjectFeature() {
+class WebHookConfigurationNew() : ProjectFeature() {
 
     init {
         type = "tcWebHooks"
@@ -112,104 +112,254 @@ open class WebHookConfigurationNew() : ProjectFeature() {
     /**
      * Specifies to which system a status should be published
      */
-    var buildTypes by compoundParameter<BuildTypes>()
+    //var buildTypes by compoundParameter<BuildTypes>()
+    sealed class BuildTypes2(
+        val feature: WebHookConfigurationNew,
+        val allProjectBuilds : Boolean = false,
+        var subProjectBuilds: Boolean = false) : Validatable {
 
-    sealed class BuildTypes(value: String? = null): CompoundParam<BuildTypes>(value) {
-        abstract fun validate(consumer: ErrorConsumer)
 
-        /**
-         * Send webhook to all build in project
-         */
-        class AllProjectBuilds() : BuildTypes("allProjectBuilds") {
 
-            /**
-             * A flag to instruct the webhook to run against all
-             * builds in subprojects of this project.
-             */
-            var subProjectBuilds by booleanParameter()
-
+        class AllProjectBuilds(feature: WebHookConfigurationNew,): BuildTypes2(feature, allProjectBuilds = true) {
             override fun validate(consumer: ErrorConsumer) {
+                TODO("Not yet implemented")
             }
+
         }
-
-        class SelectedProjectBuilds() : BuildTypes("selectedProjectBuilds") {
-
-            /**
-             * A flag to instruct the webhook to run against all
-             * builds in subprojects of this project.
-             */
-            var subProjectBuilds by booleanParameter()
-
-            /**
-             * Comma separated list of buildTypeIds for which this
-             * webhook should
-             * trigger.
-             */
-            var buildTypeIds by stringParameter()
+        class SelectedProjectBuilds(feature: WebHookConfigurationNew,): BuildTypes2(feature, allProjectBuilds = false) {
+            private val myBuildTypes = mutableSetOf<Id?>()
 
             override fun validate(consumer: ErrorConsumer) {
-                if (buildTypeIds == null && !hasParam("buildTypeIds")) {
-                    consumer.consumePropertyError("buildTypes.buildTypeIds", "mandatory 'buildTypes.buildTypeIds' property is not specified")
-                }
+
+            }
+
+            /**
+             * 
+             */
+            fun buildType(myBuildTypeFunction: () -> BuildType) {
+                /* We are passed in a function like this...
+                    buildType{
+                        // Some buildType reference passed to the function
+                        BuildType {
+                            name = "AirTouch Utils"
+                            params {
+                                param("vcs.project.name", "airtouch-utils")
+                            }
+                        }
+                    }
+
+                 * Therefore, call the function and add the resulting Id
+                 * to the set.
+                 */
+                myBuildTypes.add(myBuildTypeFunction().id)
+            }
+
+            fun buildTypeId(myBuildTypeIdFunction: () -> Id?) {
+                myBuildTypes.add(myBuildTypeIdFunction())
             }
         }
     }
+
+    fun allProjectBuilds(init: BuildTypes2.AllProjectBuilds.() -> Unit = {}) : BuildTypes2.AllProjectBuilds {
+        val result = BuildTypes2.AllProjectBuilds(this)
+        result.init()
+        return result
+    }
+
+    fun selectedProjectBuilds(init: BuildTypes2.SelectedProjectBuilds.() -> Unit = {}) : BuildTypes2.SelectedProjectBuilds {
+        val result = BuildTypes2.SelectedProjectBuilds(this)
+        result.init()
+        return result
+    }
+
+//    sealed class xBuildTypes(value: String? = null): CompoundParam<BuildTypes>(value) {
+//        abstract fun validate(consumer: ErrorConsumer)
+//
+//        /**
+//         * Send webhook to all build in project
+//         */
+//        class AllProjectBuilds() : BuildTypes("allProjectBuilds") {
+//
+//            var subProjectBuilds by booleanParameter()
+//            /**
+//             * A flag to instruct the webhook to run against all
+//             * builds in subprojects of this project.
+//             */
+//            val allProjectBuilds = true
+//            override fun validate(consumer: ErrorConsumer) {
+//            }
+//
+//            class SelectedProjectBuilds() : BuildTypes("selectedProjectBuilds") {
+//                /**
+//                 * A flag to instruct the webhook to run against all
+//                 * builds in subprojects of this project.
+//                 */
+//                var subProjectBuilds by booleanParameter()
+//
+//                var allProjectBuilds by booleanParameter2()
+//
+//                fun booleanParameter2(customName: String? = null, trueValue: String? = "true", falseValue: String? = "false"): DelegateProvider<Boolean?> {
+//                    var thing = booleanParameter()
+//
+//                    return thing
+//                }
+//
+//
+//                /**
+//                 * Comma separated list of buildTypeIds for which this
+//                 * webhook should
+//                 * trigger.
+//                 */
+//                var buildTypeIds by stringParameter()
+//
+//                override fun validate(consumer: ErrorConsumer) {
+//                    if (buildTypeIds == null && !hasParam("buildTypeIds")) {
+//                        consumer.consumePropertyError("buildTypes.buildTypeIds", "mandatory 'buildTypes.buildTypeIds' property is not specified")
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
 
     /**
      * Send webhook to all builds in project
      */
-    fun allProjectBuilds(init: BuildTypes.AllProjectBuilds.() -> Unit = {}) : BuildTypes.AllProjectBuilds {
-        val result = BuildTypes.AllProjectBuilds()
-        result.init()
-        return result
-    }
+//    fun allProjectBuilds(init: BuildTypes.AllProjectBuilds.() -> Unit = {}) : BuildTypes.AllProjectBuilds {
+//        val result = BuildTypes.AllProjectBuilds()
+//        result.init()
+//        return result
+//    }
+//
+//    fun selectedProjectBuilds(init: BuildTypes.SelectedProjectBuilds.() -> Unit = {}) : BuildTypes.SelectedProjectBuilds {
+//        val result = BuildTypes.SelectedProjectBuilds()
+//        result.init()
+//        return result
+//    }
 
-    fun selectedProjectBuilds(init: BuildTypes.SelectedProjectBuilds.() -> Unit = {}) : BuildTypes.SelectedProjectBuilds {
-        val result = BuildTypes.SelectedProjectBuilds()
-        result.init()
-        return result
-    }
-
-    /**
-     * The build states for which this webhook should trigger.
-     */
-    var buildStates by compoundParameter<BuildStates>()
-
-    sealed class BuildStates(value: String? = null): CompoundParam<BuildStates>(value) {
-        /**
-         * Pass in the build states required. Any omitted build
-         * states will default to disabled.
-         */
-        class EnabledBuildStates() : BuildStates("enabledBuildStates") {
-
-            /**
-             * Trigger this webhook when the build is added to the queue.
-             */
-            var buildAddedToQueue by booleanParameter(trueValue = "enabled", falseValue = "disabled")
-
-            /**
-             * Trigger this webhook when the build is removed from the queue by a user.
-             */
-            var buildRemovedFromQueue by booleanParameter(trueValue = "enabled", falseValue = "disabled")
-
+    class BuildStates(
+        private val feature: WebHookConfigurationNew, init: BuildStates.() -> Unit,
+        ) {
+        init {
+            init()
         }
+
+        private fun enabledAsSting(boolValue: Boolean): String {
+            return if (boolValue) "enabled" else "disabled"
+        }
+
+        fun addToParams() {
+            buildAddedToQueue?.let { this.feature.param("buildAddedToQueue" , enabledAsSting(buildAddedToQueue!!)) }
+            buildRemovedFromQueue?.let { this.feature.param("buildRemovedFromQueue" , enabledAsSting(buildRemovedFromQueue!!)) }
+            buildStarted?.let { this.feature.param("buildStarted" , enabledAsSting(buildStarted!!)) }
+            changesLoaded?.let { this.feature.param("changesLoaded" , enabledAsSting(changesLoaded!!)) }
+            buildSuccessful?.let { this.feature.param("buildSuccessful" , enabledAsSting(buildSuccessful!!)) }
+            buildFixed?.let { this.feature.param("buildFixed" , enabledAsSting(buildFixed!!)) }
+            buildFailed?.let { this.feature.param("buildFailed" , enabledAsSting(buildFailed!!)) }
+            buildBroken?.let { this.feature.param("buildBroken" , enabledAsSting(buildBroken!!)) }
+            buildPinned?.let { this.feature.param("buildPinned" , enabledAsSting(buildPinned!!)) }
+            buildUnpinned?.let { this.feature.param("buildUnpinned" , enabledAsSting(buildUnpinned!!)) }
+            testsMuted?.let { this.feature.param("testsMuted" , enabledAsSting(testsMuted!!)) }
+            testsUnmuted?.let { this.feature.param("testsUnmuted" , enabledAsSting(testsUnmuted!!)) }
+            responsibilityChanged?.let { this.feature.param("responsibilityChanged" , enabledAsSting(responsibilityChanged!!)) }
+            serviceMessageReceived?.let { this.feature.param("serviceMessageReceived" , enabledAsSting(serviceMessageReceived!!)) }
+            reportStatistics?.let { this.feature.param("reportStatistics" , enabledAsSting(reportStatistics!!)) }
+        }
+
+        /**
+         *  Triggered when a build is added to the queue.
+         */
+        var buildAddedToQueue: Boolean? = null
+        /**
+         * Triggered when a build is removed from the queue by a user.
+         */
+        var buildRemovedFromQueue: Boolean? = null
+        /**
+         * Triggered when a build starts.
+         * Note: changes and other variables may not be initialised at this point.
+         */
+        var buildStarted: Boolean? = null
+        /**
+         * Triggered after the build has started and VCS changes have been assembled.
+         */
+        var changesLoaded: Boolean? = null
+        /**
+         * Triggered every time a build successfully completes.
+         */
+        var buildSuccessful: Boolean? = null
+        /**
+         * Triggered the first time a build succeeds after previously failing
+         */
+        var buildFixed: Boolean? = null
+        /**
+         * Every time a build fails
+         */
+        var buildFailed: Boolean? = null
+        /**
+         * The first time a build fails after previously succeeding
+         */
+        var buildBroken: Boolean? = null
+        /**
+         * A pin is added to a build by a user
+         */
+        var buildPinned: Boolean? = null
+        /**
+         * A pin is removed from a build by a user
+         */
+        var buildUnpinned: Boolean? = null
+        /**
+         * Tests are muted on a build
+         */
+        var testsMuted: Boolean? = null
+        /**
+         * Tests are unmuted on a build
+         */
+        var testsUnmuted: Boolean? = null
+        /**
+         * The Responsibility of resolving build issues is changed
+         */
+        var responsibilityChanged: Boolean? = null
+        /**
+         * A webhook service message is generated by the build
+         */
+        var serviceMessageReceived: Boolean? = null
+        /**
+         * A statistics report request has been received
+         */
+        var reportStatistics: Boolean? = null
     }
 
     /**
-     * Pass in the build states required. Any omitted build
-     * states will default to disabled.
+     * Function to define the build states for which this webhook should be triggered.
+     *
+     * Example Code:
+     *
+     *     buildStates {
+     *        buildAddedToQueue = true
+     *        buildRemovedFromQueue = true
+     *        testsMuted = true
+     *        testsUnmuted = false
+     *        buildPinned = true
+     *        buildFixed = true
+     *     }
      */
-    fun enabledBuildStates(init: BuildStates.EnabledBuildStates.() -> Unit = {}) : BuildStates.EnabledBuildStates {
-        val result = BuildStates.EnabledBuildStates()
-        result.init()
-        return result
+    fun buildStates(init: BuildStates.() -> Unit = {}): BuildStates {
+        val buildStates = BuildStates(this, init)
+        this.buildStates = buildStates
+        this.buildStates!!.addToParams()
+        return buildStates
     }
+
+    private var buildStates: BuildStates? = null
+    private var parameters: Parameters? = null
+    private var headers: Headers? = null
 
     /**
      * Build Type references for which this webhook should
      * run.
      */
-    var buildType by stringParameter()
+    //var buildType by stringParameter()
+    var buildTypes: BuildTypes2? = null
 
     override fun validate(consumer: ErrorConsumer) {
         super.validate(consumer)
@@ -230,6 +380,8 @@ open class WebHookConfigurationNew() : ProjectFeature() {
         if (buildStates == null && !hasParam("buildStates")) {
             consumer.consumePropertyError("buildStates", "mandatory 'buildStates' property is not specified")
         }
+        parameters?.validate(consumer)
+        headers?.validate(consumer)
     }
 
 //    fun header(name: String, value: String) : Header {
@@ -239,7 +391,34 @@ open class WebHookConfigurationNew() : ProjectFeature() {
 //        return h
 //    }
 
-    class Headers(val feature: WebHookConfigurationNew, init: Headers.() -> Unit) {
+    fun buildTypes(allProjectBuilds: () -> Unit, subProjectBuilds: Boolean) : BuildTypes {
+        var buildTypes = BuildTypes(this, true, subProjectBuilds)
+        return buildTypes
+    }
+    fun buildTypes(init: BuildTypes.() -> Unit, subProjectBuilds: Boolean) : BuildTypes {
+        var buildTypes = BuildTypes(this, false, subProjectBuilds)
+        return buildTypes
+    }
+
+    class BuildTypes(
+        var feature: WebHookConfigurationNew,
+        val allProjectBuilds : Boolean = false,
+        val subProjectBuilds: Boolean = false
+    ) : Validatable {
+
+        private val myBuildTypes = mutableSetOf<BuildType>()
+
+        fun buildType(buildType: BuildType) {
+            myBuildTypes.add(buildType)
+        }
+
+        override fun validate(consumer: ErrorConsumer) {
+            consumer.consumePropertyError("headers", "headers function was called more than once.")
+        }
+    }
+
+    class Headers(val feature: WebHookConfigurationNew, init: Headers.() -> Unit) : Validatable {
+        var alreadySeen = false
         val myHeaders = mutableMapOf<String,String>()
         init {
             init()
@@ -251,25 +430,41 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             //this.feature.param(name, value)
         }
 
-//        fun header(init: Header.() -> Unit = {}) {
-//            val result = Header()
-//            result.init()
-//            if (result.name != null && result.value != null) {
-//                this.feature.param(result.name, result.value)
-//            }
-//        }
+        override fun validate(consumer: ErrorConsumer) {
+            if (alreadySeen) {
+                consumer.consumePropertyError("headers", "headers function was called more than once.")
+            }
+        }
     }
 
+    /**
+     *  Defines headers for a webhook (optional).
+     *
+     *    headers {
+     *        header(name = "foo1", value = "bar1")
+     *        header(name = "foo2", value = "bar2")
+     *        header("foo3", "bar3")
+     *        header(
+     *            name = "foo4",
+     *            value = "bar4"
+     *        )
+     *    }
+     */
     fun headers(init: Headers.() -> Unit): Headers {
         val headers = Headers(this, init)
+        if (this.headers != null) {
+            headers.alreadySeen = true
+        }
         for((headerCounter, key) in headers.myHeaders.keys.withIndex()) {
             headers.feature.param("header_${headerCounter}_name", key)
             headers.myHeaders[key]?.let { headers.feature.param("header_${headerCounter}_value", it) }
         }
+        this.headers = headers
         return headers
     }
 
-    class Parameters(val feature: WebHookConfigurationNew, init: Parameters.() -> Unit) {
+    class Parameters(val feature: WebHookConfigurationNew, init: Parameters.() -> Unit) : Validatable {
+        var alreadySeen = false
         val myParameters = mutableMapOf<String,Parameter>()
         init {
             init()
@@ -299,16 +494,34 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             )
         }
 
-//        fun parameter(init: Parameter.() -> Unit = {}) : Parameter {
-//            val parameter = Parameter(init)
-//        }
-
+        override fun validate(consumer: ErrorConsumer) {
+            if (alreadySeen) {
+                consumer.consumePropertyError("parameters", "parameters function was called more than once.")
+            }
+        }
     }
 
+    /**
+     *  Defines parameters for a webhook (optional).
+     *
+     *    parameters {
+     *        parameter("fooParam1", "barParam1")
+     *        parameter(
+     *            name = "fooParam2",
+     *            value = "barParam2",
+     *            secure = true,
+     *            forceResolveTeamCityVariable = true,
+     *            includedInLegacyPayloads = true,
+     *            templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY
+     *        )
+     *    }
+     */
     fun parameters(init: Parameters.() -> Unit): Parameters {
         val parameters = Parameters(this, init)
+        if (this.parameters != null) {
+            parameters.alreadySeen = true
+        }
         for((parameterCounter, p) in parameters.myParameters.values.withIndex()) {
-
             parameters.feature.param("parameter_${parameterCounter}_name", p.name)
             parameters.feature.param("parameter_${parameterCounter}_value", p.value)
             p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
@@ -316,6 +529,7 @@ open class WebHookConfigurationNew() : ProjectFeature() {
             p.forceResolveTeamCityVariable?.let { parameters.feature.param("parameter_${parameterCounter}_forceResolveTeamCityVariable", p.forceResolveTeamCityVariable.toString()) }
             p.templateEngine?.let { parameters.feature.param("parameter_${parameterCounter}_templateEngine", p.templateEngine.toString()) }
         }
+        this.parameters = parameters
         return parameters
     }
 
@@ -402,3 +616,4 @@ fun ProjectFeatures.webHookConfigurationNew(init: WebHookConfigurationNew.() -> 
     feature(result)
     return result
 }
+

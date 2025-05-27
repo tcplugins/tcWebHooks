@@ -118,10 +118,10 @@ public class ProjectFeatureToWebHookConfigConverter {
     
     private void populateTriggerFilters(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.filters(
-                parameters.entrySet().stream().filter(e -> e.getKey().startsWith(TRIGGER_FILTER_KEY_PREFIX))
-                .map(e -> gson.fromJson(e.getValue(), WebHookFilterConfig.class))
-                .collect(Collectors.toList())
-                );
+            parameters.entrySet().stream().filter(e -> e.getKey().startsWith(TRIGGER_FILTER_KEY_PREFIX))
+            .map(e -> gson.fromJson(e.getValue(), WebHookFilterConfig.class))
+            .collect(Collectors.toList())
+            );
     }
 
 

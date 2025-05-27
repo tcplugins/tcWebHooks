@@ -46,7 +46,7 @@ public class WebHookTemplateResolver {
 	
 	public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SProject project, String templateId){
 		for (WebHookPayloadTemplate template : findWebHookTemplatesForProject(project)){
-			if (template.getTemplateId().equals(templateId)){
+			if (templateId.equals(template.getTemplateId())){
 				return template.getTemplateForState(state);
 			}
 		}

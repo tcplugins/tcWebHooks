@@ -474,16 +474,16 @@ public class WebHookUserRequestedExecutorImpl implements WebHookUserRequestedExe
 					myWebHookTemplateConfig.getPreferredDateTimeFormat()
 				);
 			}
-
+		
 		@Override
 		public WebHookTemplateContent findWebHookTemplate(BuildStateEnum state, SProject sProject, String templateName) {
-			return WebHookTemplateContent.create(
-					state.getShortName(),
-					myWebHookTemplateConfig.getDefaultTemplate().getTemplateContent(),
-					true,
-					myWebHookTemplateConfig.getPreferredDateTimeFormat()
-				);
-			}
+		    return WebHookTemplateContent.create(
+		            state.getShortName(),
+		            myWebHookTemplateConfig.getDefaultTemplate().getTemplateContent(),
+		            true,
+		            myWebHookTemplateConfig.getPreferredDateTimeFormat()
+		            );
+		}
 
 		@Override
 		public WebHookPayload getTemplatePayloadFormat(String templateId) {

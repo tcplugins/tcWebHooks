@@ -31,10 +31,18 @@ public class ConfigLoaderUtil {
 
 	public static WebHookConfig getFirstWebHookInConfig(File f) throws JDOMException, IOException{
 		Element fileAsElement = ConfigLoaderUtil.getFullConfigElement(f);
-		assertTrue("One and only one webhook expected when loading test config from file : " + f.getName(), fileAsElement.getChild("webhooks").getChildren("webhook").size() == 1);
 		return new WebHookConfig((Element) fileAsElement.getChild("webhooks").getChildren("webhook").get(0));
 	}
 	
+	/**
+	 * Gets the nth {@link WebHookConfig} from the file. 
+	 * 1 based (not zero based) 
+	 * @param itemNumber (1 based)
+	 * @param plugin XML file from which to load the configuration
+	 * @return WebHookConfig assembled from the configuration in the plugin XML file.
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
 	public static WebHookConfig getSpecificWebHookInConfig(int itemNumber, File f) throws JDOMException, IOException{
 		Element fileAsElement = ConfigLoaderUtil.getFullConfigElement(f);
 		return new WebHookConfig((Element) fileAsElement.getChild("webhooks").getChildren("webhook").get(itemNumber -1));
