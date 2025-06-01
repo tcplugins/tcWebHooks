@@ -90,6 +90,12 @@ class WebHookConfigurationNewTest {
                         templateEngine = WebHookConfigurationNew.TemplateEngine.STANDARD
                     )
                 }
+
+                triggerFilters {
+                    triggerFilter("myValue01", ".+", true)
+                    triggerFilter("myValue02", ".+", false)
+                    triggerFilter("myValue03", ".+")
+                }
         }
     }
 
@@ -174,6 +180,14 @@ class WebHookConfigurationNewTest {
 //        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "parameter_3_value", value = "barParam1" )))
     }
 
+
+    @Test
+    fun getTriggerFilters() {
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_value", value = "myValue01" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_regex", value = ".+" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "triggerFilter_0_enabled", value = "true" )))
+    }
+
     @Test
     fun validateWebHook() {
         val consumer = Consumer()
@@ -182,7 +196,7 @@ class WebHookConfigurationNewTest {
     }
 
     @Test
-    fun validationFailsWhenMoreThanOneParameterBlockAdded() {
+    fun validationFailsWhenMoreThanOneParametersBlockAdded() {
         hook.parameters {
             parameter("fooParam100", "barParam100")
         }
@@ -190,5 +204,27 @@ class WebHookConfigurationNewTest {
         hook.validate(consumer)
         assertTrue(consumer.errorsReported())
         assertTrue(consumer.errors.contains("parameters function was called more than once."))
+    }
+
+    @Test
+    fun validationFailsWhenMoreThanOneHeadersBlockAdded() {
+        hook.headers {
+            header("fooHeader100", "barHeader100")
+        }
+        val consumer = Consumer()
+        hook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("headers function was called more than once."))
+    }
+
+    @Test
+    fun validationFailsWhenMoreThanOneTriggerFiltersBlockAdded() {
+        hook.triggerFilters {
+            triggerFilter("fooHeader100", "barHeader100")
+        }
+        val consumer = Consumer()
+        hook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("triggerFilters function was called more than once."))
     }
 }

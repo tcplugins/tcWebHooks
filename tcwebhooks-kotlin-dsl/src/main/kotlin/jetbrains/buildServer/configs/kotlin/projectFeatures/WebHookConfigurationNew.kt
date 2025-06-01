@@ -287,6 +287,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
     private var buildStates: BuildStates? = null
     private var parameters: Parameters? = null
     private var headers: Headers? = null
+    private var triggerFilters: TriggerFilters? = null
 
     /**
      * Build Type references for which this webhook should
@@ -310,12 +311,14 @@ class WebHookConfigurationNew() : ProjectFeature() {
         if (buildTypes == null && !hasParam("buildTypes")) {
             consumer.consumePropertyError("buildTypes", "mandatory 'buildTypes' property is not specified")
         }
-        buildTypes?.validate(consumer)
         if (buildStates == null && !hasParam("buildStates")) {
             consumer.consumePropertyError("buildStates", "mandatory 'buildStates' property is not specified")
         }
+
+        buildTypes?.validate(consumer)
         parameters?.validate(consumer)
         headers?.validate(consumer)
+        triggerFilters?.validate(consumer)
     }
 
     class Headers(val feature: WebHookConfigurationNew, init: Headers.() -> Unit) : Validatable {
@@ -355,10 +358,11 @@ class WebHookConfigurationNew() : ProjectFeature() {
         val headers = Headers(this, init)
         if (this.headers != null) {
             headers.alreadySeen = true
-        }
-        for((headerCounter, key) in headers.myHeaders.keys.withIndex()) {
-            headers.feature.param("header_${headerCounter}_name", key)
-            headers.myHeaders[key]?.let { headers.feature.param("header_${headerCounter}_value", it) }
+        } else {
+            for ((headerCounter, key) in headers.myHeaders.keys.withIndex()) {
+                headers.feature.param("header_${headerCounter}_name", key)
+                headers.myHeaders[key]?.let { headers.feature.param("header_${headerCounter}_value", it) }
+            }
         }
         this.headers = headers
         return headers
@@ -408,8 +412,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
             var includedInLegacyPayloads: Boolean?,
             var forceResolveTeamCityVariable: Boolean?,
             var templateEngine: TemplateEngine?
-        ) {
-        }
+        )
     }
 
     /**
@@ -431,17 +434,109 @@ class WebHookConfigurationNew() : ProjectFeature() {
         val parameters = Parameters(this, init)
         if (this.parameters != null) {
             parameters.alreadySeen = true
-        }
-        for((parameterCounter, p) in parameters.myParameters.values.withIndex()) {
-            parameters.feature.param("parameter_${parameterCounter}_name", p.name)
-            parameters.feature.param("parameter_${parameterCounter}_value", p.value)
-            p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
-            p.includedInLegacyPayloads?.let { parameters.feature.param("parameter_${parameterCounter}_includedInLegacyPayloads", p.includedInLegacyPayloads.toString()) }
-            p.forceResolveTeamCityVariable?.let { parameters.feature.param("parameter_${parameterCounter}_forceResolveTeamCityVariable", p.forceResolveTeamCityVariable.toString()) }
-            p.templateEngine?.let { parameters.feature.param("parameter_${parameterCounter}_templateEngine", p.templateEngine.toString()) }
+        } else {
+            for ((parameterCounter, p) in parameters.myParameters.values.withIndex()) {
+                parameters.feature.param("parameter_${parameterCounter}_name", p.name)
+                parameters.feature.param("parameter_${parameterCounter}_value", p.value)
+                p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
+                p.includedInLegacyPayloads?.let {
+                    parameters.feature.param(
+                        "parameter_${parameterCounter}_includedInLegacyPayloads",
+                        p.includedInLegacyPayloads.toString()
+                    )
+                }
+                p.forceResolveTeamCityVariable?.let {
+                    parameters.feature.param(
+                        "parameter_${parameterCounter}_forceResolveTeamCityVariable",
+                        p.forceResolveTeamCityVariable.toString()
+                    )
+                }
+                p.templateEngine?.let {
+                    parameters.feature.param(
+                        "parameter_${parameterCounter}_templateEngine",
+                        p.templateEngine.toString()
+                    )
+                }
+            }
         }
         this.parameters = parameters
         return parameters
+    }
+
+    class TriggerFilters(val feature: WebHookConfigurationNew, init: TriggerFilters.() -> Unit) : Validatable {
+        var alreadySeen = false
+        val myTriggerFilters = mutableMapOf<String,TriggerFilter>()
+        init {
+            init()
+        }
+
+        /**
+         * Define a trigger filter and default to enabled.
+         */
+        fun triggerFilter(value: String, regex: String) {
+            // TODO: Throw exception if trigger filter is added twice
+            triggerFilter(value, regex, true)
+        }
+
+        /**
+         * Define a trigger filter
+         */
+        fun triggerFilter(
+            value: String,
+            regex: String,
+            enabled: Boolean,
+            ) {
+            // TODO: Throw exception if trigger filter is added twice
+            myTriggerFilters[value] = TriggerFilter(
+                value,
+                regex,
+                enabled
+            )
+        }
+
+        override fun validate(consumer: ErrorConsumer) {
+            if (alreadySeen) {
+                consumer.consumePropertyError("triggerFilters", "triggerFilters function was called more than once.")
+            }
+        }
+
+        class TriggerFilter(
+            var value: String,
+            var regex: String,
+            var enabled: Boolean?,
+        )
+    }
+
+
+
+    /**
+     *  Defines parameters for a webhook (optional).
+     *
+     *    parameters {
+     *        parameter("fooParam1", "barParam1")
+     *        parameter(
+     *            name = "fooParam2",
+     *            value = "barParam2",
+     *            secure = true,
+     *            forceResolveTeamCityVariable = true,
+     *            includedInLegacyPayloads = true,
+     *            templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY
+     *        )
+     *    }
+     */
+    fun triggerFilters(init: TriggerFilters.() -> Unit): TriggerFilters {
+        val triggerFilters = TriggerFilters(this, init)
+        if (this.triggerFilters != null) {
+            triggerFilters.alreadySeen = true
+        } else {
+            for ((triggerFilterCounter, p) in triggerFilters.myTriggerFilters.values.withIndex()) {
+                triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_value", p.value)
+                triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_regex", p.regex)
+                triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_enabled", p.enabled.toString())
+            }
+        }
+        this.triggerFilters = triggerFilters
+        return triggerFilters
     }
 
     enum class TemplateEngine {
