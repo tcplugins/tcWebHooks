@@ -13,15 +13,13 @@ class WebHookConfigurationNewTest {
     @BeforeEach
     fun setup() {
 
-        val airTouchDiscoveryConsole : BuildType =
-            BuildType {
+        val airTouchDiscoveryConsole = BuildType {
                 name = "AirTouch Discovery Console"
                 params {
                     param("vcs.project.name", "airtouch-discovery-console")
                 }
             }
-        val anotherExampleBuildType : BuildType =
-            BuildType {
+        val anotherExampleBuildType = BuildType {
                 name = "My Example Build Type"
                 params {
                     param("vcs.project.name", "my-example-build-type")
@@ -32,10 +30,6 @@ class WebHookConfigurationNewTest {
                 webHookId = "SmallKotlinProject_WebHook_01"
                 template = "legacy-json"
                 url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
-//                buildTypes = selectedProjectBuilds {
-//                    subProjectBuilds = true
-//                    buildTypeIds = "01, 02"
-//                }
 
                 buildTypes  = allProjectBuilds {
                     subProjectBuilds = true
