@@ -39,8 +39,21 @@ class WebHookConfigurationNew() : ProjectFeature() {
     var template by stringParameter()
 
     /**
+     * Show simplified URL in UI and prevent payload from logging secure values.
+     */
+    @Suppress("unused")
+    var hideSecureValues: Boolean? by booleanParameter()
+
+    /**
+     * Whether the webhook is enabled. Defaults to true if omitted.
+     */
+    @Suppress("unused")
+    var enabled by booleanParameter()
+
+    /**
      * Authentication type to use
      */
+    @Suppress("unused")
     var authentication by compoundParameter<Authentication>()
 
     sealed class Authentication(value: String? = null): CompoundParam<Authentication>(value) {
@@ -58,6 +71,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
              * to true). Without pre-emptive enabled, the webhook will get a 401
              * and then re-send the request with authentication enabled.
              */
+            @Suppress("unused")
             var preemptive by booleanParameter("bearerPreemptive")
 
             override fun validate(consumer: ErrorConsumer) {
@@ -89,6 +103,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
              * to true). Without pre-emptive enabled, the webhook will get a 401
              * and then re-send the request with authentication enabled.
              */
+            @Suppress("unused")
             var preemptive by booleanParameter("basicAuthPreemptive")
 
             override fun validate(consumer: ErrorConsumer) {
@@ -96,12 +111,14 @@ class WebHookConfigurationNew() : ProjectFeature() {
         }
     }
 
+    @Suppress("unused")
     fun bearer(init: Authentication.Bearer.() -> Unit = {}) : Authentication.Bearer {
         val result = Authentication.Bearer()
         result.init()
         return result
     }
 
+    @Suppress("unused")
     fun basic(init: Authentication.Basic.() -> Unit = {}) : Authentication.Basic {
         val result = Authentication.Basic()
         result.init()
@@ -112,8 +129,11 @@ class WebHookConfigurationNew() : ProjectFeature() {
      * Specifies to which system a status should be published
      */
     sealed class BuildTypes(
+        @Suppress("unused")
         val feature: WebHookConfigurationNew,
+        @Suppress("unused")
         val allProjectBuilds: Boolean = false,
+        @Suppress("unused")
         var subProjectBuilds: Boolean = false
     ) : Validatable {
 
@@ -377,9 +397,27 @@ class WebHookConfigurationNew() : ProjectFeature() {
 
         fun parameter(name: String, value: String) {
             // TODO: Throw exception if parameter added twice
-            parameter(name, value, null, null, null, null)
+            parameter(name, value, null, null, null, null as String?)
         }
 
+        fun parameter(
+            name: String,
+            value: String,
+            secure: Boolean? = null,
+            includedInLegacyPayloads: Boolean? = null,
+            forceResolveTeamCityVariable: Boolean? = null,
+            templateEngine: String? = null
+            ) {
+            // TODO: Throw exception if parameter added twice
+            myParameters[name] = Parameter(
+                name,
+                value,
+                secure,
+                includedInLegacyPayloads,
+                forceResolveTeamCityVariable,
+                templateEngine
+            )
+        }
         fun parameter(
             name: String,
             value: String,
@@ -395,13 +433,20 @@ class WebHookConfigurationNew() : ProjectFeature() {
                 secure,
                 includedInLegacyPayloads,
                 forceResolveTeamCityVariable,
-                templateEngine
+                templateEngine.toString()
             )
         }
 
         override fun validate(consumer: ErrorConsumer) {
             if (alreadySeen) {
                 consumer.consumePropertyError("parameters", "parameters function was called more than once.")
+            }
+            for (p in this.myParameters.values) {
+                p.templateEngine?.let {
+                    if (!TemplateEngine.asStrings().contains(p.templateEngine.toString())) {
+                        consumer.consumePropertyError("parameters", "templateEngine must be one of " + TemplateEngine.asStrings())
+                    }
+                }
             }
         }
 
@@ -411,7 +456,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
             var secure: Boolean?,
             var includedInLegacyPayloads: Boolean?,
             var forceResolveTeamCityVariable: Boolean?,
-            var templateEngine: TemplateEngine?
+            var templateEngine: String?
         )
     }
 
@@ -426,7 +471,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
      *            secure = true,
      *            forceResolveTeamCityVariable = true,
      *            includedInLegacyPayloads = true,
-     *            templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY
+     *            templateEngine = VELOCITY
      *        )
      *    }
      */
@@ -540,7 +585,12 @@ class WebHookConfigurationNew() : ProjectFeature() {
     }
 
     enum class TemplateEngine {
-        STANDARD, VELOCITY
+        STANDARD, VELOCITY;
+        companion object {
+            fun asStrings(): List<String> {
+                return values().map(TemplateEngine::toString)
+            }
+        }
     }
 
 }

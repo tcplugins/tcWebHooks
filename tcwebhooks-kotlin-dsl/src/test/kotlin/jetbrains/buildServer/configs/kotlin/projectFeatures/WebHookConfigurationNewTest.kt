@@ -30,6 +30,8 @@ class WebHookConfigurationNewTest {
                 webHookId = "SmallKotlinProject_WebHook_01"
                 template = "legacy-json"
                 url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
+                //enabled = true
+                //hideSecureValues = true
 
                 buildTypes  = allProjectBuilds {
                     subProjectBuilds = true
@@ -52,6 +54,7 @@ class WebHookConfigurationNewTest {
                     testsUnmuted = false
                     buildPinned = true
                     buildFixed = true
+                    serviceMessageReceived = true
                 }
 
                 authentication = basic {
@@ -87,7 +90,7 @@ class WebHookConfigurationNewTest {
                         secure = false,
                         forceResolveTeamCityVariable = false,
                         includedInLegacyPayloads = false,
-                        templateEngine = WebHookConfigurationNew.TemplateEngine.STANDARD
+                        templateEngine = "STANDARD"
                     )
                 }
 
@@ -143,6 +146,13 @@ class WebHookConfigurationNewTest {
             "http://localhost:8111/webhooks/endpoint.html?vcs_test=1",
             hook.url
         )
+    }
+
+    @Test
+    fun getEnabled() {
+        assertEquals(null,hook.enabled)
+        hook.enabled = true
+        assertEquals(true,hook.enabled)
     }
 
     @Test
@@ -226,5 +236,22 @@ class WebHookConfigurationNewTest {
         hook.validate(consumer)
         assertTrue(consumer.errorsReported())
         assertTrue(consumer.errors.contains("triggerFilters function was called more than once."))
+    }
+
+    @Test
+    fun validationFailsWhenMNonStandardParameterTempLateEngineIsDefined() {
+        val hook2 = WebHookConfigurationNew {
+            parameters {
+                parameter(
+                    name = "fred",
+                    value = "sam",
+                    templateEngine = "FRED"
+                )
+            }
+        }
+        val consumer = Consumer()
+        hook2.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("templateEngine must be one of [STANDARD, VELOCITY]"))
     }
 }
