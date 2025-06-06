@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" parent-id="RootParentProjectId" uuid="" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2021.1/project-config.xsd">
+  <name>RootProjectName</name>
+  <description>Small Kotlin based project from VCS</description>
+  <parameters />
+  <project-extensions>
+    <extension id="PROJECT_EXT_1" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="basicAuth" />
+        <param name="basicAuthPassword" value="myPassword" />
+        <param name="basicAuthPreemptive" value="true" />
+        <param name="basicAuthRealm" value="myRealm" />
+        <param name="basicAuthUsername" value="myUserName" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=1" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_01" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_2" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="basicAuth" />
+        <param name="basicAuthPassword" value="myPassword" />
+        <param name="basicAuthPreemptive" value="true" />
+        <param name="basicAuthRealm" value="myRealm" />
+        <param name="basicAuthUsername" value="myUserName" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=2" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_02" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_3" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="dkfjsdlfjldfjk" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=3" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_03" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_4" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="new-bearer-toke" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=4" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_04" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_5" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="dkfjsdlfjldfjk" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=5" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_05" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_6" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="dkfjsdlfjldfjk" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=6" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_06" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_7" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="this-is-my-token" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="template" value="slack.com-compact" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=7" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_07" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_8" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="this-is-my-updated-token" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildRemovedFromQueue" value="enabled" />
+        <param name="header_0_name" value="foo1" />
+        <param name="header_0_value" value="bar1" />
+        <param name="header_1_name" value="foo2" />
+        <param name="header_1_value" value="bar2" />
+        <param name="header_2_name" value="foo3" />
+        <param name="header_2_value" value="bar3" />
+        <param name="parameter_0_name" value="colour" />
+        <param name="parameter_0_value" value="blue" />
+        <param name="template" value="slack.com-compact" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=8" />
+        <param name="webHookId" value="SmallKotlinProject_WebHook_08" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_9" type="versionedSettings">
+      <parameters>
+        <param name="enabled" value="true" />
+        <param name="format" value="kotlin" />
+      </parameters>
+    </extension>
+  </project-extensions>
+  <cleanup />
+</project>
+
+

@@ -69,11 +69,14 @@
 				enabled-for-subprojects="true" />
 			<trigger-filters>
 				<filter value="${buildName}" regex=".+" enabled="true" />
+				<filter value="${branchDisplayName}" regex="^master$" enabled="true" />
+				<filter value="${buildInternalTypeId}" regex="^bt\d$" enabled="true" />
 			</trigger-filters>
 			<parameters>
 				<param name="my_variable" value="my_variable_value"
 					secure="false" included-in-legacy-payloads="true"
 					force-resolve-teamcity-variable="true" template-engine="VELOCITY" />
+				<param name="my_parameter" value="my_param_value" />
 			</parameters>
 			<auth enabled="true" type="userpass" preemptive="true">
 				<auth-parameters>

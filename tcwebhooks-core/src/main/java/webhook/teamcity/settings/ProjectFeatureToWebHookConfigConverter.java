@@ -78,8 +78,10 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static final String ALL_PROJECT_BUILDS_ENABLED_KEY = "allProjectBuildsEnabled";
     private static final String SUB_PROJECT_BUILDS_ENABLED_KEY = "subProjectBuildsEnabled";
     private static final String HIDE_SECURE_VALUES_KEY = "hideSecureValues";
-    private static final String TRIGGER_FILTER_KEY_PREFIX = "triggerFilter_";
-    private static final String HEADER_KEY_PREFIX = "header_";
+    private static final String TRIGGER_FILTER_PREFIX = "triggerFilter_";
+    private static final String HEADER_PREFIX = "header_";
+    private static final String NAME_SUFFIX = "_name";
+    private static final String VALUE_SUFFIX = "_value";
     private static final String WEBHOOK_PARAMETER_KEY_PREFIX = "parameter_";
     private static final String AUTHENTICATION_KEY = "authentication";
     
@@ -110,31 +112,85 @@ public class ProjectFeatureToWebHookConfigConverter {
 
     private void populateHeaders(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.headers(
-            parameters.entrySet().stream().filter(e -> e.getKey().startsWith(HEADER_KEY_PREFIX))
-            .map(e -> gson.fromJson(e.getValue(), WebHookHeaderConfig.class))
+            parameters.entrySet().stream()
+            .filter(e -> e.getKey().startsWith(HEADER_PREFIX) && e.getKey().endsWith(NAME_SUFFIX))
+            .map(e -> mapHeader(e, parameters))
             .collect(Collectors.toList())
         );
     }
     
     private void populateTriggerFilters(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.filters(
-            parameters.entrySet().stream().filter(e -> e.getKey().startsWith(TRIGGER_FILTER_KEY_PREFIX))
-            .map(e -> gson.fromJson(e.getValue(), WebHookFilterConfig.class))
+            parameters.entrySet().stream()
+            .filter(e -> e.getKey().startsWith(TRIGGER_FILTER_PREFIX) && e.getKey().endsWith(VALUE_SUFFIX))
+            .map(e -> mapTriggerFilter(e, parameters))
             .collect(Collectors.toList())
             );
     }
-
-
-
+    
     private void populateWebHookParameters(WebHookConfigBuilder builder, Map<String, String> parameters) {
         ExtraParameters extraParameters = new ExtraParameters();
-        parameters.entrySet().stream().filter(e -> e.getKey().startsWith(WEBHOOK_PARAMETER_KEY_PREFIX)).forEach(p -> {
-            extraParameters.add(gson.fromJson(p.getValue(), WebHookParameterModel.class));
+        parameters.entrySet().stream()
+        	.filter(e -> e.getKey().startsWith(WEBHOOK_PARAMETER_KEY_PREFIX) && e.getKey().endsWith(NAME_SUFFIX))
+        	.forEach(p -> {
+        		extraParameters.add(mapParameter(p, parameters));
         });
         if (!extraParameters.isEmpty()) {
             builder.extraParameters(extraParameters);
         }
     }
+
+    private static WebHookHeaderConfig mapHeader(Map.Entry<String, String> e, Map<String,String> parameters) {
+    	String valueKey = e.getKey().replaceFirst(NAME_SUFFIX, VALUE_SUFFIX);
+    	String value = parameters.get(valueKey);
+    	return new WebHookHeaderConfig(e.getValue(), value);
+    }
+    
+    private static WebHookFilterConfig mapTriggerFilter(Map.Entry<String, String> e, Map<String,String> parameters) {
+    	WebHookFilterConfig filter = new WebHookFilterConfig();
+    	filter.setValue(e.getValue());
+    	filter.setRegex(parameters.get(e.getKey().replaceFirst(VALUE_SUFFIX, "_regex")));
+    	filter.setEnabled(Boolean.parseBoolean(parameters.get(e.getKey().replaceFirst(VALUE_SUFFIX, "_enabled"))));
+    	return filter;
+    }
+    private static WebHookParameterModel mapParameter(Map.Entry<String, String> e, Map<String,String> parameters) {
+    	
+    	/*
+            parameters.feature.param("parameter_${parameterCounter}_name", p.name)
+            parameters.feature.param("parameter_${parameterCounter}_value", p.value)
+            p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
+            p.includedInLegacyPayloads?.let { parameters.feature.param("parameter_${parameterCounter}_includedInLegacyPayloads", p.includedInLegacyPayloads.toString()) }
+            p.forceResolveTeamCityVariable?.let { parameters.feature.param("parameter_${parameterCounter}_forceResolveTeamCityVariable", p.forceResolveTeamCityVariable.toString()) }
+            p.templateEngine?.let { parameters.feature.param("parameter_${parameterCounter}_templateEngine", p.templateEngine.toString()) }
+
+    	 */
+    	
+    	
+    	WebHookParameterModel filter = new WebHookParameterModel();
+    	String valueKey = e.getKey().replaceFirst(NAME_SUFFIX, VALUE_SUFFIX);
+    	String secureKey = e.getKey().replaceFirst(NAME_SUFFIX, "_secure");
+    	String includedInLegacyPayloadsKey = e.getKey().replaceFirst(NAME_SUFFIX, "_includedInLegacyPayloads");
+    	String forceResolveTeamCityVariableKey = e.getKey().replaceFirst(NAME_SUFFIX, "_forceResolveTeamCityVariable");
+    	String templateEngineKey = e.getKey().replaceFirst(NAME_SUFFIX, "_templateEngine");
+    	
+    	filter.setName(e.getValue());
+    	filter.setValue(parameters.get(valueKey));
+    	if (parameters.containsKey(secureKey)) {
+    		filter.setSecure(Boolean.valueOf(parameters.get(secureKey)));
+    	}
+    	if (parameters.containsKey(includedInLegacyPayloadsKey)) {
+    		filter.setIncludedInLegacyPayloads(Boolean.valueOf(parameters.get(includedInLegacyPayloadsKey)));
+    	}
+    	if (parameters.containsKey(forceResolveTeamCityVariableKey)) {
+    		filter.setForceResolveTeamCityVariable(Boolean.valueOf(parameters.get(forceResolveTeamCityVariableKey)));
+    	}
+    	if (parameters.containsKey(templateEngineKey)) {
+    		filter.setTemplateEngine(parameters.get(templateEngineKey));
+    	}
+    	return filter;
+    }
+
+
 
     /**
      * Add Authentication to the WebHookConfig by reading values from ProjectFeature Parameters
@@ -209,21 +265,27 @@ public class ProjectFeatureToWebHookConfigConverter {
         private String id;
         private WebHookConfig webHookConfig;
         private WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
+        private Map<String,String> parameters;
 
         public WebHookProjectFeature(String id, WebHookConfig webHookConfig, WebHookAuthenticatorProvider webHookAuthenticatorProvider) {
             this.id = id;
             this.webHookConfig = webHookConfig;
             this.myWebHookAuthenticatorProvider = webHookAuthenticatorProvider;
+            this.parameters = initParameters();
         }
 
         @Override
         public String getType() {
             return "tcWebHook";
         }
-
+        
         @Override
         public Map<String, String> getParameters() {
-            Map<String,String> parameters = new LinkedHashMap<>(); // use LinkedHashMap so that insertion order is maintained.
+        	return this.parameters;
+        }
+
+        public Map<String, String> initParameters() {
+        	Map<String,String> parameters = new LinkedHashMap<>(); // use LinkedHashMap so that insertion order is maintained.
             parameters.put(ID_KEY, this.webHookConfig.getUniqueKey());
             parameters.put(URL_KEY, this.webHookConfig.getUrl());
             parameters.put(TEMPLATE_KEY, this.webHookConfig.getPayloadTemplate());
@@ -276,16 +338,19 @@ public class ProjectFeatureToWebHookConfigConverter {
         private void addTriggerFilters(Map<String, String> parameters) {
             int count = 0;
             for (WebHookFilterConfig triggerFilter : this.webHookConfig.getTriggerFilters()) {
+                parameters.put(TRIGGER_FILTER_PREFIX + count + "_value", triggerFilter.getValue());
+                parameters.put(TRIGGER_FILTER_PREFIX + count + "_regex", triggerFilter.getRegex());
+                parameters.put(TRIGGER_FILTER_PREFIX + count + "_enabled", Boolean.toString(triggerFilter.isEnabled()));
                 count++;
-                parameters.put(TRIGGER_FILTER_KEY_PREFIX + count, gson.toJson(triggerFilter));
             }
         }
 
         private void addHeaders(Map<String, String> parameters) {
             int count = 0;
             for (WebHookHeaderConfig header : this.webHookConfig.getHeaders()) {
+                parameters.put(HEADER_PREFIX + count + "_name", header.name);
+                parameters.put(HEADER_PREFIX + count + "_value", header.value);
                 count++;
-                parameters.put(HEADER_KEY_PREFIX + count, gson.toJson(header));
             }
         }
 
@@ -293,8 +358,21 @@ public class ProjectFeatureToWebHookConfigConverter {
             int count = 0;
             if (this.webHookConfig.getParams() != null) {
                 for (WebHookParameterModel parameter : this.webHookConfig.getParams()) {
+                    parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count + "_name", parameter.getName());
+                    parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count + "_value", parameter.getValue());
+                    if (parameter.getSecure() != null) {
+                    	parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count + "_secure", Boolean.toString(parameter.getSecure()));
+                    }
+                    if (parameter.getIncludedInLegacyPayloads() != null) {
+                    	parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count + "_includedInLegacyPayloads", Boolean.toString(parameter.getIncludedInLegacyPayloads()));
+                    }
+                    if (parameter.getForceResolveTeamCityVariable() != null) {
+                    	parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count + "_forceResolveTeamCityVariable", Boolean.toString(parameter.getForceResolveTeamCityVariable()));
+                    }
+                    if (parameter.getTemplateEngine() != null) {
+                    	parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count + "_templateEngine", parameter.getTemplateEngine());
+                    }
                     count++;
-                    parameters.put(WEBHOOK_PARAMETER_KEY_PREFIX + count, gson.toJson(parameter));
                 }
             }
         }
