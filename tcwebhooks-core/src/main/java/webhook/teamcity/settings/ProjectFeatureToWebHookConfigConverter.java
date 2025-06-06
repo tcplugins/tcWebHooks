@@ -166,28 +166,29 @@ public class ProjectFeatureToWebHookConfigConverter {
     	 */
     	
     	
-    	WebHookParameterModel filter = new WebHookParameterModel();
+    	WebHookParameterModel parameter = new WebHookParameterModel();
+    	parameter.setContext(ExtraParameters.WEBHOOK);
     	String valueKey = e.getKey().replaceFirst(NAME_SUFFIX, VALUE_SUFFIX);
     	String secureKey = e.getKey().replaceFirst(NAME_SUFFIX, "_secure");
     	String includedInLegacyPayloadsKey = e.getKey().replaceFirst(NAME_SUFFIX, "_includedInLegacyPayloads");
     	String forceResolveTeamCityVariableKey = e.getKey().replaceFirst(NAME_SUFFIX, "_forceResolveTeamCityVariable");
     	String templateEngineKey = e.getKey().replaceFirst(NAME_SUFFIX, "_templateEngine");
     	
-    	filter.setName(e.getValue());
-    	filter.setValue(parameters.get(valueKey));
+    	parameter.setName(e.getValue());
+    	parameter.setValue(parameters.get(valueKey));
     	if (parameters.containsKey(secureKey)) {
-    		filter.setSecure(Boolean.valueOf(parameters.get(secureKey)));
+    		parameter.setSecure(Boolean.valueOf(parameters.get(secureKey)));
     	}
     	if (parameters.containsKey(includedInLegacyPayloadsKey)) {
-    		filter.setIncludedInLegacyPayloads(Boolean.valueOf(parameters.get(includedInLegacyPayloadsKey)));
+    		parameter.setIncludedInLegacyPayloads(Boolean.valueOf(parameters.get(includedInLegacyPayloadsKey)));
     	}
     	if (parameters.containsKey(forceResolveTeamCityVariableKey)) {
-    		filter.setForceResolveTeamCityVariable(Boolean.valueOf(parameters.get(forceResolveTeamCityVariableKey)));
+    		parameter.setForceResolveTeamCityVariable(Boolean.valueOf(parameters.get(forceResolveTeamCityVariableKey)));
     	}
     	if (parameters.containsKey(templateEngineKey)) {
-    		filter.setTemplateEngine(parameters.get(templateEngineKey));
+    		parameter.setTemplateEngine(parameters.get(templateEngineKey));
     	}
-    	return filter;
+    	return parameter;
     }
 
 
@@ -229,7 +230,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         */
     }
     public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
-        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook, myWebHookAuthenticatorProvider);
+        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook, myWebHookAuthenticatorProvider).init();
     }
 
     private static void populateBuildStates(WebHookConfigBuilder builder, Map<String, String> parameters) {
@@ -271,7 +272,11 @@ public class ProjectFeatureToWebHookConfigConverter {
             this.id = id;
             this.webHookConfig = webHookConfig;
             this.myWebHookAuthenticatorProvider = webHookAuthenticatorProvider;
+        }
+
+        public SProjectFeatureDescriptor init() {
             this.parameters = initParameters();
+            return this;
         }
 
         @Override
