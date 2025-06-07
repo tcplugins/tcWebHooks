@@ -1,16 +1,13 @@
 package webhook.teamcity.settings;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import webhook.teamcity.BuildState;
@@ -74,9 +71,11 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static final String URL_KEY = "url";
     private static final String ENABLED_KEY = ENABLED;
     private static final String TEMPLATE_KEY = "template";
-    private static final String ENABLED_BUILDS_KEY = "enabledBuilds";
-    private static final String ALL_PROJECT_BUILDS_ENABLED_KEY = "allProjectBuildsEnabled";
-    private static final String SUB_PROJECT_BUILDS_ENABLED_KEY = "subProjectBuildsEnabled";
+    private static final String BUILDS_ENABLED_KEY = "buildTypes";
+    private static final String BUILDIDS_KEY = "buildTypeIds";
+    private static final String ALL_PROJECT_BUILDS_ENABLED_VALUE = "allProjectBuilds";
+    private static final String SELECTED_PROJECT_BUILDS_ENABLED_KEY = "selectedProjectBuilds";
+    private static final String SUB_PROJECT_BUILDS_ENABLED_KEY = "subProjectBuilds";
     private static final String HIDE_SECURE_VALUES_KEY = "hideSecureValues";
     private static final String TRIGGER_FILTER_PREFIX = "triggerFilter_";
     private static final String HEADER_PREFIX = "header_";
@@ -84,8 +83,6 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static final String VALUE_SUFFIX = "_value";
     private static final String WEBHOOK_PARAMETER_KEY_PREFIX = "parameter_";
     private static final String AUTHENTICATION_KEY = "authentication";
-    
-    private static final Gson gson = new GsonBuilder().create();
     private WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
     
 
@@ -97,7 +94,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         Map<String, String> parameters = projectFeatureDescriptor.getParameters();
         WebHookConfigBuilder builder = WebHookConfig.builder();
         populateSimpleParameters(builder, parameters);
-        populateBuildTyepIds(builder, parameters.get(ENABLED_BUILDS_KEY));
+        populateBuildTyepIds(builder, parameters.get(BUILDIDS_KEY));
         populateBuildStates(builder, parameters);
         builder.projectInternalId(projectFeatureDescriptor.getProjectId());
         populateAuthentication(builder, parameters);
@@ -130,10 +127,11 @@ public class ProjectFeatureToWebHookConfigConverter {
     
     private void populateWebHookParameters(WebHookConfigBuilder builder, Map<String, String> parameters) {
         ExtraParameters extraParameters = new ExtraParameters();
+        AtomicInteger counter = new AtomicInteger(1);
         parameters.entrySet().stream()
         	.filter(e -> e.getKey().startsWith(WEBHOOK_PARAMETER_KEY_PREFIX) && e.getKey().endsWith(NAME_SUFFIX))
         	.forEach(p -> {
-        		extraParameters.add(mapParameter(p, parameters));
+        		extraParameters.add(mapParameter(p, parameters, counter.getAndIncrement()));
         });
         if (!extraParameters.isEmpty()) {
             builder.extraParameters(extraParameters);
@@ -153,7 +151,7 @@ public class ProjectFeatureToWebHookConfigConverter {
     	filter.setEnabled(Boolean.parseBoolean(parameters.get(e.getKey().replaceFirst(VALUE_SUFFIX, "_enabled"))));
     	return filter;
     }
-    private static WebHookParameterModel mapParameter(Map.Entry<String, String> e, Map<String,String> parameters) {
+    private static WebHookParameterModel mapParameter(Map.Entry<String, String> e, Map<String,String> parameters, int id) {
     	
     	/*
             parameters.feature.param("parameter_${parameterCounter}_name", p.name)
@@ -174,6 +172,7 @@ public class ProjectFeatureToWebHookConfigConverter {
     	String forceResolveTeamCityVariableKey = e.getKey().replaceFirst(NAME_SUFFIX, "_forceResolveTeamCityVariable");
     	String templateEngineKey = e.getKey().replaceFirst(NAME_SUFFIX, "_templateEngine");
     	
+    	parameter.setId(String.valueOf(id));
     	parameter.setName(e.getValue());
     	parameter.setValue(parameters.get(valueKey));
     	if (parameters.containsKey(secureKey)) {
@@ -255,7 +254,11 @@ public class ProjectFeatureToWebHookConfigConverter {
         builder.url(parameters.get(URL_KEY));
         builder.enabled(Boolean.valueOf(parameters.getOrDefault(ENABLED_KEY, TRUE_VALUE)));
         builder.payloadTemplate(parameters.get(TEMPLATE_KEY));
-        builder.allBuildTypesEnabled(Boolean.valueOf(parameters.getOrDefault(ALL_PROJECT_BUILDS_ENABLED_KEY, TRUE_VALUE)));
+        if (parameters.containsKey(BUILDS_ENABLED_KEY) && parameters.get(BUILDS_ENABLED_KEY).equals(ALL_PROJECT_BUILDS_ENABLED_VALUE)) {
+            builder.allBuildTypesEnabled(true);
+        } else {
+            builder.allBuildTypesEnabled(false);
+        }
         builder.subProjectsEnabled(Boolean.valueOf(parameters.getOrDefault(SUB_PROJECT_BUILDS_ENABLED_KEY, TRUE_VALUE)));
         builder.hideSecureValues(Boolean.valueOf(parameters.getOrDefault(HIDE_SECURE_VALUES_KEY, TRUE_VALUE)));
     }
@@ -298,10 +301,14 @@ public class ProjectFeatureToWebHookConfigConverter {
             if (! this.webHookConfig.isHideSecureValues()) {
                 parameters.put(HIDE_SECURE_VALUES_KEY, Boolean.toString(this.webHookConfig.isHideSecureValues()));
             }
-            parameters.put(ALL_PROJECT_BUILDS_ENABLED_KEY, this.webHookConfig.isEnabledForAllBuildsInProject().toString());
+            if (this.webHookConfig.isEnabledForAllBuildsInProject()) {
+                parameters.put(BUILDS_ENABLED_KEY, ALL_PROJECT_BUILDS_ENABLED_VALUE);
+            } else {
+                parameters.put(BUILDS_ENABLED_KEY, SELECTED_PROJECT_BUILDS_ENABLED_KEY);
+            }
             parameters.put(SUB_PROJECT_BUILDS_ENABLED_KEY, this.webHookConfig.isEnabledForSubProjects().toString());
             if (CollectionUtils.isNotEmpty(this.webHookConfig.getEnabledBuildTypesSet())) {
-                parameters.put(ENABLED_BUILDS_KEY, this.webHookConfig.getEnabledBuildTypesSet().stream().collect(Collectors.joining(",")));
+                parameters.put(BUILDIDS_KEY, this.webHookConfig.getEnabledBuildTypesSet().stream().collect(Collectors.joining(",")));
             }
             addBuildStates(parameters);
             addTriggerFilters(parameters);
@@ -359,6 +366,10 @@ public class ProjectFeatureToWebHookConfigConverter {
             }
         }
 
+        /**
+         * Adds WebHookParameters from the {@link WebHookConfig} into the ProjectFeature parameters map
+         * @param parameters
+         */
         private void addWebHookParameters(Map<String, String> parameters) {
             int count = 0;
             if (this.webHookConfig.getParams() != null) {

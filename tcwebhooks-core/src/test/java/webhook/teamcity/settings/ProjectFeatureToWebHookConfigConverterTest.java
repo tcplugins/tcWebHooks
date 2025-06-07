@@ -140,9 +140,9 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
         authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
-        List<SProjectFeatureDescriptor> webhook = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
+        List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
         ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
-        WebHookConfig webHookConfig = converter.convert(webhook.get(0));
+        WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(0));
         SProjectFeatureDescriptor features = converter.convert(webHookConfig);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -157,7 +157,19 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         assertEquals("myPassword", webHookConfig.getAuthenticationConfig().getParameters().get(UsernamePasswordAuthenticator.KEY_PASS));
         assertTrue(webHookConfig.isEnabledForSubProjects());
         assertFalse(webHookConfig.isEnabledForAllBuildsInProject());
-        
+        assertEquals(2, webHookConfig.getEnabledBuildTypesSet().size());
     }
+	
+	@Test
+	public void testConvertWhenAllBuildsEnabled() throws JDOMException, IOException {
+        WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
+        authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
+        authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
+        List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
+        WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(3));
+        assertEquals("http://localhost:8111/webhooks/endpoint.html?vcs_test=2", webHookConfig.getUrl());
+        assertTrue(webHookConfig.isEnabledForAllBuildsInProject());
+	}
 
 }
