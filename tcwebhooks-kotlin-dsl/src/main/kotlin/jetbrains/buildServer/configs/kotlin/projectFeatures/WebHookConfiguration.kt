@@ -6,16 +6,16 @@ import jetbrains.buildServer.configs.kotlin.*
  * A description of a class.
  *
  *
- * @see webHookConfigurationNew
+ * @see webHookConfiguration
  */
 @TeamCityDsl
-class WebHookConfigurationNew() : ProjectFeature() {
+class WebHookConfiguration() : ProjectFeature() {
 
     init {
         type = "tcWebHooks"
     }
 
-    constructor(init: WebHookConfigurationNew.() -> Unit): this() {
+    constructor(init: WebHookConfiguration.() -> Unit): this() {
         init()
     }
 
@@ -130,7 +130,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
      */
     sealed class BuildTypes(
         @Suppress("unused")
-        val feature: WebHookConfigurationNew,
+        val feature: WebHookConfiguration,
         @Suppress("unused")
         val allProjectBuilds: Boolean = false,
         @Suppress("unused")
@@ -138,13 +138,13 @@ class WebHookConfigurationNew() : ProjectFeature() {
     ) : Validatable {
 
 
-        class AllProjectBuilds(feature: WebHookConfigurationNew) : BuildTypes(feature, allProjectBuilds = true) {
+        class AllProjectBuilds(feature: WebHookConfiguration) : BuildTypes(feature, allProjectBuilds = true) {
             override fun validate(consumer: ErrorConsumer) {
                 //TODO: add validation here
             }
         }
 
-        class SelectedProjectBuilds(feature: WebHookConfigurationNew) :
+        class SelectedProjectBuilds(feature: WebHookConfiguration) :
             BuildTypes(feature, allProjectBuilds = false) {
             private val myBuildTypes = mutableSetOf<Id?>()
 
@@ -192,7 +192,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
     }
 
     class BuildStates(
-        private val feature: WebHookConfigurationNew, init: BuildStates.() -> Unit,
+        private val feature: WebHookConfiguration, init: BuildStates.() -> Unit,
         ) {
         init {
             init()
@@ -341,7 +341,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
         triggerFilters?.validate(consumer)
     }
 
-    class Headers(val feature: WebHookConfigurationNew, init: Headers.() -> Unit) : Validatable {
+    class Headers(val feature: WebHookConfiguration, init: Headers.() -> Unit) : Validatable {
         var alreadySeen = false
         val myHeaders = mutableMapOf<String,String>()
         init {
@@ -388,7 +388,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
         return headers
     }
 
-    class Parameters(val feature: WebHookConfigurationNew, init: Parameters.() -> Unit) : Validatable {
+    class Parameters(val feature: WebHookConfiguration, init: Parameters.() -> Unit) : Validatable {
         var alreadySeen = false
         val myParameters = mutableMapOf<String,Parameter>()
         init {
@@ -508,7 +508,7 @@ class WebHookConfigurationNew() : ProjectFeature() {
         return parameters
     }
 
-    class TriggerFilters(val feature: WebHookConfigurationNew, init: TriggerFilters.() -> Unit) : Validatable {
+    class TriggerFilters(val feature: WebHookConfiguration, init: TriggerFilters.() -> Unit) : Validatable {
         var alreadySeen = false
         val myTriggerFilters = mutableMapOf<String,TriggerFilter>()
         init {
@@ -599,10 +599,10 @@ class WebHookConfigurationNew() : ProjectFeature() {
  * A description of a called function.
  *
  *
- * @see WebHookConfigurationNew
+ * @see WebHookConfiguration
  */
-fun ProjectFeatures.webHookConfigurationNew(init: WebHookConfigurationNew.() -> Unit): WebHookConfigurationNew {
-    val result = WebHookConfigurationNew(init)
+fun ProjectFeatures.webHookConfiguration(init: WebHookConfiguration.() -> Unit): WebHookConfiguration {
+    val result = WebHookConfiguration(init)
     feature(result)
     return result
 }

@@ -6,9 +6,9 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 
-class WebHookConfigurationNewTest {
+class WebHookConfigurationTest {
 
-    private lateinit var hook: WebHookConfigurationNew
+    private lateinit var hook: WebHookConfiguration
 
     @BeforeEach
     fun setup() {
@@ -26,7 +26,7 @@ class WebHookConfigurationNewTest {
                 }
             }
 
-        hook = WebHookConfigurationNew {
+        hook = WebHookConfiguration {
                 webHookId = "SmallKotlinProject_WebHook_01"
                 template = "legacy-json"
                 url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
@@ -82,7 +82,7 @@ class WebHookConfigurationNewTest {
                         secure = true,
                         forceResolveTeamCityVariable = true,
                         includedInLegacyPayloads = true,
-                        templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY
+                        templateEngine = WebHookConfiguration.TemplateEngine.VELOCITY
                     )
                     parameter(
                         name = "fooParam3",
@@ -240,7 +240,7 @@ class WebHookConfigurationNewTest {
 
     @Test
     fun validationFailsWhenMNonStandardParameterTempLateEngineIsDefined() {
-        val hook2 = WebHookConfigurationNew {
+        val hook2 = WebHookConfiguration {
             parameters {
                 parameter(
                     name = "fred",
