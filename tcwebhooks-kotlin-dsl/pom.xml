@@ -116,10 +116,10 @@
 	</build>
 
 	<repositories>
-		<repository>
+		<!--<repository>
 			<id>local-mvn-repo</id>
 			<url>file://${project.basedir}/local-mvn-repo</url>
-		</repository>
+		</repository>-->
 <!--		<repository>
 			<id>teamcity-server</id>
 			<url>
