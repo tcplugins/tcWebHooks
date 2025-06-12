@@ -2,6 +2,9 @@
 <project>
 	<properties>
 		<goals-goal>compile</goals-goal>
+		<kotlin.version>1.8.0</kotlin.version>
+		<teamcity.version>2022.10</teamcity.version>
+		<teamcity.dsl.version>2024.12</teamcity.dsl.version>
 	</properties>
 
   <modelVersion>4.0.0</modelVersion>
@@ -9,14 +12,27 @@
   <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
   <artifactId>tcwebhooks-kotlin-dsl-example</artifactId>
   
-
-  <parent>
+<!--  <parent>
     <groupId>org.jetbrains.teamcity</groupId>
     <artifactId>configs-dsl-kotlin-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
-  </parent>
-
+  </parent>-->
+  
+  	<parent>
+		<artifactId>tcwebhooks</artifactId>
+		<groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
+		<version>${currentVersion}</version>
+		<relativePath>..</relativePath>
+	</parent>
+	
   <repositories>
+    <repository>
+      <id>local-mvn-repo</id>
+      <url>file://${basedir}/local-mvn-repo</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>jetbrains-all</id>
       <url>https://download.jetbrains.com/teamcity-repository</url>
@@ -90,17 +106,23 @@
   <dependencies>
     <dependency>
       <groupId>org.jetbrains.teamcity</groupId>
+      <artifactId>configs-dsl-kotlin</artifactId>
+      <version>${teamcity.dsl.version}</version>
+      <scope>compile</scope>
+    </dependency>
+<!--    <dependency>
+      <groupId>org.jetbrains.teamcity</groupId>
       <artifactId>configs-dsl-kotlin-latest</artifactId>
       <version>${teamcity.dsl.version}</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+--><!--    <dependency>
       <groupId>org.jetbrains.teamcity</groupId>
       <artifactId>configs-dsl-kotlin-plugins-latest</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>pom</type>
       <scope>compile</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
