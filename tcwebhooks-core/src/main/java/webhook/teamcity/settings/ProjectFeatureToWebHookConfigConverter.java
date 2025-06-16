@@ -2,16 +2,21 @@ package webhook.teamcity.settings;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.auth.WebHookAuthConfig;
 import webhook.teamcity.auth.WebHookAuthenticatorFactory;
@@ -84,10 +89,12 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static final String WEBHOOK_PARAMETER_KEY_PREFIX = "parameter_";
     private static final String AUTHENTICATION_KEY = "authentication";
     private WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
+    private BuildTypeIdResolver myBuildTypeIdResolver;
     
 
-    public ProjectFeatureToWebHookConfigConverter(WebHookAuthenticatorProvider authenticatorProvider) {
+    public ProjectFeatureToWebHookConfigConverter(WebHookAuthenticatorProvider authenticatorProvider, BuildTypeIdResolver buildTypeIdResolver) {
         this.myWebHookAuthenticatorProvider = authenticatorProvider;
+        this.myBuildTypeIdResolver = buildTypeIdResolver;
     }
     
     public WebHookConfig convert(SProjectFeatureDescriptor projectFeatureDescriptor) {
@@ -229,7 +236,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         */
     }
     public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
-        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook, myWebHookAuthenticatorProvider).init();
+        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook, myWebHookAuthenticatorProvider, myBuildTypeIdResolver).init();
     }
 
     private static void populateBuildStates(WebHookConfigBuilder builder, Map<String, String> parameters) {
@@ -243,9 +250,18 @@ public class ProjectFeatureToWebHookConfigConverter {
         builder.states(buildStates);
     }
 
-    private static void populateBuildTyepIds(WebHookConfigBuilder builder, String buildTypeIds) {
-        if (buildTypeIds != null) {
-            builder.enabledBuildTypesSet(Arrays.stream(buildTypeIds.split(",")).collect(Collectors.toSet()));
+    /**
+     * Populate the set of internal buildTypeIds in the builder from the set of externalBuildTypeIds in the ProjectFeature
+     * @param builder
+     * @param externalBuildTypeIds
+     */
+    private void populateBuildTyepIds(WebHookConfigBuilder builder, String externalBuildTypeIds) {
+        if (externalBuildTypeIds != null) {
+            builder.enabledBuildTypesSet(
+                    myBuildTypeIdResolver.getInternalBuildTypeIds(
+                            Arrays.asList(externalBuildTypeIds.split(","))
+                            )
+                    );
         }
     }
 
@@ -270,11 +286,13 @@ public class ProjectFeatureToWebHookConfigConverter {
         private WebHookConfig webHookConfig;
         private WebHookAuthenticatorProvider myWebHookAuthenticatorProvider;
         private Map<String,String> parameters;
+        private BuildTypeIdResolver myBuildTypeIdResolver;
 
-        public WebHookProjectFeature(String id, WebHookConfig webHookConfig, WebHookAuthenticatorProvider webHookAuthenticatorProvider) {
+        public WebHookProjectFeature(String id, WebHookConfig webHookConfig, WebHookAuthenticatorProvider webHookAuthenticatorProvider, BuildTypeIdResolver buildTypeIdResolver) {
             this.id = id;
             this.webHookConfig = webHookConfig;
             this.myWebHookAuthenticatorProvider = webHookAuthenticatorProvider;
+            this.myBuildTypeIdResolver = buildTypeIdResolver;
         }
 
         public SProjectFeatureDescriptor init() {
@@ -308,7 +326,7 @@ public class ProjectFeatureToWebHookConfigConverter {
             }
             parameters.put(SUB_PROJECT_BUILDS_ENABLED_KEY, this.webHookConfig.isEnabledForSubProjects().toString());
             if (CollectionUtils.isNotEmpty(this.webHookConfig.getEnabledBuildTypesSet())) {
-                parameters.put(BUILDIDS_KEY, this.webHookConfig.getEnabledBuildTypesSet().stream().collect(Collectors.joining(",")));
+                parameters.put(BUILDIDS_KEY, this.myBuildTypeIdResolver.getExternalBuildTypeIds(this.webHookConfig.getEnabledBuildTypesSet()).stream().collect(Collectors.joining(",")));
             }
             addBuildStates(parameters);
             addTriggerFilters(parameters);

@@ -119,7 +119,7 @@ public class WebHookPayloadXmlVelocityTemplateTest {
 				true,
 				""
 			);
-		assertEquals("{ \"testing\": \"mockBuildType\" }", whp.responsibilityChanged(
+		assertEquals("{ \"testing\": \"projectExternalId_mockBuildType\" }", whp.responsibilityChanged(
 				WebHookResponsibilityHolder
 					.builder()
 					.responsibilityEntryOld(responsibilityEntryOld)

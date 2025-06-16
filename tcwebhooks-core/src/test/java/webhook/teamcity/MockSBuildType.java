@@ -87,10 +87,10 @@ public class MockSBuildType implements SBuildType {
 	private ParametersProvider parametersProvider;
 	
 	
-	public MockSBuildType(String name, String description, String buildTypeId) {
+	public MockSBuildType(String name, String description, String internalBuildTypeId) {
 		this.name = name;
 		this.description = description;
-		this.buildTypeId = buildTypeId;
+		this.buildTypeId = internalBuildTypeId;
 	}
 	
 	public void setMockingFrameworkInstance(WebHookMockingFramework mockingFramework){
@@ -995,7 +995,11 @@ public class MockSBuildType implements SBuildType {
 
 	@Override
 	public String getExternalId() {
-		return this.name.replace(" ", "");
+	    if (this.project != null) {
+	        return this.project.getExternalId() + "_" + this.name.replace(" ", "");
+	    } else {
+	        return this.name.replace(" ", "");
+	    }
 	}
 
 	@Override

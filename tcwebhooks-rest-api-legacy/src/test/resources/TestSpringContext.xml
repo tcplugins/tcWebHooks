@@ -136,6 +136,9 @@
 	<bean id="projectIdResolver" 
      	class="webhook.teamcity.test.jerseyprovider.ProjectIdResolverMock"
      	/>		
+	<bean id="buildTypeIdResolver" 
+     	class="webhook.teamcity.test.jerseyprovider.BuildTypeIdResolverMock"
+     	/>		
 	<bean id="mockingWebHookSettingsEventHandler" 
      	class="webhook.teamcity.test.springmock.MockingWebHookSettingsEventHandler"
      	/>		

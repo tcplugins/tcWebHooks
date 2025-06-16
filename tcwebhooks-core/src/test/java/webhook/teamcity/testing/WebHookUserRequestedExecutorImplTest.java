@@ -206,7 +206,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		WebHookRenderResult payload = executorImpl.requestWebHookPreview(webHookExecutionRequest);
 		
 		Loggers.SERVER.debug("################# " + payload);
-		assertEquals(true, payload.getHtml().contains("http://teamcity/viewLog.html?buildTypeId=name"));
+		assertEquals(true, payload.getHtml().contains("http://teamcity/viewLog.html?buildTypeId=MyProject_name"));
 		
 		Loggers.SERVER.debug(WebHookExecutionRequestGsonBuilder.gsonBuilder().toJson(webHookExecutionRequest));
 		
@@ -536,7 +536,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		
 		WebHookHistoryItem historyItem = executorImpl.requestWebHookExecution(webHookTemplateExecutionRequest);
 		
-		assertEquals("non-Branch text for build: name", s.getRequestBody());
+		assertEquals("non-Branch text for build: MyProject_name", s.getRequestBody());
 		assertEquals("HttpClient should be invoked exactly once", 1, httpClient.getInvocationCount());
 		assertEquals("Post should have returned 200 OK", HttpServletResponse.SC_OK, s.getReponseCode());
 		assertEquals(false, historyItem.getWebHookExecutionStats().isErrored());

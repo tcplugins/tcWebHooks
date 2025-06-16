@@ -76,7 +76,7 @@ public class VariableMessageBuilderTest extends VariableMessageBuilderTestBase {
 				+ "\"appVersion\": \"${builder.appVersion}\", "
 				+ "\"sha\": \"${build.vcs.number}\" }";
 		System.out.println(builder.build(template));
-		assertEquals("{ \"notifyType\": \"beforeBuildFinish\",  \"buildId\": \"123456\", \"buildTypeId\": \"TestBuild\", \"buildStatus\": \"Running\", \"config\": \"This is some config thing\",\"appVersion\": \"This is the appVersion\", \"sha\": \"3b0a11eda029aaeb349993cb070a1c2e5987906c\" }", builder.build(template));
+		assertEquals("{ \"notifyType\": \"beforeBuildFinish\",  \"buildId\": \"123456\", \"buildTypeId\": \"ATestProject_TestBuild\", \"buildStatus\": \"Running\", \"config\": \"This is some config thing\",\"appVersion\": \"This is the appVersion\", \"sha\": \"3b0a11eda029aaeb349993cb070a1c2e5987906c\" }", builder.build(template));
 	}
 	
 	@Test

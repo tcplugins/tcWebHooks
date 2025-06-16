@@ -68,7 +68,7 @@ public class ProjectAndBuildTypeResolverImpl implements ProjectIdResolver, Build
 	public Set<String> getExternalBuildTypeIds(Collection<String> internalBuildTypeIds) {
 		Set<String> ids = new LinkedHashSet<>();
 		for (String internalBuildTypeId : internalBuildTypeIds) {
-			ids.add(getExternalBuildTypeId(internalBuildTypeId));
+			ids.add(getExternalBuildTypeId(internalBuildTypeId.trim()));
 		}
 		return ids;
 	}
@@ -77,7 +77,7 @@ public class ProjectAndBuildTypeResolverImpl implements ProjectIdResolver, Build
 	public Set<String> getInternalBuildTypeIds(Collection<String> externalBuildTypeIds) {
 		Set<String> ids = new LinkedHashSet<>();
 		for (String externalBuildTypeId : externalBuildTypeIds) {
-			ids.add(getInternalBuildTypeId(externalBuildTypeId));
+			ids.add(getInternalBuildTypeId(externalBuildTypeId.trim()));
 		}
 		return ids;
 	}

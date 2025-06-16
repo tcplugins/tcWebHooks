@@ -26,7 +26,7 @@ public class ElasticSearchWebHookTemplateTest extends AbstractSpringTemplateTest
 		
 		wh = webHookContentBuilder.buildWebHookContent(wh, webhookElastic, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true, Collections.emptyMap());
 		System.out.println(wh.getPayload());
-		assertTrue(wh.getPayload().contains("\"build_status_url\": \"http://my-server/viewLog.html?buildTypeId=TestBuild&buildId=123456\""));
+		assertTrue(wh.getPayload().contains("\"build_status_url\": \"http://my-server/viewLog.html?buildTypeId=ATestProject_TestBuild&buildId=123456\""));
 	}
 
 	@Override

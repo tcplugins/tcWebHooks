@@ -25,7 +25,7 @@ public class FlowdockWebHookTemplateTest extends AbstractSpringTemplateTest {
 		
 		wh = webHookContentBuilder.buildWebHookContent(wh, webhookFlowDock, sRunningBuild, BuildStateEnum.BUILD_STARTED, null, null, true, Collections.emptyMap());
 		System.out.println(wh.getPayload());
-		assertTrue(wh.getPayload().contains("\"tags\": [ \"#TestBuild\", \"#ATestProject\", \"#buildStarted\", \"#master\", \"#teamcity\" ],"));
+		assertTrue(wh.getPayload().contains("\"tags\": [ \"#ATestProject_TestBuild\", \"#ATestProject\", \"#buildStarted\", \"#master\", \"#teamcity\" ],"));
 	}
 
 	@Override

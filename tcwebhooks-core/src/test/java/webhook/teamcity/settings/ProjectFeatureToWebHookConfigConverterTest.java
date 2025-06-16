@@ -2,39 +2,68 @@ package webhook.teamcity.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jdom.JDOMException;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import webhook.teamcity.BuildTypeIdResolver;
+import webhook.teamcity.MockSBuildType;
+import webhook.teamcity.MockSProject;
+import webhook.teamcity.ProjectAndBuildTypeResolverImpl;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticator;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
 import webhook.testframework.util.ConfigLoaderUtil;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ProjectFeatureToWebHookConfigConverterTest {
 
+    @Mock
+    ProjectManager projectManager;
+    
+    @Before
+    public void setup() {
+        MockSBuildType sBuildType = new MockSBuildType("TcDummyDeb", "TcDummyDeb build", "bt1");
+        MockSBuildType sBuildType2 = new MockSBuildType("TcWebHooks", "TcWebHooks build", "bt2");
+        MockSProject myProject = new MockSProject("Root Project", "The Root Project", "project01", "RootProjectId", sBuildType);
+        myProject.addANewBuildTypeToTheMock(sBuildType2);
+        sBuildType.setProject(myProject);
+        sBuildType2.setProject(myProject);
+        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcDummyDeb")).thenReturn(sBuildType);
+        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcWebHooks")).thenReturn(sBuildType2);
+        when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
+        when(projectManager.findBuildTypeById("bt2")).thenReturn(sBuildType2);
+    }
+    
     @Test
     public void testConvert() throws JDOMException, IOException {
         //String featureId = "PROJECT_EXT_30";
+        BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
         authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
         WebHookConfig webhook = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
         webhook.setProjectInternalId("project02");
-        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         SProjectFeatureDescriptor features = converter.convert(webhook);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -47,12 +76,13 @@ public class ProjectFeatureToWebHookConfigConverterTest {
     @Test
     public void testAndValidateConvert() throws JDOMException, IOException {
         //String featureId = "PROJECT_EXT_30";
+        BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
         authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
         WebHookConfig webhook = ConfigLoaderUtil.getSpecificWebHookInConfig(2, new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
         webhook.setProjectInternalId("project02");
-        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         SProjectFeatureDescriptor features = converter.convert(webhook);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -137,11 +167,12 @@ public class ProjectFeatureToWebHookConfigConverterTest {
                   </parameters>
                 </extension>
          */
+        BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
         authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
         List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
-        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(0));
         SProjectFeatureDescriptor features = converter.convert(webHookConfig);
         WebHookConfig convertedWebHook = converter.convert(features);
@@ -162,11 +193,12 @@ public class ProjectFeatureToWebHookConfigConverterTest {
 	
 	@Test
 	public void testConvertWhenAllBuildsEnabled() throws JDOMException, IOException {
+        BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
         authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
         List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
-        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider);
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(3));
         assertEquals("http://localhost:8111/webhooks/endpoint.html?vcs_test=2", webHookConfig.getUrl());
         assertTrue(webHookConfig.isEnabledForAllBuildsInProject());

@@ -72,8 +72,8 @@ public class MockSProject implements SProject {
 		this.buildType = buildType;
 		
 		SProject root = Mockito.mock(SProject.class);
-		Mockito.when(root.getProjectId()).thenReturn("_Root");
-		Mockito.when(root.getExternalId()).thenReturn("_Root");
+		Mockito.lenient().when(root.getProjectId()).thenReturn("_Root");
+		Mockito.lenient().when(root.getExternalId()).thenReturn("_Root");
 		this.parentPath.add(root);
 		this.parentPath.add(this);
 		addANewBuildTypeToTheMock(buildType);
