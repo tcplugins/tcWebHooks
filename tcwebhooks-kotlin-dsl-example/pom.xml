@@ -9,7 +9,6 @@
 
   <modelVersion>4.0.0</modelVersion>
   <name>tcWebHooks Kotlin DSL Example</name>
-  <groupId>netwolfuk.teamcity.plugins.tcwebhooks</groupId>
   <artifactId>tcwebhooks-kotlin-dsl-example</artifactId>
   
 <!--  <parent>
@@ -40,13 +39,13 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-<!--    <repository>
+    <repository>
       <id>teamcity-server</id>
       <url>http://teamcity-test-main:8111/app/dsl-plugins-repository</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>-->
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -110,19 +109,19 @@
       <version>${teamcity.dsl.version}</version>
       <scope>compile</scope>
     </dependency>
-<!--    <dependency>
+    <dependency>
       <groupId>org.jetbrains.teamcity</groupId>
       <artifactId>configs-dsl-kotlin-latest</artifactId>
       <version>${teamcity.dsl.version}</version>
       <scope>compile</scope>
     </dependency>
---><!--    <dependency>
+    <dependency>
       <groupId>org.jetbrains.teamcity</groupId>
       <artifactId>configs-dsl-kotlin-plugins-latest</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>pom</type>
       <scope>compile</scope>
-    </dependency>-->
+    </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-jdk8</artifactId>
