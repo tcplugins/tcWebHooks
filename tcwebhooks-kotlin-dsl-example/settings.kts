@@ -29,10 +29,10 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 version = "2024.03"
 
 project {
-    description = "Small Kotlin based project from VCS"
+    description = "My Example Kotlin based project from VCS"
     features {
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_01"
+            webHookId = "MyProjectId_WebHook_01"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
             buildTypes = selectedProjectBuilds {
@@ -55,7 +55,7 @@ project {
 
                 buildType{TcDummyDeb}
                 buildTypeId{TcWebHooks.id.toString()}
-                buildTypeId{"SmallKotlinProject_TcChatBot"}
+                buildTypeId{"MyProjectId_TcChatBot"}
             }
             buildStates {
                 buildAddedToQueue = true
@@ -69,7 +69,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_02"
+            webHookId = "MyProjectId_WebHook_02"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=2"
             buildTypes = allProjectBuilds {
@@ -95,7 +95,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_03"
+            webHookId = "MyProjectId_WebHook_03"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=3"
             buildTypes = allProjectBuilds {
@@ -111,7 +111,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_04"
+            webHookId = "MyProjectId_WebHook_04"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=4"
             buildTypes = allProjectBuilds {
@@ -126,7 +126,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_05"
+            webHookId = "MyProjectId_WebHook_05"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=5"
             buildTypes = allProjectBuilds {
@@ -142,7 +142,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_06"
+            webHookId = "MyProjectId_WebHook_06"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=6"
             buildTypes = allProjectBuilds {
@@ -158,7 +158,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_07"
+            webHookId = "MyProjectId_WebHook_07"
             template = "slack.com-compact"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=7"
             buildTypes = allProjectBuilds {
@@ -174,7 +174,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "SmallKotlinProject_WebHook_08"
+            webHookId = "MyProjectId_WebHook_08"
             template = "slack.com-compact"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=8"
             buildTypes = allProjectBuilds {
