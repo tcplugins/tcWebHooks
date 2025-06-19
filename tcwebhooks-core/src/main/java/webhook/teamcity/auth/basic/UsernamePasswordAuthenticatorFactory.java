@@ -22,6 +22,11 @@ public class UsernamePasswordAuthenticatorFactory extends AbstractWebHookAuthent
 		}
 		
 		@Override
+		public String getKotlinDslName() {
+		return "basic";
+		}
+		
+		@Override
 		public String getDescription() {
 			return "Username/Password Authentication (Basic Auth)";
 		}

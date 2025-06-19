@@ -37,8 +37,25 @@ project {
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
             buildTypes = selectedProjectBuilds {
                 subProjectBuilds = true
+                /* Define the specific buildTypes that this webhook should execute for.
+                 * There are 3 ways to define a buildType.
+                 *
+                 *     This function takes an object of type "jetbrains. buildServer. configs. kotlin.BuildType".
+                 *     Typically, the buildType will already be defined in this file, and we can just reference it.
+                 * buildType(myBuildType)
+                 *
+                 *     This function takes the id of the BuildType. Again, we already know the buildType config, so
+                 *     we can use that by calling toString() on it.
+                 * buildTypeId(myBuildType.id.toString())
+                 *
+                 *     This example calls the same function, but we are hard coding the BuildType's ID string.
+                 *     This is the least preferred method as it would need to be updated if the ID changes.
+                 * buildTypeId("MyProjectId_MyBuildTypeId")
+                 */
+
                 buildType{TcDummyDeb}
-                buildType{TcWebHooks}
+                buildTypeId{TcWebHooks.id.toString()}
+                buildTypeId{"SmallKotlinProject_TcChatBot"}
             }
             buildStates {
                 buildAddedToQueue = true

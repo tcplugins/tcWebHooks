@@ -14,12 +14,12 @@
         <param name="buildAddedToQueue" value="enabled" />
         <param name="buildRemovedFromQueue" value="enabled" />
         <param name="buildStates" value="enabledBuildStates" />
-        <param name="buildTypeIds" value="RootProjectId_TcDummyDeb, RootProjectId_TcWebHooks" />
+        <param name="buildTypeIds" value="MyProjectId_TcDummyDeb, MyProjectId_TcWebHooks" />
         <param name="buildTypes" value="selectedProjectBuilds" />
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=1" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_01" />
+        <param name="webHookId" value="MyProjectId_WebHook_01" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_10" type="versionedSettings">
@@ -38,12 +38,12 @@
         <param name="buildAddedToQueue" value="enabled" />
         <param name="buildRemovedFromQueue" value="enabled" />
         <param name="buildStates" value="enabledBuildStates" />
-        <param name="buildTypeIds" value="RootProjectId_TcDummyDeb, RootProjectId_TcWebHooks" />
+        <param name="buildTypeIds" value="MyProjectId_TcDummyDeb, MyProjectId_TcWebHooks" />
         <param name="buildTypes" value="selectedProjectBuilds" />
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=1" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_02" />
+        <param name="webHookId" value="MyProjectId_WebHook_02" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_3" type="tcWebHooks">
@@ -60,7 +60,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=2" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_03" />
+        <param name="webHookId" value="MyProjectId_WebHook_03" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_4" type="tcWebHooks">
@@ -75,7 +75,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=3" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_04" />
+        <param name="webHookId" value="MyProjectId_WebHook_04" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_5" type="tcWebHooks">
@@ -89,7 +89,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=4" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_05" />
+        <param name="webHookId" value="MyProjectId_WebHook_05" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_6" type="tcWebHooks">
@@ -104,7 +104,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=5" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_06" />
+        <param name="webHookId" value="MyProjectId_WebHook_06" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_7" type="tcWebHooks">
@@ -119,7 +119,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="legacy-json" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=6" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_07" />
+        <param name="webHookId" value="MyProjectId_WebHook_07" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_8" type="tcWebHooks">
@@ -134,7 +134,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="slack.com-compact" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=7" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_08" />
+        <param name="webHookId" value="MyProjectId_WebHook_08" />
       </parameters>
     </extension>
     <extension id="PROJECT_EXT_9" type="tcWebHooks">
@@ -157,7 +157,7 @@
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="slack.com-compact" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=8" />
-        <param name="webHookId" value="SmallKotlinProject_WebHook_09" />
+        <param name="webHookId" value="MyProjectId_WebHook_09" />
       </parameters>
     </extension>
   </project-extensions>

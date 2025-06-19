@@ -22,6 +22,11 @@ public class BearerAuthenticatorFactory extends AbstractWebHookAuthenticatorFact
 		}
 		
 		@Override
+		public String getKotlinDslName() {
+		    return getName();
+		}
+		
+		@Override
 		public String getDescription() {
 			return "Bearer Token Authentication (Bearer)";
 		}

@@ -146,7 +146,7 @@ class WebHookConfiguration() : ProjectFeature() {
 
         class SelectedProjectBuilds(feature: WebHookConfiguration) :
             BuildTypes(feature, allProjectBuilds = false) {
-            private val myBuildTypes = mutableSetOf<Id?>()
+            private val myBuildTypes = mutableSetOf<String>()
 
             override fun validate(consumer: ErrorConsumer) {
                 //TODO: add validation here
@@ -170,10 +170,10 @@ class WebHookConfiguration() : ProjectFeature() {
                  * Therefore, call the function and add the resulting Id
                  * to the set.
                  */
-                myBuildTypes.add(myBuildTypeFunction().id)
+                myBuildTypes.add(myBuildTypeFunction().id.toString())
             }
 
-            fun buildTypeId(myBuildTypeIdFunction: () -> Id?) {
+            fun buildTypeId(myBuildTypeIdFunction: () -> String) {
                 myBuildTypes.add(myBuildTypeIdFunction())
             }
         }

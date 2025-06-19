@@ -20,6 +20,10 @@ public class NtlmAuthenticatorFactory extends AbstractWebHookAuthenticatorFactor
 		public String getName() {
 			return "ntlm";
 		}
+		@Override
+		public String getKotlinDslName() {
+		    return getName();
+		}
 		
 		@Override
 		public String getDescription() {

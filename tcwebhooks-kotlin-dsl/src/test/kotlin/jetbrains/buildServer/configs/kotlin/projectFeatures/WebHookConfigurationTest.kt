@@ -43,8 +43,8 @@ class WebHookConfigurationTest {
                     // Use an already defined build type.
                     buildType{airTouchDiscoveryConsole}
 
-                    // Just pass the build type ID, as that's all we use anyway
-                    buildTypeId{anotherExampleBuildType.id}
+                    // Just pass the build type as a String, as that's all we use anyway
+                    buildTypeId{anotherExampleBuildType.id.toString()}
                 }
 
                 buildStates {

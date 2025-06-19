@@ -44,12 +44,12 @@ public class ProjectFeatureToWebHookConfigConverterTest {
     public void setup() {
         MockSBuildType sBuildType = new MockSBuildType("TcDummyDeb", "TcDummyDeb build", "bt1");
         MockSBuildType sBuildType2 = new MockSBuildType("TcWebHooks", "TcWebHooks build", "bt2");
-        MockSProject myProject = new MockSProject("Root Project", "The Root Project", "project01", "RootProjectId", sBuildType);
+        MockSProject myProject = new MockSProject("Root Project", "The Root Project", "project01", "MyProjectId", sBuildType);
         myProject.addANewBuildTypeToTheMock(sBuildType2);
         sBuildType.setProject(myProject);
         sBuildType2.setProject(myProject);
-        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcDummyDeb")).thenReturn(sBuildType);
-        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcWebHooks")).thenReturn(sBuildType2);
+        when(projectManager.findBuildTypeByExternalId("MyProjectId_TcDummyDeb")).thenReturn(sBuildType);
+        when(projectManager.findBuildTypeByExternalId("MyProjectId_TcWebHooks")).thenReturn(sBuildType2);
         when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
         when(projectManager.findBuildTypeById("bt2")).thenReturn(sBuildType2);
     }
@@ -163,7 +163,7 @@ public class ProjectFeatureToWebHookConfigConverterTest {
                     <param name="subProjectBuilds" value="true" />
                     <param name="template" value="legacy-json" />
                     <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=1" />
-                    <param name="webHookId" value="SmallKotlinProject_WebHook_01" />
+                    <param name="webHookId" value="MyProjectId_WebHook_01" />
                   </parameters>
                 </extension>
          */
