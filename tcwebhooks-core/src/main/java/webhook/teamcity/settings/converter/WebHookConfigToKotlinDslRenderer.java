@@ -10,6 +10,8 @@ import webhook.teamcity.auth.WebHookAuthenticationParameter;
 import webhook.teamcity.auth.WebHookAuthenticatorFactory;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.settings.WebHookConfig;
+import webhook.teamcity.settings.WebHookHeaderConfig;
+import webhook.teamcity.settings.project.WebHookParameterModel;
 
 @AllArgsConstructor
 public class WebHookConfigToKotlinDslRenderer {
@@ -55,6 +57,8 @@ public class WebHookConfigToKotlinDslRenderer {
         .append(getBuildTypes(webHookConfig))
         .append(getBuildStates(webHookConfig))
         .append(getAuthentication(webHookConfig))
+        .append(getHeaders(webHookConfig))
+        .append(getParameters(webHookConfig))
         .append(leftPad()).append("}");
         return sb.toString();
     }
@@ -91,7 +95,7 @@ public class WebHookConfigToKotlinDslRenderer {
     private String getBuildTypes(WebHookConfig webHookConfig) {
         StringBuilder sb = new StringBuilder();
         if (webHookConfig.isEnabledForAllBuildsInProject()) {
-            sb.append(leftPad(1)).append("allProjectBuilds {\n")
+            sb.append(leftPad(1)).append("buildTypes = allProjectBuilds {\n")
               .append(leftPad(2)).append("subProjectBuilds = ").append(Boolean.toString(webHookConfig.isEnabledForSubProjects())).append("\n")
               .append(leftPad(1)).append("}\n");
         } else {
@@ -121,6 +125,30 @@ public class WebHookConfigToKotlinDslRenderer {
         return sb.toString();
     }
 
+    private String getHeaders(WebHookConfig webHookConfig) {
+        StringBuilder sb = new StringBuilder();
+        if (!webHookConfig.getHeaders().isEmpty()) {
+            sb.append(leftPad(1)).append("headers {\n");
+            for (WebHookHeaderConfig h : webHookConfig.getHeaders()) {
+                sb.append(leftPad(2)).append("header(\"").append(h.getName()).append("\", \"").append(h.getValue()).append("\")\n");
+            }
+            sb.append(leftPad(1)).append("}\n");
+        }
+        return sb.toString();
+    }
+    
+    private String getParameters(WebHookConfig webHookConfig) {
+        StringBuilder sb = new StringBuilder();
+        if (!webHookConfig.getParams().isEmpty()) {
+            sb.append(leftPad(1)).append("parameters {\n");
+            for (WebHookParameterModel p : webHookConfig.getParams()) {
+                sb.append(leftPad(2)).append("parameter(\"").append(p.getName()).append("\", \"").append(p.getValue()).append("\")\n");
+            }
+            sb.append(leftPad(1)).append("}\n");
+        }
+        return sb.toString();
+    }
+    
     private String leftPad() {
         return StringUtils.leftPad("", LEFT_PAD);
     }

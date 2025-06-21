@@ -116,7 +116,7 @@ public class ProjectFeatureToWebHookConfigConverter {
 
     private void populateHeaders(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.headers(
-            parameters.entrySet().stream()
+            parameters.entrySet().stream().sorted(Map.Entry.comparingByKey()) // Sort by key name (eg, header_0).
             .filter(e -> e.getKey().startsWith(HEADER_PREFIX) && e.getKey().endsWith(NAME_SUFFIX))
             .map(e -> mapHeader(e, parameters))
             .collect(Collectors.toList())
@@ -125,7 +125,7 @@ public class ProjectFeatureToWebHookConfigConverter {
     
     private void populateTriggerFilters(WebHookConfigBuilder builder, Map<String, String> parameters) {
         builder.filters(
-            parameters.entrySet().stream()
+            parameters.entrySet().stream().sorted(Map.Entry.comparingByKey()) // Sort by key name (eg, triggerFilter_0).
             .filter(e -> e.getKey().startsWith(TRIGGER_FILTER_PREFIX) && e.getKey().endsWith(VALUE_SUFFIX))
             .map(e -> mapTriggerFilter(e, parameters))
             .collect(Collectors.toList())
@@ -135,7 +135,7 @@ public class ProjectFeatureToWebHookConfigConverter {
     private void populateWebHookParameters(WebHookConfigBuilder builder, Map<String, String> parameters) {
         ExtraParameters extraParameters = new ExtraParameters();
         AtomicInteger counter = new AtomicInteger(1);
-        parameters.entrySet().stream()
+        parameters.entrySet().stream().sorted(Map.Entry.comparingByKey()) // Sort by key name (eg, parameter_0).
         	.filter(e -> e.getKey().startsWith(WEBHOOK_PARAMETER_KEY_PREFIX) && e.getKey().endsWith(NAME_SUFFIX))
         	.forEach(p -> {
         		extraParameters.add(mapParameter(p, parameters, counter.getAndIncrement()));

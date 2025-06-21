@@ -32,7 +32,7 @@ project {
     description = "My Example Kotlin based project from VCS"
     features {
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_01"
+            webHookId = "RootProjectId_WebHook_01"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=1"
             buildTypes = selectedProjectBuilds {
@@ -50,12 +50,12 @@ project {
                  *
                  *     This example calls the same function, but we are hard coding the BuildType's ID string.
                  *     This is the least preferred method as it would need to be updated if the ID changes.
-                 * buildTypeId("MyProjectId_MyBuildTypeId")
+                 * buildTypeId("RootProjectId_MyBuildTypeId")
                  */
 
                 buildType{TcDummyDeb}
                 buildTypeId{TcWebHooks.id.toString()}
-                buildTypeId{"MyProjectId_TcChatBot"}
+                buildTypeId{"RootProjectId_TcChatBot"}
             }
             buildStates {
                 buildAddedToQueue = true
@@ -69,7 +69,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_02"
+            webHookId = "RootProjectId_WebHook_02"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=2"
             buildTypes = allProjectBuilds {
@@ -95,7 +95,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_03"
+            webHookId = "RootProjectId_WebHook_03"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=3"
             buildTypes = allProjectBuilds {
@@ -111,7 +111,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_04"
+            webHookId = "RootProjectId_WebHook_04"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=4"
             buildTypes = allProjectBuilds {
@@ -126,7 +126,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_05"
+            webHookId = "RootProjectId_WebHook_05"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=5"
             buildTypes = allProjectBuilds {
@@ -142,7 +142,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_06"
+            webHookId = "RootProjectId_WebHook_06"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=6"
             buildTypes = allProjectBuilds {
@@ -158,7 +158,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_07"
+            webHookId = "RootProjectId_WebHook_07"
             template = "slack.com-compact"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=7"
             buildTypes = allProjectBuilds {
@@ -174,7 +174,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_08"
+            webHookId = "RootProjectId_WebHook_08"
             template = "slack.com-compact"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=8"
             buildTypes = allProjectBuilds {

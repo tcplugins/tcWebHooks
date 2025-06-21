@@ -136,9 +136,16 @@ class WebHookConfiguration() : ProjectFeature() {
         @Suppress("unused")
         var subProjectBuilds: Boolean = false
     ) : Validatable {
+        
+        abstract fun addToParams()
 
 
         class AllProjectBuilds(feature: WebHookConfiguration) : BuildTypes(feature, allProjectBuilds = true) {
+            override fun addToParams() {
+                this.feature.param("buildTypes" , "allProjectBuilds")
+                subProjectBuilds.let { this.feature.param("subProjectBuilds" , subProjectBuilds.toString()) }
+            }
+
             override fun validate(consumer: ErrorConsumer) {
                 //TODO: add validation here
             }
@@ -147,6 +154,11 @@ class WebHookConfiguration() : ProjectFeature() {
         class SelectedProjectBuilds(feature: WebHookConfiguration) :
             BuildTypes(feature, allProjectBuilds = false) {
             private val myBuildTypes = mutableSetOf<String>()
+            override fun addToParams() {
+                this.feature.param("buildTypes" , "selectedProjectBuilds")
+                this.feature.param("buildTypeIds" , myBuildTypes.joinToString(", "))
+                this.feature.param("subProjectBuilds" , subProjectBuilds.toString())
+            }
 
             override fun validate(consumer: ErrorConsumer) {
                 //TODO: add validation here
@@ -182,12 +194,14 @@ class WebHookConfiguration() : ProjectFeature() {
     fun allProjectBuilds(init: BuildTypes.AllProjectBuilds.() -> Unit = {}) : BuildTypes.AllProjectBuilds {
         val result = BuildTypes.AllProjectBuilds(this)
         result.init()
+        result.addToParams()
         return result
     }
 
     fun selectedProjectBuilds(init: BuildTypes.SelectedProjectBuilds.() -> Unit = {}) : BuildTypes.SelectedProjectBuilds {
         val result = BuildTypes.SelectedProjectBuilds(this)
         result.init()
+        result.addToParams()
         return result
     }
 

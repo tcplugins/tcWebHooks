@@ -15,12 +15,14 @@ class WebHookConfigurationTest {
 
         val airTouchDiscoveryConsole = BuildType {
                 name = "AirTouch Discovery Console"
+                id = AbsoluteId("MyProject_AirTouchDiscoveryConsole")
                 params {
                     param("vcs.project.name", "airtouch-discovery-console")
                 }
             }
         val anotherExampleBuildType = BuildType {
                 name = "My Example Build Type"
+                id = AbsoluteId("MyProject_AnotherExampleBuildType")
                 params {
                     param("vcs.project.name", "my-example-build-type")
                 }
@@ -37,7 +39,7 @@ class WebHookConfigurationTest {
                     subProjectBuilds = true
                 }
 
-                buildTypes  = selectedProjectBuilds {
+                buildTypes = selectedProjectBuilds {
                     subProjectBuilds = true
 
                     // Use an already defined build type.
@@ -163,6 +165,13 @@ class WebHookConfigurationTest {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "testsUnmuted", value = "disabled" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildPinned", value = "enabled" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildFixed", value = "enabled" )))
+    }
+
+    @Test
+    fun getEnabledBuildTypes() {
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildTypes", value = "selectedProjectBuilds" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildTypeIds", value= "MyProject_AirTouchDiscoveryConsole, MyProject_AnotherExampleBuildType")))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "subProjectBuilds", value = "true" )))
     }
 
     @Test

@@ -16,7 +16,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
-import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.ProjectAndBuildTypeResolverImpl;
@@ -41,20 +40,24 @@ public class WebHookConfigToKotlinDslRendererTest {
         public void setup() throws JDOMException, IOException {
             MockSBuildType sBuildType = new MockSBuildType("TcDummyDeb", "TcDummyDeb build", "bt1");
             MockSBuildType sBuildType2 = new MockSBuildType("TcWebHooks", "TcWebHooks build", "bt2");
-            MockSProject myProject = new MockSProject("My Project", "My Example Project", "project01", "MyProjectId", sBuildType);
+            MockSBuildType sBuildType3 = new MockSBuildType("TcChatBot", "TcChatBot build", "bt3");
+            MockSProject myProject = new MockSProject("My Project", "My Example Project", "project01", "RootProjectId", sBuildType);
             myProject.addANewBuildTypeToTheMock(sBuildType2);
             sBuildType.setProject(myProject);
             sBuildType2.setProject(myProject);
-            when(projectManager.findBuildTypeByExternalId("MyProjectId_TcDummyDeb")).thenReturn(sBuildType);
-            when(projectManager.findBuildTypeByExternalId("MyProjectId_TcWebHooks")).thenReturn(sBuildType2);
+            sBuildType3.setProject(myProject);
+            when(projectManager.findBuildTypeByExternalId("RootProjectId_TcDummyDeb")).thenReturn(sBuildType);
+            when(projectManager.findBuildTypeByExternalId("RootProjectId_TcWebHooks")).thenReturn(sBuildType2);
+            when(projectManager.findBuildTypeByExternalId("RootProjectId_TcChatBot")).thenReturn(sBuildType3);
             when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
             when(projectManager.findBuildTypeById("bt2")).thenReturn(sBuildType2);
+            when(projectManager.findBuildTypeById("bt3")).thenReturn(sBuildType3);
             
             buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
             authenticatorProvider = new WebHookAuthenticatorProvider();
             authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
             authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
-            webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
+            webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testMigrationConfigurations/projects/FirstProject/project-config.xml"));
             converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         }
     
@@ -65,7 +68,7 @@ project {
     features {
 
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_02"
+            webHookId = "RootProjectId_WebHook_02"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=2"
             buildTypes = allProjectBuilds {
@@ -91,7 +94,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_03"
+            webHookId = "RootProjectId_WebHook_03"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=3"
             buildTypes = allProjectBuilds {
@@ -107,7 +110,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_04"
+            webHookId = "RootProjectId_WebHook_04"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=4"
             buildTypes = allProjectBuilds {
@@ -122,7 +125,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_05"
+            webHookId = "RootProjectId_WebHook_05"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=5"
             buildTypes = allProjectBuilds {
@@ -138,7 +141,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_06"
+            webHookId = "RootProjectId_WebHook_06"
             template = "legacy-json"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=6"
             buildTypes = allProjectBuilds {
@@ -154,7 +157,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_07"
+            webHookId = "RootProjectId_WebHook_07"
             template = "slack.com-compact"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=7"
             buildTypes = allProjectBuilds {
@@ -170,7 +173,7 @@ project {
             }
         }
         webHookConfiguration {
-            webHookId = "MyProjectId_WebHook_08"
+            webHookId = "RootProjectId_WebHook_08"
             template = "slack.com-compact"
             url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=8"
             buildTypes = allProjectBuilds {
@@ -203,7 +206,7 @@ project {
         WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(0));
         String expectedResult = 
                   "webHookConfiguration {\n"
-                + "    webHookId = \"MyProjectId_WebHook_01\"\n"
+                + "    webHookId = \"RootProjectId_WebHook_01\"\n"
                 + "    template = \"legacy-json\"\n"
                 + "    url = \"http://localhost:8111/webhooks/endpoint.html?vcs_test=1\"\n"
                 + "    buildTypes = selectedProjectBuilds {\n"
@@ -224,8 +227,9 @@ project {
                 + "         * buildTypeId(\"MyProjectId_MyBuildTypeId\")\n"
                 + "         */\n"
                 + "        \n"
-                + "        buildTypeId{\"MyProjectId_TcDummyDeb\"}\n"
-                + "        buildTypeId{\"MyProjectId_TcWebHooks\"}\n"
+                + "        buildTypeId{\"RootProjectId_TcDummyDeb\"}\n"
+                + "        buildTypeId{\"RootProjectId_TcWebHooks\"}\n"
+                + "        buildTypeId{\"RootProjectId_TcChatBot\"}\n"
                 + "    }\n"
                 + "    buildStates {\n"
                 + "        buildAddedToQueue = true\n"
@@ -243,11 +247,11 @@ project {
     }
     
     @Test
-    public void testRenderAsKotlinDsl02() throws JDOMException, IOException {
-        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(2)); // Index 1 is not a webhook
+    public void testRenderAsKotlinDsl01() throws JDOMException, IOException {
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(1));
         String expectedResult = 
                   "webHookConfiguration {\n"
-                + "    webHookId = \"MyProjectId_WebHook_02\"\n"
+                + "    webHookId = \"RootProjectId_WebHook_02\"\n"
                 + "    template = \"legacy-json\"\n"
                 + "    url = \"http://localhost:8111/webhooks/endpoint.html?vcs_test=2\"\n"
                 + "    buildTypes = allProjectBuilds {\n"
@@ -264,16 +268,16 @@ project {
                 + "        preemptive = true\n"
                 + "    }\n"
                 + "    headers {\n"
-                + "        header(name = \"foo1\", value = \"bar1\")\n"
-                + "        header(name = \"foo2\", value = \"bar2\")\n"
+                + "        header(\"foo1\", \"bar1\")\n"
+                + "        header(\"foo2\", \"bar2\")\n"
                 + "        header(\"foo3\", \"bar3\")\n"
                 + "    }\n"
                 + "    parameters {\n"
-                + "        parameter(name=\"colour\", value=\"blue\")\n"
+                + "        parameter(\"colour\", \"blue\")\n"
                 + "    }\n"
                 + "}";
 
-        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config);
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config, 0);
         assertEquals(expectedResult, actualResult);
     }
 
