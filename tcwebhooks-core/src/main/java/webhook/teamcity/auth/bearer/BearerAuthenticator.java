@@ -21,7 +21,6 @@ public class BearerAuthenticator extends AbstractWebHookAuthenticator implements
 
 		public static final String BEARER_AUTH_SCHEME_TYPE = "Bearer";
 		public static final String KEY_BEARER = "bearer";
-		public static final String KEY_REALM = "realm";
 		
 		@Override
 		public void addAuthentication(CredentialsProvider credentialsProvider, HttpClientContext httpClientContext, String url) {

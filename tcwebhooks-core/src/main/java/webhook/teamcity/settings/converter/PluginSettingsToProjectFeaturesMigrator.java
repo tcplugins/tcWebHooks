@@ -91,6 +91,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private final DeferrableServiceManager myDeferrableServiceManager;
 	private ScheduledFuture<?> future;
 	private final ExecutorServices executorServices;
+	private final WebHookConfigToKotlinDslRenderer myWebHookConfigToKotlinDslRenderer;
 
 
 	private static final String TEAMCITY_INTERNAL_PROPERTY_KEY = "teamcity.plugin.tcWebHooks.pluginSettingsToProjectFeaturesMigration";
@@ -189,8 +190,12 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		for (Map.Entry<SProject, WebHookProjectSettings> e : projectsForMigration.entrySet()) {
 			if (checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
                 addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
+                addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. Please copy and paste these configuration(s) into settings.kts inside the features block.");
+                e.getValue().getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
 			} else if (checkIfProjectHasVcsEnabledAndSyncEnabled(e.getKey())) {
                 addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", e.getKey().getExternalId()));
+                addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block.");
+                e.getValue().getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
 				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
 			} else {
 				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);

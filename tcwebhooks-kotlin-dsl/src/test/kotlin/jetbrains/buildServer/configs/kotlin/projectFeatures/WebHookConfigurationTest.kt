@@ -84,7 +84,7 @@ class WebHookConfigurationTest {
                         secure = true,
                         forceResolveTeamCityVariable = true,
                         includedInLegacyPayloads = true,
-                        templateEngine = WebHookConfiguration.TemplateEngine.VELOCITY
+                        templateEngine = WebHookConfiguration.TemplateEngine.VELOCITY.toString()
                     )
                     parameter(
                         name = "fooParam3",

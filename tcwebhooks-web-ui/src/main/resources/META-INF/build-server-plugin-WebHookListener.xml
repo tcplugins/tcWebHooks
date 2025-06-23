@@ -207,6 +207,10 @@
 		init-method="requestDeferredRegistration"
 		/>
 		
+	<bean id="webHookConfigToKotlinDslRenderer"
+		class="webhook.teamcity.settings.converter.WebHookConfigToKotlinDslRenderer"
+		/>
+		
 	<bean id="webHookPayloadManager"
 		class="webhook.teamcity.payload.WebHookPayloadManager"
 		/>

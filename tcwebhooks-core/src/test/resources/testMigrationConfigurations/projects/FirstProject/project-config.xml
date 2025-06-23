@@ -129,7 +129,20 @@
         <param name="header_2_name" value="foo3" />
         <param name="header_2_value" value="bar3" />
         <param name="parameter_0_name" value="colour" />
+        <param name="parameter_0_secure" value="true" />
         <param name="parameter_0_value" value="blue" />
+        <param name="parameter_1_forceResolveTeamCityVariable" value="true" />
+        <param name="parameter_1_includedInLegacyPayloads" value="true" />
+        <param name="parameter_1_name" value="fooParam2" />
+        <param name="parameter_1_secure" value="true" />
+        <param name="parameter_1_templateEngine" value="VELOCITY" />
+        <param name="parameter_1_value" value="barParam2" />
+        <param name="parameter_2_forceResolveTeamCityVariable" value="false" />
+        <param name="parameter_2_includedInLegacyPayloads" value="false" />
+        <param name="parameter_2_name" value="fooParam3" />
+        <param name="parameter_2_secure" value="false" />
+        <param name="parameter_2_templateEngine" value="STANDARD" />
+        <param name="parameter_2_value" value="barParam3" />
         <param name="subProjectBuilds" value="true" />
         <param name="template" value="slack.com-compact" />
         <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=8" />

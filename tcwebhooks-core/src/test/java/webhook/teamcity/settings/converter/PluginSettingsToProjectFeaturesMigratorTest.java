@@ -73,6 +73,8 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	private WebHookConfig config;
 	private MockSProject project01;
 	
+	@Mock WebHookConfigToKotlinDslRenderer myWebHookConfigToKotlinDslRenderer;
+	
 	
 	@Before
 	public void setup() throws JDOMException, IOException {
@@ -114,7 +116,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	@Test
 	public void testHappyPath() throws JDOMException, IOException {
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(1, project01.getPersistCount());
@@ -131,7 +133,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myWebHookSettingsManager.findWebHooks(any())).thenReturn(Collections.singletonList(searchResult));
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(1, project01.getPersistCount());
@@ -145,7 +147,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myProjectManager.getActiveProjects()).thenReturn(Collections.emptyList());
 
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(0, project01.getPersistCount());
@@ -159,7 +161,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myWebHookFeaturesStore.addWebHookConfig(any(), any())).thenReturn(new WebHookUpdateResult(false, config));
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		//Save should be attempted
@@ -176,7 +178,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(new WebHookProjectSettings());
 
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		//Save should be attempted
@@ -192,7 +194,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(new WebHookProjectSettings());
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.attemptMigration(false, LocalDateTime.now(), null);
 		
 		//Save should be attempted
@@ -213,7 +215,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		project01.addFeature("versionedSettings", featureMap);
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		//Save should not be attempted
@@ -234,7 +236,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		project01.addFeature("versionedSettings", featureMap);
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null);
+				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(1, project01.getPersistCount());

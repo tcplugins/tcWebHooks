@@ -202,7 +202,7 @@ project {
      */
 
     @Test
-    public void testRenderAsKotlinDsl00() throws JDOMException, IOException {
+    public void testRenderAsKotlinDsl_00() throws JDOMException, IOException {
         WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(0));
         String expectedResult = 
                   "webHookConfiguration {\n"
@@ -247,7 +247,7 @@ project {
     }
     
     @Test
-    public void testRenderAsKotlinDsl01() throws JDOMException, IOException {
+    public void testRenderAsKotlinDsl_01() throws JDOMException, IOException {
         WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(1));
         String expectedResult = 
                   "webHookConfiguration {\n"
@@ -277,6 +277,133 @@ project {
                 + "    }\n"
                 + "}";
 
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config, 0);
+        assertEquals(expectedResult, actualResult);
+    }
+    
+    @Test
+    public void testRenderAsKotlinDsl_02() throws JDOMException, IOException {
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(2));
+        String expectedResult = 
+                  "webHookConfiguration {\n"
+                + "    webHookId = \"RootProjectId_WebHook_03\"\n"
+                + "    template = \"legacy-json\"\n"
+                + "    url = \"http://localhost:8111/webhooks/endpoint.html?vcs_test=3\"\n"
+                + "    buildTypes = allProjectBuilds {\n"
+                + "        subProjectBuilds = true\n"
+                + "    }\n"
+                + "    buildStates {\n"
+                + "        buildAddedToQueue = true\n"
+                + "        buildRemovedFromQueue = true\n"
+                + "    }\n"
+                + "    authentication = bearer {\n"
+                + "        token = \"dkfjsdlfjldfjk\"\n"
+                + "        preemptive = true\n"
+                + "    }\n"
+                + "}";
+        
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config, 0);
+        assertEquals(expectedResult, actualResult);
+    }
+    
+    @Test
+    public void testRenderAsKotlinDsl_03() throws JDOMException, IOException {
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(3));
+        String expectedResult = 
+                  "webHookConfiguration {\n"
+                + "    webHookId = \"RootProjectId_WebHook_04\"\n"
+                + "    template = \"legacy-json\"\n"
+                + "    url = \"http://localhost:8111/webhooks/endpoint.html?vcs_test=4\"\n"
+                + "    buildTypes = allProjectBuilds {\n"
+                + "        subProjectBuilds = true\n"
+                + "    }\n"
+                + "    buildStates {\n"
+                + "        buildAddedToQueue = true\n"
+                + "    }\n"
+                + "    authentication = bearer {\n"
+                + "        token = \"new-bearer-toke\"\n"
+                + "        preemptive = true\n"
+                + "    }\n"
+                + "}";
+        
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config, 0);
+        assertEquals(expectedResult, actualResult);
+    }
+    
+    @Test
+    public void testRenderAsKotlinDsl_04() throws JDOMException, IOException {
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(4));
+        String expectedResult = 
+                  "webHookConfiguration {\n"
+                + "    webHookId = \"RootProjectId_WebHook_05\"\n"
+                + "    template = \"legacy-json\"\n"
+                + "    url = \"http://localhost:8111/webhooks/endpoint.html?vcs_test=5\"\n"
+                + "    buildTypes = allProjectBuilds {\n"
+                + "        subProjectBuilds = true\n"
+                + "    }\n"
+                + "    buildStates {\n"
+                + "        buildAddedToQueue = true\n"
+                + "        buildRemovedFromQueue = true\n"
+                + "    }\n"
+                + "    authentication = bearer {\n"
+                + "        token = \"dkfjsdlfjldfjk\"\n"
+                + "        preemptive = true\n"
+                + "    }\n"
+                + "}";
+        
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config, 0);
+        assertEquals(expectedResult, actualResult);
+    }
+    
+    @Test
+    public void testRenderAsKotlinDsl_07() throws JDOMException, IOException {
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(7));
+        String expectedResult = 
+                  "webHookConfiguration {\n"
+                + "    webHookId = \"RootProjectId_WebHook_08\"\n"
+                + "    template = \"slack.com-compact\"\n"
+                + "    url = \"http://localhost:8111/webhooks/endpoint.html?vcs_test=8\"\n"
+                + "    buildTypes = allProjectBuilds {\n"
+                + "        subProjectBuilds = true\n"
+                + "    }\n"
+                + "    buildStates {\n"
+                + "        buildAddedToQueue = true\n"
+                + "        buildRemovedFromQueue = true\n"
+                + "    }\n"
+                + "    authentication = bearer {\n"
+                + "        token = \"this-is-my-updated-token\"\n"
+                + "        preemptive = true\n"
+                + "    }\n"
+                + "    headers {\n"
+                + "        header(\"foo1\", \"bar1\")\n"
+                + "        header(\"foo2\", \"bar2\")\n"
+                + "        header(\"foo3\", \"bar3\")\n"
+                + "    }\n"
+                + "    parameters {\n"
+                + "        parameter(\n"
+                + "            name = \"colour\",\n"
+                + "            value = \"blue\",\n"
+                + "            secure = true\n"
+                + "        )\n"
+                + "        parameter(\n"
+                + "            name = \"fooParam2\",\n"
+                + "            value = \"barParam2\",\n"
+                + "            secure = true,\n"
+                + "            forceResolveTeamCityVariable = true,\n"
+                + "            includedInLegacyPayloads = true,\n"
+                + "            templateEngine = \"VELOCITY\"\n"
+                + "        )\n"
+                + "        parameter(\n"
+                + "            name = \"fooParam3\",\n"
+                + "            value = \"barParam3\",\n"
+                + "            secure = false,\n"
+                + "            forceResolveTeamCityVariable = false,\n"
+                + "            includedInLegacyPayloads = false,\n"
+                + "            templateEngine = \"STANDARD\"\n"
+                + "        )\n"
+                + "    }\n"
+                + "}";
+        
         String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(config, 0);
         assertEquals(expectedResult, actualResult);
     }

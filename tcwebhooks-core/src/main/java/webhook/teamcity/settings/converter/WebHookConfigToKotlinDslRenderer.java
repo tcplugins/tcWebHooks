@@ -71,7 +71,7 @@ public class WebHookConfigToKotlinDslRenderer {
             sb.append(leftPad(1)).append("authentication = ").append(factory.getKotlinDslName()).append(" {\n");
             for (WebHookAuthenticationParameter param : factory.getParameterList()) {
                 if (authenticationConfig.getParameters().containsKey(param.getKey())) {
-                    sb.append(leftPad(2)).append(param.getKey()).append(" = \"").append(authenticationConfig.getParameters().get(param.getKey())).append("\"\n");
+                    sb.append(leftPad(2)).append(param.getKotlinDslKey()).append(" = \"").append(authenticationConfig.getParameters().get(param.getKey())).append("\"\n");
                 }
             }
             sb.append(leftPad(2)).append("preemptive = ").append(authenticationConfig.getPreemptive().toString()).append("\n")
@@ -83,10 +83,13 @@ public class WebHookConfigToKotlinDslRenderer {
     private String getBuildStates(WebHookConfig webHookConfig) {
         StringBuilder sb = new StringBuilder();
         sb.append(leftPad(1)).append("buildStates {\n");
-        for (BuildStateEnum state : BuildStateEnum.values()) {
+        for (BuildStateEnum state : BuildStateEnum.getNotifyStates()) {
             if (webHookConfig.isEnabledForBuildState(state)) {
                 sb.append(leftPad(2)).append(state.getShortName()).append(" = true\n");
             }
+        }
+        if (webHookConfig.isEnabledForBuildState(BuildStateEnum.REPORT_STATISTICS)) {
+            sb.append(leftPad(2)).append(BuildStateEnum.REPORT_STATISTICS.getShortName()).append(" = true\n");
         }
         sb.append(leftPad(1)).append("}\n");
         return sb.toString();
@@ -142,13 +145,45 @@ public class WebHookConfigToKotlinDslRenderer {
         if (!webHookConfig.getParams().isEmpty()) {
             sb.append(leftPad(1)).append("parameters {\n");
             for (WebHookParameterModel p : webHookConfig.getParams()) {
-                sb.append(leftPad(2)).append("parameter(\"").append(p.getName()).append("\", \"").append(p.getValue()).append("\")\n");
+                if (isSimpleParameter(p)) {
+                    sb.append(leftPad(2)).append("parameter(\"").append(p.getName()).append("\", \"").append(p.getValue()).append("\")\n");
+                } else {
+                    sb.append(leftPad(2)).append("parameter(\n")
+                      .append(leftPad(3)).append("name = \"").append(p.getName()).append("\",\n")
+                      .append(leftPad(3)).append("value = \"").append(p.getValue()).append("\"");
+                    if (p.getSecure() != null ) {
+                        sb.append(",\n").append(leftPad(3)).append("secure = ").append(p.getSecure());
+                    }
+                    if (p.getForceResolveTeamCityVariable() != null ) {
+                        sb.append(",\n").append(leftPad(3)).append("forceResolveTeamCityVariable = ").append(p.getForceResolveTeamCityVariable());
+                    }
+                    if (p.getIncludedInLegacyPayloads() != null ) {
+                        sb.append(",\n").append(leftPad(3)).append("includedInLegacyPayloads = ").append(p.getIncludedInLegacyPayloads());
+                    }
+                    if (p.getTemplateEngine() != null ) {
+                        sb.append(",\n").append(leftPad(3)).append("templateEngine = \"").append(p.getTemplateEngine()).append("\"");
+                    }
+                    sb.append("\n").append(leftPad(2)).append(")\n");
+                    
+                }
             }
             sb.append(leftPad(1)).append("}\n");
         }
         return sb.toString();
     }
     
+    /**
+     * Checks that all the non-required fields are null.
+     * If they are defined, we want to render a complex object in the DSL.
+     * @param p
+     * @return
+     */
+    private boolean isSimpleParameter(WebHookParameterModel p) {
+        return     p.getSecure() == null 
+                && p.getForceResolveTeamCityVariable() == null 
+                && p.getIncludedInLegacyPayloads() == null 
+                && p.getTemplateEngine() == null;
+    }
     private String leftPad() {
         return StringUtils.leftPad("", LEFT_PAD);
     }

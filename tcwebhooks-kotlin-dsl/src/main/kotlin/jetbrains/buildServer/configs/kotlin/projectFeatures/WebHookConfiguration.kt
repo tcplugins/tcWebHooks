@@ -432,24 +432,6 @@ class WebHookConfiguration() : ProjectFeature() {
                 templateEngine
             )
         }
-        fun parameter(
-            name: String,
-            value: String,
-            secure: Boolean? = null,
-            includedInLegacyPayloads: Boolean? = null,
-            forceResolveTeamCityVariable: Boolean? = null,
-            templateEngine: TemplateEngine? = null
-            ) {
-            // TODO: Throw exception if parameter added twice
-            myParameters[name] = Parameter(
-                name,
-                value,
-                secure,
-                includedInLegacyPayloads,
-                forceResolveTeamCityVariable,
-                templateEngine.toString()
-            )
-        }
 
         override fun validate(consumer: ErrorConsumer) {
             if (alreadySeen) {

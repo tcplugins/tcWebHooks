@@ -10,9 +10,9 @@ public class UsernamePasswordAuthenticatorFactory extends AbstractWebHookAuthent
 
 		public UsernamePasswordAuthenticatorFactory(WebHookAuthenticatorProvider provider) {
 			super(provider);
-			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.KEY_USERNAME, REQUIRED, NOT_HIDDEN, "Username", "basicAuthUsername", "The username that the webhook should send to authenticate with the webserver."));
-			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.KEY_PASS, REQUIRED, HIDDEN, "Password", "basicAuthPassword", "The password that the webhook should send to authenticate with the webserver."));
-			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.KEY_REALM, NOT_REQUIRED, NOT_HIDDEN, "Realm", "basicAuthRealm", "The Realm the server must present before this webhook will send credentials. This is ignored if preemptive is enabled, because the webhook does not make a first request to expect a 401 repsonse and to retreive the realm."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.KEY_USERNAME, REQUIRED, NOT_HIDDEN, "Username", "basicAuthUsername", UsernamePasswordAuthenticator.KEY_USERNAME, "The username that the webhook should send to authenticate with the webserver."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.KEY_PASS, REQUIRED, HIDDEN, "Password", "basicAuthPassword", UsernamePasswordAuthenticator.KEY_PASS, "The password that the webhook should send to authenticate with the webserver."));
+			parameterDefinition.add(new WebHookAuthenticationParameter(UsernamePasswordAuthenticator.KEY_REALM, NOT_REQUIRED, NOT_HIDDEN, "Realm", "basicAuthRealm", UsernamePasswordAuthenticator.KEY_REALM, "The Realm the server must present before this webhook will send credentials. This is ignored if preemptive is enabled, because the webhook does not make a first request to expect a 401 repsonse and to retreive the realm."));
 		
 		}
 		

@@ -12,6 +12,7 @@ public class WebHookAuthenticationParameter {
 	private boolean hidden;
 	private String name;
 	private String projectFeatureKey;
+	private String kotlinDslKey;
 	private String toolTip;
 
 }

@@ -1,6 +1,7 @@
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
+import jetbrains.buildServer.configs.kotlin.projectFeatures.WebHookConfiguration
 import jetbrains.buildServer.configs.kotlin.projectFeatures.webHookConfiguration
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 
@@ -117,7 +118,7 @@ project {
             buildTypes = allProjectBuilds {
                 subProjectBuilds = true
             }
-            buildStates  {
+            buildStates {
                 buildAddedToQueue = true
             }
             authentication = bearer {
@@ -188,14 +189,29 @@ project {
                 token = "this-is-my-updated-token"
                 preemptive = true
             }
-
             headers {
-                header(name = "foo1", value = "bar1")
-                header(name = "foo2", value = "bar2")
+                header("foo1", "bar1")
+                header("foo2", "bar2")
                 header("foo3", "bar3")
             }
             parameters {
-                parameter(name="colour", value="blue")
+                parameter(name="colour", value="blue", secure = true)
+                parameter(
+                    name = "fooParam2",
+                    value = "barParam2",
+                    secure = true,
+                    forceResolveTeamCityVariable = true,
+                    includedInLegacyPayloads = true,
+                    templateEngine = "VELOCITY"
+                )
+                parameter(
+                    name = "fooParam3",
+                    value = "barParam3",
+                    secure = false,
+                    forceResolveTeamCityVariable = false,
+                    includedInLegacyPayloads = false,
+                    templateEngine = "STANDARD"
+                )
             }
         }
     }
