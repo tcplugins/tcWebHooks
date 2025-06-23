@@ -27,7 +27,6 @@
 	        <filtering>true</filtering>
 	        <includes>
 	          <include>*.xml</include>
-	          <include>**/kotlin-dsl/*.xml</include>
 	          <include>*.properties</include>
 	        </includes>
 	      </resource>
@@ -126,7 +125,6 @@
 						<copy todir="${project.build.directory}/dist-core/">
 							<fileset dir="${project.build.directory}/classes/">
 								<include name="teamcity-plugin.xml"/>
-								<include name="kotlin-dsl/*.xml"/>
 							</fileset>
 						</copy> 
 		
