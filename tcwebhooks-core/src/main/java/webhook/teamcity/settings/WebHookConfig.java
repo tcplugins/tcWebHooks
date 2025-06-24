@@ -394,7 +394,7 @@ public class WebHookConfig {
 		e.setAttribute(ATTR_SECURE, String.valueOf(i.getSecure()));
 		e.setAttribute(ATTR_INCLUDED_IN_LEGACY_PAYLOADS, String.valueOf(i.getIncludedInLegacyPayloads()));
 		e.setAttribute(ATTR_FORCE_RESOLVE_TEAMCITY_VARIABLE, String.valueOf(i.getForceResolveTeamCityVariable()));
-		e.setAttribute(ATTR_TEMPLATE_ENGINE, i.getTemplateEngine());
+		e.setAttribute(ATTR_TEMPLATE_ENGINE, i.getTemplateEngine() != null ? i.getTemplateEngine() : "STANDARD");
 		return e;
 	}
 
