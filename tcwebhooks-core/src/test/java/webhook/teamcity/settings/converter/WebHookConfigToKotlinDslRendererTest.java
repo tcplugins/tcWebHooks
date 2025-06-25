@@ -408,4 +408,11 @@ project {
         assertEquals(expectedResult, actualResult);
     }
 
+    @Test
+    public void testConvertPluginSettingsToKotlonForDocs() throws JDOMException, IOException {
+        WebHookConfig webhook = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(webhook, 0);
+        System.out.print(actualResult);
+        
+    }
 }
