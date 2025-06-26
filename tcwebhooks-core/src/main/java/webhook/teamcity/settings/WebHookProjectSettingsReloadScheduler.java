@@ -55,6 +55,7 @@ public class WebHookProjectSettingsReloadScheduler implements DeferrableService,
 	@Override
 	public void register() {
 		Loggers.SERVER.info("WebHookProjectSettingsReloadScheduler :: Requesting scheduling of WebHookProjectSettingsReloadTask");
+		this.myWebHookSettingsManager.initialise(); // Make sure it's initialised.
 		this.myExecutorService.schedule(new WebHookProjectSettingsReloadTask(this, myWebHookSettingsManager), 10, TimeUnit.SECONDS);
 	}
 	
