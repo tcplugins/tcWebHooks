@@ -341,10 +341,14 @@ public class ProjectFeatureToWebHookConfigConverter {
 
         private void addBuildStates(Map<String, String> parameters) {
             BuildState buildStates = this.webHookConfig.getBuildStates();
-            Arrays.stream(BuildStateEnum.getNotifyStates()).forEach(state -> {
-                parameters.put(state.getShortName(), buildStates.enabled(state) ? ENABLED : DISABLED);
+            Arrays.stream(BuildStateEnum.getNotifyStates())
+                    .filter(state -> buildStates.enabled(state))
+                    .forEach(state -> {
+                        parameters.put(state.getShortName(), buildStates.enabled(state) ? ENABLED : DISABLED);
             });
-            parameters.put(BuildStateEnum.REPORT_STATISTICS.getShortName(), buildStates.enabled(BuildStateEnum.REPORT_STATISTICS) ? ENABLED : DISABLED);
+            if (buildStates.enabled(BuildStateEnum.REPORT_STATISTICS)) {
+                parameters.put(BuildStateEnum.REPORT_STATISTICS.getShortName(), buildStates.enabled(BuildStateEnum.REPORT_STATISTICS) ? ENABLED : DISABLED);
+            }
         }
 
         private Map<String,String> getAuthenticationAsParameters(WebHookAuthConfig webHookAuthConfig) {

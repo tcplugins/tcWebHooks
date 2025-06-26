@@ -21,8 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.MockSBuildType;
@@ -107,7 +105,7 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         assertContainsKeyAndValue(features.getParameters(), "testsMuted", "enabled");
         assertContainsKeyAndValue(features.getParameters(), "testsUnmuted", "enabled");
         assertContainsKeyAndValue(features.getParameters(), "serviceMessageReceived", "enabled");
-        assertContainsKeyAndValue(features.getParameters(), "reportStatistics", "disabled");
+        assertDoesNotContainsKey(features.getParameters(), "reportStatistics");
         
         
         assertContainsKeyAndValue(features.getParameters(), "authentication", "basicAuth");
@@ -144,6 +142,10 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         assertTrue("Parameters Map does not contain key '" + key + "'", parameters.containsKey(key));
         assertTrue("Parameters Map with key '" + key + "' does not contain value '" + value + "'", parameters.get(key).equals(value));
 	}
+    
+    private static void assertDoesNotContainsKey(Map<String,String> parameters, String key) {
+        assertFalse("Parameters Map unexpectedly contains key '" + key + "'", parameters.containsKey(key));
+    }
 
 	@Test
     public void testConvertFromRealProjectConfig() throws JDOMException, IOException {
