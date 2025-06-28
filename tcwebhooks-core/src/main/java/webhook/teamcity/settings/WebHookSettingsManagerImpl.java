@@ -75,6 +75,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	@Override
 	public void initialise() {
 		if (this.projectSettingsMap == null) {
+		    Loggers.SERVER.debug("Initialising projectSettingsMap");
 			this.projectSettingsMap = rebuildProjectSettingsMap();
 			for (String projectId : this.projectSettingsMap.keySet()) {
 				this.rebuildWebHooksEnhanced(projectId);
@@ -325,6 +326,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
     @Override
     public void handleProjectChangedEvent(WebHookSettingsEvent event) {
+        this.initialise();
         if (
              (      // PROJECT_CHANGED or PROJECT_PERSISTED and unseen project 
                (     WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType()) 
@@ -410,7 +412,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			doBuildTypeIdSearch(filter, webHookConfigEnhanced, result);
 		}
 
-		if ( ! result.getMatches().isEmpty() ) {
+		if ( ! result.getMatches().isEmpty() && webHookConfigEnhanced != null) {
 			result.setWebHookConfigEnhanced(webHookConfigEnhanced);
 			webhookResultList.add(result);
 		}
