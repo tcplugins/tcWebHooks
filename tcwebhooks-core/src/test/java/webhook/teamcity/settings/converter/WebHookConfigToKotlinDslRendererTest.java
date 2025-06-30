@@ -5,7 +5,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.jdom.JDOMException;
 import org.junit.Before;
@@ -411,7 +414,15 @@ project {
     @Test
     public void testConvertPluginSettingsToKotlonForDocs() throws JDOMException, IOException {
         WebHookConfig webhook = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
-        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(webhook, 0);
+        String actualResult = new WebHookConfigToKotlinDslRenderer(authenticatorProvider, buildTypeIdResolver).renderAsKotlinDsl(webhook, 8);
+        System.out.print(actualResult);
+        
+    }
+    
+    @Test
+    public void testConvertPluginSettingsToXmlForDocs() throws JDOMException, IOException, JAXBException {
+        WebHookConfig webhook = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
+        String actualResult = new WebHookConfigToProjectFeatureXmlRenderer(converter).renderAsXml(Collections.singletonList(webhook));
         System.out.print(actualResult);
         
     }
