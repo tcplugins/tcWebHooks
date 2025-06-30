@@ -211,6 +211,10 @@
 		class="webhook.teamcity.settings.converter.WebHookConfigToKotlinDslRenderer"
 		/>
 		
+	<bean id="webHookConfigToProjectFeatureXmlRenderer"
+		class="webhook.teamcity.settings.converter.WebHookConfigToProjectFeatureXmlRenderer"
+		/>
+		
 	<bean id="webHookPayloadManager"
 		class="webhook.teamcity.payload.WebHookPayloadManager"
 		/>

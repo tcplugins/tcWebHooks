@@ -3,6 +3,7 @@ package webhook.testframework.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -79,7 +80,11 @@ public class ConfigLoaderUtil {
 	    System.out.println(elements.get(0).toString());
 	    List<Element> params = elements.get(0).getChildren("param");
 	    return params.stream().collect(
-	            Collectors.toMap(e -> ((Element) e).getAttribute("name").getValue(), 
-	                    e -> ((Element) e).getAttribute("value").getValue()));
+	            Collectors.toMap( // Use 4 param toMap method, so that we can specify LinkedHashMap to maintain order
+	                    e -> ((Element) e).getAttribute("name").getValue(), 
+	                    e -> ((Element) e).getAttribute("value").getValue(),
+	                    (s, a) -> a,
+	                    LinkedHashMap::new
+	                    ));
 	}
 }

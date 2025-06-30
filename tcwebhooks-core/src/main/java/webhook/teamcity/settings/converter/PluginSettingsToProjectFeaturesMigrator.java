@@ -18,6 +18,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jdom.JDOMException;
@@ -92,6 +94,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private ScheduledFuture<?> future;
 	private final ExecutorServices executorServices;
 	private final WebHookConfigToKotlinDslRenderer myWebHookConfigToKotlinDslRenderer;
+	private final WebHookConfigToProjectFeatureXmlRenderer myWebHookConfigToProjectFeatureXmlRenderer;
 
 
 	private static final String TEAMCITY_INTERNAL_PROPERTY_KEY = "teamcity.plugin.tcWebHooks.pluginSettingsToProjectFeaturesMigration";
@@ -188,15 +191,23 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		}
 		addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
 		for (Map.Entry<SProject, WebHookProjectSettings> e : projectsForMigration.entrySet()) {
-			if (checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
+			if (checkIfProjectIsKotlin(e.getKey()) && checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
                 addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
                 addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. Please copy and paste these configuration(s) into settings.kts inside the features block.");
                 e.getValue().getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
-			} else if (checkIfProjectHasVcsEnabledAndSyncEnabled(e.getKey())) {
+			} else if (checkIfProjectIsKotlin(e.getKey()) && checkIfProjectHasVcsEnabledAndSyncEnabled(e.getKey())) {
                 addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", e.getKey().getExternalId()));
                 addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block.");
                 e.getValue().getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
 				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
+			} else if (!checkIfProjectIsKotlin(e.getKey()) && checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
+                addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
+                addToReport(writer, "An project-config.xml configuration of each webhook is produced below. Please copy and paste these configuration(s) into project-config.xml in your VCS settings.");
+                try {
+                    addToReport(writer,"\n" + myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(e.getValue().getWebHooksAsList()));
+                } catch (JAXBException jaxbException) {
+                    throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", e.getKey().getExternalId()), jaxbException);
+                }
 			} else {
 				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
 			}
@@ -251,6 +262,17 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		File projectPluginSettingsBackupFile = new File(projectPluginsConfigDir, String.format("plugin-settings-%s.xml", now.format(dateTimeFormatter)));
 		FileUtils.copyFile(projectPluginSettingsFile, projectPluginSettingsBackupFile);
 		addToReport(writer, String.format("Backed up existing plugin-settings.xml file in project '%s'. Copied from '%s' to '%s'", project.getExternalId(), projectPluginSettingsFile, projectPluginSettingsBackupFile));
+	}
+	
+	
+	
+	private boolean checkIfProjectIsKotlin(SProject key) {
+	    Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
+	    Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
+	    if (Boolean.TRUE.equals(vs.isPresent() && vs.get().getParameters().containsKey("format") && vs.get().getParameters().get("format").equals("kotlin"))) {
+	        return true;
+	    }
+	    return false;
 	}
 
 	private boolean checkIfProjectHasVcsEnabledAndSyncDisabled(SProject key) {
