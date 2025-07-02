@@ -164,6 +164,9 @@
      <bean id="webHookJavascriptTestsController" 
      	class="webhook.teamcity.extension.WebHookJavascriptTestsController" 
      	/>
+     <bean id="webHookMigrationController" 
+     	class="webhook.teamcity.migration.WebHookMigrationController" 
+     	/>
 
      <bean id="webHookHttpClientFactory"
      	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 

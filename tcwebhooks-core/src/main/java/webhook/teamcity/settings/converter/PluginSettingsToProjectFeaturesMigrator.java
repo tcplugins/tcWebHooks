@@ -22,6 +22,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jdom.JDOMException;
 
 import jetbrains.buildServer.serverSide.ConfigAction;
@@ -191,28 +192,34 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		}
 		addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
 		for (Map.Entry<SProject, WebHookProjectSettings> e : projectsForMigration.entrySet()) {
-			if (checkIfProjectIsKotlin(e.getKey()) && checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
-                addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
-                addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. Please copy and paste these configuration(s) into settings.kts inside the features block.");
-                e.getValue().getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
-			} else if (checkIfProjectIsKotlin(e.getKey()) && checkIfProjectHasVcsEnabledAndSyncEnabled(e.getKey())) {
-                addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", e.getKey().getExternalId()));
-                addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block.");
-                e.getValue().getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
-				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
-			} else if (!checkIfProjectIsKotlin(e.getKey()) && checkIfProjectHasVcsEnabledAndSyncDisabled(e.getKey())) {
-                addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", e.getKey().getExternalId()));
-                addToReport(writer, "An project-config.xml configuration of each webhook is produced below. Please copy and paste these configuration(s) into project-config.xml in your VCS settings.");
-                try {
-                    addToReport(writer,"\n" + myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(e.getValue().getWebHooksAsList()));
-                } catch (JAXBException jaxbException) {
-                    throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", e.getKey().getExternalId()), jaxbException);
-                }
-			} else {
-				attemptMigration(e.getKey(), e.getValue(), failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
-			}
+			determineThenAttemptMigration(failIfCantRemoveWebhookFromCurrentConfiguration, now, writer, e.getKey(), e.getValue());
 		}
 	}
+
+    private void determineThenAttemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration,
+            LocalDateTime now, BufferedWriter writer, SProject project, WebHookProjectSettings settings)
+            throws ProjectFeatureMigrationException {
+        if (checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncDisabled(project)) {
+            addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
+            addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. Please copy and paste these configuration(s) into settings.kts inside the features block.");
+            settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
+        } else if (checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncEnabled(project)) {
+            addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", project.getExternalId()));
+            addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block.");
+            settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
+        	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
+        } else if (!checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncDisabled(project)) {
+            addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
+            addToReport(writer, "An project-config.xml configuration of each webhook is produced below. Please copy and paste these configuration(s) into project-config.xml in your VCS settings.");
+            try {
+                addToReport(writer,"\n" + myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(settings.getWebHooksAsList()));
+            } catch (JAXBException jaxbException) {
+                throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", project.getExternalId()), jaxbException);
+            }
+        } else {
+        	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
+        }
+    }
 
 	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, BufferedWriter writer) throws ProjectFeatureMigrationException {
 		addSectionToReport(writer, String.format("Starting migration of project '%s'. There are '%s' webhooks to migrate", project.getExternalId(), webhookSettings.getWebHooksAsList().size()));
@@ -307,44 +314,51 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration(BufferedWriter writer) {
 		Map<SProject, WebHookProjectSettings> projectsThatRequireMigrations = new LinkedHashMap<>();
 		for (SProject project : myProjectManager.getActiveProjects()) {
-			File projectConfigDir = project.getConfigDirectory();
-			File projectPluginsConfigDir = new File(projectConfigDir,"pluginData");
-			File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
-			if (projectPluginsConfigDir.isDirectory() && projectPluginsConfigDir.canWrite()) {
-				if (projectPluginSettingsFile.canRead()) {
-					try {
-						WebHookProjectSettings webhooks = ConfigLoaderUtil.getAllWebHooksInConfig(projectPluginSettingsFile);
-						if (webhooks != null && webhooks.isEnabled() && !webhooks.getWebHooksAsList().isEmpty()) {
-							projectsThatRequireMigrations.put(project, webhooks);
-						} else {
-							Loggers.SERVER.info(String.format(
-									"File '%s' for project '%s' does not contain a webhooks XML element. No webhook migration will be attempted for this project.",
-									projectPluginSettingsFile.toString(),
-									project.getExternalId()));
-						}
-					} catch (JDOMException | IOException e) {
-						Loggers.SERVER.info(String.format(
-								"File '%s' for project '%s' is not readable as a plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
-								projectPluginSettingsFile.toString(),
-								project.getExternalId(),
-								e.getMessage()));
-					}
-				} else {
-					Loggers.SERVER.info(String.format(
-							"File '%s' for project '%s' does not exist. No webhook migration will be attempted for this project.",
-							projectPluginSettingsFile.toString(),
-							project.getExternalId()));
-				}
-			} else {
-				Loggers.SERVER.info(String.format(
-						"Directory '%s' for project '%s' does not exist or is not writable. No webhook migration will be attempted for this project.",
-						projectPluginsConfigDir.toString(),
-						project.getExternalId()));
+			WebHookProjectSettings webhooks = getProjectSettingsIfItCanBeMigrated(project);
+			if (webhooks != null) {
+			    projectsThatRequireMigrations.put(project, webhooks);
 			}
-			
 		}
 		return projectsThatRequireMigrations;
 	}
+
+    private WebHookProjectSettings getProjectSettingsIfItCanBeMigrated(SProject project) {
+        File projectConfigDir = project.getConfigDirectory();
+        File projectPluginsConfigDir = new File(projectConfigDir,"pluginData");
+        File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
+        if (projectPluginsConfigDir.isDirectory() && projectPluginsConfigDir.canWrite()) {
+        	if (projectPluginSettingsFile.canRead()) {
+        		try {
+        			WebHookProjectSettings webhooks = ConfigLoaderUtil.getAllWebHooksInConfig(projectPluginSettingsFile);
+        			if (webhooks != null && webhooks.isEnabled() && !webhooks.getWebHooksAsList().isEmpty()) {
+        				return webhooks;
+        			} else {
+        				Loggers.SERVER.info(String.format(
+        						"File '%s' for project '%s' does not contain a webhooks XML element. No webhook migration will be attempted for this project.",
+        						projectPluginSettingsFile.toString(),
+        						project.getExternalId()));
+        			}
+        		} catch (JDOMException | IOException e) {
+        			Loggers.SERVER.info(String.format(
+        					"File '%s' for project '%s' is not readable as a plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
+        					projectPluginSettingsFile.toString(),
+        					project.getExternalId(),
+        					e.getMessage()));
+        		}
+        	} else {
+        		Loggers.SERVER.info(String.format(
+        				"File '%s' for project '%s' does not exist. No webhook migration will be attempted for this project.",
+        				projectPluginSettingsFile.toString(),
+        				project.getExternalId()));
+        	}
+        } else {
+        	Loggers.SERVER.info(String.format(
+        			"Directory '%s' for project '%s' does not exist or is not writable. No webhook migration will be attempted for this project.",
+        			projectPluginsConfigDir.toString(),
+        			project.getExternalId()));
+        }
+        return null;
+    }
 
 	@Override
 	public void requestDeferredRegistration() {
@@ -377,4 +391,12 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		}
 		
 	}
+
+    public List<WebHookConfig> getCandidates(SProject myProject) {
+        WebHookProjectSettings settings = getProjectSettingsIfItCanBeMigrated(myProject);
+        if (settings != null) {
+            return settings.getWebHooksAsList();
+        }
+        return null;
+    }
 }
