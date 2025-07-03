@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import com.intellij.util.containers.hash.LinkedHashMap;
@@ -16,6 +18,11 @@ import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
+import webhook.teamcity.migration.WebHookMigrationController;
 import webhook.teamcity.migration.WebHookMigrationController.WebHookTriple;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
@@ -65,15 +72,24 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	@Override
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
 		Map<SProject,Map<String, WebHookTriple>> migrationData = new LinkedHashMap<>();
+		Map<SProject,String> reasons = new LinkedHashMap<>();
+		Map<SProject,VcsStatuses> vcsStatuses = new LinkedHashMap<>();
 		for (SProject myProject : myProjectManager.getActiveProjects()) {
-			List<WebHookConfig> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
+			Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
 			WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
 			List<WebHookConfigEnhanced> cached = myWebHookSettingsManager.getWebHooksForProject(myProject);
 			
+			vcsStatuses.put(myProject, new VcsStatuses()
+					.withIsKotlin(pluginSettingsToProjectFeaturesMigrator.checkIfProjectIsKotlin(myProject))
+					.withVcsAndSyncEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabledAndSyncEnabled(myProject))
+					.withVcsEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabled(myProject)));
 			
 			Map<String, WebHookTriple> webhooks = new LinkedHashMap<>();
-			if (candidates != null) {
-				candidates.forEach(w -> {
+			if (candidates.getLeft() != null) {
+				reasons.put(myProject, candidates.getLeft());
+			}
+			if (candidates.getRight() != null) {
+				candidates.getRight().forEach(w -> {
 					if (webhooks.containsKey(w.getUniqueKey())) {
 						webhooks.put(w.getUniqueKey(), webhooks.get(w.getUniqueKey()).withCandidate(w));
 					} else {
@@ -99,6 +115,19 @@ public class WebHookMigrationAdminPage extends AdminPage {
 			}
 			migrationData.put(myProject, webhooks);
 		}
+		model.put("reasons", reasons);
 		model.put("migrationData", migrationData);
+		model.put("vcsStatuses", vcsStatuses);
+	}
+	
+	@Data @AllArgsConstructor @NoArgsConstructor
+    public static class VcsStatuses {
+		@With
+		Boolean vcsEnabled;
+		@With
+		Boolean vcsAndSyncEnabled;
+		@With
+		Boolean isKotlin;
+		
 	}
 }

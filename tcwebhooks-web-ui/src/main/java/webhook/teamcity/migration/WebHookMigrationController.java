@@ -6,10 +6,12 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.StringBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,12 +35,16 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.extension.admin.WebHookMigrationAdminPage.VcsStatuses;
+import webhook.teamcity.migration.WebHookMigrationController.WebHookTriple;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookFeaturesStore;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator;
+import webhook.teamcity.settings.converter.WebHookConfigToKotlinDslRenderer;
+import webhook.teamcity.settings.converter.WebHookConfigToProjectFeatureXmlRenderer;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookMigrationController extends BaseController {
@@ -51,6 +57,8 @@ public class WebHookMigrationController extends BaseController {
 	private ProjectManager myProjectManager;
 	private WebHookFeaturesStore myWebHookFeaturesStore;
 	private WebHookSettingsManager myWebHookSettingsManager;
+	private WebHookConfigToKotlinDslRenderer myWebHookConfigToKotlinDslRenderer;
+	private WebHookConfigToProjectFeatureXmlRenderer myWebHookConfigToProjectFeatureXmlRenderer;
 	
 	public WebHookMigrationController(
 								SBuildServer server,
@@ -59,6 +67,8 @@ public class WebHookMigrationController extends BaseController {
 								WebHookSettingsManager webHookSettingsManager,
 								PluginDescriptor pluginDescriptor, 
 								ProjectManager projectManager,
+								WebHookConfigToKotlinDslRenderer webHookConfigToKotlinDslRenderer,
+								WebHookConfigToProjectFeatureXmlRenderer webHookConfigToProjectFeatureXmlRenderer,
 								WebControllerManager webControllerManager) {
 		super(server);
 		this.pluginSettingsToProjectFeaturesMigrator = pluginSettingsToProjectFeaturesMigrator;
@@ -67,6 +77,8 @@ public class WebHookMigrationController extends BaseController {
 		this.myWebHookSettingsManager = webHookSettingsManager;
 		this.myProjectManager = projectManager;
 		this.myWebManager = webControllerManager;
+		this.myWebHookConfigToKotlinDslRenderer = webHookConfigToKotlinDslRenderer;
+		this.myWebHookConfigToProjectFeatureXmlRenderer = webHookConfigToProjectFeatureXmlRenderer;
 		this.myWebManager.registerController(MY_URL, this);
 		Loggers.SERVER.debug("WebHookMigrationController:: Registering");
 	}
@@ -77,53 +89,83 @@ public class WebHookMigrationController extends BaseController {
         SUser myUser = SessionUser.getUser(request);
     	
     	if (isGet(request)) {
-    		HashMap<String,Object> params = new HashMap<>();
-    		params.put("jspHome",this.myPluginPath);
+    		HashMap<String,Object> model = new HashMap<>();
+    		Map<SProject,Map<String, WebHookTriple>> migrationData = new LinkedHashMap<>();
+    		Map<SProject,String> reasons = new LinkedHashMap<>();
+    		Map<SProject,VcsStatuses> vcsStatuses = new LinkedHashMap<>();
+    		
+    		model.put("jspHome",this.myPluginPath);
     		
     		if (request.getParameter("project") != null) {
     			SProject myProject = this.myProjectManager.findProjectByExternalId(request.getParameter("project"));
     			if (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT)) {
-    				List<WebHookConfig> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
+    				Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
     				WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
     				List<WebHookConfigEnhanced> cached = myWebHookSettingsManager.getWebHooksForProject(myProject);
     				
-    				params.put("migrationCandidates", candidates);
-    				params.put("migratedWebHooks", migrated.getWebHooksAsList());
-					params.put("cachedWebHooks", cached);
+    				vcsStatuses.put(myProject, new VcsStatuses()
+    						.withIsKotlin(pluginSettingsToProjectFeaturesMigrator.checkIfProjectIsKotlin(myProject))
+    						.withVcsAndSyncEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabledAndSyncEnabled(myProject))
+    						.withVcsEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabled(myProject)));
     				
     				Map<String, WebHookTriple> webhooks = new LinkedHashMap<>();
-    				if (candidates != null) {
-						candidates.forEach(w -> {
-	    					if (webhooks.containsKey(w.getUniqueKey())) {
-	    						webhooks.put(w.getUniqueKey(), webhooks.get(w.getUniqueKey()).withCandidate(w));
-	    					} else {
-	    						webhooks.put(w.getUniqueKey(), new WebHookTriple().withCandidate(w));
-	    					}
-	    				});
+    				if (candidates.getLeft() != null) {
+    					reasons.put(myProject, candidates.getLeft());
     				}
-					migrated.getWebHooksAsList().forEach(w -> {
+    				if (candidates.getRight() != null) {
+    					candidates.getRight().forEach(w -> {
+    						if (webhooks.containsKey(w.getUniqueKey())) {
+    							webhooks.put(w.getUniqueKey(), webhooks.get(w.getUniqueKey()).withCandidate(w));
+    						} else {
+    							webhooks.put(w.getUniqueKey(), new WebHookTriple().withCandidate(w));
+    						}
+    					});
+    				}
+    				migrated.getWebHooksAsList().forEach(w -> {
     					if (webhooks.containsKey(w.getUniqueKey())) {
     						webhooks.put(w.getUniqueKey(), webhooks.get(w.getUniqueKey()).withMigrated(w));
     					} else {
     						webhooks.put(w.getUniqueKey(), new WebHookTriple().withMigrated(w));
     					}
     				});
-					if (cached != null) {
-						cached.forEach(w -> {
-	    					if (webhooks.containsKey(w.getWebHookConfig().getUniqueKey())) {
-	    						webhooks.put(w.getWebHookConfig().getUniqueKey(), webhooks.get(w.getWebHookConfig().getUniqueKey()).withCached(w));
-	    					} else {
-	    						webhooks.put(w.getWebHookConfig().getUniqueKey(), new WebHookTriple().withCached(w));
+    				if (cached != null) {
+    					cached.forEach(w -> {
+    						if (webhooks.containsKey(w.getWebHookConfig().getUniqueKey())) {
+    							webhooks.put(w.getWebHookConfig().getUniqueKey(), webhooks.get(w.getWebHookConfig().getUniqueKey()).withCached(w));
+    						} else {
+    							webhooks.put(w.getWebHookConfig().getUniqueKey(), new WebHookTriple().withCached(w));
+    						}
+    					});
+    				}
+    				migrationData.put(myProject, webhooks);
+    				//model.put("webhooks", webhooks);
+    				if (vcsStatuses.get(myProject).getIsKotlin()) {
+    					List<WebHookConfig> webhookConfigs = candidates.getRight();
+    					StringBuilder sb = new StringBuilder();
+    					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
+	    					for(WebHookConfig c : webhookConfigs) {
+	    						sb
+	    						.append(myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(c))
+	    						.append("\n\n");
 	    					}
-	    				});
-					}
-    				params.put("webhooks", webhooks);
+    					}
+    					model.put("kotlinDsls", sb.toString());
+    				} else if (vcsStatuses.get(myProject).getVcsEnabled() && !vcsStatuses.get(myProject).getVcsAndSyncEnabled()) {
+    					List<WebHookConfig> webhookConfigs = candidates.getRight();
+    					StringBuilder sb = new StringBuilder();
+    					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
+    						sb.append(myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(webhookConfigs));
+    					}
+    					model.put("projectFeaturesXml", sb.toString());
+    				}
     			}
     		}
 
+    		model.put("reasons", reasons);
+    		model.put("migrationData", migrationData);
+    		model.put("vcsStatuses", vcsStatuses);
     		
-    		
-    		return new ModelAndView(myPluginPath + "WebHook/migration.jsp", params); 
+    		return new ModelAndView(myPluginPath + "WebHook/migration.jsp", model); 
 
     	}
     	response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -132,6 +174,8 @@ public class WebHookMigrationController extends BaseController {
     
     @Data @AllArgsConstructor @NoArgsConstructor
     public static class WebHookTriple {
+    	@With
+    	String reason;
     	@With
     	WebHookConfig candidate;
     	@With

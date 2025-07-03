@@ -205,7 +205,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
         } else if (checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncEnabled(project)) {
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", project.getExternalId()));
-            addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block.");
+            addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block. TeamCity may also have created a patch file in the project's settings repo. This will need to be fixed.");
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
         	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
         } else if (!checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncDisabled(project)) {
@@ -273,7 +273,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	
 	
 	
-	private boolean checkIfProjectIsKotlin(SProject key) {
+	public boolean checkIfProjectIsKotlin(SProject key) {
 	    Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
 	    Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
 	    if (Boolean.TRUE.equals(vs.isPresent() && vs.get().getParameters().containsKey("format") && vs.get().getParameters().get("format").equals("kotlin"))) {
@@ -281,8 +281,17 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	    }
 	    return false;
 	}
+	
+	public boolean checkIfProjectHasVcsEnabled(SProject key) {
+	    Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
+	    Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
+	    if (Boolean.TRUE.equals(vs.isPresent())) {
+	        return true;
+	    }
+	    return false;
+	}
 
-	private boolean checkIfProjectHasVcsEnabledAndSyncDisabled(SProject key) {
+	public boolean checkIfProjectHasVcsEnabledAndSyncDisabled(SProject key) {
 		Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
 		Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
 		if (Boolean.TRUE.equals(vs.isPresent() && Boolean.valueOf(vs.get().getParameters().get("enabled"))) && Boolean.FALSE.equals(Boolean.valueOf(vs.get().getParameters().get("twoWaySynchronization")))) {
@@ -291,7 +300,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		return false;
 	}
 	
-	private boolean checkIfProjectHasVcsEnabledAndSyncEnabled(SProject key) {
+	public boolean checkIfProjectHasVcsEnabledAndSyncEnabled(SProject key) {
 		Collection<SProjectFeatureDescriptor> versionedSettings = key.getAvailableFeaturesOfType("versionedSettings");
 		Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
 		if (vs.isPresent() && Boolean.TRUE.equals(Boolean.valueOf(vs.get().getParameters().get("enabled"))) && Boolean.TRUE.equals(Boolean.valueOf(vs.get().getParameters().get("twoWaySynchronization")))) {
@@ -314,15 +323,17 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration(BufferedWriter writer) {
 		Map<SProject, WebHookProjectSettings> projectsThatRequireMigrations = new LinkedHashMap<>();
 		for (SProject project : myProjectManager.getActiveProjects()) {
-			WebHookProjectSettings webhooks = getProjectSettingsIfItCanBeMigrated(project);
-			if (webhooks != null) {
-			    projectsThatRequireMigrations.put(project, webhooks);
+			Pair<String,WebHookProjectSettings> webhooks = getProjectSettingsIfItCanBeMigrated(project);
+			if (webhooks.getRight() != null) {
+			    projectsThatRequireMigrations.put(project, webhooks.getRight());
+			} else {
+			    Loggers.SERVER.info(webhooks.getLeft());
 			}
 		}
 		return projectsThatRequireMigrations;
 	}
 
-    private WebHookProjectSettings getProjectSettingsIfItCanBeMigrated(SProject project) {
+    private Pair<String, WebHookProjectSettings> getProjectSettingsIfItCanBeMigrated(SProject project) {
         File projectConfigDir = project.getConfigDirectory();
         File projectPluginsConfigDir = new File(projectConfigDir,"pluginData");
         File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
@@ -331,33 +342,32 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         		try {
         			WebHookProjectSettings webhooks = ConfigLoaderUtil.getAllWebHooksInConfig(projectPluginSettingsFile);
         			if (webhooks != null && webhooks.isEnabled() && !webhooks.getWebHooksAsList().isEmpty()) {
-        				return webhooks;
+        				return Pair.of(null, webhooks);
         			} else {
-        				Loggers.SERVER.info(String.format(
+        				return Pair.of(String.format(
         						"File '%s' for project '%s' does not contain a webhooks XML element. No webhook migration will be attempted for this project.",
         						projectPluginSettingsFile.toString(),
-        						project.getExternalId()));
+        						project.getExternalId()), null);
         			}
         		} catch (JDOMException | IOException e) {
-        			Loggers.SERVER.info(String.format(
+        		    return Pair.of(String.format(
         					"File '%s' for project '%s' is not readable as a plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
         					projectPluginSettingsFile.toString(),
         					project.getExternalId(),
-        					e.getMessage()));
+        					e.getMessage()), null);
         		}
         	} else {
-        		Loggers.SERVER.info(String.format(
+        	    return Pair.of(String.format(
         				"File '%s' for project '%s' does not exist. No webhook migration will be attempted for this project.",
         				projectPluginSettingsFile.toString(),
-        				project.getExternalId()));
+        				project.getExternalId()), null);
         	}
         } else {
-        	Loggers.SERVER.info(String.format(
+        	return Pair.of(String.format(
         			"Directory '%s' for project '%s' does not exist or is not writable. No webhook migration will be attempted for this project.",
         			projectPluginsConfigDir.toString(),
-        			project.getExternalId()));
+        			project.getExternalId()), null);
         }
-        return null;
     }
 
 	@Override
@@ -392,11 +402,11 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		
 	}
 
-    public List<WebHookConfig> getCandidates(SProject myProject) {
-        WebHookProjectSettings settings = getProjectSettingsIfItCanBeMigrated(myProject);
-        if (settings != null) {
-            return settings.getWebHooksAsList();
+    public Pair<String,List<WebHookConfig>> getCandidates(SProject myProject) {
+        Pair<String, WebHookProjectSettings> settings = getProjectSettingsIfItCanBeMigrated(myProject);
+        if (settings.getRight() != null) {
+            return Pair.of(null, settings.getRight().getWebHooksAsList());
         }
-        return null;
+        return Pair.of(settings.getLeft(), null);
     }
 }
