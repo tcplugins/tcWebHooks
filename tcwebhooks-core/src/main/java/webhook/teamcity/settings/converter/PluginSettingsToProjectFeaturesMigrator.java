@@ -312,10 +312,12 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private void markMigrationAs(String status) throws ProjectFeatureMigrationException {
 		String teamcityInternalPropertiesFilename = this.myServerPaths.getConfigDir() + File.separator + FileWatchingPropertiesModel.DEFAULT_PROPERTIES_FILE_NAME;
 		Properties teamcityInternalProperties = new Properties();
-		try {
-			teamcityInternalProperties.load(new FileInputStream(teamcityInternalPropertiesFilename));
+		
+		try (FileInputStream reader = new FileInputStream(teamcityInternalPropertiesFilename); FileWriter writer = new FileWriter(teamcityInternalPropertiesFilename)){
+			teamcityInternalProperties.load(reader);
 			teamcityInternalProperties.put(TEAMCITY_INTERNAL_PROPERTY_KEY, status);
-			teamcityInternalProperties.store(new FileWriter(teamcityInternalPropertiesFilename), String.format("Set tcWebHooks migration '%s' flag in TeamCity's internal.properties file", status));
+			
+			teamcityInternalProperties.store(writer,String.format("Set tcWebHooks migration '%s' flag in TeamCity's internal.properties file", status));
 		} catch (IOException e) {
 			throw new ProjectFeatureMigrationException("Unable to set migration status flag in internal.properties file", e);
 		}
