@@ -78,7 +78,7 @@ public class BuildState {
         return states.get(BUILD_FAILED).isEnabled() 
                 || states.get(BUILD_FIXED).isEnabled() 
                 || states.get(BUILD_SUCCESSFUL).isEnabled() 
-                || states.get(BUILD_FIXED).isEnabled();
+                || states.get(BUILD_BROKEN).isEnabled();
     }
     
     public boolean enabled(BuildStateEnum currentBuildState, boolean success, boolean changed){
