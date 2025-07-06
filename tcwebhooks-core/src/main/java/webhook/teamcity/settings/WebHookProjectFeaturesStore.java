@@ -2,6 +2,7 @@ package webhook.teamcity.settings;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     
     private static final String PROJECT_FEATURE_TYPE = "tcWebHooks";
     private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter;
+    private final FeatureDescriptorSorter featureDescriptorSorter = new FeatureDescriptorSorter();
     
     @Override
     public WebHookUpdateResult addWebHookConfig(@NotNull SProject sProject, @NotNull WebHookConfig webHookConfig) {
@@ -28,8 +30,9 @@ public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     @Override
     @NotNull
     public WebHookProjectSettings getWebHookConfigs(@NotNull SProject project) {
-    	return new WebHookProjectSettings(project.getOwnFeaturesOfType(PROJECT_FEATURE_TYPE)
+        return new WebHookProjectSettings(project.getOwnFeaturesOfType(PROJECT_FEATURE_TYPE)
                       .stream()
+                      .sorted(featureDescriptorSorter)
                       .map(configConverter::convert)
                       .collect(toList()));
     }
@@ -78,5 +81,21 @@ public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
             return new WebHookUpdateResult(false, config);
         }
     }
+    public class FeatureDescriptorSorter implements Comparator <SProjectFeatureDescriptor> {
+        private final int PROJECT_FEATURE_PREFIX_LENGTH = "PROJECT_EXT_".length();
 
+        @Override
+        public int compare(SProjectFeatureDescriptor o1, SProjectFeatureDescriptor o2) {
+            try {
+                //Try to compare based on the integer value after "PROJECT_EXT_".
+                // eg, 10 in "PROJECT_EXT_10"
+                int o1Id = Integer.valueOf(o1.getId().substring(PROJECT_FEATURE_PREFIX_LENGTH));
+                int o2Id = Integer.valueOf(o2.getId().substring(PROJECT_FEATURE_PREFIX_LENGTH));
+                return Integer.compare(o1Id, o2Id);
+            } catch (NumberFormatException ex) {
+                // If that fails, just compare the text strings as that's the default behaviour in TeamCity anyway. 
+                return o1.getId().compareTo(o2.getId());
+            }
+        }
+    }
 }
