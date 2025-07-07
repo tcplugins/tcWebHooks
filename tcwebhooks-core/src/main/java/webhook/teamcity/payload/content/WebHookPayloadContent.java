@@ -263,14 +263,14 @@ public class WebHookPayloadContent {
 				+ oldUser
 				+ " to "
 				+ newUser
-				+ getComment() != null ? " with comment '" + getComment().trim() + "'" : ""
+				+ (getComment() != null ? " with comment '" + getComment().trim() + "'" : "")
 				);
 				setText(sBuildType.getFullName()
 						+ " changed responsibility from "
 						+ oldUser
 						+ " to "
 						+ newUser
-						+ getComment() != null ? " with comment '" + getComment().trim() + "'" : ""
+						+ (getComment() != null ? " with comment '" + getComment().trim() + "'" : "")
 						);
 			}
 

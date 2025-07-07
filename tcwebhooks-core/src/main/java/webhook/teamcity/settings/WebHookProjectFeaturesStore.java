@@ -82,15 +82,15 @@ public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
         }
     }
     public class FeatureDescriptorSorter implements Comparator <SProjectFeatureDescriptor> {
-        private final int PROJECT_FEATURE_PREFIX_LENGTH = "PROJECT_EXT_".length();
+        private final int projectFeaturePrefixLength = "PROJECT_EXT_".length();
 
         @Override
         public int compare(SProjectFeatureDescriptor o1, SProjectFeatureDescriptor o2) {
             try {
                 //Try to compare based on the integer value after "PROJECT_EXT_".
                 // eg, 10 in "PROJECT_EXT_10"
-                int o1Id = Integer.valueOf(o1.getId().substring(PROJECT_FEATURE_PREFIX_LENGTH));
-                int o2Id = Integer.valueOf(o2.getId().substring(PROJECT_FEATURE_PREFIX_LENGTH));
+                int o1Id = Integer.parseInt(o1.getId().substring(projectFeaturePrefixLength));
+                int o2Id = Integer.parseInt(o2.getId().substring(projectFeaturePrefixLength));
                 return Integer.compare(o1Id, o2Id);
             } catch (NumberFormatException ex) {
                 // If that fails, just compare the text strings as that's the default behaviour in TeamCity anyway. 
