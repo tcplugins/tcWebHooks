@@ -251,7 +251,7 @@ project {
     
     @Test
     public void testRenderAsKotlinDsl_01() throws JDOMException, IOException {
-        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(1));
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(6));
         String expectedResult = 
                   "webHookConfiguration {\n"
                 + "    webHookId = \"RootProjectId_WebHook_02\"\n"
@@ -286,7 +286,7 @@ project {
     
     @Test
     public void testRenderAsKotlinDsl_02() throws JDOMException, IOException {
-        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(2));
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(7));
         String expectedResult = 
                   "webHookConfiguration {\n"
                 + "    webHookId = \"RootProjectId_WebHook_03\"\n"
@@ -311,7 +311,7 @@ project {
     
     @Test
     public void testRenderAsKotlinDsl_03() throws JDOMException, IOException {
-        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(3));
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(8));
         String expectedResult = 
                   "webHookConfiguration {\n"
                 + "    webHookId = \"RootProjectId_WebHook_04\"\n"
@@ -335,7 +335,7 @@ project {
     
     @Test
     public void testRenderAsKotlinDsl_04() throws JDOMException, IOException {
-        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(4));
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(9));
         String expectedResult = 
                   "webHookConfiguration {\n"
                 + "    webHookId = \"RootProjectId_WebHook_05\"\n"
@@ -360,7 +360,7 @@ project {
     
     @Test
     public void testRenderAsKotlinDsl_07() throws JDOMException, IOException {
-        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(7));
+        WebHookConfig config = converter.convert(webhooksAsProjectFeatures.get(12));
         String expectedResult = 
                   "webHookConfiguration {\n"
                 + "    webHookId = \"RootProjectId_WebHook_08\"\n"

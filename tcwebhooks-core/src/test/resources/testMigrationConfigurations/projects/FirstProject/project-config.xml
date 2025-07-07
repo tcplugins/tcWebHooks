@@ -21,6 +21,64 @@
         <param name="webHookId" value="RootProjectId_WebHook_01" />
       </parameters>
     </extension>
+    <extension id="PROJECT_EXT_10" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="new-bearer-toke" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildTypes" value="allProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=10" />
+        <param name="webHookId" value="RootProjectId_WebHook_10" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_11" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="new-bearer-toke" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildTypes" value="allProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=11" />
+        <param name="webHookId" value="RootProjectId_WebHook_11" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_12" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="new-bearer-toke" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildTypes" value="allProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=12" />
+        <param name="webHookId" value="RootProjectId_WebHook_12" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_13" type="tcWebHooks">
+      <parameters>
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="new-bearer-toke" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildTypes" value="allProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=13" />
+        <param name="webHookId" value="RootProjectId_WebHook_13" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_14" type="versionedSettings">
+      <parameters>
+        <param name="enabled" value="true" />
+        <param name="format" value="kotlin" />
+      </parameters>
+    </extension>
     <extension id="PROJECT_EXT_2" type="tcWebHooks">
       <parameters>
         <param name="authentication" value="basicAuth" />
@@ -149,10 +207,17 @@
         <param name="webHookId" value="RootProjectId_WebHook_08" />
       </parameters>
     </extension>
-    <extension id="PROJECT_EXT_9" type="versionedSettings">
+    <extension id="PROJECT_EXT_9" type="tcWebHooks">
       <parameters>
-        <param name="enabled" value="true" />
-        <param name="format" value="kotlin" />
+        <param name="authentication" value="bearer" />
+        <param name="bearerPreemptive" value="true" />
+        <param name="bearerToken" value="new-bearer-toke" />
+        <param name="buildAddedToQueue" value="enabled" />
+        <param name="buildTypes" value="allProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="legacy-json" />
+        <param name="url" value="http://localhost:8111/webhooks/endpoint.html?vcs_test=9" />
+        <param name="webHookId" value="RootProjectId_WebHook_09" />
       </parameters>
     </extension>
   </project-extensions>

@@ -42,12 +42,16 @@ public class ProjectFeatureToWebHookConfigConverterTest {
     public void setup() {
         MockSBuildType sBuildType = new MockSBuildType("TcDummyDeb", "TcDummyDeb build", "bt1");
         MockSBuildType sBuildType2 = new MockSBuildType("TcWebHooks", "TcWebHooks build", "bt2");
-        MockSProject myProject = new MockSProject("Root Project", "The Root Project", "project01", "MyProjectId", sBuildType);
+        MockSBuildType sBuildType3 = new MockSBuildType("TcChatBot", "TcChatBot build", "bt2");
+        MockSProject myProject = new MockSProject("Root Project", "The Root Project", "project01", "RootProjectId", sBuildType);
         myProject.addANewBuildTypeToTheMock(sBuildType2);
+        myProject.addANewBuildTypeToTheMock(sBuildType3);
         sBuildType.setProject(myProject);
         sBuildType2.setProject(myProject);
-        when(projectManager.findBuildTypeByExternalId("MyProjectId_TcDummyDeb")).thenReturn(sBuildType);
-        when(projectManager.findBuildTypeByExternalId("MyProjectId_TcWebHooks")).thenReturn(sBuildType2);
+        sBuildType3.setProject(myProject);
+        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcDummyDeb")).thenReturn(sBuildType);
+        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcWebHooks")).thenReturn(sBuildType2);
+        when(projectManager.findBuildTypeByExternalId("RootProjectId_TcChatBot")).thenReturn(sBuildType3);
         when(projectManager.findBuildTypeById("bt1")).thenReturn(sBuildType);
         when(projectManager.findBuildTypeById("bt2")).thenReturn(sBuildType2);
     }
@@ -173,7 +177,7 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
         authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
-        List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testProjectConfig/projects/Root/project-config.xml"));
+        List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testMigrationConfigurations/projects/FirstProject/project-config.xml"));
         ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(0));
         SProjectFeatureDescriptor features = converter.convert(webHookConfig);
