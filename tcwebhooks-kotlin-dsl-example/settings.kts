@@ -214,6 +214,11 @@ project {
                 )
             }
         }
+        webHookConfiguration(WebHookConfiguration09)
+        webHookConfiguration(WebHookConfiguration10)
+        webHookConfiguration(WebHookConfiguration11)
+        webHookConfiguration(WebHookConfiguration12)
+        webHookConfiguration(WebHookConfiguration13)
     }
     vcsRoot(AirTouchJavaTemplate)
     vcsRoot(TcPluginGitHubTemplate)
@@ -224,6 +229,86 @@ project {
     buildType(AirTouchDiscoveryConsole)
     buildType(AirTouchUtils)
 }
+
+    object WebHookConfiguration09 : WebHookConfiguration ({
+        webHookId = "RootProjectId_WebHook_09"
+        template = "legacy-json"
+        url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=9"
+        buildTypes = allProjectBuilds {
+            subProjectBuilds = true
+        }
+        buildStates {
+            buildAddedToQueue = true
+        }
+        authentication = bearer {
+            token = "new-bearer-toke"
+            preemptive = true
+        }
+    })
+
+    object WebHookConfiguration10 : WebHookConfiguration ({
+        webHookId = "RootProjectId_WebHook_10"
+        template = "legacy-json"
+        url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=10"
+        buildTypes = allProjectBuilds {
+            subProjectBuilds = true
+        }
+        buildStates {
+            buildAddedToQueue = true
+        }
+        authentication = bearer {
+            token = "new-bearer-toke"
+            preemptive = true
+        }
+    })
+
+    object WebHookConfiguration11 : WebHookConfiguration ({
+        webHookId = "RootProjectId_WebHook_11"
+        template = "legacy-json"
+        url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=11"
+        buildTypes = allProjectBuilds {
+            subProjectBuilds = true
+        }
+        buildStates {
+            buildAddedToQueue = true
+        }
+        authentication = bearer {
+            token = "new-bearer-toke"
+            preemptive = true
+        }
+    })
+
+    object WebHookConfiguration12 : WebHookConfiguration ({
+        webHookId = "RootProjectId_WebHook_12"
+        template = "legacy-json"
+        url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=12"
+        buildTypes = allProjectBuilds {
+            subProjectBuilds = true
+        }
+        buildStates {
+            buildAddedToQueue = true
+        }
+        authentication = bearer {
+            token = "new-bearer-toke"
+            preemptive = true
+        }
+    })
+
+    object WebHookConfiguration13 : WebHookConfiguration ({
+        webHookId = "RootProjectId_WebHook_13"
+        template = "legacy-json"
+        url = "http://localhost:8111/webhooks/endpoint.html?vcs_test=13"
+        buildTypes = allProjectBuilds {
+            subProjectBuilds = true
+        }
+        buildStates {
+            buildAddedToQueue = true
+        }
+        authentication = bearer {
+            token = "new-bearer-toke"
+            preemptive = true
+        }
+    })
 
     object AirTouchJavaTemplate : GitVcsRoot({
         name = "AirTouch Java GitHub Template"

@@ -9,7 +9,7 @@ import jetbrains.buildServer.configs.kotlin.*
  * @see webHookConfiguration
  */
 @TeamCityDsl
-class WebHookConfiguration() : ProjectFeature() {
+open class WebHookConfiguration() : ProjectFeature() {
 
     init {
         type = "tcWebHooks"
@@ -601,5 +601,10 @@ fun ProjectFeatures.webHookConfiguration(init: WebHookConfiguration.() -> Unit):
     val result = WebHookConfiguration(init)
     feature(result)
     return result
+}
+
+fun ProjectFeatures.webHookConfiguration(webhookConfig: WebHookConfiguration): WebHookConfiguration {
+    feature(webhookConfig)
+    return webhookConfig
 }
 
