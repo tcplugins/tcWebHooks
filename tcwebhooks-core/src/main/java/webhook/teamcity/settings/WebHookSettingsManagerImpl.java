@@ -41,7 +41,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 	@NotNull private final ProjectManager myProjectManager;
 	@NotNull private final ConfigActionFactory myConfigActionFactory;
-	//@NotNull private final ProjectSettingsManager myProjectSettingsManager;
 	@NotNull private final WebHookFeaturesStore myWebHookFeaturesStore;
 	@NotNull private final WebHookTemplateManager myWebHookTemplateManager;
 	@NotNull private final WebHookPayloadManager myWebHookPayloadManager;
@@ -57,7 +56,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public WebHookSettingsManagerImpl(
 			@NotNull final ProjectManager projectManager,
 			@NotNull final ConfigActionFactory configActionFactory,
-			//@NotNull final ProjectSettingsManager projectSettingsManager,
 			@NotNull final WebHookFeaturesStore webHookFeaturesStore,
 			@NotNull final WebHookTemplateManager webHookTemplateManager,
 			@NotNull final WebHookPayloadManager webHookPayloadManager,
@@ -65,7 +63,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	{
 		this.myProjectManager = projectManager;
 		this.myConfigActionFactory = configActionFactory;
-		//this.myProjectSettingsManager = projectSettingsManager;
 		this.myWebHookFeaturesStore = webHookFeaturesStore;
 		this.myWebHookTemplateManager = webHookTemplateManager;
 		this.myWebHookPayloadManager = webHookPayloadManager;

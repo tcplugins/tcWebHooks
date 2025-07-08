@@ -20,7 +20,6 @@ import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.history.WebAddressTransformerImpl;
 import webhook.teamcity.payload.content.ExtraParameters;

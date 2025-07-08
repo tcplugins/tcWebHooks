@@ -89,7 +89,7 @@
 	<modules>
 		<module>tcwebhooks-core</module>
 		<module>tcwebhooks-kotlin-dsl</module>
-		<!--<module>tcwebhooks-kotlin-dsl-example</module>-->
+		<!--<module>tcwebhooks-kotlin-dsl-example</module>--> <!--NOSONAR-->
 		<module>tcwebhooks-rest-api</module>
 		<module>tcwebhooks-rest-api-legacy</module>
 		<module>tcwebhooks-web-ui</module>

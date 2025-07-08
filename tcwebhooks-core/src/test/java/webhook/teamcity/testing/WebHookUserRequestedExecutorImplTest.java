@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -149,8 +148,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 		when(server.findBuildInstanceById(2)).thenReturn(runningBuild);
 		when(server.getProjectManager()).thenReturn(projectManager);
 		when(server.getRootUrl()).thenReturn("http://teamcity");
-		when(projectManager.findProjectByExternalId(eq("MyProject"))).thenReturn(sproject);
-		when(projectManager.findProjectById(eq("project01"))).thenReturn(sproject);
+		when(projectManager.findProjectByExternalId("MyProject")).thenReturn(sproject);
+		when(projectManager.findProjectById("project01")).thenReturn(sproject);
 		when(projectIdResolver.getExternalProjectId("_Root")).thenReturn("_Root");
 		when(projectIdResolver.getInternalProjectId("_Root")).thenReturn("_Root");
 
@@ -229,8 +228,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookParameterStoreFactory
 			);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		BuildState finishedBuildState2 = new BuildState();
+		finishedBuildState2.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
 		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
@@ -477,8 +476,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookParameterStoreFactory
 			);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		BuildState finishedBuildState2 = new BuildState();
+		finishedBuildState2.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
 		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
@@ -562,8 +561,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookParameterStoreFactory
 				);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		BuildState finishedBuildState2 = new BuildState();
+		finishedBuildState2.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
 		WebHookConfig loadedConfig = webHookProjectSettings.getWebHooksConfigs().get(0);
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
@@ -607,8 +606,8 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 				webHookParameterStoreFactory
 				);
 		
-		BuildState finishedBuildState = new BuildState();
-		finishedBuildState.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
+		BuildState finishedBuildState2 = new BuildState();
+		finishedBuildState2.setEnabled(BuildStateEnum.BUILD_SUCCESSFUL, true);
 		
 		WebHookTemplateExecutionRequest webHookTemplateExecutionRequest = WebHookTemplateExecutionRequest.builder()
 				.buildId(2L)

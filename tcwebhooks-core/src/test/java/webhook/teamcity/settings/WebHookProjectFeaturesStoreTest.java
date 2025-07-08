@@ -1,8 +1,6 @@
 package webhook.teamcity.settings;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -11,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jdom.JDOMException;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,9 +29,6 @@ public class WebHookProjectFeaturesStoreTest {
     SProject sProject;
     
     ProjectFeatureToWebHookConfigConverter converter;
-    
-    @Mock
-    WebHookAuthenticatorProvider authenticatorProvider;
     
     @Mock
     BuildTypeIdResolver buildTypeIdResolver;

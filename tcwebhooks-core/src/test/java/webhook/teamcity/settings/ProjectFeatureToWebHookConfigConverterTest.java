@@ -58,7 +58,6 @@ public class ProjectFeatureToWebHookConfigConverterTest {
     
     @Test
     public void testConvert() throws JDOMException, IOException {
-        //String featureId = "PROJECT_EXT_30";
         BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
@@ -69,15 +68,12 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         SProjectFeatureDescriptor features = converter.convert(webhook);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        //System.out.print(gson.toJson(webhook));
         System.out.print(gson.toJson(convertedWebHook));
         assertEquals(gson.toJson(webhook), gson.toJson(convertedWebHook));
-        //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
     }
     
     @Test
-    public void testAndValidateConvert() throws JDOMException, IOException {
-        //String featureId = "PROJECT_EXT_30";
+    public void testAndValidateConvert() throws JDOMException, IOException { //NOSONAR
         BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
         WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
         authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
@@ -86,9 +82,7 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         webhook.setProjectInternalId("project02");
         ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         SProjectFeatureDescriptor features = converter.convert(webhook);
-        WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        //System.out.print(gson.toJson(webhook));
         System.out.print(gson.toJson(features.getParameters()));
         
         assertContainsKeyAndValue(features.getParameters(), "webHookId", "id_725393956");
@@ -134,17 +128,11 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         
         assertContainsKeyAndValue(features.getParameters(), "parameter_1_name", "my_parameter");
         assertContainsKeyAndValue(features.getParameters(), "parameter_1_value", "my_param_value");
-        
-        
-//        System.out.print(gson.toJson(convertedWebHook));
-//        assertEquals(gson.toJson(webhook), gson.toJson(convertedWebHook));
-        
-        //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
     }
     
     private static void assertContainsKeyAndValue(Map<String,String> parameters, String key, String value) {
         assertTrue("Parameters Map does not contain key '" + key + "'", parameters.containsKey(key));
-        assertTrue("Parameters Map with key '" + key + "' does not contain value '" + value + "'", parameters.get(key).equals(value));
+        assertEquals("Parameters Map with key '" + key + "' does not contain value '" + value + "'", value, parameters.get(key));
 	}
     
     private static void assertDoesNotContainsKey(Map<String,String> parameters, String key) {
@@ -183,10 +171,8 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         SProjectFeatureDescriptor features = converter.convert(webHookConfig);
         WebHookConfig convertedWebHook = converter.convert(features);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        //System.out.print(gson.toJson(webhook));
         System.out.print(gson.toJson(convertedWebHook));
         assertEquals(gson.toJson(webHookConfig), gson.toJson(convertedWebHook));
-        //assertTrue(EqualsBuilder.reflectionEquals(webhook.getAsElement() ,convertedWebHook.getAsElement()));
         UsernamePasswordAuthenticatorFactory usernamePasswordAuthenticatorFactory = new UsernamePasswordAuthenticatorFactory(authenticatorProvider);
         assertTrue(webHookConfig.getAuthEnabled());
         assertEquals(usernamePasswordAuthenticatorFactory.getName(), webHookConfig.getAuthenticationConfig().getType());

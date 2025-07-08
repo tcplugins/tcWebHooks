@@ -2,7 +2,6 @@ package webhook.teamcity.statistics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -16,7 +15,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -32,7 +30,6 @@ import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.serverSide.ServerSettings;
-import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.exception.StatisticsFileOperationException;
@@ -79,7 +76,6 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 	@Mock 
 	ProjectManager projectManager;
 	
-	//@InjectMocks
 	StatisticsReportAssemblerImpl reportAssembler;
 
 	@Spy
@@ -137,13 +133,13 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		when(sProject3.getName()).thenReturn("My Project3");
 		
 		when(projectManager.getActiveProjects()).thenReturn(Arrays.asList(sProject, sProject2, sProject3));
-		when(projectManager.findProjectById(eq("project01"))).thenReturn(sProject);
-		when(projectManager.findProjectById(eq("project02"))).thenReturn(sProject2);
-		when(projectManager.findProjectById(eq("project03"))).thenReturn(sProject3);
+		when(projectManager.findProjectById("project01")).thenReturn(sProject);
+		when(projectManager.findProjectById("project02")).thenReturn(sProject2);
+		when(projectManager.findProjectById("project03")).thenReturn(sProject3);
 
-		projectSettings = configureProjectSettings(sProject, "MyProject", "src/test/resources/project-settings-test-elastic.xml");
-		projectSettings2 = configureProjectSettings(sProject2, "MyProject2", "src/test/resources/project-settings-test-slack.xml");
-		projectSettings3 = configureProjectSettings(sProject3, "MyProject3", "src/test/resources/project-settings-test-all-states-enabled-with-filters.xml");
+		projectSettings = configureProjectSettings(sProject, "src/test/resources/project-settings-test-elastic.xml");
+		projectSettings2 = configureProjectSettings(sProject2, "src/test/resources/project-settings-test-slack.xml");
+		projectSettings3 = configureProjectSettings(sProject3, "src/test/resources/project-settings-test-all-states-enabled-with-filters.xml");
 
 		WebHookMockingFramework framework = WebHookSemiMockingFrameworkImpl.create(
 				BuildStateEnum.BUILD_STARTED,
@@ -198,7 +194,7 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 		reportAssembler = new StatisticsReportAssemblerImpl(serverSettings, sBuildServer, webHookPluginDataResolver, webHookSettingsManager, webHookMainSettings, framework.getWebHookTemplateManager());
 	}
 
-	private WebHookProjectSettings configureProjectSettings(SProject sProject, String projectExternalId, String pathname) throws JDOMException, IOException {
+	private WebHookProjectSettings configureProjectSettings(SProject sProject, String pathname) throws JDOMException, IOException {
 		WebHookProjectSettings settings = new WebHookProjectSettings();
 		settings.readFrom(ConfigLoaderUtil.getFullConfigElement(new File(pathname)).getChild("webhooks"));
 		settings.getWebHooksConfigs().forEach(c -> {
@@ -210,7 +206,7 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 	}
 
 	@Test
-	public void testAssembleStatisticsReports() {
+	public void testAssembleStatisticsReports() { //NOSONAR - just information
 		List<StatisticsEntity> stats = statisticsManager.getUnreportedHistoricalStatisticsEntities(LocalDate.parse("2020-11-01"), LocalDate.parse("2020-11-05"));
 		StatisticsReport plainReport = reportAssembler.assembleStatisticsReports(plainHasher, stats);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -218,7 +214,7 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 	}
 	
 	@Test
-	public void testAssembleStatisticsReportsWithCryptHasher() {
+	public void testAssembleStatisticsReportsWithCryptHasher() { //NOSONAR - just information
 		List<StatisticsEntity> stats = statisticsManager.getUnreportedHistoricalStatisticsEntities(LocalDate.parse("2020-11-01"), LocalDate.parse("2020-11-05"));
 		StatisticsReport plainReport = reportAssembler.assembleStatisticsReports(cryptHasher, stats);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -263,18 +259,14 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 	@Test
 	public void testAssembleWebHookStatisticsReports() throws StatisticsFileOperationException, JDOMException, IOException {
 		
-		//WebHookHistoryRepository webHookHistoryRepository = Mockito.mock(WebHookHistoryRepository.class);
-		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(ArgumentMatchers.eq(LocalDate.parse("2020-01-01")), ArgumentMatchers.eq(0))).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T01:30:00")));
-		//ServerPaths serverPaths = Mockito.mock(ServerPaths.class);
+		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(LocalDate.parse("2020-01-01"), 0)).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T01:30:00")));
 		Mockito.when(serverPaths.getConfigDir()).thenReturn(folder.getRoot().getAbsolutePath());
 		
-		
-		//statisticsManager = new StatisticsManagerImpl(webHookHistoryRepository, jaxHelper, serverPaths);
 		statisticsManager.updateStatistics(LocalDateTime.parse("2020-01-01T03:00:00.000"));
 		assertEquals(1, jaxHelper.getWriteCount());
 		assertEquals(LocalDateTime.parse("2020-01-01T03:00:00.000"), jaxHelper.getLastBean().getLastUpdated());
 		
-		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(ArgumentMatchers.eq(LocalDate.parse("2020-01-01")), ArgumentMatchers.eq(0))).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T04:30:00")));
+		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(LocalDate.parse("2020-01-01"), 0)).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T04:30:00")));
 		statisticsManager.updateStatistics(LocalDateTime.parse("2020-01-01T05:00:00.000"));
 		assertEquals(2, jaxHelper.getWriteCount());
 		assertEquals(LocalDateTime.parse("2020-01-01T05:00:00.000"), jaxHelper.getLastBean().getLastUpdated());
@@ -289,18 +281,14 @@ public class StatisticsReportAssemblerTest extends BaseStatisticsTest {
 	@Test
 	public void testAssembleWebHookStatisticsReportsWithCryptHasher() throws StatisticsFileOperationException, JDOMException, IOException {
 		
-		//WebHookHistoryRepository webHookHistoryRepository = Mockito.mock(WebHookHistoryRepository.class);
-		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(ArgumentMatchers.eq(LocalDate.parse("2020-01-01")), ArgumentMatchers.eq(0))).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T01:30:00")));
-		//ServerPaths serverPaths = Mockito.mock(ServerPaths.class);
+		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(LocalDate.parse("2020-01-01"), 0)).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T01:30:00")));
 		Mockito.when(serverPaths.getConfigDir()).thenReturn(folder.getRoot().getAbsolutePath());
 		
-		
-		//statisticsManager = new StatisticsManagerImpl(webHookHistoryRepository, jaxHelper, serverPaths);
 		statisticsManager.updateStatistics(LocalDateTime.parse("2020-01-01T03:00:00.000"));
 		assertEquals(1, jaxHelper.getWriteCount());
 		assertEquals(LocalDateTime.parse("2020-01-01T03:00:00.000"), jaxHelper.getLastBean().getLastUpdated());
 		
-		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(ArgumentMatchers.eq(LocalDate.parse("2020-01-01")), ArgumentMatchers.eq(0))).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T04:30:00")));
+		Mockito.when(webHookHistoryRepository.findHistoryAllItemsGroupedByDayInclusive(LocalDate.parse("2020-01-01"), 0)).thenReturn(buildStats(LocalDateTime.parse("2020-01-01T04:30:00")));
 		statisticsManager.updateStatistics(LocalDateTime.parse("2020-01-01T05:00:00.000"));
 		assertEquals(2, jaxHelper.getWriteCount());
 		assertEquals(LocalDateTime.parse("2020-01-01T05:00:00.000"), jaxHelper.getLastBean().getLastUpdated());
