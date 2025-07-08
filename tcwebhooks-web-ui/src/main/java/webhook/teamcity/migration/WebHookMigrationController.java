@@ -1,6 +1,7 @@
 package webhook.teamcity.migration;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.intellij.util.containers.hash.LinkedHashMap;
-
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -27,7 +25,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import webhook.teamcity.Loggers;
-import webhook.teamcity.extension.admin.WebHookMigrationAdminPage.VcsStatuses;
+import webhook.teamcity.TeamCityCoreFacade;
+import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookFeaturesStore;
@@ -45,7 +44,7 @@ public class WebHookMigrationController extends BaseController {
 	private final WebControllerManager myWebManager;
 	private String myPluginPath;
 	private PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
-	private ProjectManager myProjectManager;
+	private TeamCityCoreFacade myTeamCityCoreFacade;
 	private WebHookFeaturesStore myWebHookFeaturesStore;
 	private WebHookSettingsManager myWebHookSettingsManager;
 	private WebHookConfigToKotlinDslRenderer myWebHookConfigToKotlinDslRenderer;
@@ -57,7 +56,7 @@ public class WebHookMigrationController extends BaseController {
 								WebHookFeaturesStore webHookFeaturesStore,
 								WebHookSettingsManager webHookSettingsManager,
 								PluginDescriptor pluginDescriptor, 
-								ProjectManager projectManager,
+								TeamCityCoreFacade teamCityCoreFacade,
 								WebHookConfigToKotlinDslRenderer webHookConfigToKotlinDslRenderer,
 								WebHookConfigToProjectFeatureXmlRenderer webHookConfigToProjectFeatureXmlRenderer,
 								WebControllerManager webControllerManager) {
@@ -66,7 +65,7 @@ public class WebHookMigrationController extends BaseController {
 		this.myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		this.myWebHookFeaturesStore = webHookFeaturesStore;
 		this.myWebHookSettingsManager = webHookSettingsManager;
-		this.myProjectManager = projectManager;
+		this.myTeamCityCoreFacade = teamCityCoreFacade;
 		this.myWebManager = webControllerManager;
 		this.myWebHookConfigToKotlinDslRenderer = webHookConfigToKotlinDslRenderer;
 		this.myWebHookConfigToProjectFeatureXmlRenderer = webHookConfigToProjectFeatureXmlRenderer;
@@ -83,21 +82,18 @@ public class WebHookMigrationController extends BaseController {
     		HashMap<String,Object> model = new HashMap<>();
     		Map<SProject,Map<String, WebHookTriple>> migrationData = new LinkedHashMap<>();
     		Map<SProject,String> reasons = new LinkedHashMap<>();
-    		Map<SProject,VcsStatuses> vcsStatuses = new LinkedHashMap<>();
+    		Map<SProject,ProjectVcsStatus> vcsStatuses = new LinkedHashMap<>();
     		
     		model.put("jspHome",this.myPluginPath);
     		
     		if (request.getParameter("project") != null) {
-    			SProject myProject = this.myProjectManager.findProjectByExternalId(request.getParameter("project"));
+    			SProject myProject = this.myTeamCityCoreFacade.findProjectByExtId(request.getParameter("project"));
     			if (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT)) {
     				Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
     				WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
     				List<WebHookConfigEnhanced> cached = myWebHookSettingsManager.getWebHooksForProject(myProject);
     				
-    				vcsStatuses.put(myProject, new VcsStatuses()
-    						.withIsKotlin(pluginSettingsToProjectFeaturesMigrator.checkIfProjectIsKotlin(myProject))
-    						.withVcsAndSyncEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabledAndSyncEnabled(myProject))
-    						.withVcsEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabled(myProject)));
+    				vcsStatuses.put(myProject, myTeamCityCoreFacade.getProjectVcsStatus(myProject));
     				
     				Map<String, WebHookTriple> webhooks = new LinkedHashMap<>();
     				if (candidates.getLeft() != null) {
@@ -130,7 +126,7 @@ public class WebHookMigrationController extends BaseController {
     				}
     				migrationData.put(myProject, webhooks);
     				//model.put("webhooks", webhooks);
-    				if (vcsStatuses.get(myProject).getIsKotlin()) {
+    				if (vcsStatuses.get(myProject).isKotlin()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
     					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
@@ -141,7 +137,7 @@ public class WebHookMigrationController extends BaseController {
 	    					}
     					}
     					model.put("kotlinDsls", sb.toString());
-    				} else if (vcsStatuses.get(myProject).getVcsEnabled() && !vcsStatuses.get(myProject).getVcsAndSyncEnabled()) {
+    				} else if (vcsStatuses.get(myProject).isVcsEnabled() && !vcsStatuses.get(myProject).isVcsSyncEnabled()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
     					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {

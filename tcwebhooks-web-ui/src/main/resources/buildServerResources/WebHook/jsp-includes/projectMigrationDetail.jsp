@@ -14,21 +14,21 @@
 								</c:if>
 								
 								<c:choose>
-									<c:when test="${vcsStatuses.get(webhooks.key).isKotlin and vcsStatuses.get(webhooks.key).vcsAndSyncEnabled}">
+									<c:when test="${vcsStatuses.get(webhooks.key).kotlin and vcsStatuses.get(webhooks.key).vcsSyncEnabled}">
 										This project has KotlinDSL VCS Settings enabled. Migrations will not be attempted, and must be manually applied.<br>
 										This project has sync with the UI enabled. If users have created webhooks, there may be a patch file committed to the
 										repository. This patch file will need to be manually applied to <code>settings.kts.
 									</c:when>
-									<c:when test="${vcsStatuses.get(webhooks.key).isKotlin and not vcsStatuses.get(webhooks.key).vcsAndSyncEnabled}">
+									<c:when test="${vcsStatuses.get(webhooks.key).kotlin and not vcsStatuses.get(webhooks.key).vcsSyncEnabled}">
 										This project has <em>KotlinDSL VCS Settings</em> <strong>enabled</strong>. Migrations will not be attempted, and must be manually applied.<br>
 										This project has <em>Allow editing project settings via UI</em> <strong>disabled</strong>. Webhooks must be created by adding them to <code>settings.kts</code>.
 									</c:when>
-									<c:when test="${not vcsStatuses.get(webhooks.key).isKotlin and vcsStatuses.get(webhooks.key).vcsAndSyncEnabled}">
+									<c:when test="${not vcsStatuses.get(webhooks.key).kotlin and vcsStatuses.get(webhooks.key).vcsSyncEnabled}">
 										tcWebHooks configurations will have been attempted but may still have to be remedied by hand.
 										Configuration of each webhook can be generated. 
 										You may need to copy and paste these configuration(s) into the <code>plugin-settings.xml</code> file committed in the repository. 
 									</c:when>
-									<c:when test="${not vcsStatuses.get(webhooks.key).isKotlin and vcsStatuses.get(webhooks.key).vcsEnabled and not vcsStatuses.get(webhooks.key).vcsAndSyncEnabled}">
+									<c:when test="${not vcsStatuses.get(webhooks.key).kotlin and vcsStatuses.get(webhooks.key).vcsEnabled and not vcsStatuses.get(webhooks.key).vcsSyncEnabled}">
 										This project has <em>XML VCS Settings</em> <strong>enabled</strong> and <em>Allow editing project settings via UI</em> is <strong>disabled</strong>.<br>
 										 
 										Migrations will not be attempted, and must be manually applied.<br>
@@ -49,9 +49,9 @@
 								</c:choose>
 								
 								<ul>
-									<li><em>KotlinDSL:</em> <strong></b><c:out value="${vcsStatuses.get(webhooks.key).isKotlin}"/></strong></li>
+									<li><em>KotlinDSL:</em> <strong></b><c:out value="${vcsStatuses.get(webhooks.key).kotlin}"/></strong></li>
 									<li><em>VCS Enabled:</em> <strong><c:out value="${vcsStatuses.get(webhooks.key).vcsEnabled}"/></strong></li>
-									<li><em>VCS Sync Enabled:</em> <strong><c:out value="${vcsStatuses.get(webhooks.key).vcsAndSyncEnabled}"/></strong></li>
+									<li><em>VCS Sync Enabled:</em> <strong><c:out value="${vcsStatuses.get(webhooks.key).vcsSyncEnabled}"/></strong></li>
 								</ul>
 							</td>
 						</tr>

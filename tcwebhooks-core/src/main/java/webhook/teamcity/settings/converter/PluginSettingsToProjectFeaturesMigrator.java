@@ -29,7 +29,6 @@ import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.FileWatchingPropertiesModel;
 import jetbrains.buildServer.serverSide.PersistFailedException;
-import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.serverSide.ServerPaths;
@@ -41,6 +40,8 @@ import lombok.RequiredArgsConstructor;
 import webhook.teamcity.DeferrableService;
 import webhook.teamcity.DeferrableServiceManager;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.TeamCityCoreFacade;
+import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
 import webhook.teamcity.exception.ProjectFeatureMigrationException;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFeaturesStore;
@@ -85,7 +86,7 @@ import webhook.teamcity.settings.WebHookUpdateResult;
 public class PluginSettingsToProjectFeaturesMigrator implements DeferrableService {
 	
 	
-	private final ProjectManager myProjectManager;
+	private final TeamCityCoreFacade myTeamCityCoreFacade;
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final ProjectSettingsManager myProjectSettingsManager;
 	private final WebHookFeaturesStore myWebHookFeaturesStore;
@@ -199,16 +200,17 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
     private void determineThenAttemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration,
             LocalDateTime now, BufferedWriter writer, SProject project, WebHookProjectSettings settings)
             throws ProjectFeatureMigrationException {
-        if (checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncDisabled(project)) {
+		ProjectVcsStatus vcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(project);
+        if (vcsStatus.isVcsEnabled() && vcsStatus.isKotlin() && !vcsStatus.isVcsSyncEnabled()) {
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
             addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. Please copy and paste these configuration(s) into settings.kts inside the features block.");
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
-        } else if (checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncEnabled(project)) {
+        } else if (vcsStatus.isVcsEnabled() && vcsStatus.isKotlin() && vcsStatus.isVcsSyncEnabled()) {
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", project.getExternalId()));
             addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block. TeamCity may also have created a patch file in the project's settings repo. This will need to be fixed.");
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
         	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
-        } else if (!checkIfProjectIsKotlin(project) && checkIfProjectHasVcsEnabledAndSyncDisabled(project)) {
+        } else if (vcsStatus.isVcsEnabled() && !vcsStatus.isKotlin() && !vcsStatus.isVcsSyncEnabled()) {
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
             addToReport(writer, "An project-config.xml configuration of each webhook is produced below. Please copy and paste these configuration(s) into project-config.xml in your VCS settings.");
             try {
@@ -324,7 +326,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	}
 	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration(BufferedWriter writer) {
 		Map<SProject, WebHookProjectSettings> projectsThatRequireMigrations = new LinkedHashMap<>();
-		for (SProject project : myProjectManager.getActiveProjects()) {
+		for (SProject project : myTeamCityCoreFacade.getActiveProjects()) {
 			Pair<String,WebHookProjectSettings> webhooks = getProjectSettingsIfItCanBeMigrated(project);
 			if (webhooks.getRight() != null) {
 			    projectsThatRequireMigrations.put(project, webhooks.getRight());

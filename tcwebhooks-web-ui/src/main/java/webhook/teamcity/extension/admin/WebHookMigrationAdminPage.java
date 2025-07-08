@@ -6,23 +6,18 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import com.intellij.util.containers.hash.LinkedHashMap;
 
 import jetbrains.buildServer.controllers.admin.AdminPage;
-import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
-import webhook.teamcity.migration.WebHookMigrationController;
+import webhook.teamcity.TeamCityCoreFacade;
+import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
 import webhook.teamcity.migration.WebHookMigrationController.WebHookTriple;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
@@ -36,7 +31,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private @NotNull PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
 	private @NotNull WebHookFeaturesStore myWebHookFeaturesStore;
-	private ProjectManager myProjectManager;
+	private TeamCityCoreFacade myTeamCityCoreFacade;
 
 
 	public WebHookMigrationAdminPage(@NotNull PagePlaces pagePlaces, 
@@ -44,13 +39,13 @@ public class WebHookMigrationAdminPage extends AdminPage {
 								  @NotNull PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator, 
 								  @NotNull WebHookFeaturesStore webHookFeaturesStore,
 								  @NotNull WebHookSettingsManager webHookSettingsManager,
-								  @NotNull ProjectManager projectManager
+								  @NotNull TeamCityCoreFacade teamCityCoreFacade
 								  ) {
 		super(pagePlaces);
 		this.myWebHookSettingsManager = webHookSettingsManager;
 		this.pluginSettingsToProjectFeaturesMigrator = pluginSettingsToProjectFeaturesMigrator;
 		this.myWebHookFeaturesStore = webHookFeaturesStore;
-		this.myProjectManager = projectManager;
+		this.myTeamCityCoreFacade = teamCityCoreFacade;
 		setPluginName(ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/migrationAdminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
@@ -73,17 +68,13 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
 		Map<SProject,Map<String, WebHookTriple>> migrationData = new LinkedHashMap<>();
 		Map<SProject,String> reasons = new LinkedHashMap<>();
-		Map<SProject,VcsStatuses> vcsStatuses = new LinkedHashMap<>();
-		for (SProject myProject : myProjectManager.getActiveProjects()) {
+		Map<SProject,ProjectVcsStatus> vcsStatuses = new LinkedHashMap<>();
+		for (SProject myProject : myTeamCityCoreFacade.getActiveProjects()) {
 			Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
 			WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
 			List<WebHookConfigEnhanced> cached = myWebHookSettingsManager.getWebHooksForProject(myProject);
 			
-			vcsStatuses.put(myProject, new VcsStatuses()
-					.withIsKotlin(pluginSettingsToProjectFeaturesMigrator.checkIfProjectIsKotlin(myProject))
-					.withVcsAndSyncEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabledAndSyncEnabled(myProject))
-					.withVcsEnabled(pluginSettingsToProjectFeaturesMigrator.checkIfProjectHasVcsEnabled(myProject)));
-			
+			vcsStatuses.put(myProject, myTeamCityCoreFacade.getProjectVcsStatus(myProject));
 			Map<String, WebHookTriple> webhooks = new LinkedHashMap<>();
 			if (candidates.getLeft() != null) {
 				reasons.put(myProject, candidates.getLeft());
@@ -120,14 +111,4 @@ public class WebHookMigrationAdminPage extends AdminPage {
 		model.put("vcsStatuses", vcsStatuses);
 	}
 	
-	@Data @AllArgsConstructor @NoArgsConstructor
-    public static class VcsStatuses {
-		@With
-		Boolean vcsEnabled;
-		@With
-		Boolean vcsAndSyncEnabled;
-		@With
-		Boolean isKotlin;
-		
-	}
 }

@@ -35,6 +35,8 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
+import webhook.teamcity.TeamCityCoreFacade;
+import webhook.teamcity.TeamCityCoreFacadeImpl;
 import webhook.teamcity.exception.ProjectFeatureMigrationException;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
@@ -49,6 +51,8 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 
 	@Mock
 	private ProjectManager myProjectManager;
+	
+	private TeamCityCoreFacade myTeamCityCoreFacade;
 	
 	@Mock
 	private WebHookSettingsManager myWebHookSettingsManager;
@@ -94,7 +98,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myProjectManager.getActiveProjects()).thenReturn(Collections.singletonList(project01));
 		when(myWebHookFeaturesStore.addWebHookConfig(any(), any())).thenReturn(new WebHookUpdateResult(true, config));
 		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(settingsFromProjectSettingsManager);
-		
+		myTeamCityCoreFacade = new TeamCityCoreFacadeImpl(myProjectManager);
 		
 		// Create a bunch of temp files in "target" so that we can read and write them.
 		Path teamcityTempConfigDir = Files.createTempDirectory(Paths.get("target"), "tmpBuildServerConfig");
@@ -117,7 +121,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	@Test
 	public void testHappyPath() throws JDOMException, IOException {
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(1, project01.getPersistCount());
@@ -134,7 +138,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myWebHookSettingsManager.findWebHooks(any())).thenReturn(Collections.singletonList(searchResult));
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(1, project01.getPersistCount());
@@ -145,10 +149,10 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	@Test
 	public void testThatPeristIsNeverCalledWhenNoProjectsFound() throws JDOMException, IOException {
 
-		when(myProjectManager.getActiveProjects()).thenReturn(Collections.emptyList());
+		when(myTeamCityCoreFacade.getActiveProjects()).thenReturn(Collections.emptyList());
 
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(0, project01.getPersistCount());
@@ -162,7 +166,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myWebHookFeaturesStore.addWebHookConfig(any(), any())).thenReturn(new WebHookUpdateResult(false, config));
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		//Save should be attempted
@@ -179,7 +183,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(new WebHookProjectSettings());
 
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		//Save should be attempted
@@ -195,7 +199,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(new WebHookProjectSettings());
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.attemptMigration(false, LocalDateTime.now(), null);
 		
 		//Save should be attempted
@@ -211,12 +215,13 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		
 		Map<String,String> featureMap = ImmutableMap.of(
 				"enabled" , "true",
-				"twoWaySynchronization", "false"
+				"twoWaySynchronization", "false",
+				"format", "kotlin"
 			);
 		project01.addFeature("versionedSettings", featureMap);
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		//Save should not be attempted
@@ -237,7 +242,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		project01.addFeature("versionedSettings", featureMap);
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
-				myProjectManager, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
+				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
 		
 		assertEquals(1, project01.getPersistCount());
