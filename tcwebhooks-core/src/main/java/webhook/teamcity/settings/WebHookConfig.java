@@ -27,6 +27,8 @@ import org.jdom.Element;
 import jetbrains.buildServer.serverSide.SBuildType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
@@ -44,6 +46,7 @@ import webhook.teamcity.settings.project.WebHookParameterModel;
 public class WebHookConfig {
 	private static final String ATTR_KEY = "key";
 	private static final String ATTR_URL = "url";
+	private static final String ATTR_FEATURE_ID = "feature-id";
 	private static final String ATTR_ID = "id";
 	private static final String ATTR_TEMPLATE_ENGINE = "template-engine";
 	private static final String ATTR_INCLUDED_IN_LEGACY_PAYLOADS = "included-in-legacy-payloads";
@@ -91,6 +94,8 @@ public class WebHookConfig {
 	@Builder.Default private String projectInternalId = null;
 	@Builder.Default private String projectExternalId = null;
 	@Builder.Default private boolean hideSecureValues = true;
+	@Builder.Default @Getter @Setter private String featureDescriptorId = null;
+
 
 	@SuppressWarnings("unchecked")
 	public WebHookConfig (Element e) {
@@ -112,6 +117,9 @@ public class WebHookConfig {
 
 		if (e.getAttribute(ATTR_URL) != null){
 			this.setUrl(e.getAttributeValue(ATTR_URL));
+		}
+		if (e.getAttribute(ATTR_FEATURE_ID) != null){
+		    this.setFeatureDescriptorId(e.getAttributeValue(ATTR_FEATURE_ID));
 		}
 
 		if (e.getAttribute(ATTR_ENABLED) != null){
@@ -345,7 +353,7 @@ public class WebHookConfig {
 	 * @param enabledBuildTypes
 	 * @param webHookAuthConfig
 	 */
-	public WebHookConfig (String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues){
+	public WebHookConfig (String projectInternalId, String projectExternalId, String url, String featureId, Boolean enabled, BuildState states, String payloadTemplate, boolean buildTypeAllEnabled, boolean buildTypeSubProjects, Set<String> enabledBuildTypes, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues){
 		this.uniqueKey =  generateRandomKey();
 		this.setProjectInternalId(projectInternalId);
 		this.setProjectExternalId(projectExternalId);
@@ -358,6 +366,7 @@ public class WebHookConfig {
 		this.filters = new ArrayList<>();
 		this.headers = new ArrayList<>();
 		this.setUrl(url);
+		this.setFeatureDescriptorId(featureId);
 		this.setEnabled(enabled);
 		this.setBuildStates(states);
 		this.setPayloadTemplate(payloadTemplate);
@@ -411,6 +420,9 @@ public class WebHookConfig {
 		Element el = new Element("webhook");
 		el.setAttribute(ATTR_ID, this.getUniqueKey());
 		el.setAttribute(ATTR_URL, this.getUrl());
+		if (this.featureDescriptorId != null) {
+		    el.setAttribute(ATTR_FEATURE_ID, this.getFeatureDescriptorId());
+		}
 		el.setAttribute(ATTR_ENABLED, String.valueOf(this.enabled));
 		el.setAttribute(ATTR_TEMPLATE, String.valueOf(this.payloadTemplate));
 		el.setAttribute(ATTR_HIDE_SECURE, String.valueOf(this.hideSecureValues));

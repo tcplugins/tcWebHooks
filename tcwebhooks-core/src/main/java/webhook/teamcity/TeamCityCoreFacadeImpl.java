@@ -10,9 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import webhook.teamcity.settings.ProjectFeatureDescriptorSorter;
 
 public class TeamCityCoreFacadeImpl implements TeamCityCoreFacade {
 	private final ProjectManager projectManager;
+	private final int PROJECT_FEATURE_PREFIX_LENGTH = "PROJECT_EXT_".length(); //NOSONAR
 
 	public TeamCityCoreFacadeImpl(ProjectManager projectManager) {
 		this.projectManager = projectManager;
@@ -61,5 +63,16 @@ public class TeamCityCoreFacadeImpl implements TeamCityCoreFacade {
 		}
 		return status;
 	}
+
+    @Override
+    public int getMaxDescripterId(SProject sProject) {
+        final ProjectFeatureDescriptorSorter featureDescriptorSorter = new ProjectFeatureDescriptorSorter();
+        return sProject.getOwnFeatures()
+                .stream()
+                .sorted(featureDescriptorSorter.reversed())
+                .map(f -> Integer.parseInt(f.getId().substring(PROJECT_FEATURE_PREFIX_LENGTH)))
+                .findFirst()
+                .orElse(0);
+    }
 
 }

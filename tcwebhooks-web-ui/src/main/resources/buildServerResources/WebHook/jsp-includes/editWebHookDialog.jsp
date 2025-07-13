@@ -10,10 +10,13 @@
 
             		<div id="tab-container" class="tab-container">
 								  <ul class='etabs'>
-												   <li class='tab' id="hookPaneTab"><a href="#hookPane" class="active">WebHook Config</a></li>
-												   <li class='tab' id="buildPaneTab"><a href="#buildPane">Builds (<span id="selectedBuildCount">all</span>)</a></li>
-												   <li class='tab' id="extrasPaneTab"><a href="#extrasPane">Extra Config</a></li>
-												   <li class='tab' id="templatePaneTab"><a href="#templatePane">Preview &amp; Test</a></li>
+												<li class='tab' id="hookPaneTab"><a href="#hookPane" class="active">WebHook Config</a></li>
+												<li class='tab' id="buildPaneTab"><a href="#buildPane">Builds (<span id="selectedBuildCount">all</span>)</a></li>
+												<li class='tab' id="extrasPaneTab"><a href="#extrasPane">Extra Config</a></li>
+												<li class='tab' id="templatePaneTab"><a href="#templatePane">Preview &amp; Test</a></li>
+												<c:if test="${showAsCode}">
+													<li class='tab' id="codePaneTab"><a href="#codePane" onclick="return ${webhookConfigDialogScope}.EditDialog.fetchWebHookAsCode();">Code</a></li>
+												</c:if>
 								  </ul>
 						 <div class='panel-container'>
 									<div id='hookPane' class="tabPane">
@@ -270,6 +273,14 @@
 											<div id="webhookDialogAjaxResult"></div>
 						            	</div>
 						            </div><!--templatePane -->
+						            <c:if test="${showAsCode}">
+							            <div id='codePane' class="tabPane">
+							            	<div id='webhookCodeRendered'>
+							            		Code will load shortly....
+							            	</div>
+							            </div>
+							        </c:if>	
+						            
 					    	</div><!-- panel-container  -->
 					</div>    <!-- tab-container -->
 
@@ -281,11 +292,13 @@
             <input type="hidden" id="payloadTemplate" name="payloadTemplate" value=""/>
             <input type="hidden" id="submitAction" name="submitAction" value=""/>
 
-            <!-- input type="hidden" name="action" id="WebHookTemplateAction" value="editTemplateItem"/-->
             <div id="ajaxWebHookEditResult"></div>
             <div class="popupSaveButtonsBlock">
-                <forms:submit id="editTemplateItemDialogSubmit" label="Save Web Hook"/>
+                <c:if test="${allowSave}"><forms:submit id="editTemplateItemDialogSubmit" label="Save Web Hook"/></c:if>
                 <forms:cancel onclick="${webhookConfigDialogScope}.EditDialog.cancelDialog()"/>
+                <c:if test="${showAsCode}">
+                  <button class="btn" id="showCodeButton" onclick="return ${webhookConfigDialogScope}.EditDialog.fetchWebHookAsCode();">View as code</button>
+                </c:if>
             </div>
         </forms:multipartForm>
     </bs:dialog>

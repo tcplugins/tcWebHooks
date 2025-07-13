@@ -125,7 +125,6 @@ public class WebHookMigrationController extends BaseController {
     					});
     				}
     				migrationData.put(myProject, webhooks);
-    				//model.put("webhooks", webhooks);
     				if (vcsStatuses.get(myProject).isKotlin()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
@@ -141,7 +140,7 @@ public class WebHookMigrationController extends BaseController {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
     					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
-    						sb.append(myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(webhookConfigs));
+    						sb.append(myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(webhookConfigs, myProject));
     					}
     					model.put("projectFeaturesXml", sb.toString());
     				}

@@ -48,7 +48,7 @@ td.newWebHookRow p {
 	display:none;
 }
 
-#currentTemplateRaw, #currentTemplateRendered, #currentTemplatePreview, #webhookPreviewRendered {
+#currentTemplateRaw, #currentTemplateRendered, #currentTemplatePreview, #webhookPreviewRendered, #webhookCodeRendered {
 	margin: 0.5em  0em 0.5em 0em;
 	width:auto;
 	height:25em;
@@ -57,7 +57,10 @@ td.newWebHookRow p {
 	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow: scroll;
+}
 
+#webhookCodeRendered {
+	height:36em;
 }
 
 #currentTemplatePreview {
@@ -844,5 +847,9 @@ div.webhookContainer p {
 }
 
 span.migrationDetailLink {
+	float: right;
+}
+
+button#showCodeButton {
 	float: right;
 }

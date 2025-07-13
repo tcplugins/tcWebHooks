@@ -99,7 +99,7 @@ public class WebHookUserRequestedExecutorImplTest extends WebHookTestServerTestB
 	private WebHookTemplateJaxTestHelper webHookTemplateJaxTestHelper = new WebHookTemplateJaxTestHelper();
 	private WebHookTemplateManager webHookTemplateManager  = new WebHookTemplateManager(webHookPayloadManager, webHookTemplateJaxTestHelper, projectIdResolver);
 	private WebHookTemplateResolver webHookTemplateResolver = new WebHookTemplateResolver(webHookTemplateManager, webHookPayloadManager);
-	private WebHookConfigFactory webHookConfigFactory = new WebHookConfigFactoryImpl(server, projectSettingsManager, webHookTemplateManager);
+	private WebHookConfigFactory webHookConfigFactory = new WebHookConfigFactoryImpl(server, projectSettingsManager, webHookTemplateManager, projectIdResolver);
 	
 	private WebHookVariableResolverManager variableResolverManager = new WebHookVariableResolverManagerImpl();
 	

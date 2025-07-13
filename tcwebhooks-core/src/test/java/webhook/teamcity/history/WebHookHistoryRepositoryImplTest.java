@@ -241,8 +241,8 @@ public class WebHookHistoryRepositoryImplTest {
 		when(sBuild01.getBuildId()).thenReturn(01L);
 		when(sBuild02.getBuildId()).thenReturn(02L);
 		
-		whc1 = new WebHookConfig("project01", "MyProject", "http://url/1", true, new BuildState().setAllEnabled(), "testFormat", true, true, null, null, null, null, null, true);
-		whc2 = new WebHookConfig("project01", "MyProject", "http://url/2", true, new BuildState().setAllEnabled(), "testFormat", true, true, null, null, null, null, null, true);
+		whc1 = new WebHookConfig("project01", "MyProject", "http://url/1", "PROJECT_EXT_14", true, new BuildState().setAllEnabled(), "testFormat", true, true, null, null, null, null, null, true);
+		whc2 = new WebHookConfig("project01", "MyProject", "http://url/2", "PROJECT_EXT_15", true, new BuildState().setAllEnabled(), "testFormat", true, true, null, null, null, null, null, true);
 		
 		WebHookHistoryRepository historyRepository = new WebHookHistoryRepositoryImpl();
 		historyRepository.addHistoryItem(new WebHookHistoryItem(whc1, webhook01.getExecutionStats(), sBuild01, null));
@@ -292,7 +292,7 @@ public class WebHookHistoryRepositoryImplTest {
 
 		@Override
 		public void run() {
-			WebHookConfig whc = new WebHookConfig("project01", "MyProject", "http://url/1", true, new BuildState().setAllEnabled(), "testFormat", true, true, null, null, null, null, null, true);
+			WebHookConfig whc = new WebHookConfig("project01", "MyProject", "http://url/1", null, true, new BuildState().setAllEnabled(), "testFormat", true, true, null, null, null, null, null, true);
 			WebHook webhook = new SimpleMockedWebHook(stats);
 			historyRepository.addHistoryItem(new WebHookHistoryItem(whc, webhook.getExecutionStats(), sBuild, null));
 			atomic.addAndGet(1);

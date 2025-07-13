@@ -24,6 +24,7 @@ public interface TeamCityCoreFacade {
 
 	@NotNull
 	ProjectVcsStatus getProjectVcsStatus(SProject sProject);
+	int getMaxDescripterId(SProject sProject);
 
 	@Data
 	public static class ProjectVcsStatus {
@@ -34,5 +35,6 @@ public interface TeamCityCoreFacade {
 			return vcsFormat != null && vcsFormat.equalsIgnoreCase("kotlin");
 		}
 	}
+
 
 }

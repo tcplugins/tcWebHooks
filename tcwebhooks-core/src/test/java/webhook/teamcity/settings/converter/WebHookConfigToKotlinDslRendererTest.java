@@ -22,6 +22,7 @@ import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import webhook.teamcity.MockSBuildType;
 import webhook.teamcity.MockSProject;
 import webhook.teamcity.ProjectAndBuildTypeResolverImpl;
+import webhook.teamcity.TeamCityCoreFacade;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
@@ -34,17 +35,20 @@ public class WebHookConfigToKotlinDslRendererTest {
     
         @Mock
         ProjectManager projectManager;
+        @Mock
+        TeamCityCoreFacade teamCityCoreFacade;
         private ProjectAndBuildTypeResolverImpl buildTypeIdResolver;
         private WebHookAuthenticatorProvider authenticatorProvider;
         private List<SProjectFeatureDescriptor> webhooksAsProjectFeatures;
         private ProjectFeatureToWebHookConfigConverter converter;
+        private MockSProject myProject;
         
         @Before
         public void setup() throws JDOMException, IOException {
             MockSBuildType sBuildType = new MockSBuildType("TcDummyDeb", "TcDummyDeb build", "bt1");
             MockSBuildType sBuildType2 = new MockSBuildType("TcWebHooks", "TcWebHooks build", "bt2");
             MockSBuildType sBuildType3 = new MockSBuildType("TcChatBot", "TcChatBot build", "bt3");
-            MockSProject myProject = new MockSProject("My Project", "My Example Project", "project01", "RootProjectId", sBuildType);
+            myProject = new MockSProject("My Project", "My Example Project", "project01", "RootProjectId", sBuildType);
             myProject.addANewBuildTypeToTheMock(sBuildType2);
             sBuildType.setProject(myProject);
             sBuildType2.setProject(myProject);
@@ -421,8 +425,9 @@ project {
     
     @Test
     public void testConvertPluginSettingsToXmlForDocs() throws JDOMException, IOException, JAXBException {
+        when(teamCityCoreFacade.getMaxDescripterId(myProject)).thenReturn(1);
         WebHookConfig webhook = ConfigLoaderUtil.getFirstWebHookInConfig(new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
-        String actualResult = new WebHookConfigToProjectFeatureXmlRenderer(converter).renderAsXml(Collections.singletonList(webhook));
+        String actualResult = new WebHookConfigToProjectFeatureXmlRenderer(converter, teamCityCoreFacade).renderAsXml(Collections.singletonList(webhook), myProject);
         System.out.print(actualResult);
         
     }

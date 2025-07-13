@@ -18,7 +18,7 @@ public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     
     private static final String PROJECT_FEATURE_TYPE = "tcWebHooks";
     private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter;
-    private final FeatureDescriptorSorter featureDescriptorSorter = new FeatureDescriptorSorter();
+    private final ProjectFeatureDescriptorSorter featureDescriptorSorter = new ProjectFeatureDescriptorSorter();
     
     @Override
     public WebHookUpdateResult addWebHookConfig(@NotNull SProject sProject, @NotNull WebHookConfig webHookConfig) {
@@ -79,23 +79,6 @@ public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
             Loggers.SERVER.warn("WebHookProjectFeaturesStore :: Unable to find existing config instance "
                     + "of type '" + config.getUniqueKey() + "' to update with ID: " + config.getUniqueKey());
             return new WebHookUpdateResult(false, config);
-        }
-    }
-    public class FeatureDescriptorSorter implements Comparator <SProjectFeatureDescriptor> {
-        private final int projectFeaturePrefixLength = "PROJECT_EXT_".length();
-
-        @Override
-        public int compare(SProjectFeatureDescriptor o1, SProjectFeatureDescriptor o2) {
-            try {
-                //Try to compare based on the integer value after "PROJECT_EXT_".
-                // eg, 10 in "PROJECT_EXT_10"
-                int o1Id = Integer.parseInt(o1.getId().substring(projectFeaturePrefixLength));
-                int o2Id = Integer.parseInt(o2.getId().substring(projectFeaturePrefixLength));
-                return Integer.compare(o1Id, o2Id);
-            } catch (NumberFormatException ex) {
-                // If that fails, just compare the text strings as that's the default behaviour in TeamCity anyway. 
-                return o1.getId().compareTo(o2.getId());
-            }
         }
     }
 }

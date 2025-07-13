@@ -1,6 +1,7 @@
 package webhook.teamcity.extension;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,11 +18,12 @@ import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.extension.bean.ErrorResult;
 import webhook.teamcity.extension.util.WebHookConfigurationValidator;
+import webhook.teamcity.json.WebHookConfigurationGsonBuilder;
+import webhook.teamcity.json.WebHookConfigurationJson;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.WebHookUpdateResult;
-import webhook.teamcity.json.WebHookConfigurationGsonBuilder;
-import webhook.teamcity.json.WebHookConfigurationJson;
+import webhook.teamcity.settings.converter.WebHookUserRequestedConfigRenderer;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class WebHookEditController extends BaseController {
@@ -34,6 +36,7 @@ public class WebHookEditController extends BaseController {
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final ProjectIdResolver myProjectIdResolver;
 	private final BuildTypeIdResolver myBuildTypeIdResolver;
+	private final WebHookUserRequestedConfigRenderer myWebHookUserRequestedConfigRenderer;
 
 	public WebHookEditController(SBuildServer server,
 			WebHookConfigurationValidator webHookConfigurationValidator,
@@ -41,12 +44,14 @@ public class WebHookEditController extends BaseController {
 			WebControllerManager webManager,
 			WebHookSettingsManager webHookSettingsManager,
 			ProjectIdResolver projectIdResolver,
-			BuildTypeIdResolver buildTypeIdResolver) {
+			BuildTypeIdResolver buildTypeIdResolver,
+			WebHookUserRequestedConfigRenderer webHookUserRequestedConfigRenderer) {
 		super(server);
 		myWebHookConfigurationValidator = webHookConfigurationValidator;
 		myWebHookSettingsManager = webHookSettingsManager;
 		myProjectIdResolver = projectIdResolver;
 		myBuildTypeIdResolver = buildTypeIdResolver;
+		myWebHookUserRequestedConfigRenderer = webHookUserRequestedConfigRenderer;
 		myPluginPath = pluginDescriptor.getPluginResourcesPath();
 		webManager.registerController("/webhooks/edit.html", this);
 	}
@@ -83,8 +88,13 @@ public class WebHookEditController extends BaseController {
 
 
 			// Check for errors and that the user has EDIT_PROJECT permission.
-			
-			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("add")) {
+			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("asCode")) {
+				if (webHookSaveRequest.getId().equals("_new")) {
+					myWebHookConfigurationValidator.validateNewWebHook(webHookSaveRequest.getProjectId(), webHookSaveRequest, result);
+				} else {
+					myWebHookConfigurationValidator.validateUpdatedWebHook(webHookSaveRequest.getProjectId(), webHookSaveRequest, result);
+				}
+			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("add")) {
 				myWebHookConfigurationValidator.validateNewWebHook(webHookSaveRequest.getProjectId(), webHookSaveRequest, result);
 			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("delete")) {
 				myWebHookConfigurationValidator.validateDeleteWebHook(request.getParameter("projectId"), request.getParameter("webHookId"), result);
@@ -99,7 +109,23 @@ public class WebHookEditController extends BaseController {
 
 			
 			WebHookUpdateResult saveResult = null;
-			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("delete")) {
+			if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("asCode")) {
+				WebHookConfig webHookConfig = webHookSaveRequest.toWebHookConfig(myProjectIdResolver, myBuildTypeIdResolver);
+				if (!webHookSaveRequest.getId().equals("_new")) {
+					Optional<WebHookConfig> existingWebHook = this.myWebHookSettingsManager.getWebHooksConfigs(myProjectIdResolver.getInternalProjectId(webHookSaveRequest.getProjectId()))
+						.stream()
+						.filter(w -> w.getUniqueKey().equals(webHookSaveRequest.getId()))
+						.findFirst();
+					if (existingWebHook.isPresent()) {
+						webHookConfig.setFeatureDescriptorId(existingWebHook.get().getFeatureDescriptorId());
+					}
+				}
+				params.put("templateRendering", 
+						gson.toJson(
+								myWebHookUserRequestedConfigRenderer.requestWebHookConfigurationAsCode(webHookConfig))
+						);
+				return new ModelAndView(myPluginPath + "WebHook/templateRendering.jsp", params);
+			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("delete")) {
 				saveResult = this.myWebHookSettingsManager.deleteWebHook( request.getParameter("webHookId"), this.myProjectIdResolver.getInternalProjectId(request.getParameter("projectId")));
 			
 			} else if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("add")) {

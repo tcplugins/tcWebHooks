@@ -29,8 +29,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import webhook.Constants;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.TeamCityCoreFacade;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
+import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.extension.bean.ProjectParametersBean;
 import webhook.teamcity.extension.bean.ProjectTemplatesBean;
@@ -65,6 +67,8 @@ public class WebHookIndexPageController extends BaseController {
 		private final WebHookPluginDataResolver myWebHookPluginDataResolver;
 		private final WebHookTemplateManager myWebHookTemplateManager;
 		private final ProjectManager myProjectManager;
+		private final TeamCityCoreFacade myTeamCityCoreFacade;
+
 
 
 		public WebHookIndexPageController(
@@ -79,7 +83,8 @@ public class WebHookIndexPageController extends BaseController {
 				WebHookParameterStoreFactory webHookParameterStoreFactory,
 				WebHookPluginDataResolver webHookPluginDataResolver,
 				WebHookTemplateManager webHookTemplateManager,
-				ProjectManager projectManager
+				ProjectManager projectManager,
+				TeamCityCoreFacade teamCityCoreFacade
 			) {
 			super(server);
 			myWebManager = webManager;
@@ -93,6 +98,7 @@ public class WebHookIndexPageController extends BaseController {
 			myWebHookPluginDataResolver = webHookPluginDataResolver;
 			myWebHookTemplateManager = webHookTemplateManager;
 			myProjectManager = projectManager;
+			myTeamCityCoreFacade = teamCityCoreFacade;
 
 		}
 
@@ -208,6 +214,13 @@ public class WebHookIndexPageController extends BaseController {
 									)
 								)
 							);
+					ProjectVcsStatus projectVcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(currentProject);
+					params.put("vcsStatus", projectVcsStatus);
+					params.put("showAsCode", projectVcsStatus.isVcsEnabled());
+					boolean allowSave =    !projectVcsStatus.isVcsEnabled() || (projectVcsStatus.isVcsEnabled() && projectVcsStatus.isVcsSyncEnabled());
+					boolean showSaveWarning = projectVcsStatus.isVcsEnabled() && projectVcsStatus.isVcsSyncEnabled() && projectVcsStatus.isKotlin();
+					params.put("allowSave", allowSave);
+					params.put("showSaveWarning", showSaveWarning);
 
 				} else {
 					params.put("haveProject", "false");
@@ -256,6 +269,14 @@ public class WebHookIndexPageController extends BaseController {
 									)
 								)
 							);
+					ProjectVcsStatus projectVcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(project);
+					params.put("vcsStatus", projectVcsStatus);
+					params.put("showAsCode", projectVcsStatus.isVcsEnabled());
+					boolean allowSave =    !projectVcsStatus.isVcsEnabled() || (projectVcsStatus.isVcsEnabled() && projectVcsStatus.isVcsSyncEnabled());
+					boolean showSaveWarning = projectVcsStatus.isVcsEnabled() && projectVcsStatus.isVcsSyncEnabled() && projectVcsStatus.isKotlin();
+					params.put("allowSave", allowSave);
+					params.put("showSaveWarning", showSaveWarning);
+
 				} else {
 					params.put("haveProject", "false");
 					params.put("errorReason", "The build requested does not appear to be valid.");

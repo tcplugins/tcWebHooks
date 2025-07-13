@@ -20,6 +20,8 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.TeamCityCoreFacade;
+import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
 import webhook.teamcity.TeamCityIdResolver;
 import webhook.teamcity.WebHookPluginDataResolver;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
@@ -47,11 +49,9 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 	private final WebHookTemplateManager myWebHookTemplateManager;
 	private final WebHookTemplateResolver myTemplateResolver;
 	private final WebHookAuthenticatorProvider myAuthenticatorProvider;
-
-
 	private final WebHookParameterStore myWebHookParameterStore;
 	private final ProjectManager myProjectManager;
-	String myPluginPath;
+	private final TeamCityCoreFacade myTeamCityCoreFacade;
 	private final WebHookPluginDataResolver myWebHookPluginDataResolver;
 
 	public WebHookProjectSettingsTab(@NotNull PagePlaces pagePlaces,
@@ -63,6 +63,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 									@NotNull WebHookParameterStoreFactory webHookParameterStoreFactory,
 									@NotNull WebHookAuthenticatorProvider authenticatorProvider,
 									@NotNull ProjectManager projectManager,
+									@NotNull TeamCityCoreFacade teamCityCoreFacade,
 									@NotNull WebHookPluginDataResolver webHookPluginDataResolver) {
 		super(pagePlaces, pluginDescriptor.getPluginName(), "WebHook/webHookProjectSettingsTab.jsp", TAB_TITLE);
 		this.myWebhookSettingsManager = settings;
@@ -72,6 +73,7 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		this.myWebHookParameterStore = webHookParameterStoreFactory.getWebHookParameterStore();
 		this.myAuthenticatorProvider = authenticatorProvider;
 		this.myProjectManager = projectManager;
+		this.myTeamCityCoreFacade = teamCityCoreFacade;
 		this.myWebHookPluginDataResolver = webHookPluginDataResolver;
 		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/css/styles.css"));
 		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.css"));
@@ -193,7 +195,13 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 						)
 					)
 				);
-
+		ProjectVcsStatus projectVcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(currentProject);
+		model.put("vcsStatus", projectVcsStatus);
+		model.put("showAsCode", projectVcsStatus.isVcsEnabled());
+		boolean allowSave =    !projectVcsStatus.isVcsEnabled() || (projectVcsStatus.isVcsEnabled() && projectVcsStatus.isVcsSyncEnabled());
+		boolean showSaveWarning = projectVcsStatus.isVcsEnabled() && projectVcsStatus.isVcsSyncEnabled() && projectVcsStatus.isKotlin();
+		model.put("allowSave", allowSave);
+		model.put("showSaveWarning", showSaveWarning);
 	}
 
 	@Getter @AllArgsConstructor

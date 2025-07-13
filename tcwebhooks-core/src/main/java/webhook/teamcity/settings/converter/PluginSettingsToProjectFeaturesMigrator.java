@@ -214,7 +214,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
             addToReport(writer, "An project-config.xml configuration of each webhook is produced below. Please copy and paste these configuration(s) into project-config.xml in your VCS settings.");
             try {
-                addToReport(writer,"\n" + myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(settings.getWebHooksAsList()));
+                addToReport(writer,"\n" + myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(settings.getWebHooksAsList(), project));
             } catch (JAXBException jaxbException) {
                 throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", project.getExternalId()), jaxbException);
             }

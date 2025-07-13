@@ -115,7 +115,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 
 		SProject sProject = myProjectManager.findProjectById(projectInternalId);
 		WebHookUpdateResult result = getSettings(projectInternalId).addNewWebHook(
-												projectInternalId, projectExternalId, url,
+												projectInternalId, projectExternalId, url, null,
 												enabled, buildState, template, buildTypeAll,
 												buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, 
 												extraParameters,

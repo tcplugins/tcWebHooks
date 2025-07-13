@@ -414,6 +414,10 @@
 		class="webhook.teamcity.testing.WebHookUserRequestedExecutorImpl"
 		/>
 		
+	<bean id="webHookUserRequestedConfigRenderer"
+		class="webhook.teamcity.settings.converter.WebHookUserRequestedConfigRendererImpl"
+		/>
+		
 	<bean id="reportPayloadJaxHelper"
 		class="webhook.teamcity.statistics.StatisticsJaxHelper"
 		/>

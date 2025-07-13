@@ -42,8 +42,13 @@
                 <td><c:out value="${hook.enabledEventsListForWeb}"/></td>
                 <td title="${hook.buildTypeCountAsToolTip}"><c:out value="${hook.buildTypeCountAsFriendlyString}"/></td>
                 <c:if test="${showEditButton}">
-                    <td><a onclick="${webhookConfigDialogScope}.showEditDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'}, '#hookPane');" href="javascript://">edit</a></td>
-                    <td><a onclick="${webhookConfigDialogScope}.showDeleteDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'});" href="javascript://">delete</a></td>
+                	<c:if test="${allowSave}">
+	                    <td><a onclick="${webhookConfigDialogScope}.showEditDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'}, '#hookPane');" href="javascript://">edit</a></td>
+	                    <td><a onclick="${webhookConfigDialogScope}.showDeleteDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'});" href="javascript://">delete</a></td>
+	                </c:if>
+	                <c:if test="${not allowSave}">
+	                	<td colspan="2"><a onclick="${webhookConfigDialogScope}.showEditDialog({'webhookId':'${hook.uniqueKey}','projectId':'${projectExternalId}'}, '#hookPane');" href="javascript://">view</a></td>
+	                </c:if>
                 </c:if>
 
             </tr>

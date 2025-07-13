@@ -215,12 +215,12 @@ public class WebHookProjectSettings implements ProjectSettings {
 	}
 
 	//Only used by tests
-	protected void addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, boolean hideSecureValues) {
-		addNewWebHook(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null, null, null, null, hideSecureValues);
+	protected void addNewWebHook(String projectInternalId, String projectExternalId, String url, String featureId, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, boolean hideSecureValues) {
+		addNewWebHook(projectInternalId, projectExternalId, url, featureId, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, null, null, null, null, hideSecureValues);
 	}
 	
-	protected WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
-		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, extraParameters, filters, headers, hideSecureValues); 
+	protected WebHookUpdateResult addNewWebHook(String projectInternalId, String projectExternalId, String url, String featureId, Boolean enabled, BuildState buildState, String template, boolean buildTypeAll, boolean buildTypeSubProjects, Set<String> buildTypesEnabled, WebHookAuthConfig webHookAuthConfig, ExtraParameters extraParameters, List<WebHookFilterConfig> filters, List<WebHookHeaderConfig> headers, boolean hideSecureValues) {
+		WebHookConfig newWebHook = new WebHookConfig(projectInternalId, projectExternalId, url, featureId, enabled, buildState, template, buildTypeAll, buildTypeSubProjects, buildTypesEnabled, webHookAuthConfig, extraParameters, filters, headers, hideSecureValues); 
 		this.webHooksConfigs.add(newWebHook);
 		Loggers.SERVER.debug(NAME + ":addNewWebHook :: Adding webhook to " + projectExternalId + " with URL " + url);
 		return new WebHookUpdateResult(true, newWebHook);

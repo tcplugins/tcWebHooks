@@ -10,6 +10,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildState;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.Loggers;
+import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.WebHookTemplateManager;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.settings.CustomMessageTemplate;
@@ -26,16 +27,19 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 	private final SBuildServer myServer;
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private final WebHookTemplateManager myWebHookTemplateManager;
+	private final ProjectIdResolver myProjectIdResolver;
 
 	public WebHookConfigFactoryImpl(
 			SBuildServer sBuildServer,
 			WebHookSettingsManager projectSettingsManager,
-			WebHookTemplateManager webHookTemplateManager
+			WebHookTemplateManager webHookTemplateManager,
+			ProjectIdResolver projectIdResolver
 
 			) {
 		myServer = sBuildServer;
 		myWebHookSettingsManager = projectSettingsManager;
 		myWebHookTemplateManager = webHookTemplateManager;
+		myProjectIdResolver = projectIdResolver;
 	}
 
 	@Override
@@ -86,6 +90,8 @@ public class WebHookConfigFactoryImpl implements WebHookConfigFactory {
 					 .filters(new ArrayList<WebHookFilterConfig>())
 					 .states(buildStates(webHookExecutionRequest.getConfigBuildStates()))
 					 .extraParameters(new ExtraParameters())
+					 .projectInternalId(myProjectIdResolver.getInternalProjectId(webHookExecutionRequest.getProjectExternalId()))
+					 .projectExternalId(webHookExecutionRequest.getProjectExternalId())
 					 .build();
 	}
 

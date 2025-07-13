@@ -201,6 +201,7 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
             $j("#editWebHookForm #webHookId").val(data.webhookId);
             $j("#editWebHookForm #webhookProjectId").val(data.projectId);
             $j('#webhookPreviewRendered').html("");
+            $j('#webhookCodeRendered').html("");
             //this.toggleHidden();
             this.cleanErrors();
         },
@@ -508,6 +509,46 @@ WebHooksPlugin.Configurations = OO.extend(WebHooksPlugin, {
 			} else {
 				$j("#webhookDialogAjaxResult").empty().append("Please select a Build first");
 			}
+			return false;
+		},
+        fetchWebHookAsCode: function() {
+			var dialog = this;
+					$j("#webhookDialogAjaxResult").empty();
+					$j('#webhookTestProgress').css("display","block");
+					$j('#tab-container').easytabs('select', '#codePane');
+					let myWebHook = this.getStore().myJson;
+					myWebHook = convertFormToWebHook(myWebHook);
+					myWebHook.projectExternalId = myWebHook.projectId;
+					myWebHook.uniqueKey =myWebHook.id;
+					dialog.cleanErrors();
+					$j.ajax ({
+						url: "../webhooks/edit.html?action=asCode",
+						type: "POST",
+						dataType: 'json',
+						headers : {
+							'Content-Type' : 'application/json',
+							'Accept' : 'application/json'
+						},
+						data: JSON.stringify(myWebHook),
+						success:function(response){
+							if (response.errors) {
+							    $j.each(response.errors, function(index, errorMsg){
+							        dialog.ajaxError(errorMsg)
+							    });
+							} else {
+							    $j('#webhookCodeRendered').html(response.html);
+
+							    $j('#webhookCodeRendered pre code').each(function (i, block) {
+							        hljs.highlightBlock(block);
+							    });
+							}
+							$j('#webhookTestProgress').css("display","none");
+						},
+						error: function (response) {
+							dialog.handleAjaxError(dialog, response);
+							$j('#webhookTestProgress').css("display","none");
+						}
+					});
 			return false;
 		}
 

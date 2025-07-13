@@ -143,7 +143,7 @@ public class WebHookConfigurationValidator {
 			result.addError("regex", "The filter regex cannot be empty.");
 		}
 		if (updatedFilter.getEnabled() == null) {
-			result.addError("regex", "The filter enabled cannot be empty.");
+			result.addError("filter", "The filter enabled cannot be empty.");
 		}
 		
 		return result;

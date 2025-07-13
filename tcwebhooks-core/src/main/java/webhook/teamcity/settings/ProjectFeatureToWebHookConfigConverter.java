@@ -100,6 +100,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         populateBuildTyepIds(builder, parameters.get(BUILDIDS_KEY));
         populateBuildStates(builder, parameters);
         builder.projectInternalId(projectFeatureDescriptor.getProjectId());
+        builder.featureDescriptorId(projectFeatureDescriptor.getId());
         populateAuthentication(builder, parameters);
         populateWebHookParameters(builder, parameters);
         populateTriggerFilters(builder, parameters);
@@ -232,7 +233,7 @@ public class ProjectFeatureToWebHookConfigConverter {
         */
     }
     public SProjectFeatureDescriptor convert(WebHookConfig webhook) {
-        return new WebHookProjectFeature(webhook.getUniqueKey(), webhook, myWebHookAuthenticatorProvider, myBuildTypeIdResolver).init();
+        return new WebHookProjectFeature(webhook.getFeatureDescriptorId(), webhook, myWebHookAuthenticatorProvider, myBuildTypeIdResolver).init();
     }
 
     private static void populateBuildStates(WebHookConfigBuilder builder, Map<String, String> parameters) {
