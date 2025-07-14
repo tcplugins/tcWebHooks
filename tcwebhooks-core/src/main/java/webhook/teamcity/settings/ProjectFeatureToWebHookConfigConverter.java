@@ -1,5 +1,7 @@
 package webhook.teamcity.settings;
 
+import static webhook.Constants.PROJECT_FEATURE_TYPE;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -158,6 +160,8 @@ public class ProjectFeatureToWebHookConfigConverter {
     private static WebHookParameterModel mapParameter(Map.Entry<String, String> e, Map<String,String> parameters, int id) {
     	
     	/*
+    	 *  Example code from Kotlin.
+    	 *  
             parameters.feature.param("parameter_${parameterCounter}_name", p.name)
             parameters.feature.param("parameter_${parameterCounter}_value", p.value)
             p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
@@ -299,7 +303,7 @@ public class ProjectFeatureToWebHookConfigConverter {
 
         @Override
         public String getType() {
-            return "tcWebHook";
+            return PROJECT_FEATURE_TYPE;
         }
         
         @Override

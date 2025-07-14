@@ -59,7 +59,7 @@ public class ProjectFeatureEntity {
         @XmlAttribute
         String type;
         
-        @XmlElementWrapper(name="parameters") @XmlElement(name="parameter")
+        @XmlElementWrapper(name="parameters") @XmlElement(name="param")
         List<ProjectFeatureParameter> parameters ;
         
         public static ProjectFeatureExtension init(String id, String type, Map<String,String> parameters) {

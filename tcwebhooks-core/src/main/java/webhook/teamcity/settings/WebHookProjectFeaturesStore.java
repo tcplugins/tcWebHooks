@@ -1,8 +1,8 @@
 package webhook.teamcity.settings;
 
 import static java.util.stream.Collectors.toList;
+import static webhook.Constants.PROJECT_FEATURE_TYPE;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,7 +16,6 @@ import webhook.teamcity.Loggers;
 @AllArgsConstructor
 public class WebHookProjectFeaturesStore implements WebHookFeaturesStore {
     
-    private static final String PROJECT_FEATURE_TYPE = "tcWebHooks";
     private final @NotNull ProjectFeatureToWebHookConfigConverter configConverter;
     private final ProjectFeatureDescriptorSorter featureDescriptorSorter = new ProjectFeatureDescriptorSorter();
     
