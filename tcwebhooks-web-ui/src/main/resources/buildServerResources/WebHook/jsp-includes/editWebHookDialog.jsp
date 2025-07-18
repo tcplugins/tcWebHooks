@@ -147,14 +147,14 @@
 														</label>
 													</td>
 												</tr>
-					    					</table>
+											</table>
 
-					    			</div><!--hookPane -->
+									</div><!--hookPane -->
 
-					    			<div id='buildPane' class="tabPane">
-					    				<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input id="buildTypeAll" name="buildTypeAll" onclick="toggleAllBuildTypesSelected();" type=checkbox style="padding-right: 1em;" class="buildType_all"><strong>All Project Builds</strong></label></p>
-					    				<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input id="buildTypeSubProjects" name="buildTypeSubProjects" onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" class="buildType_subprojects"><strong>All Sub-Project Builds</strong></label></p>
-					            		<div id='buildList' style="padding:0;">
+									<div id='buildPane' class="tabPane">
+										<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input id="buildTypeAll" name="buildTypeAll" onclick="toggleAllBuildTypesSelected();" type=checkbox style="padding-right: 1em;" class="buildType_all"><strong>All Project Builds</strong></label></p>
+										<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;"><label><input id="buildTypeSubProjects" name="buildTypeSubProjects" onclick="updateSelectedBuildTypes();" type=checkbox style="padding-right: 1em;" class="buildType_subprojects"><strong>All Sub-Project Builds</strong></label></p>
+										<div id='buildList' style="padding:0;">
 										<c:forEach items="${buildList}" var="build">
 											<p style="border-bottom:solid 1px #cccccc; margin:0; padding:0.5em;">
 											<label>
@@ -232,57 +232,56 @@
 												</tfoot>
 												</table>
 											</div>
-						            	</div>
-						            </div><!--extrasPane -->
-						            <div id='templatePane' class="tabPane">
-						            	<div id='templateLeftPanel'>
-						            		<div class="webHookPreviewHeader">
-							            		<table>
-							            		<tr><td colspan=2>Select a build to use as example data for a webhook test execution:</td></tr>
-							            		<tr><td>Template:</td><td><span id="currentTemplateName"></span></td></tr>
-							            		<tr><td>Build:</td>
-							            		<td> <select name="webhookPreviewBuildId" id="webhookPreviewBuildId" class="templateAjaxRefresh"></select></td></tr>
-							            		<tr><td>Build Event:</td>
-							            		<td> <select name="webhookPreviewBuildEvent" id="webhookPreviewBuildEvent" class="templateAjaxRefresh">
-								            			<option value="buildAddedToQueue">Build Added to Queue</option>
-								            			<option value="buildRemovedFromQueue">Build Removed from Queue by User</option>
-								            			<option value="buildStarted">Build Started</option>
-								            			<option value="changesLoaded">Changes Loaded</option>
-								            			<option value="serviceMessageReceived">Service Message Received</option>
-								            			<option value="buildInterrupted">Build Interrupted</option>
-								            			<option value="beforeBuildFinish">Build Almost Completed</option>
-								            			<option value="responsibilityChanged">Build Responsibility Changed</option>
-								            			<option value="buildPinned">Build Pinned</option>
-								            			<option value="buildUnpinned">Build Unpinned</option>
-								            			<option value="testsMuted">Tests Muted</option>
-								            			<option value="testsUnmuted">Tests Unmuted</option>
-								            			<option value="buildSuccessful">Build Successful</option>
-								            			<option value="buildFixed"> - Build changes from Failure to Success</option>
-								            			<option value="buildFailed">Build Failed</option>
-								            			<option value="buildBroken"> - Build changes from Success to Failure</option>
-								            		</select>
-								            	</td></tr></table>
+										</div>
+									</div><!--extrasPane -->
+									<div id='templatePane' class="tabPane">
+										<div id='templateLeftPanel'>
+											<div class="webHookPreviewHeader">
+												<table>
+												<tr><td colspan=2>Select a build to use as example data for a webhook test execution:</td></tr>
+												<tr><td>Template:</td><td><span id="currentTemplateName"></span></td></tr>
+												<tr><td>Build:</td>
+												<td> <select name="webhookPreviewBuildId" id="webhookPreviewBuildId" class="templateAjaxRefresh"></select></td></tr>
+												<tr><td>Build Event:</td>
+												<td> <select name="webhookPreviewBuildEvent" id="webhookPreviewBuildEvent" class="templateAjaxRefresh">
+														<option value="buildAddedToQueue">Build Added to Queue</option>
+														<option value="buildRemovedFromQueue">Build Removed from Queue by User</option>
+														<option value="buildStarted">Build Started</option>
+														<option value="changesLoaded">Changes Loaded</option>
+														<option value="serviceMessageReceived">Service Message Received</option>
+														<option value="buildInterrupted">Build Interrupted</option>
+														<option value="beforeBuildFinish">Build Almost Completed</option>
+														<option value="responsibilityChanged">Build Responsibility Changed</option>
+														<option value="buildPinned">Build Pinned</option>
+														<option value="buildUnpinned">Build Unpinned</option>
+														<option value="testsMuted">Tests Muted</option>
+														<option value="testsUnmuted">Tests Unmuted</option>
+														<option value="buildSuccessful">Build Successful</option>
+														<option value="buildFixed"> - Build changes from Failure to Success</option>
+														<option value="buildFailed">Build Failed</option>
+														<option value="buildBroken"> - Build changes from Success to Failure</option>
+													</select>
+												</td></tr></table>
 											</div>
-						            		<div id="webhookPreviewRendered"></div>
-						            		<button id="webhookDialogPreview" class="btn btn_primary" onclick="return ${webhookConfigDialogScope}.EditDialog.executeWebHook();">Send Test WebHook for Build Event</button>
-						            		<span class="testingLimitations"><a rel="noopener noreferrer" target="_blank" href="https://github.com/tcplugins/tcWebHooks/wiki/Testing-a-WebHook#limitations-with-webhook-testing">Testing limitations (opens in new window)</a></span>
+											<div id="webhookPreviewRendered"></div>
+											<button id="webhookDialogPreview" class="btn btn_primary" onclick="return ${webhookConfigDialogScope}.EditDialog.executeWebHook();">Send Test WebHook for Build Event</button>
+											<span class="testingLimitations"><a rel="noopener noreferrer" target="_blank" href="https://github.com/tcplugins/tcWebHooks/wiki/Testing-a-WebHook#limitations-with-webhook-testing">Testing limitations (opens in new window)</a></span>
 											<div id="webhookTestProgress">
 												<forms:progressRing progressTitle="Sending test webhook..."/>
 												<span class="stage-status__description">Sending test webhook...</span>
 											</div>
 											<div id="webhookDialogAjaxResult"></div>
-						            	</div>
-						            </div><!--templatePane -->
-						            <c:if test="${showAsCode}">
-							            <div id='codePane' class="tabPane">
-							            	<div id='webhookCodeRendered'>
-							            		Code will load shortly....
-							            	</div>
-							            </div>
-							        </c:if>	
-						            
-					    	</div><!-- panel-container  -->
-					</div>    <!-- tab-container -->
+										</div>
+									</div><!--templatePane -->
+									<c:if test="${showAsCode}">
+										<div id='codePane' class="tabPane">
+											<div id='webhookCodeRendered'>
+												Code will load shortly....
+											</div>
+										</div>
+									</c:if>	
+							</div><!-- panel-container  -->
+					</div>	<!-- tab-container -->
 
 			</div> <!-- webHookFormContents -->
 
@@ -293,12 +292,20 @@
             <input type="hidden" id="submitAction" name="submitAction" value=""/>
 
             <div id="ajaxWebHookEditResult"></div>
+            <div id="popupButtonsWrapper">
+                <c:if test="${showSaveWarning}">
+		            <div class="attentionRed" style="margin-left: 10px; margin-right:10px;">
+		            This project is Kotlin and has <em>Allow editing project settings via UI</em> enabled. &nbsp; 
+		            Adding, Editing and Deleting WebHooks is possible but will create a <a href="https://github.com/tcplugins/tcWebHooks/wiki/Migrating-webhooks-from-Kotlin-Patch-Files" target="_new">patch file in the VCS that will need to be manually merged</a>.
+		            </div>
+		        </c:if>
             <div class="popupSaveButtonsBlock">
                 <c:if test="${allowSave}"><forms:submit id="editTemplateItemDialogSubmit" label="Save Web Hook"/></c:if>
                 <forms:cancel onclick="${webhookConfigDialogScope}.EditDialog.cancelDialog()"/>
                 <c:if test="${showAsCode}">
                   <button class="btn" id="showCodeButton" onclick="return ${webhookConfigDialogScope}.EditDialog.fetchWebHookAsCode();">View as code</button>
                 </c:if>
+            </div>
             </div>
         </forms:multipartForm>
     </bs:dialog>

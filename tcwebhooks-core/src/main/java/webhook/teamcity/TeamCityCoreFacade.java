@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import jetbrains.buildServer.serverSide.SProject;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 public interface TeamCityCoreFacade {
@@ -22,11 +23,10 @@ public interface TeamCityCoreFacade {
 
 	void persist(@NotNull String project, @NotNull String description);
 
-	@NotNull
-	ProjectVcsStatus getProjectVcsStatus(SProject sProject);
+	@NotNull ProjectVcsStatus getProjectVcsStatus(SProject sProject);
 	int getMaxDescripterId(SProject sProject);
 
-	@Data
+	@Data @AllArgsConstructor
 	public static class ProjectVcsStatus {
 		private boolean vcsEnabled;
 		private String vcsFormat;

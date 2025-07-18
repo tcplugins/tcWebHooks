@@ -46,13 +46,16 @@ public class TeamCityCoreFacadeImpl implements TeamCityCoreFacade {
 	@NotNull
 	@Override
 	public ProjectVcsStatus getProjectVcsStatus(SProject sProject) {
-		ProjectVcsStatus status = new ProjectVcsStatus();
+		ProjectVcsStatus status = new ProjectVcsStatus(false, "xml", true);
 		Collection<SProjectFeatureDescriptor> versionedSettings = sProject.getAvailableFeaturesOfType("versionedSettings");
 		Optional<SProjectFeatureDescriptor> vs = versionedSettings.stream().findFirst();
 		if (vs.isPresent()){
 			Map<String, String> params = vs.get().getParameters();
 			if (params.containsKey("enabled")) {
 				status.setVcsEnabled(Boolean.parseBoolean(params.get("enabled")));
+			} else {
+				// If the 'versionedSettings' feature is present, but we have no "enabled" key, default to enabled.
+				status.setVcsEnabled(true);
 			}
 			if (params.containsKey("format")) {
 				status.setVcsFormat(params.get("format"));
