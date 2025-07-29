@@ -248,7 +248,7 @@ class WebHookConfigurationTest {
     }
 
     @Test
-    fun validationFailsWhenMNonStandardParameterTempLateEngineIsDefined() {
+    fun validationFailsWhenNonStandardParameterTempLateEngineIsDefined() {
         val hook2 = WebHookConfiguration {
             parameters {
                 parameter(
@@ -262,5 +262,85 @@ class WebHookConfigurationTest {
         hook2.validate(consumer)
         assertTrue(consumer.errorsReported())
         assertTrue(consumer.errors.contains("templateEngine must be one of [STANDARD, VELOCITY]"))
+    }
+
+    @Test
+    fun validationFailsWhenBearerTokenIsUndefined() {
+        var localHook = WebHookConfiguration {
+            authentication = bearer {}
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.token' property is not specified"))
+    }
+
+    @Test
+    fun validationFailsWhenBasicUserNameOrPasswordIsUndefined() {
+        var localHook = WebHookConfiguration {
+            authentication = basic {}
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.username' property is not specified"))
+        assertTrue(consumer.errors.contains("mandatory 'authentication.password' property is not specified"))
+    }
+
+    @Test
+    fun validationFailsWhenBasicUserNameIsUndefined() {
+        var localHook = WebHookConfiguration {
+            authentication = basic {
+                password = "my password"
+            }
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.username' property is not specified"))
+    }
+
+    @Test
+    fun validationFailsWhenBasicPasswordIsUndefined() {
+        var localHook = WebHookConfiguration {
+            authentication = basic {
+                username = "my-username"
+            }
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.password' property is not specified"))
+    }
+
+    @Test
+    fun getBasicAuthentication() {
+        var localHook = WebHookConfiguration {
+            authentication = basic {
+                username = "myUserName"
+                password = "myPassword"
+                realm = "myRealm"
+                preemptive = true
+            }
+        }
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthUsername", value = "myUserName" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPassword", value = "myPassword" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthRealm", value = "myRealm" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPreemptive", value = "true" )))
+    }
+
+    @Test
+    fun getBasicAuthenticationDefaultToPreemptive() {
+        var localHook = WebHookConfiguration {
+            authentication = basic {
+                username = "myUserName"
+                password = "myPassword"
+                realm = "myRealm"
+            }
+        }
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthUsername", value = "myUserName" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPassword", value = "myPassword" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthRealm", value = "myRealm" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPreemptive", value = "true" )))
     }
 }

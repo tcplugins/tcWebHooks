@@ -107,6 +107,46 @@ open class WebHookConfiguration() : ProjectFeature() {
             var preemptive by booleanParameter("basicAuthPreemptive")
 
             override fun validate(consumer: ErrorConsumer) {
+                if (username == null && !hasParam("basicAuthUsername")) {
+                    consumer.consumePropertyError("authentication.username", "mandatory 'authentication.username' property is not specified")
+                }
+                if (password == null && !hasParam("basicAuthPassword")) {
+                    consumer.consumePropertyError("authentication.password", "mandatory 'authentication.password' property is not specified")
+                }
+            }
+        }
+
+        class Ntlm() : Authentication("ntlm") {
+
+            /**
+             * Username for NTLM Authentication
+             */
+            var username by stringParameter("ntlmUsername")
+
+            /**
+             * Password for NTLM Authentication
+             */
+            var password by stringParameter("ntlmPassword")
+
+            /**
+             * WorkStation to use for NTLM Authentication
+             */
+            var workstation by stringParameter("ntlmWorkStation")
+
+            /**
+             * Domain to use for NTLM Authentication
+             */
+            var domain by stringParameter("ntlmDomain")
+
+            /**
+             * Whether to enable pre-emptive authentication (defaults
+             * to true). Without pre-emptive enabled, the webhook will get a 401
+             * and then re-send the request with authentication enabled.
+             */
+            @Suppress("unused")
+            var preemptive by booleanParameter("basicAuthPreemptive")
+
+            override fun validate(consumer: ErrorConsumer) {
             }
         }
     }
@@ -121,6 +161,13 @@ open class WebHookConfiguration() : ProjectFeature() {
     @Suppress("unused")
     fun basic(init: Authentication.Basic.() -> Unit = {}) : Authentication.Basic {
         val result = Authentication.Basic()
+        result.init()
+        return result
+    }
+
+    @Suppress("unused")
+    fun ntlm(init: Authentication.Ntlm.() -> Unit = {}) : Authentication.Ntlm {
+        val result = Authentication.Ntlm()
         result.init()
         return result
     }
