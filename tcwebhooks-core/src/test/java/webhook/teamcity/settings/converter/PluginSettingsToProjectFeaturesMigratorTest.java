@@ -103,7 +103,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		// Create a bunch of temp files in "target" so that we can read and write them.
 		Path teamcityTempConfigDir = Files.createTempDirectory(Paths.get("target"), "tmpBuildServerConfig");
 		teamcityTempConfigDir.toFile().deleteOnExit();
-		new File(teamcityTempConfigDir.toFile().toString() + "/internal.properties").createNewFile();
+		//new File(teamcityTempConfigDir.toFile().toString() + "/internal.properties").createNewFile();
 		when(myServerPaths.getConfigDir()).thenReturn(teamcityTempConfigDir.toString());
 		when(myServerPaths.getSystemDir()).thenReturn(teamcityTempConfigDir.toString());
 		

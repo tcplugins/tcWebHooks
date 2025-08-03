@@ -116,11 +116,11 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		    String fileName = getReportFileName(now);
 		    try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
     			try {
-    				markMigrationAs("started");
+    				markMigrationAs("started", writer);
     				writer.write("Starting PluginSettings To ProjectFeatures Migration at " + now.format(dateTimeFormatter) );
     				writer.write("\n----------------------------------------------------------------------------------------\n");
     				attemptMigration(true, now, writer);
-    				markMigrationAs("completed");
+    				markMigrationAs("completed", writer);
     				addSectionToReport(writer, String.format("tcWebHooks PluginSettings to ProjectFeatures migration completed see '%s' for a report.", fileName));
     			} catch (ProjectFeatureMigrationException e) {
     			    addToReport(writer, "Failed to complete tcWebHooks PluginSettings to ProjectFeatures migration.", e);
@@ -188,7 +188,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		Map<SProject, WebHookProjectSettings> projectsForMigration = getProjectsThatRequireMigration(writer);
 		if (projectsForMigration.isEmpty()) {
 			addToReport(writer, "No projects require tcWebHooks ProjectFeature migration. Marking migration as completed.");
-			markMigrationAs("completed");
+			markMigrationAs("completed", writer);
 			return;
 		}
 		addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
@@ -311,15 +311,19 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		return false;
 	}
 
-	private void markMigrationAs(String status) throws ProjectFeatureMigrationException {
+	private void markMigrationAs(String status, BufferedWriter writer) throws ProjectFeatureMigrationException {
 		String teamcityInternalPropertiesFilename = this.myServerPaths.getConfigDir() + File.separator + FileWatchingPropertiesModel.DEFAULT_PROPERTIES_FILE_NAME;
 		Properties teamcityInternalProperties = new Properties();
+		try (FileInputStream reader = new FileInputStream(teamcityInternalPropertiesFilename)) {
+		    teamcityInternalProperties.load(reader);
+        } catch (IOException e) {
+            addToReport(writer, String.format("Existing internal properties were not loaded from '%s'. Message: '%s'", teamcityInternalPropertiesFilename, e.getMessage()));
+        }
 		
-		try (FileInputStream reader = new FileInputStream(teamcityInternalPropertiesFilename); FileWriter writer = new FileWriter(teamcityInternalPropertiesFilename)){
-			teamcityInternalProperties.load(reader);
+		try (FileWriter propsWriter = new FileWriter(teamcityInternalPropertiesFilename)){
 			teamcityInternalProperties.put(TEAMCITY_INTERNAL_PROPERTY_KEY, status);
 			
-			teamcityInternalProperties.store(writer,String.format("Set tcWebHooks migration '%s' flag in TeamCity's internal.properties file", status));
+			teamcityInternalProperties.store(propsWriter,String.format("Set tcWebHooks migration '%s' flag in TeamCity's internal.properties file", status));
 		} catch (IOException e) {
 			throw new ProjectFeatureMigrationException("Unable to set migration status flag in internal.properties file", e);
 		}
