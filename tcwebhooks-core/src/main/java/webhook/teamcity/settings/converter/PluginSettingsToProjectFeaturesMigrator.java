@@ -246,7 +246,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 				} else {
 				    addToReport(writer, String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
 				}
-				WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
+				WebHookUpdateResult deleteResult = webhookSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
 				if (!deleteResult.isUpdated() && failIfCantRemoveWebhookFromCurrentConfiguration) {
 					throw new ProjectFeatureMigrationException("Unable to delete existing webhook from Project Settings", deleteResult.getWebHookConfig());
 				} else if (!deleteResult.isUpdated()){
