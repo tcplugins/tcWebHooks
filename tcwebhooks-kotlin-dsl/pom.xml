@@ -99,19 +99,57 @@
 					</archive>
 				</configuration>
 			</plugin>
-        <plugin>
-            <groupId>org.jetbrains.dokka</groupId>
-            <artifactId>dokka-maven-plugin</artifactId>
-            <version>2.0.0</version>
-            <executions>
-                <execution>
-                    <phase>pre-site</phase>
-                    <goals>
-                        <goal>dokka</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+			<plugin>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kover-maven-plugin</artifactId>
+                <version>0.9.1</version>
+                <executions>
+                    <!-- instrument test tasks -->
+                    <execution>
+                        <id>instr</id>
+                        <goals>
+                            <goal>instrumentation</goal>
+                        </goals>
+                    </execution>
+                    
+                    <!-- generate XML report in verify phase -->
+                    <execution>
+                        <id>kover-xml</id>
+                        <goals>
+                            <goal>report-xml</goal>
+                        </goals>
+                    </execution>
+                    
+                    <!-- generate HTML report in verify phase -->
+                    <execution>
+                        <id>kover-html</id>
+                        <goals>
+                            <goal>report-html</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- check coverage rules in verify phase -->
+                    <execution>
+                        <id>kover-verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+			<plugin>
+				<groupId>org.jetbrains.dokka</groupId>
+				<artifactId>dokka-maven-plugin</artifactId>
+				<version>2.0.0</version>
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>dokka</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

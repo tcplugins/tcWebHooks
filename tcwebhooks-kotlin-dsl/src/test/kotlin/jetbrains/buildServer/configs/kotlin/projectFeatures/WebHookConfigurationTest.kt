@@ -62,7 +62,7 @@ class WebHookConfigurationTest {
                 authentication = basic {
                     username = "myUserName"
                     password = "myPassword"
-                    realm = "myRealm"
+                    realm = "myDomain"
                     preemptive = true
                 }
 
@@ -134,7 +134,7 @@ class WebHookConfigurationTest {
                     authentication = basic {
                         username = "myUserName"
                         password = "myPassword"
-                        realm = "myRealm"
+                        realm = "myDomain"
                         preemptive = true
                     }
                 }
@@ -323,24 +323,99 @@ class WebHookConfigurationTest {
                 preemptive = true
             }
         }
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthUsername", value = "myUserName" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPassword", value = "myPassword" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthRealm", value = "myRealm" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPreemptive", value = "true" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthUsername", value = "myUserName" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPassword", value = "myPassword" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthRealm", value = "myRealm" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPreemptive", value = "true" )))
     }
 
     @Test
-    fun getBasicAuthenticationDefaultToPreemptive() {
+    fun validationFailsWhenNtlmUserNameOrPasswordIsUndefined() {
+        var localHook = WebHookConfiguration {
+            authentication = ntlm {}
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.username' property is not specified"))
+        assertTrue(consumer.errors.contains("mandatory 'authentication.password' property is not specified"))
+        assertTrue(consumer.errors.contains("mandatory 'authentication.workstation' property is not specified"))
+        assertTrue(consumer.errors.contains("mandatory 'authentication.domain' property is not specified"))
+    }
+
+    @Test
+    fun validationFailsWhenNtlmUserNameIsUndefined() {
         var localHook = WebHookConfiguration {
             authentication = basic {
-                username = "myUserName"
-                password = "myPassword"
-                realm = "myRealm"
+                password = "my password"
             }
         }
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthUsername", value = "myUserName" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPassword", value = "myPassword" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthRealm", value = "myRealm" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "basicAuthPreemptive", value = "true" )))
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.username' property is not specified"))
+    }
+
+    @Test
+    fun validationFailsWhenNtlmPasswordIsUndefined() {
+        var localHook = WebHookConfiguration {
+            authentication = basic {
+                username = "my-username"
+            }
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("mandatory 'authentication.password' property is not specified"))
+    }
+
+    @Test
+    fun getNtlmAuthentication() {
+        var localHook = WebHookConfiguration {
+            authentication = ntlm {
+                username = "myUserName"
+                password = "myPassword"
+                workstation = "myWorkStation"
+                domain = "myDomain"
+                preemptive = false
+            }
+        }
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "ntlmUsername", value = "myUserName" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "ntlmPassword", value = "myPassword" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "ntlmWorkStation", value = "myWorkStation" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "ntlmDomain", value = "myDomain" )))
+        assertThat(localHook.params, CoreMatchers.hasItem(Parameter(name = "ntlmPreemptive", value = "false" )))
+    }
+
+    @Test
+    fun parameterDeclaredMoreThanOnceFailsValidation() {
+        var localHook = WebHookConfiguration {
+            parameters{
+                parameter("my_name", "my name the first")
+                parameter("my_name", "my name the second")
+                parameter("my_name", "my name the third")
+                parameter(
+                        name = "fooParam",
+                        value = "barParam",
+                        secure = false,
+                        forceResolveTeamCityVariable = false,
+                        includedInLegacyPayloads = false,
+                        templateEngine = "STANDARD"
+                )
+                parameter(
+                        name = "fooParam",
+                        value = "barParam",
+                        secure = false,
+                        forceResolveTeamCityVariable = false,
+                        includedInLegacyPayloads = false,
+                        templateEngine = "STANDARD"
+                )
+            }
+        }
+        val consumer = Consumer()
+        localHook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("parameter 'parameters.my_name' is declared 3 times"))
+        assertTrue(consumer.errors.contains("parameter 'parameters.fooParam' is declared 2 times"))
     }
 }

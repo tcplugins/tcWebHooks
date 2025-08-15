@@ -144,9 +144,21 @@ open class WebHookConfiguration() : ProjectFeature() {
              * and then re-send the request with authentication enabled.
              */
             @Suppress("unused")
-            var preemptive by booleanParameter("basicAuthPreemptive")
+            var preemptive by booleanParameter("ntlmPreemptive")
 
             override fun validate(consumer: ErrorConsumer) {
+                if (username == null && !hasParam("ntlmUsername")) {
+                    consumer.consumePropertyError("authentication.username", "mandatory 'authentication.username' property is not specified")
+                }
+                if (password == null && !hasParam("ntlmPassword")) {
+                    consumer.consumePropertyError("authentication.password", "mandatory 'authentication.password' property is not specified")
+                }
+                if (workstation == null && !hasParam("ntlmWorkStation")) {
+                    consumer.consumePropertyError("authentication.workstation", "mandatory 'authentication.workstation' property is not specified")
+                }
+                if (domain == null && !hasParam("ntlmDomain")) {
+                    consumer.consumePropertyError("authentication.domain", "mandatory 'authentication.domain' property is not specified")
+                }
             }
         }
     }
@@ -402,24 +414,23 @@ open class WebHookConfiguration() : ProjectFeature() {
         triggerFilters?.validate(consumer)
     }
 
-    class Headers(val feature: WebHookConfiguration, init: Headers.() -> Unit) : Validatable {
-        var alreadySeen = false
-        val myHeaders = mutableMapOf<String,String>()
+    class Headers(val feature: WebHookConfiguration, init: Headers.() -> Unit) : SingleValue<String>("header"), Validatable {
+        //var alreadySeen = false
+        //val myHeaders = mutableMapOf<String,String>()
         init {
             init()
         }
 
         fun header(name: String, value: String) {
             // TODO: Throw exception if header added twice
-            myHeaders[name] = value
+            //myHeaders[name] = value
             //this.feature.param(name, value)
+            addValue(name, value)
         }
 
-        override fun validate(consumer: ErrorConsumer) {
-            if (alreadySeen) {
-                consumer.consumePropertyError("headers", "headers function was called more than once.")
-            }
-        }
+        // override fun validate(consumer: ErrorConsumer) {
+        //     super.validate(consumer)
+        // }
     }
 
     /**
@@ -440,24 +451,21 @@ open class WebHookConfiguration() : ProjectFeature() {
         if (this.headers != null) {
             headers.alreadySeen = true
         } else {
-            for ((headerCounter, key) in headers.myHeaders.keys.withIndex()) {
+            for ((headerCounter, key) in headers.myValues.keys.withIndex()) {
                 headers.feature.param("header_${headerCounter}_name", key)
-                headers.myHeaders[key]?.let { headers.feature.param("header_${headerCounter}_value", it) }
+                headers.myValues[key]?.let { headers.feature.param("header_${headerCounter}_value", it) }
             }
         }
         this.headers = headers
         return headers
     }
 
-    class Parameters(val feature: WebHookConfiguration, init: Parameters.() -> Unit) : Validatable {
-        var alreadySeen = false
-        val myParameters = mutableMapOf<String,Parameter>()
+    class Parameters(val feature: WebHookConfiguration, init: Parameters.() -> Unit) : SingleValue<jetbrains.buildServer.configs.kotlin.projectFeatures.WebHookConfiguration.Parameters.Parameter>("parameter"), Validatable {
         init {
             init()
         }
 
         fun parameter(name: String, value: String) {
-            // TODO: Throw exception if parameter added twice
             parameter(name, value, null, null, null, null as String?)
         }
 
@@ -469,22 +477,20 @@ open class WebHookConfiguration() : ProjectFeature() {
             forceResolveTeamCityVariable: Boolean? = null,
             templateEngine: String? = null
             ) {
-            // TODO: Throw exception if parameter added twice
-            myParameters[name] = Parameter(
-                name,
-                value,
-                secure,
-                includedInLegacyPayloads,
-                forceResolveTeamCityVariable,
-                templateEngine
+            addValue(name, Parameter(
+                    name,
+                    value,
+                    secure,
+                    includedInLegacyPayloads,
+                    forceResolveTeamCityVariable,
+                    templateEngine
+                )
             )
         }
 
         override fun validate(consumer: ErrorConsumer) {
-            if (alreadySeen) {
-                consumer.consumePropertyError("parameters", "parameters function was called more than once.")
-            }
-            for (p in this.myParameters.values) {
+            super.validate(consumer)
+            for (p in this.myValues.values) {
                 p.templateEngine?.let {
                     if (!TemplateEngine.asStrings().contains(p.templateEngine.toString())) {
                         consumer.consumePropertyError("parameters", "templateEngine must be one of " + TemplateEngine.asStrings())
@@ -514,7 +520,7 @@ open class WebHookConfiguration() : ProjectFeature() {
      *            secure = true,
      *            forceResolveTeamCityVariable = true,
      *            includedInLegacyPayloads = true,
-     *            templateEngine = VELOCITY
+     *            templateEngine = "VELOCITY"
      *        )
      *    }
      */
@@ -523,7 +529,7 @@ open class WebHookConfiguration() : ProjectFeature() {
         if (this.parameters != null) {
             parameters.alreadySeen = true
         } else {
-            for ((parameterCounter, p) in parameters.myParameters.values.withIndex()) {
+            for ((parameterCounter, p) in parameters.myValues.values.withIndex()) {
                 parameters.feature.param("parameter_${parameterCounter}_name", p.name)
                 parameters.feature.param("parameter_${parameterCounter}_value", p.value)
                 p.secure?.let { parameters.feature.param("parameter_${parameterCounter}_secure", p.secure.toString()) }
@@ -608,7 +614,7 @@ open class WebHookConfiguration() : ProjectFeature() {
      *            secure = true,
      *            forceResolveTeamCityVariable = true,
      *            includedInLegacyPayloads = true,
-     *            templateEngine = WebHookConfigurationNew.TemplateEngine.VELOCITY
+     *            templateEngine = "VELOCITY"
      *        )
      *    }
      */
@@ -632,6 +638,31 @@ open class WebHookConfiguration() : ProjectFeature() {
         companion object {
             fun asStrings(): List<String> {
                 return values().map(TemplateEngine::toString)
+            }
+        }
+    }
+
+    open class SingleValue<T>(nameType:String) : Validatable {
+        var alreadySeen = false
+        var myNameType = nameType
+        var mySeenKeys = mutableMapOf<String,Int>()
+        var myValues = mutableMapOf<String,T>()
+
+        fun addValue(name:String, value:T) {
+            this.mySeenKeys.putIfAbsent(name, 0)
+            this.mySeenKeys[name] = mySeenKeys[name]!! + 1
+            this.myValues[name] = value
+        }
+
+        override fun validate(consumer: ErrorConsumer) {
+            if (alreadySeen) {
+                consumer.consumePropertyError("${myNameType}s", "${myNameType}s function was called more than once.")
+            }
+            for (k in this.mySeenKeys.keys) {
+                if (this.mySeenKeys[k]!! > 1) {
+                    val count = this.mySeenKeys[k]
+                    consumer.consumePropertyError("${myNameType}_${k}", "${myNameType} '${myNameType}s.${k}' is declared ${count} times")
+                }
             }
         }
     }
