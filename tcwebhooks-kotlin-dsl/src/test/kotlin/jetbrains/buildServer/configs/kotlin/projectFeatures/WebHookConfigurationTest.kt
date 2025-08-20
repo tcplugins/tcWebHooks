@@ -248,6 +248,21 @@ class WebHookConfigurationTest {
     }
 
     @Test
+    fun validationFailsWhenMoreThanOneTriggerFilterAddedWithTheSameValue() {
+        hook.triggerFilters {
+            triggerFilter("fooHeader100", "barHeader100")
+            triggerFilter("fooHeader200", "barHeader200")
+            triggerFilter("fooHeader100", "barHeader200")
+        }
+        val consumer = Consumer()
+        hook.validate(consumer)
+        assertTrue(consumer.errorsReported())
+        assertTrue(consumer.errors.contains("triggerFilters function was called more than once."))
+        assertTrue(consumer.errors.contains("triggerFilter 'triggerFilters.fooHeader100' is declared 2 times"))
+
+    }
+
+    @Test
     fun validationFailsWhenNonStandardParameterTempLateEngineIsDefined() {
         val hook2 = WebHookConfiguration {
             parameters {

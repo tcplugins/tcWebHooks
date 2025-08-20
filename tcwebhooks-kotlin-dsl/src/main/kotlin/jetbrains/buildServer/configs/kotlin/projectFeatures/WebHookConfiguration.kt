@@ -415,22 +415,13 @@ open class WebHookConfiguration() : ProjectFeature() {
     }
 
     class Headers(val feature: WebHookConfiguration, init: Headers.() -> Unit) : SingleValue<String>("header"), Validatable {
-        //var alreadySeen = false
-        //val myHeaders = mutableMapOf<String,String>()
         init {
             init()
         }
 
         fun header(name: String, value: String) {
-            // TODO: Throw exception if header added twice
-            //myHeaders[name] = value
-            //this.feature.param(name, value)
             addValue(name, value)
         }
-
-        // override fun validate(consumer: ErrorConsumer) {
-        //     super.validate(consumer)
-        // }
     }
 
     /**
@@ -557,9 +548,7 @@ open class WebHookConfiguration() : ProjectFeature() {
         return parameters
     }
 
-    class TriggerFilters(val feature: WebHookConfiguration, init: TriggerFilters.() -> Unit) : Validatable {
-        var alreadySeen = false
-        val myTriggerFilters = mutableMapOf<String,TriggerFilter>()
+    class TriggerFilters(val feature: WebHookConfiguration, init: TriggerFilters.() -> Unit) : SingleValue<jetbrains.buildServer.configs.kotlin.projectFeatures.WebHookConfiguration.TriggerFilters.TriggerFilter>("triggerFilter"), Validatable {
         init {
             init()
         }
@@ -568,7 +557,6 @@ open class WebHookConfiguration() : ProjectFeature() {
          * Define a trigger filter and default to enabled.
          */
         fun triggerFilter(value: String, regex: String) {
-            // TODO: Throw exception if trigger filter is added twice
             triggerFilter(value, regex, true)
         }
 
@@ -580,18 +568,11 @@ open class WebHookConfiguration() : ProjectFeature() {
             regex: String,
             enabled: Boolean,
             ) {
-            // TODO: Throw exception if trigger filter is added twice
-            myTriggerFilters[value] = TriggerFilter(
+            addValue(value, TriggerFilter(
                 value,
                 regex,
-                enabled
+                enabled)
             )
-        }
-
-        override fun validate(consumer: ErrorConsumer) {
-            if (alreadySeen) {
-                consumer.consumePropertyError("triggerFilters", "triggerFilters function was called more than once.")
-            }
         }
 
         class TriggerFilter(
@@ -623,7 +604,7 @@ open class WebHookConfiguration() : ProjectFeature() {
         if (this.triggerFilters != null) {
             triggerFilters.alreadySeen = true
         } else {
-            for ((triggerFilterCounter, p) in triggerFilters.myTriggerFilters.values.withIndex()) {
+            for ((triggerFilterCounter, p) in triggerFilters.myValues.values.withIndex()) {
                 triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_value", p.value)
                 triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_regex", p.regex)
                 triggerFilters.feature.param("triggerFilter_${triggerFilterCounter}_enabled", p.enabled.toString())
