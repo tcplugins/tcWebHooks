@@ -202,16 +202,19 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
             throws ProjectFeatureMigrationException {
 		ProjectVcsStatus vcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(project);
         if (vcsStatus.isVcsEnabled() && vcsStatus.isKotlin() && !vcsStatus.isVcsSyncEnabled()) {
-            addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
+            addWarningToReport(writer, String.format("Project '%s' has Kotlin VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
+            addToReport(writer, "For information on manual migration see: https://github.com/tcplugins/tcWebHooks/wiki/Manually-Migrating-WebHooks");
             addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. Please copy and paste these configuration(s) into settings.kts inside the features block.");
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
         } else if (vcsStatus.isVcsEnabled() && vcsStatus.isKotlin() && vcsStatus.isVcsSyncEnabled()) {
-            addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled. tcWebHooks configurations will be attempted but may still have to be done by hand.", project.getExternalId()));
-            addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block. TeamCity may also have created a patch file in the project's settings repo. This will need to be fixed.");
+            addWarningToReport(writer, String.format("Project '%s' has Kotlin VCS Settings enabled. Migration of tcWebHooks configurations will be attempted but will result in patch files that need to be migrated by hand.", project.getExternalId()));
+            addToReport(writer, "For information on manual migration see: https://github.com/tcplugins/tcWebHooks/wiki/Manually-Migrating-WebHooks");
+            addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block. TeamCity may also have created a patch file in the project's settings repo. This will need to be manually remediated.");
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
         	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
         } else if (vcsStatus.isVcsEnabled() && !vcsStatus.isKotlin() && !vcsStatus.isVcsSyncEnabled()) {
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
+            addToReport(writer, "For information on manual migration see: https://github.com/tcplugins/tcWebHooks/wiki/Manually-Migrating-WebHooks");
             addToReport(writer, "An project-config.xml configuration of each webhook is produced below. Please copy and paste these configuration(s) into project-config.xml in your VCS settings.");
             try {
                 addToReport(writer,"\n" + myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(settings.getWebHooksAsList(), project));
@@ -246,7 +249,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 				} else {
 				    addToReport(writer, String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
 				}
-				WebHookUpdateResult deleteResult = webhookSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
+				WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
 				if (!deleteResult.isUpdated() && failIfCantRemoveWebhookFromCurrentConfiguration) {
 					throw new ProjectFeatureMigrationException("Unable to delete existing webhook from Project Settings", deleteResult.getWebHookConfig());
 				} else if (!deleteResult.isUpdated()){
@@ -347,8 +350,9 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
         if (projectPluginsConfigDir.isDirectory() && projectPluginsConfigDir.canWrite()) {
         	if (projectPluginSettingsFile.canRead()) {
-        		try {
-        			WebHookProjectSettings webhooks = ConfigLoaderUtil.getAllWebHooksInConfig(projectPluginSettingsFile);
+        		//try {
+        			//WebHookProjectSettings webhooks = ConfigLoaderUtil.getAllWebHooksInConfig(projectPluginSettingsFile);
+        		      WebHookProjectSettings webhooks =  (WebHookProjectSettings) this.myProjectSettingsManager.getSettings(project.getProjectId(), "webhooks");
         			if (webhooks != null && webhooks.isEnabled() && !webhooks.getWebHooksAsList().isEmpty()) {
         				return Pair.of(null, webhooks);
         			} else {
@@ -357,13 +361,13 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         						projectPluginSettingsFile.toString(),
         						project.getExternalId()), null);
         			}
-        		} catch (JDOMException | IOException e) {
-        		    return Pair.of(String.format(
-        					"File '%s' for project '%s' is not readable as a plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
-        					projectPluginSettingsFile.toString(),
-        					project.getExternalId(),
-        					e.getMessage()), null);
-        		}
+//        		} catch (JDOMException | IOException e) {
+//        		    return Pair.of(String.format(
+//        					"File '%s' for project '%s' is not readable as a plugin-settings file. No webhook migration will be attempted for this project. Reason: %s",
+//        					projectPluginSettingsFile.toString(),
+//        					project.getExternalId(),
+//        					e.getMessage()), null);
+//        		}
         	} else {
         	    return Pair.of(String.format(
         				"File '%s' for project '%s' does not exist. No webhook migration will be attempted for this project.",

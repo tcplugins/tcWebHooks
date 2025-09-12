@@ -51,5 +51,18 @@ public class WebHookConfigToProjectFeatureXmlRenderer {
         m.marshal(e, sw);
         return sw.toString();
     }
+    
+    public String renderAsXml(WebHookConfig webHookConfig) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(ProjectFeatureExtension.class);
+        Marshaller m = context.createMarshaller();
+        StringWriter sw = new StringWriter();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        
+        SProjectFeatureDescriptor f = myProjectFeatureToWebHookConfigConverter.convert(webHookConfig);
+        ProjectFeatureExtension e = ProjectFeatureExtension.init(f.getId(), f.getType(), f.getParameters());
+        m.marshal(e, sw);
+        return sw.toString();
+    }
 
 }

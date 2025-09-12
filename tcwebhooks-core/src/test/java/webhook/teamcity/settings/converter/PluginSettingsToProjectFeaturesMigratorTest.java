@@ -103,7 +103,6 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		// Create a bunch of temp files in "target" so that we can read and write them.
 		Path teamcityTempConfigDir = Files.createTempDirectory(Paths.get("target"), "tmpBuildServerConfig");
 		teamcityTempConfigDir.toFile().deleteOnExit();
-		//new File(teamcityTempConfigDir.toFile().toString() + "/internal.properties").createNewFile();
 		when(myServerPaths.getConfigDir()).thenReturn(teamcityTempConfigDir.toString());
 		when(myServerPaths.getSystemDir()).thenReturn(teamcityTempConfigDir.toString());
 		
@@ -119,7 +118,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	
 	
 	@Test
-	public void testHappyPath() throws JDOMException, IOException {
+	public void testHappyPath() {
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
 				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
 		migrator.executeAutomatedMigration();
@@ -132,7 +131,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	}
 	
 	@Test
-	public void testThatWebHookIsNotCreatedIfExistsAlreadyInSettingsManager() throws JDOMException, IOException {
+	public void testThatWebHookIsNotCreatedIfExistsAlreadyInSettingsManager() {
 		WebHookSearchResult searchResult = new WebHookSearchResult();
 		searchResult.setWebHookConfigEnhanced(WebHookConfigEnhanced.builder().webHookConfig(config).build());
 		when(myWebHookSettingsManager.findWebHooks(any())).thenReturn(Collections.singletonList(searchResult));
@@ -147,7 +146,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	}
 	
 	@Test
-	public void testThatPeristIsNeverCalledWhenNoProjectsFound() throws JDOMException, IOException {
+	public void testThatPeristIsNeverCalledWhenNoProjectsFound() {
 
 		when(myTeamCityCoreFacade.getActiveProjects()).thenReturn(Collections.emptyList());
 
@@ -161,7 +160,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 		verifyZeroInteractions(myWebHookFeaturesStore);
 	}
 	@Test
-	public void testThatPeristIsNeverCalledWhenNewWebHookCannotBeSaved() throws JDOMException, IOException {
+	public void testThatPeristIsNeverCalledWhenNewWebHookCannotBeSaved() {
 		
 		when(myWebHookFeaturesStore.addWebHookConfig(any(), any())).thenReturn(new WebHookUpdateResult(false, config));
 		
@@ -179,8 +178,16 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	
 	@Test
 	public void testThatPeristIsNeverCalledWhenOldWebHookCannotBeRemoved() throws JDOMException, IOException {
-		// Mock out the ProjectSettingsManager, so that no existing webhooks are found in plugin settings
-		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(new WebHookProjectSettings());
+		// Mock out the ProjectSettingsManager, so that no existing webhooks are found in plugin settings on the second call.
+	    // The first call, gets a valid set of webhooks, and then the second call populates the old webhooks
+	    // and then returns an empty set. Thus making the delete fail.
+        String projectDir = "src/test/resources/testMigrationConfigurations/projects/FirstProject";
+
+        Element e = ConfigLoaderUtil.getFullConfigElement(new File(projectDir + "/pluginData/plugin-settings.xml"));
+        WebHookProjectSettings settingsFromProjectSettingsManager = new WebHookProjectSettings();
+        settingsFromProjectSettingsManager.readFrom(e.getChild("webhooks"));
+        when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks"))
+                .thenReturn(settingsFromProjectSettingsManager).thenReturn(new WebHookProjectSettings());
 
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
 				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
@@ -195,8 +202,16 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	}
 	@Test
 	public void testThatPeristIsCalledEvenWhenOldWebHookCannotBeRemovedIfAllowedToContinue() throws JDOMException, IOException, ProjectFeatureMigrationException {
-		// Mock out the ProjectSettingsManager, so that no existing webhooks are found in plugin settings
-		when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks")).thenReturn(new WebHookProjectSettings());
+        // Mock out the ProjectSettingsManager, so that no existing webhooks are found in plugin settings on the second call.
+        // The first call, gets a valid set of webhooks, and then the second call populates the old webhooks
+        // and then returns an empty set. Thus making the delete fail.
+        String projectDir = "src/test/resources/testMigrationConfigurations/projects/FirstProject";
+
+        Element e = ConfigLoaderUtil.getFullConfigElement(new File(projectDir + "/pluginData/plugin-settings.xml"));
+        WebHookProjectSettings settingsFromProjectSettingsManager = new WebHookProjectSettings();
+        settingsFromProjectSettingsManager.readFrom(e.getChild("webhooks"));
+        when(myProjectSettingsManager.getSettings(project01.getProjectId(), "webhooks"))
+                .thenReturn(settingsFromProjectSettingsManager).thenReturn(new WebHookProjectSettings());
 		
 		PluginSettingsToProjectFeaturesMigrator migrator = new PluginSettingsToProjectFeaturesMigrator(
 				myTeamCityCoreFacade, myWebHookSettingsManager, myProjectSettingsManager, myWebHookFeaturesStore, myConfigActionFactory, myServerPaths, null, null, myWebHookConfigToKotlinDslRenderer, myWebHookConfigToProjectFeatureXmlRenderer);
@@ -211,7 +226,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	}
 	
 	@Test
-	public void testThatNothingMuchHappensWhenVcsSettingsAreConfigured() throws JDOMException, IOException {
+	public void testThatNothingMuchHappensWhenVcsSettingsAreConfigured() {
 		
 		Map<String,String> featureMap = ImmutableMap.of(
 				"enabled" , "true",
@@ -233,7 +248,7 @@ public class PluginSettingsToProjectFeaturesMigratorTest {
 	}
 	
 	@Test
-	public void testThatMigrationIsAttemptedWhenVcsSettingsAreConfiguredButSyncIsEnabled() throws JDOMException, IOException {
+	public void testThatMigrationIsAttemptedWhenVcsSettingsAreConfiguredButSyncIsEnabled() {
 		
 		Map<String,String> featureMap = ImmutableMap.of(
 				"enabled" , "true",
