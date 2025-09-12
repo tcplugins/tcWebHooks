@@ -77,11 +77,12 @@ public class WebHookProjectSettingsTab extends EditProjectTab {
 		this.myWebHookPluginDataResolver = webHookPluginDataResolver;
 		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/css/styles.css"));
 		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.css"));
+		addCssFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/highlight/styles/default.css"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.color.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/jquery.easytabs.min.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/moment-2.22.2.min.js"));
-		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/highlight/highlight.pack.js"));
+		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/3rd-party/highlight/highlight.min.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookCommon.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookParameter.js"));
 		addJsFile(pluginDescriptor.getPluginResourcesPath("WebHook/js/editWebhookHeader.js"));

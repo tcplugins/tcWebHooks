@@ -24,7 +24,7 @@
     /css/userRoles.css
     
     ${jspHome}WebHook/css/styles.css
-    ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
+    ${jspHome}WebHook/3rd-party/highlight/styles/default.css
     ${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.css
         
       </bs:linkCSS>
@@ -65,7 +65,7 @@
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.easytabs.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.color.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/moment-2.22.2.min.js"></script>
-	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
+	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.min.js"></script>
 	<script type=text/javascript src="..${jspHome}WebHook/3rd-party/jquery.sweet-dropdown-1.0.0/jquery.sweet-dropdown.min.js"></script>
 
     <div class="editBuildPageGeneral webhookContainer" style="background-color:white; float:left; margin:0; padding:0; width:70%;">

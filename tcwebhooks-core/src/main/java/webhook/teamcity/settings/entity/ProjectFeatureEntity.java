@@ -53,6 +53,7 @@ public class ProjectFeatureEntity {
 
     @Data @NoArgsConstructor
     @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlRootElement(name = "extension")
     public static class ProjectFeatureExtension {
         @XmlAttribute
         String id;

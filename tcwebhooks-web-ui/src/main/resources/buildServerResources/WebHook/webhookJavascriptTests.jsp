@@ -15,7 +15,7 @@
       /css/userRoles.css
     
       ${jspHome}WebHook/css/styles.css
-      ${jspHome}WebHook/3rd-party/highlight/styles/tomorrow.css
+      ${jspHome}WebHook/3rd-party/highlight/styles/default.css
       ${jspHome}WebHook/3rd-party/mocha@9.1.3/mocha.css
       ${jspHome}WebHook/css/mocha.css
     </bs:linkCSS>
@@ -43,7 +43,7 @@
 	  <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/jquery.easytabs.min.js"></script>
   	<script type=text/javascript src="../..${jspHome}WebHook/3rd-party/jquery.color.js"></script>
 	  <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/moment-2.22.2.min.js"></script>
-	  <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/highlight/highlight.pack.js"></script>
+	  <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/highlight/highlight.min.js"></script>
     <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/mocha@9.1.3/chai.js"></script>
     <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/mocha@9.1.3/mocha.js"></script>
     <script type=text/javascript src="../..${jspHome}WebHook/3rd-party/mocha@9.1.3/sinon-9.2.4.js"></script>

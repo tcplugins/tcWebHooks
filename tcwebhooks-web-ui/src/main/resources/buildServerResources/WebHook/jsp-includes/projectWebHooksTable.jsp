@@ -4,8 +4,11 @@
     </c:if>
     <p>There are <strong>${fn:length(projectBean.webHookList)}</strong> WebHooks configured for all builds in this project.
         <c:if test="${showLinksToOldEditPage}">
-            <a href="../webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.</p>
+            <a href="../webhooks/index.html?projectId=${projectExternalId}">Edit project WebHooks</a>.
         </c:if>
+     </p>
+     <p>To view these WebHooks as code, visit <a href="../webhooks/view-configuration.html?project=${projectExternalId}">this projects WebHook Configurations page</a>.</p> 
+        
     <table id="webHookTable" class="parametersTable settings webhooktable">
         <c:if test="${fn:length(projectBean.webHookList) > 0}" >
 

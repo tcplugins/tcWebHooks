@@ -22,13 +22,13 @@
     <bs:linkCSS>
       /css/admin/adminMain.css
       ${teamcityPluginResourcesPath}WebHook/css/styles.css
-      ${teamcityPluginResourcesPath}WebHook/3rd-party/highlight/styles/tomorrow.css
+      ${teamcityPluginResourcesPath}WebHook/3rd-party/highlight/styles/default.css
       ${teamcityPluginResourcesPath}WebHook/3rd-party/diff2html-2.11.2/diff2html.css
     </bs:linkCSS>
     <bs:linkScript>
       ${teamcityPluginResourcesPath}WebHook/3rd-party/moment-2.22.2.min.js
       ${teamcityPluginResourcesPath}WebHook/js/editWebhookTemplate.js
-      ${teamcityPluginResourcesPath}WebHook/3rd-party/highlight/highlight.pack.js
+      ${teamcityPluginResourcesPath}WebHook/3rd-party/highlight/highlight.min.js
       ${teamcityPluginResourcesPath}WebHook/3rd-party/diff2html-2.11.2/diff2html.js
     </bs:linkScript>
     <script type="text/javascript">

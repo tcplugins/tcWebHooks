@@ -167,6 +167,9 @@
      <bean id="webHookMigrationController" 
      	class="webhook.teamcity.migration.WebHookMigrationController" 
      	/>
+     <bean id="webHookViewConfigurationController" 
+     	class="webhook.teamcity.extension.WebHookViewConfigurationController" 
+     	/>
      <bean id="webHookMigrationAdminPage" 
      	class="webhook.teamcity.extension.admin.WebHookMigrationAdminPage" 
      	/>
