@@ -23,7 +23,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jdom.JDOMException;
 
 import jetbrains.buildServer.serverSide.ConfigAction;
 import jetbrains.buildServer.serverSide.ConfigActionFactory;
@@ -42,6 +41,7 @@ import webhook.teamcity.DeferrableServiceManager;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityCoreFacade;
 import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
+import webhook.teamcity.exception.NonExistantProjectException;
 import webhook.teamcity.exception.ProjectFeatureMigrationException;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookFeaturesStore;
@@ -128,6 +128,8 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
     			}
 		    } catch (IOException e1) {
                 Loggers.SERVER.warn("Failed to create migration report at: " + fileName);
+            } catch (Exception e2) {
+                Loggers.SERVER.warn("Failed to run tcWebHooks migration.", e2);
             }
 		}
 		
@@ -243,28 +245,35 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 			if (!result.isEmpty()) {
 				addWarningToReport(writer, String.format("WebHook with id '%s' in project '%s' already exists. Will not migrate this webhook", w.getUniqueKey(), project.getExternalId()));
 			} else {
-				WebHookUpdateResult addResult = this.myWebHookFeaturesStore.addWebHookConfig(project, w);
-				if (!addResult.isUpdated()) {
-					throw new ProjectFeatureMigrationException("Unable to add webhook from Plugin Settings as a ProjectFeature", addResult.getWebHookConfig());
-				} else {
-				    addToReport(writer, String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
-				}
-				WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
-				if (!deleteResult.isUpdated() && failIfCantRemoveWebhookFromCurrentConfiguration) {
-					throw new ProjectFeatureMigrationException("Unable to delete existing webhook from Project Settings", deleteResult.getWebHookConfig());
-				} else if (!deleteResult.isUpdated()){
-				    addWarningToReport(writer, String.format("Unable to delete existing webhook from Plugin Settings. WebHook id '%s', ProjectId: '%s'", w.getUniqueKey(), project.getExternalId()));
-				} else {
-				    addToReport(writer, String.format("Deleted webHook from PluginSettings. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
-				}
+			    try {
+			        WebHookUpdateResult addResult = this.myWebHookFeaturesStore.addWebHookConfig(project, w);
+    				if (!addResult.isUpdated()) {
+    					throw new ProjectFeatureMigrationException("Unable to add webhook from Plugin Settings as a ProjectFeature", addResult.getWebHookConfig());
+    				} else {
+    				    addToReport(writer, String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
+    				}
+    				WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
+    				if (!deleteResult.isUpdated() && failIfCantRemoveWebhookFromCurrentConfiguration) {
+    				    throw new ProjectFeatureMigrationException("Unable to delete existing webhook from Project Settings", deleteResult.getWebHookConfig());
+    				} else if (!deleteResult.isUpdated()){
+    				    addWarningToReport(writer, String.format("Unable to delete existing webhook from Plugin Settings. WebHook id '%s', ProjectId: '%s'", w.getUniqueKey(), project.getExternalId()));
+    				} else {
+    				    addToReport(writer, String.format("Deleted webHook from PluginSettings. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
+    				}
+			    } catch (NonExistantProjectException ex) {
+			        addToReport(writer, String.format("Unable to add existing webhook from Plugin Settings. Migration will attempt to continue. WebHook id '%s', ProjectId: '%s'", w.getUniqueKey(), project.getExternalId()),ex);
+			    }
 			}
 		}
 		try {
 			ConfigAction cause = myConfigActionFactory.createAction(project, "Migrated webhooks configuration");
 			project.persist(cause);
+			addSectionToReport(writer, String.format("Finished migration of project '%s'.", project.getExternalId()));
+
 		} catch (AccessDeniedException | PersistFailedException ex) {
 			throw new ProjectFeatureMigrationException("Failed to perist updated configurations for project " + project.getExternalId(), ex);
 		}
+		
 	}
 
 	private void backupExistingPluginSettings(SProject project, LocalDateTime now, BufferedWriter writer) throws IOException {

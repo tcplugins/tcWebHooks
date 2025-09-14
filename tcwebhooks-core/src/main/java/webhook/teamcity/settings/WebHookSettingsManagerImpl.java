@@ -78,9 +78,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public void initialise() {
 		if (this.projectSettingsMap == null) {
 		    try {
-	            Loggers.SERVER.debug("WebHookSettingsManagerImpl#initialise :: Waiting for settings write lock");
 		        settingsLock.writeLock().lock();
-		        Loggers.SERVER.debug("WebHookSettingsManagerImpl#initialise :: Obtained settings write lock");
     		    Loggers.SERVER.debug("Initialising projectSettingsMap");
     			this.projectSettingsMap = rebuildProjectSettingsMap();
     			for (String projectId : this.projectSettingsMap.keySet()) {
@@ -88,7 +86,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     			}
 		    } finally {
     		    settingsLock.writeLock().unlock();
-    		    Loggers.SERVER.debug("WebHookSettingsManagerImpl#initialise :: Released settings write lock");
     		}
 		}
 	}
@@ -105,14 +102,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public void refreshCache(SProject project) {
 	    Loggers.SERVER.info("Rebuilding webhook settings cache for project " + project.getExternalId());
         try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#refreshCache :: Waiting for settings write lock");
             settingsLock.writeLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#refreshCache :: Obtained settings write lock");
     	    this.projectSettingsMap.put(project.getProjectId(), getSettings(project.getProjectId()));
         }finally {
             settingsLock.writeLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#refreshCache :: Released settings write lock");
-            
     	}
         this.rebuildWebHooksEnhanced(project.getProjectId());
 	}
@@ -177,13 +170,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			if (persist(sProject, "Deleted existing WebHook")) {
 				result.updated = true;
 		        try {
-                    Loggers.SERVER.debug("WebHookSettingsManagerImpl#deleteWebHook :: Waiting for enhancedWebHooks write lock");
 		            enhancedLock.writeLock().lock();
-                    Loggers.SERVER.debug("WebHookSettingsManagerImpl#deleteWebHook :: Obtained enhancedWebHooks write lock");
 		            this.webhooksEnhanced.remove(webHookId);
 		        } finally {
 	                enhancedLock.writeLock().unlock();
-                    Loggers.SERVER.debug("WebHookSettingsManagerImpl#deleteWebHook :: Released enhancedWebHooks write lock");
 		        }
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
@@ -201,13 +191,10 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			if (persist(sProject, "Deleted existing WebHook")) {
 				result.updated = true;
                 try {
-                    Loggers.SERVER.debug("WebHookSettingsManagerImpl#deleteWebHook :: Waiting for enhancedWebHooks write lock");
                     enhancedLock.writeLock().lock();
-                    Loggers.SERVER.debug("WebHookSettingsManagerImpl#deleteWebHook :: Obtained enhancedWebHooks write lock");
                     this.webhooksEnhanced.remove(config.getUniqueKey());
                 } finally {
                     enhancedLock.writeLock().unlock();
-                    Loggers.SERVER.debug("WebHookSettingsManagerImpl#deleteWebHook :: Released enhancedWebHooks write lock");
                 }
 				rebuildWebHooksEnhanced(projectInternalId);
 			} else {
@@ -288,9 +275,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public int getTemplateUsageCount(String templateId) {
 		int count = 0;
 		try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getTemplateUsageCount :: Waiting for enhancedWebhooks read lock");
 		    enhancedLock.readLock().lock();
-		    Loggers.SERVER.debug("WebHookSettingsManagerImpl#getTemplateUsageCount :: Obtained enhancedWebhooks read lock");
 		for (WebHookConfigEnhanced e : this.webhooksEnhanced.values()) {
 			if (templateId.equalsIgnoreCase(e.getTemplateId())) {
 				count++;
@@ -298,7 +283,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		}
 		} finally {
 		    enhancedLock.readLock().unlock();
-		    Loggers.SERVER.debug("WebHookSettingsManagerImpl#getTemplateUsageCount :: Released enhancedWebhooks read lock");
 		}
 		return count;
 	}
@@ -307,15 +291,12 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public List<WebHookSearchResult> findWebHooks(WebHookSearchFilter filter) {
 		List<WebHookSearchResult> webhookResultList = new ArrayList<>();
 	    try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#findWebHooks :: Waiting for enhancedWebhooks read lock");
 	        enhancedLock.readLock().lock();
-	        Loggers.SERVER.debug("WebHookSettingsManagerImpl#findWebHooks :: Obtained enhancedWebhooks read lock");
     		for (WebHookConfigEnhanced e : this.webhooksEnhanced.values()) {
     			addMatchingWebHook(filter, webhookResultList, e);
     		}
         } finally {
             enhancedLock.readLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#findWebHooks :: Released enhancedWebhooks read lock");
         }
 		return webhookResultList;
 	}
@@ -323,9 +304,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	@Override
 	public Map<String, List<WebHookSearchResult>> findWebHooksByProject(WebHookSearchFilter filter) {
 		Map<String,List<WebHookSearchResult>> projectGroupedResults = new LinkedHashMap<>();
-		Loggers.SERVER.debug("WebHookSettingsManagerImpl#findWebHooksByProject :: Waiting for settings read lock");
 		settingsLock.readLock().lock();
-		Loggers.SERVER.debug("WebHookSettingsManagerImpl#findWebHooksByProject :: Obtained settings read lock");
 		try {
     		for (Map.Entry<String, WebHookProjectSettings> entry : this.projectSettingsMap.entrySet()) {
     			List<WebHookSearchResult> webhookResultList = new ArrayList<>();
@@ -338,8 +317,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     		}
 		} finally {
     	    settingsLock.readLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#findWebHooksByProject :: Released settings read lock");
-
     	}
 		return projectGroupedResults;
 	}
@@ -348,9 +325,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public List<WebHookConfigEnhanced> getWebHooksForProject(SProject project) {
 		List<WebHookConfigEnhanced> webhookConfigs = new ArrayList<>();
 		try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForProject :: Waiting for enhancedWebHooks read lock");
 		    enhancedLock.readLock().lock();
-		    Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForProject :: Obtained enhancedWebHooks read lock");
     		for (WebHookConfigEnhanced wh : this.webhooksEnhanced.values()) {
     			if (project.getExternalId().equals(wh.getProjectExternalId())) {
     				webhookConfigs.add(wh);
@@ -358,7 +333,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     		}
 		} finally {
 		    enhancedLock.readLock().unlock();
-		    Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForProject :: Released enhancedWebHooks read lock");
 		}
 		return webhookConfigs;
 	}
@@ -367,9 +341,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForProjects(List<SProject> sProjects) {
 		Map<SProject,List<WebHookConfigEnhanced>> projectGroupedResults = new LinkedHashMap<>();
 	      try {
-	            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForProjects :: Waiting for enhancedWebHooks read lock");
 	            enhancedLock.readLock().lock();
-	            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForProjects :: Obtained enhancedWebHooks read lock");
     		for (SProject project : sProjects) {
     			List<WebHookConfigEnhanced> webhookConfigs = new ArrayList<>();
     			for (WebHookConfigEnhanced wh : this.webhooksEnhanced.values()) {
@@ -381,8 +353,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     		}
 	      } finally {
 	          enhancedLock.readLock().unlock();
-	          Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForProjects :: Released enhancedWebHooks read lock");
-
 	      }
 		return projectGroupedResults;
 	}
@@ -390,9 +360,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	public Map<SProject, List<WebHookConfigEnhanced>> getWebHooksForBuild(List<SProject> sProjects, SBuildType sBuildType) {
 		Map<SProject,List<WebHookConfigEnhanced>> projectGroupedResults = new LinkedHashMap<>();
 		try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForBuild :: Waiting for enhancedWebHooks read lock");
 		    enhancedLock.readLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForBuild :: Obtained enhancedWebHooks read lock");
     		for (SProject project : sProjects) {
     			List<WebHookConfigEnhanced> webhookConfigs = new ArrayList<>();
     			for (WebHookConfigEnhanced wh : this.webhooksEnhanced.values()) {
@@ -404,7 +372,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     		}
 		} finally {
 		    enhancedLock.readLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#getWebHooksForBuild :: Released enhancedWebHooks read lock");
 		}
 		return projectGroupedResults;
 	}
@@ -413,9 +380,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     public void handleProjectChangedEvent(WebHookSettingsEvent event) {
         this.initialise();
         try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#handleProjectChangedEvent :: Waiting for settings write lock");
             settingsLock.writeLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#handleProjectChangedEvent :: Obtained settings write lock");
             if (
                  (      // PROJECT_CHANGED or PROJECT_PERSISTED and unseen project 
                    (     WebHookSettingsEventType.PROJECT_CHANGED.equals(event.getEventType()) 
@@ -444,7 +409,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
             }
         } finally {
             settingsLock.writeLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#handleProjectChangedEvent :: Released settings write lock");
         }
     }
     
@@ -463,23 +427,18 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     @Override
     public void removeAllWebHooksFromCacheForProject(String projectInternalId) {
         try  {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Waiting for settings write lock");
             settingsLock.writeLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Obtained settings write lock");
             WebHookProjectSettings p = this.projectSettingsMap.remove(projectInternalId);
             if (p != null) {
                 Loggers.SERVER.info(String.format("Removed project from webhook cache: projectId: '%s'", projectInternalId));
             }
         } finally {
             settingsLock.writeLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Released settings write lock");
 
         }
         List<String> keysForDeletion = new ArrayList<>();
         try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Waitihng for enhancedWebHooks read lock");
             enhancedLock.readLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Obtained for enhancedWebHooks read lock");
             for (Map.Entry<String,WebHookConfigEnhanced> e : this.webhooksEnhanced.entrySet()) {
                 if (projectInternalId.equals(e.getValue().getProjectInternalId())) {
                     keysForDeletion.add(e.getKey());
@@ -487,12 +446,9 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
             }
         } finally {
             enhancedLock.writeLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Released enhancedWebHooks read lock");
         }
         try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Waiting for enhancedWebHooks write lock");
             enhancedLock.writeLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Obtained enhancedWebHooks write lock");
             for (String k : keysForDeletion) {
                 WebHookConfigEnhanced w = this.webhooksEnhanced.remove(k);
                 if (w != null) {
@@ -501,7 +457,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
             }
         } finally {
             enhancedLock.writeLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#removeAllWebHooksFromCacheForProject :: Released enhancedWebHooks write lock");
         }
         Loggers.SERVER.info("Removed webhooks for project from cache with project id: " + projectInternalId);
     }
@@ -649,9 +604,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		if (Objects.nonNull(sProject)) {
 		    boolean persistRequired = false;
 		    try {
-	            Loggers.SERVER.debug("WebHookSettingsManagerImpl#rebuildWebHooksEnhanced :: Waiting for enhancedWebhooks write lock");
 		        enhancedLock.writeLock().lockInterruptibly();
-		        Loggers.SERVER.debug("WebHookSettingsManagerImpl#rebuildWebHooksEnhanced :: Obtained enhancedWebhooks write lock");
     		    WebHookProjectSettings webHookProjectSettings = getSettings(projectInternalId);
     			Loggers.SERVER.debug("WebHookSettingsManagerImpl :: rebuilding webhook cache for project: " + sProject.getExternalId() + " '" + sProject.getName() + "'");
     			List<String> existingProjectWebHookIds = getWebHooksForProject(sProject).stream().map(c -> c.getWebHookConfig().getUniqueKey()).collect(Collectors.toList());
@@ -700,7 +653,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 		        Thread.currentThread().interrupt();
             } finally {
                 enhancedLock.writeLock().unlock();
-                Loggers.SERVER.debug("WebHookSettingsManagerImpl#rebuildWebHooksEnhanced :: Released enhancedWebhooks write lock");
 		    }
 			if (persistRequired) {
 			    persist(sProject, "Conflicting WebHook ids remapped");
@@ -755,9 +707,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 	
 	private WebHookConfig checkForConflictingUniqueId(WebHookConfig origConfig, String projectInternalId) {
         try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#checkForConflictingUniqueId :: Waiting for enhancedWebhooks read lock");
             enhancedLock.readLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#checkForConflictingUniqueId :: Obtained enhancedWebhooks read lock");
 	    if (this.webhooksEnhanced.containsKey(origConfig.getUniqueKey()) &&  ! projectInternalId.equals(webhooksEnhanced.get(origConfig.getUniqueKey()).getProjectInternalId())) {
 	        // Have the same unique ID, but on a different project.
 	        // Therefore, generate a new UniqueId for this WebHook.
@@ -773,7 +723,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
         }
         } finally {
             enhancedLock.readLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#checkForConflictingUniqueId :: Released enhancedWebhooks read lock");
         }
         return origConfig;
     }
@@ -837,9 +786,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
 			return true;
 		}
         try {
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#isHideSecureValuesEnabled :: Waiting for enhancedWebhooks read lock");
             settingsLock.readLock().lock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#isHideSecureValuesEnabled :: Obtained enhancedWebhooks read lock");
     		for ( WebHookProjectSettings settings : this.projectSettingsMap.values()) {
     			for (WebHookConfig config: settings.getWebHooksConfigs()) {
     				if (webhookId.equals(config.getUniqueKey())) {
@@ -849,7 +796,6 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
     		}
         } finally {
             settingsLock.readLock().unlock();
-            Loggers.SERVER.debug("WebHookSettingsManagerImpl#isHideSecureValuesEnabled :: Released enhancedWebhooks read lock");
         }
 		return true;
 	}

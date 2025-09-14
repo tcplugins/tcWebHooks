@@ -30,6 +30,7 @@ import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticator;
 import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
 import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
+import webhook.teamcity.exception.NonExistantProjectException;
 import webhook.testframework.util.ConfigLoaderUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -194,6 +195,18 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(3));
         assertEquals("http://localhost:8111/webhooks/endpoint.html?vcs_test=2", webHookConfig.getUrl());
         assertTrue(webHookConfig.isEnabledForAllBuildsInProject());
+	}
+	
+	@Test(expected = NonExistantProjectException.class)
+	public void testConvertWhithInvalidBuildTypeId() throws JDOMException, IOException {
+	    when(projectManager.findBuildTypeById("bt1")).thenReturn(null);
+        BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
+        WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
+        authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
+        authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
+        WebHookConfig webhook = ConfigLoaderUtil.getSpecificWebHookInConfig(1, new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
+        converter.convert(webhook);
 	}
 
 }
