@@ -35,7 +35,7 @@ public class ProjectAndBuildWebhooksBean {
 		bean.webHookProjectSettings = settings;
 		bean.projectWebhooksWithAddress = new ArrayList<>();
 
-		for (WebHookConfig c : settings.getProjectWebHooksAsList()) {
+		for (WebHookConfig c : settings.getWebHooksForAllBuilds()) {
 			bean.projectWebhooksWithAddress.add(new WebHookConfigWithGeneralisedAddressWrapper(
 					c, getGeneralisedWebAddress(webAddressTransformer, c.getUrl())
 				));
@@ -44,7 +44,7 @@ public class ProjectAndBuildWebhooksBean {
 		bean.buildWebhooks = new ArrayList<>();
 
 		if (sBuild != null && sBuild.getProjectId().equals(project.getProjectId())){
-			bean.buildWebhooks.add(new BuildWebhooksBean(sBuild, settings.getBuildWebHooksAsList(sBuild), webAddressTransformer));
+			bean.buildWebhooks.add(new BuildWebhooksBean(sBuild, settings.getWebHooksForBuild(sBuild), webAddressTransformer));
 		}
 		return bean;
 	}

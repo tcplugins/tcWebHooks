@@ -86,7 +86,7 @@ public class ProjectWebHooksBean {
 		addWebHookConfigHolder(bean, projectBuildTypes, newBlankConfig, registeredPayloads, templateList);
 
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */
-		for (WebHookConfig config : projSettings.getBuildWebHooksAsList(sBuildType)){
+		for (WebHookConfig config : projSettings.getWebHooksForBuild(sBuildType)){
 			addWebHookConfigHolder(bean, projectBuildTypes, config, registeredPayloads, templateList);
 		}
 
@@ -111,7 +111,7 @@ public class ProjectWebHooksBean {
 		enabledBuildTypes.add(sBuildType.getBuildTypeId());
 
 		/* Iterate over the rest of the webhooks in this project and add them to the json config */
-		for (WebHookConfig config : projSettings.getBuildWebHooksAsList(sBuildType)){
+		for (WebHookConfig config : projSettings.getWebHooksForBuild(sBuildType)){
 			addWebHookConfigHolder(bean, projectBuildTypes, config, registeredPayloads, templateList);
 		}
 

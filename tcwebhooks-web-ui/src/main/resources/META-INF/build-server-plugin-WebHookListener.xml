@@ -173,6 +173,10 @@
      <bean id="webHookMigrationAdminPage" 
      	class="webhook.teamcity.extension.admin.WebHookMigrationAdminPage" 
      	/>
+     <bean id="webHookMigrationHealthReports" 
+     	class="webhook.teamcity.migration.WebHookMigrationHealthReports" 
+		init-method="init"
+     	/>
 
      <bean id="webHookHttpClientFactory"
      	class="webhook.teamcity.WebHookHttpClientFactoryImpl" 
@@ -214,6 +218,10 @@
 	<bean id="pluginSettingsToProjectFeaturesMigrator"
 		class="webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator"
 		init-method="requestDeferredRegistration"
+		/>
+
+	<bean id="webHookMigrationStatusService"
+		class="webhook.teamcity.settings.converter.WebHookMigrationStatusServiceImpl"
 		/>
 		
 	<bean id="webHookConfigToKotlinDslRenderer"
