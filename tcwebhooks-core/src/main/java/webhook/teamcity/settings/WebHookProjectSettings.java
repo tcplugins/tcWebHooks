@@ -88,7 +88,12 @@ public class WebHookProjectSettings implements ProjectSettings {
     	return this.webHooksConfigs;
     }    
     
-    public List<WebHookConfig> getProjectWebHooksAsList(){
+	/**
+	 * Gets WebHooks in this project that have "enabledForAllBuildsInProject"
+	 * set to true.
+	 * @return a List of all the relevant webhook configurations 
+	 */
+    public List<WebHookConfig> getWebHooksForAllBuilds(){
     	List<WebHookConfig> projHooks = new ArrayList<>();
     	for (WebHookConfig config : getWebHooksAsList()){
     		if (config.isEnabledForAllBuildsInProject()){
@@ -98,7 +103,7 @@ public class WebHookProjectSettings implements ProjectSettings {
     	return projHooks;
     }    
     
-    public List<WebHookConfig> getBuildWebHooksAsList(SBuildType buildType){
+    public List<WebHookConfig> getWebHooksForBuild(SBuildType buildType){
     	List<WebHookConfig> buildHooks = new ArrayList<>();
     	for (WebHookConfig config : getWebHooksAsList()){
     		if (config.isSpecificBuildTypeEnabled(buildType)){
