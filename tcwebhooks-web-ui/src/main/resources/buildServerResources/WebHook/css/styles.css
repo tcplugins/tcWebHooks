@@ -63,6 +63,10 @@ td.newWebHookRow p {
 	height:36em;
 }
 
+#webhookCodeRendered > pre {
+	margin:0;
+}
+
 #currentTemplatePreview {
 	width:50em;
 	height:25em;

@@ -9,9 +9,9 @@ import jetbrains.buildServer.serverSide.SProject;
 import lombok.RequiredArgsConstructor;
 import webhook.teamcity.TeamCityCoreFacade;
 import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
-import webhook.teamcity.payload.template.render.HtmlRenderer;
 import webhook.teamcity.payload.template.render.WebHookStringRenderer;
 import webhook.teamcity.payload.template.render.XmlToHtmlPrettyPrintingRenderer;
+import webhook.teamcity.payload.template.render.KotlinDslToHtmlPrettyPrintingRenderer;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.testing.model.WebHookRenderResult;
 
@@ -30,11 +30,11 @@ public class WebHookUserRequestedConfigRendererImpl implements WebHookUserReques
             @NotNull
             ProjectVcsStatus vcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(project);
             if (vcsStatus.isKotlin()) {
-                HtmlRenderer htmlr = new HtmlRenderer();
-                return new WebHookRenderResult(htmlr.render(myConfigToKotlinDslRenderer.renderAsKotlinDsl(webHookConfig)), "javascript");
+                WebHookStringRenderer kotlinRenderer = new KotlinDslToHtmlPrettyPrintingRenderer();
+                return new WebHookRenderResult(kotlinRenderer.render(myConfigToKotlinDslRenderer.renderAsKotlinDsl(webHookConfig, 0)), "kotlin");
             } else {
-                WebHookStringRenderer htmlr = new XmlToHtmlPrettyPrintingRenderer();
-                return new WebHookRenderResult(htmlr.render(myConfigToProjectFeatureXmlRenderer.renderAsXml(Collections.singletonList(webHookConfig), project)), "xml");
+                WebHookStringRenderer xmlRenderer = new XmlToHtmlPrettyPrintingRenderer();
+                return new WebHookRenderResult(xmlRenderer.render(myConfigToProjectFeatureXmlRenderer.renderAsXml(Collections.singletonList(webHookConfig), project)), "xml");
             }
         } catch (Exception e) {
             return new WebHookRenderResult(e.getMessage(), e);

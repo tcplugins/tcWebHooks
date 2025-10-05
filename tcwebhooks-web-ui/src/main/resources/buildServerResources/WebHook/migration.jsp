@@ -21,6 +21,7 @@
         /css/userRoles.css
 
         ${jspHome}WebHook/css/styles.css
+        ${jspHome}WebHook/3rd-party/highlight/styles/default.css
       </bs:linkCSS>
 
       <bs:linkScript>
@@ -46,7 +47,7 @@
     
     	<c:set var="showDetailLink" value="false" scope="request"/>
     	
-    		    <div>
+	    <div>
 	    <table class="settings templateTable">
 			<tbody>
 			<c:forEach items="${migrationData}" var="webhooks">
@@ -55,14 +56,18 @@
 	    	</tbody>
 		</table>
 	    	<c:if test="${not empty kotlinDsls}">
+			    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.min.js"></script>
 	    		<h2>Existing WebHooks converted to KotlinDSL</h2>
-	    		<pre><c:out value="${kotlinDsls}"></c:out></pre>
+	    		<pre><code class="language-kotlin"><c:out value="${kotlinDsls}"></c:out></code></pre>
+				<script>hljs.highlightAll();</script>
 	    	</c:if> 
 	    	<c:if test="${not empty projectFeaturesXml}">
+			    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.min.js"></script>
 	    		<h2>Existing WebHooks converted to Project Features XML</h2>
-	    		<pre><c:out value="${projectFeaturesXml}"></c:out></pre>
+	    		<pre><code class="language-xml"><c:out value="${projectFeaturesXml}"></c:out></code></pre>
+				<script>hljs.highlightAll();</script>
 	    	</c:if> 
-	    
 	    </div>
+	    
     </jsp:attribute>
 </bs:page>

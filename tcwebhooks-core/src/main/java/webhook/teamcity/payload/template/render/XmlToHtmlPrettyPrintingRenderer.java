@@ -9,7 +9,7 @@ public class XmlToHtmlPrettyPrintingRenderer implements WebHookStringRenderer {
 
 	@Override
 	public String render(String uglyXmlString) throws WebHookHtmlRendererException {
-		return  "<pre><code class=\"xml\">" + htmlr.render(uglyXmlString) + "</code></pre>";
+		return  "<pre><code class=\"language-xml\">" + htmlr.render(uglyXmlString) + "</code></pre>";
 	}
 	
 	@Override

@@ -2,7 +2,7 @@ package webhook.teamcity.settings.converter;
 
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.auth.WebHookAuthConfig;
@@ -13,13 +13,15 @@ import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookHeaderConfig;
 import webhook.teamcity.settings.project.WebHookParameterModel;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class WebHookConfigToKotlinDslRenderer {
-    private static int LEFT_PAD = 8;
-    final static int INDENT_SIZE_SPACES = 4;
-    private WebHookAuthenticatorProvider authenticatorProvider;
-    private BuildTypeIdResolver buildTypeIdResolver;
-    /*
+    private int leftPad = 8;
+    static final int INDENT_SIZE_SPACES = 4;
+    private final WebHookAuthenticatorProvider authenticatorProvider;
+    private final BuildTypeIdResolver buildTypeIdResolver;
+    /**
+     * Renders the webhook as KotlinDSL. Allows setting the leftPad amount in case indentation is required.
+     * For example:<code><pre>
       
        webHookConfiguration {
             webHookId = "MyProjectId_WebHook_01"
@@ -41,11 +43,10 @@ public class WebHookConfigToKotlinDslRenderer {
                 preemptive = true
             }
         }
-      
+      </pre></code>
      */
-    
     public String renderAsKotlinDsl(WebHookConfig webHookConfig, int leftPad) {
-        LEFT_PAD = leftPad;
+        this.leftPad = leftPad;
         return renderAsKotlinDsl(webHookConfig);
     }
     public String renderAsKotlinDsl(WebHookConfig webHookConfig) {
@@ -97,7 +98,7 @@ public class WebHookConfigToKotlinDslRenderer {
 
     private String getBuildTypes(WebHookConfig webHookConfig) {
         StringBuilder sb = new StringBuilder();
-        if (webHookConfig.isEnabledForAllBuildsInProject()) {
+        if (Boolean.TRUE.equals(webHookConfig.isEnabledForAllBuildsInProject())) {
             sb.append(leftPad(1)).append("buildTypes = allProjectBuilds {\n")
               .append(leftPad(2)).append("subProjectBuilds = ").append(Boolean.toString(webHookConfig.isEnabledForSubProjects())).append("\n")
               .append(leftPad(1)).append("}\n");
@@ -107,16 +108,21 @@ public class WebHookConfigToKotlinDslRenderer {
               .append(leftPad(2)).append("/* Define the specific buildTypes that this webhook should execute for.\n")
               .append(leftPad(2)).append(" * There are 3 ways to define a buildType.\n")
               .append(leftPad(2)).append(" *\n")
-              .append(leftPad(2)).append(" *     This function takes an object of type \"jetbrains. buildServer. configs. kotlin.BuildType\".\n")
-              .append(leftPad(2)).append(" *     Typically, the buildType will already be defined in this file, and we can just reference it.\n")
+              .append(leftPad(2)).append(" *     This function takes an object of type\n")
+              .append(leftPad(2)).append(" *     \"jetbrains.buildServer.configs.kotlin.BuildType\".\n")
+              .append(leftPad(2)).append(" *     Typically, the buildType will already be defined in this file,\n")
+              .append(leftPad(2)).append(" *     and we can just reference it.\n")
               .append(leftPad(2)).append(" * buildType(myBuildType)\n")
               .append(leftPad(2)).append(" *\n")
-              .append(leftPad(2)).append(" *     This function takes the id of the BuildType. Again, we already know the buildType config, so\n")
-              .append(leftPad(2)).append(" *     we can use that by calling toString() on it.\n")
+              .append(leftPad(2)).append(" *     This function takes the id of the BuildType. Again, we already\n")
+              .append(leftPad(2)).append(" *     know the buildType config, so we can use that by calling\n")
+              .append(leftPad(2)).append(" *     toString() on it.\n")
               .append(leftPad(2)).append(" * buildTypeId(myBuildType.id.toString())\n")
               .append(leftPad(2)).append(" *\n")
-              .append(leftPad(2)).append(" *     This example calls the same function, but we are hard coding the BuildType's ID string.\n")
-              .append(leftPad(2)).append(" *     This is the least preferred method as it would need to be updated if the ID changes.\n")
+              .append(leftPad(2)).append(" *     This example calls the same function, but we are hard coding the\n")
+              .append(leftPad(2)).append(" *     BuildType's ID string.\n")
+              .append(leftPad(2)).append(" *     This is the least preferred method as it would need to be updated if\n")
+              .append(leftPad(2)).append(" *     the ID changes.\n")
               .append(leftPad(2)).append(" * buildTypeId(\"MyProjectId_MyBuildTypeId\")\n")
               .append(leftPad(2)).append(" */\n")
               .append(leftPad(2)).append("\n");
@@ -185,10 +191,10 @@ public class WebHookConfigToKotlinDslRenderer {
                 && p.getTemplateEngine() == null;
     }
     private String leftPad() {
-        return StringUtils.leftPad("", LEFT_PAD);
+        return StringUtils.leftPad("", leftPad);
     }
     private String leftPad(int indentMultiplier) {
-        return StringUtils.leftPad("", LEFT_PAD + (indentMultiplier * INDENT_SIZE_SPACES));
+        return StringUtils.leftPad("", leftPad + (indentMultiplier * INDENT_SIZE_SPACES));
     }
 
 }
