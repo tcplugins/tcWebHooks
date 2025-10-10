@@ -37,7 +37,10 @@
 
     <script type="text/javascript">
       BS.Navigation.items = [
-        {title: "WebHooks", url: '<c:url value="/webhooks/index.html"/>'},
+    	  <c:if test="${not empty project}"> 
+        	{title: "${project.name}", url: '<c:url value="../project/${project.externalid}"/>'},
+        	{title: "WebHooks", url: '<c:url value="/webhooks/index.html?projectId=${project.externalid}"/>'},
+          </c:if>
         {title: '${title}', selected: true}
       ];
     </script>

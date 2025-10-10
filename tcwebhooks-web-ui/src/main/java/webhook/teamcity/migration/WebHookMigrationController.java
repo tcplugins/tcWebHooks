@@ -88,6 +88,7 @@ public class WebHookMigrationController extends BaseController {
     		
     		if (request.getParameter("project") != null) {
     			SProject myProject = this.myTeamCityCoreFacade.findProjectByExtId(request.getParameter("project"));
+    			model.put("project", myProject);
     			if (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT)) {
     				Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
     				WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
