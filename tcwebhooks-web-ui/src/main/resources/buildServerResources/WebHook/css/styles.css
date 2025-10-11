@@ -35,6 +35,10 @@ tr.webHookRow:hover, tr.webHookRowTemplate:hover, tr.newWebHookRow:hover {
 	background-color: rgb(250, 250, 250);
 }
 
+tr.webHookRow td {
+	background: transparent;
+}
+
 td.newWebHookRow {
 	padding: 0px;
 }
@@ -360,7 +364,7 @@ table.templateTable tr {
 table.templateTable tr.blankline, table.templateTable tr.blankline td {
 	border-left: none;
 	border-right: none;
-	background: white;
+	background: transparent;
 }
 
 table.templateTable tr.templateHeading th {
