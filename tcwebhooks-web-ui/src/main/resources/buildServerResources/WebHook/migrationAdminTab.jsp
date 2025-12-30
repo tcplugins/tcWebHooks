@@ -4,11 +4,12 @@
 <%@ include file="/include-internal.jsp" %>
 
 <c:set var="showDetailLink" value="true" scope="request"/>
+<c:set var="showReRunMigration" value="false" scope="request"/>
 
-	    <div style="width: 50%">
+	    <div>
 	    <table class="settings templateTable">
 			<tbody>
-			<c:forEach items="${migrationData}" var="webhooks">
+			<c:forEach items="${migrationStatuses}" var="migrationStatus">
 				<%@ include file="jsp-includes/projectMigrationDetail.jsp" %>
 			</c:forEach>
 	    	</tbody>

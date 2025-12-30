@@ -14,6 +14,10 @@ import webhook.teamcity.settings.WebHookProjectSettings;
 @RequiredArgsConstructor
 public class WebHookMigrationStatusServiceImpl implements WebHookMigrationStatusService {
 
+    private static final String STARTED = "started";
+    private static final String COMPLETED = "completed";
+    private static final String DISABLED = "disabled";
+    private static final String UNKNOWN = "unknown";
     private final ProjectSettingsManager myProjectSettingsManager;
     private final ProjectManager myProjectManager;
     
@@ -30,7 +34,7 @@ public class WebHookMigrationStatusServiceImpl implements WebHookMigrationStatus
             return true;
         }
         String migrationStatus = TeamCityProperties.getPropertyOrNull(PluginSettingsToProjectFeaturesMigrator.TEAMCITY_INTERNAL_PROPERTY_KEY);
-        if ("completed".equals(migrationStatus) || "disabled".equals(migrationStatus)) {
+        if (COMPLETED.equals(migrationStatus) || DISABLED.equals(migrationStatus)) {
             return true;
         } else {
             return false;
@@ -46,14 +50,14 @@ public class WebHookMigrationStatusServiceImpl implements WebHookMigrationStatus
     @Override
     public String getMigrationStatus() {
         switch (TeamCityProperties.getPropertyOrNull(PluginSettingsToProjectFeaturesMigrator.TEAMCITY_INTERNAL_PROPERTY_KEY)) {
-            case "started":
-                return "started";
-            case "completed":
-                return "completed";
-            case "disabled":
-                return "disabled";
+            case STARTED:
+                return STARTED;
+            case COMPLETED:
+                return COMPLETED;
+            case DISABLED:
+                return DISABLED;
             default:
-                return "unknown";
+                return UNKNOWN;
         }
     }
 

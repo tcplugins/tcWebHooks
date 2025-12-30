@@ -23,7 +23,6 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.healthStatus.HealthStatusItemPageExtension;
 import jetbrains.buildServer.web.util.SessionUser;
 import lombok.RequiredArgsConstructor;
-import webhook.teamcity.Loggers;
 import webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator;
 import webhook.teamcity.settings.converter.WebHookMigrationStatusService;
 

@@ -1,5 +1,6 @@
 package webhook.teamcity.migration;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,19 +21,17 @@ import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.SessionUser;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.TeamCityCoreFacade;
-import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookFeaturesStore;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator;
+import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser;
+import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.ProjectMigrationStatus;
+import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.WebHookTriple;
 import webhook.teamcity.settings.converter.WebHookConfigToKotlinDslRenderer;
 import webhook.teamcity.settings.converter.WebHookConfigToProjectFeatureXmlRenderer;
 
@@ -40,7 +39,10 @@ import webhook.teamcity.settings.converter.WebHookConfigToProjectFeatureXmlRende
 public class WebHookMigrationController extends BaseController {
 	
 	
+	private static final String PROJECT_ATTR = "project";
 	public static final String MY_URL = "/webhooks/migration.html";
+	private static final String PARAM_ACTION = "action";
+
 	private final WebControllerManager myWebManager;
 	private String myPluginPath;
 	private PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
@@ -49,6 +51,7 @@ public class WebHookMigrationController extends BaseController {
 	private WebHookSettingsManager myWebHookSettingsManager;
 	private WebHookConfigToKotlinDslRenderer myWebHookConfigToKotlinDslRenderer;
 	private WebHookConfigToProjectFeatureXmlRenderer myWebHookConfigToProjectFeatureXmlRenderer;
+	private ProjectFeaturesMigrationAnalyser myProjectFeaturesMigrationAnalyser;
 	
 	public WebHookMigrationController(
 								SBuildServer server,
@@ -59,6 +62,7 @@ public class WebHookMigrationController extends BaseController {
 								TeamCityCoreFacade teamCityCoreFacade,
 								WebHookConfigToKotlinDslRenderer webHookConfigToKotlinDslRenderer,
 								WebHookConfigToProjectFeatureXmlRenderer webHookConfigToProjectFeatureXmlRenderer,
+								ProjectFeaturesMigrationAnalyser projectFeaturesMigrationAnalyser,
 								WebControllerManager webControllerManager) {
 		super(server);
 		this.pluginSettingsToProjectFeaturesMigrator = pluginSettingsToProjectFeaturesMigrator;
@@ -69,6 +73,7 @@ public class WebHookMigrationController extends BaseController {
 		this.myWebManager = webControllerManager;
 		this.myWebHookConfigToKotlinDslRenderer = webHookConfigToKotlinDslRenderer;
 		this.myWebHookConfigToProjectFeatureXmlRenderer = webHookConfigToProjectFeatureXmlRenderer;
+		this.myProjectFeaturesMigrationAnalyser = projectFeaturesMigrationAnalyser;
 		this.myWebManager.registerController(MY_URL, this);
 		Loggers.SERVER.debug("WebHookMigrationController:: Registering");
 	}
@@ -76,25 +81,43 @@ public class WebHookMigrationController extends BaseController {
     @Nullable
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
-        SUser myUser = SessionUser.getUser(request);
-    	
-    	if (isGet(request)) {
-    		HashMap<String,Object> model = new HashMap<>();
-    		Map<SProject,Map<String, WebHookTriple>> migrationData = new LinkedHashMap<>();
+	    	if (!isGet(request) && !isPost(request)) {
+	    		response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+	    		return null;
+	    	}
+	    	
+	        SUser myUser = SessionUser.getUser(request);
+	        HashMap<String,Object> model = new HashMap<>();
+	    	
+	        
+	        if (isPost(request) && request.getParameter(PROJECT_ATTR) != null) {
+    			SProject myProject = this.myTeamCityCoreFacade.findProjectByExtId(request.getParameter(PROJECT_ATTR));
+    			if (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT)) {
+    				StringWriter writer = new StringWriter();
+    				if (request.getParameter(PARAM_ACTION) != null && request.getParameter(PARAM_ACTION).equals("runMigration")) {
+    					this.pluginSettingsToProjectFeaturesMigrator.executeProjectMigration(myProject, writer);
+    				}
+    				model.put("output", writer.toString());
+    			}
+	    	}
+        
+        
     		Map<SProject,String> reasons = new LinkedHashMap<>();
-    		Map<SProject,ProjectVcsStatus> vcsStatuses = new LinkedHashMap<>();
+    		ProjectMigrationStatus migrationStatus = new ProjectMigrationStatus();
     		
     		model.put("jspHome",this.myPluginPath);
     		
-    		if (request.getParameter("project") != null) {
-    			SProject myProject = this.myTeamCityCoreFacade.findProjectByExtId(request.getParameter("project"));
-    			model.put("project", myProject);
+    		if (request.getParameter(PROJECT_ATTR) != null) {
+    			SProject myProject = this.myTeamCityCoreFacade.findProjectByExtId(request.getParameter(PROJECT_ATTR));
+    			model.put(PROJECT_ATTR, myProject);
+    			migrationStatus.setProject(myProject);
     			if (myUser.isPermissionGrantedForProject(myProject.getProjectId(), Permission.EDIT_PROJECT)) {
+    				
     				Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
     				WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
     				List<WebHookConfigEnhanced> cached = myWebHookSettingsManager.getWebHooksForProject(myProject);
     				
-    				vcsStatuses.put(myProject, myTeamCityCoreFacade.getProjectVcsStatus(myProject));
+    				migrationStatus.setProjectVcsStatus(myTeamCityCoreFacade.getProjectVcsStatus(myProject));
     				
     				Map<String, WebHookTriple> webhooks = new LinkedHashMap<>();
     				if (candidates.getLeft() != null) {
@@ -125,8 +148,8 @@ public class WebHookMigrationController extends BaseController {
     						}
     					});
     				}
-    				migrationData.put(myProject, webhooks);
-    				if (vcsStatuses.get(myProject).isKotlin()) {
+    				migrationStatus.setWebhooks(webhooks);
+    				if (migrationStatus.getProjectVcsStatus().isKotlin()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
     					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
@@ -136,38 +159,23 @@ public class WebHookMigrationController extends BaseController {
 	    						.append("\n\n");
 	    					}
     					}
-    					model.put("kotlinDsls", sb.toString());
-    				} else if (vcsStatuses.get(myProject).isVcsEnabled() && !vcsStatuses.get(myProject).isVcsSyncEnabled()) {
+    					migrationStatus.setKotlinDsls(sb.toString());
+    				} else if (migrationStatus.getProjectVcsStatus().isVcsEnabled() && !migrationStatus.getProjectVcsStatus().isVcsSyncEnabled()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
     					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
     						sb.append(myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(webhookConfigs, myProject));
     					}
-    					model.put("projectFeaturesXml", sb.toString());
+    					migrationStatus.setProjectFeaturesXml(sb.toString());
     				}
+    				this.myProjectFeaturesMigrationAnalyser.populateMigrationStatusDetail(migrationStatus);
     			}
     		}
 
     		model.put("reasons", reasons);
-    		model.put("migrationData", migrationData);
-    		model.put("vcsStatuses", vcsStatuses);
+    		model.put("migrationStatus", migrationStatus);
     		
     		return new ModelAndView(myPluginPath + "WebHook/migration.jsp", model); 
 
-    	}
-    	response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-    	return null;
-    }
-    
-    @Data @AllArgsConstructor @NoArgsConstructor
-    public static class WebHookTriple {
-    	@With
-    	String reason;
-    	@With
-    	WebHookConfig candidate;
-    	@With
-    	WebHookConfig migrated;
-    	@With
-    	WebHookConfigEnhanced cached;
     }
 }

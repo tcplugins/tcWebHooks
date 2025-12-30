@@ -1,5 +1,7 @@
 package webhook.teamcity.extension.admin;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import com.intellij.util.containers.hash.LinkedHashMap;
-
 import jetbrains.buildServer.controllers.admin.AdminPage;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -17,14 +17,15 @@ import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.PositionConstraint;
 import webhook.teamcity.TeamCityCoreFacade;
-import webhook.teamcity.TeamCityCoreFacade.ProjectVcsStatus;
-import webhook.teamcity.migration.WebHookMigrationController.WebHookTriple;
 import webhook.teamcity.settings.WebHookConfig;
 import webhook.teamcity.settings.WebHookConfigEnhanced;
 import webhook.teamcity.settings.WebHookFeaturesStore;
 import webhook.teamcity.settings.WebHookProjectSettings;
 import webhook.teamcity.settings.WebHookSettingsManager;
 import webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator;
+import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser;
+import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.ProjectMigrationStatus;
+import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.WebHookTriple;
 
 public class WebHookMigrationAdminPage extends AdminPage {
 	public static final String ADMIN_ID = "tcWebHooksV3Migration";
@@ -32,6 +33,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	private @NotNull PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
 	private @NotNull WebHookFeaturesStore myWebHookFeaturesStore;
 	private TeamCityCoreFacade myTeamCityCoreFacade;
+	private @NotNull ProjectFeaturesMigrationAnalyser myProjectFeaturesMigrationAnalyser;
 
 
 	public WebHookMigrationAdminPage(@NotNull PagePlaces pagePlaces, 
@@ -39,13 +41,15 @@ public class WebHookMigrationAdminPage extends AdminPage {
 								  @NotNull PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator, 
 								  @NotNull WebHookFeaturesStore webHookFeaturesStore,
 								  @NotNull WebHookSettingsManager webHookSettingsManager,
-								  @NotNull TeamCityCoreFacade teamCityCoreFacade
+								  @NotNull TeamCityCoreFacade teamCityCoreFacade,
+								  @NotNull ProjectFeaturesMigrationAnalyser projectFeaturesMigrationAnalyser
 								  ) {
 		super(pagePlaces);
 		this.myWebHookSettingsManager = webHookSettingsManager;
 		this.pluginSettingsToProjectFeaturesMigrator = pluginSettingsToProjectFeaturesMigrator;
 		this.myWebHookFeaturesStore = webHookFeaturesStore;
 		this.myTeamCityCoreFacade = teamCityCoreFacade;
+		this.myProjectFeaturesMigrationAnalyser = projectFeaturesMigrationAnalyser;
 		setPluginName(ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/migrationAdminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
@@ -66,18 +70,18 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	
 	@Override
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
-		Map<SProject,Map<String, WebHookTriple>> migrationData = new LinkedHashMap<>();
-		Map<SProject,String> reasons = new LinkedHashMap<>();
-		Map<SProject,ProjectVcsStatus> vcsStatuses = new LinkedHashMap<>();
+		List<ProjectMigrationStatus> migrationStatuses = new ArrayList<>();
+
 		for (SProject myProject : myTeamCityCoreFacade.getActiveProjects()) {
+			ProjectMigrationStatus migrationStatus = new ProjectMigrationStatus().withProject(myProject);
 			Pair<String, List<WebHookConfig>> candidates = pluginSettingsToProjectFeaturesMigrator.getCandidates(myProject);
 			WebHookProjectSettings migrated = myWebHookFeaturesStore.getWebHookConfigs(myProject);
 			List<WebHookConfigEnhanced> cached = myWebHookSettingsManager.getWebHooksForProject(myProject);
 			
-			vcsStatuses.put(myProject, myTeamCityCoreFacade.getProjectVcsStatus(myProject));
+			migrationStatus.setProjectVcsStatus(myTeamCityCoreFacade.getProjectVcsStatus(myProject));
 			Map<String, WebHookTriple> webhooks = new LinkedHashMap<>();
 			if (candidates.getLeft() != null) {
-				reasons.put(myProject, candidates.getLeft());
+				migrationStatus.setReason(candidates.getLeft());
 			}
 			if (candidates.getRight() != null) {
 				candidates.getRight().forEach(w -> {
@@ -104,11 +108,12 @@ public class WebHookMigrationAdminPage extends AdminPage {
 					}
 				});
 			}
-			migrationData.put(myProject, webhooks);
+			migrationStatuses.add(this.myProjectFeaturesMigrationAnalyser.populateMigrationStatusDetail(migrationStatus.withWebhooks(webhooks)));
 		}
-		model.put("reasons", reasons);
-		model.put("migrationData", migrationData);
-		model.put("vcsStatuses", vcsStatuses);
+		//model.put("reasons", reasons);
+		//model.put("migrationData", migrationData);
+		model.put("migrationStatuses", migrationStatuses);
+		//model.put("vcsStatuses", vcsStatuses);
 	}
 	
 }

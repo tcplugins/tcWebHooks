@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.TeeWriter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -135,11 +137,11 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		
 	}
 
-	private void addToReport(BufferedWriter writer, String string) {
+	private void addToReport(Writer writer, String string) {
 	    addToReport(writer, string, null);
 	}
 	
-    private void addToReport(BufferedWriter writer, String string, Exception e) {
+    private void addToReport(Writer writer, String string, Exception e) {
         if (e != null) {
             Loggers.SERVER.warn(string, e);
         } else {
@@ -158,7 +160,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         }
     }
     
-    private void addSectionToReport(BufferedWriter writer, String string) {
+    private void addSectionToReport(Writer writer, String string) {
         if (writer != null) {
             try {
                 writer.write("\n\n" + LocalDateTime.now().format(logDateTimeFormatter) + " : " + string + "\n");
@@ -169,7 +171,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         }
     }
     
-    private void addWarningToReport(BufferedWriter writer, String string) {
+    private void addWarningToReport(Writer writer, String string) {
         Loggers.SERVER.warn(string);
         if (writer != null) {
             try {
@@ -186,7 +188,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         return this.myServerPaths.getSystemDir() + File.separator + "tcWebHooks-ProjectFeatures-migration-report-" + now.format(dateTimeFormatter) + ".txt";
     }
 
-    protected void attemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, BufferedWriter writer) throws ProjectFeatureMigrationException {
+    protected void attemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, Writer writer) throws ProjectFeatureMigrationException {
 		Map<SProject, WebHookProjectSettings> projectsForMigration = getProjectsThatRequireMigration(writer);
 		if (projectsForMigration.isEmpty()) {
 			addToReport(writer, "No projects require tcWebHooks ProjectFeature migration. Marking migration as completed.");
@@ -200,7 +202,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	}
 
     private void determineThenAttemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration,
-            LocalDateTime now, BufferedWriter writer, SProject project, WebHookProjectSettings settings)
+            LocalDateTime now, Writer writer, SProject project, WebHookProjectSettings settings)
             throws ProjectFeatureMigrationException {
 		ProjectVcsStatus vcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(project);
         if (vcsStatus.isVcsEnabled() && vcsStatus.isKotlin() && !vcsStatus.isVcsSyncEnabled()) {
@@ -228,7 +230,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         }
     }
 
-	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, BufferedWriter writer) throws ProjectFeatureMigrationException {
+	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, Writer writer) throws ProjectFeatureMigrationException {
 		addSectionToReport(writer, String.format("Starting migration of project '%s'. There are '%s' webhooks to migrate", project.getExternalId(), webhookSettings.getWebHooksAsList().size()));
 		try {
 			backupExistingPluginSettings(project, now, writer);
@@ -276,7 +278,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		
 	}
 
-	private void backupExistingPluginSettings(SProject project, LocalDateTime now, BufferedWriter writer) throws IOException {
+	private void backupExistingPluginSettings(SProject project, LocalDateTime now, Writer writer) throws IOException {
 		File projectConfigDir = project.getConfigDirectory();
 		File projectPluginsConfigDir = new File(projectConfigDir,"pluginData");
 		File projectPluginSettingsFile = new File(projectPluginsConfigDir, "plugin-settings.xml");
@@ -323,7 +325,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		return false;
 	}
 
-	private void markMigrationAs(String status, BufferedWriter writer) throws ProjectFeatureMigrationException {
+	private void markMigrationAs(String status, Writer writer) throws ProjectFeatureMigrationException {
 		String teamcityInternalPropertiesFilename = this.myServerPaths.getConfigDir() + File.separator + FileWatchingPropertiesModel.DEFAULT_PROPERTIES_FILE_NAME;
 		Properties teamcityInternalProperties = new Properties();
 		try (FileInputStream reader = new FileInputStream(teamcityInternalPropertiesFilename)) {
@@ -340,7 +342,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 			throw new ProjectFeatureMigrationException("Unable to set migration status flag in internal.properties file", e);
 		}
 	}
-	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration(BufferedWriter writer) {
+	private Map<SProject, WebHookProjectSettings> getProjectsThatRequireMigration(Writer writer) {
 		Map<SProject, WebHookProjectSettings> projectsThatRequireMigrations = new LinkedHashMap<>();
 		for (SProject project : myTeamCityCoreFacade.getActiveProjects()) {
 			Pair<String,WebHookProjectSettings> webhooks = getProjectSettingsIfItCanBeMigrated(project);
@@ -430,4 +432,31 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         }
         return Pair.of(settings.getLeft(), null);
     }
+
+    public void executeProjectMigration(SProject myProject, Writer extWriter) {
+        LocalDateTime now = LocalDateTime.now();
+        String fileName = getReportFileName(now);
+        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))) {
+            TeeWriter writer = new TeeWriter(extWriter, fileWriter);
+            try {
+                writer.write("Starting PluginSettings To ProjectFeatures Migration at " + now.format(dateTimeFormatter) );
+                writer.write("\n----------------------------------------------------------------------------------------\n");
+                Pair<String, WebHookProjectSettings> settingsPair = getProjectSettingsIfItCanBeMigrated(myProject);
+                if (settingsPair.getRight() != null) {
+                    determineThenAttemptMigration(false, now, writer, myProject, settingsPair.getRight());
+                } else {
+                    addToReport(writer, settingsPair.getLeft());
+                }
+                addSectionToReport(writer, String.format("tcWebHooks PluginSettings to ProjectFeatures migration completed see '%s' for a report.", fileName));
+            } catch (ProjectFeatureMigrationException e) {
+                addToReport(writer, "Failed to complete tcWebHooks PluginSettings to ProjectFeatures migration.", e);
+                Loggers.SERVER.warn("Failed to complete tcWebHooks PluginSettings to ProjectFeatures migration.", e);
+            }
+        } catch (IOException e1) {
+            Loggers.SERVER.warn("Failed to create migration report at: " + fileName);
+        } catch (Exception e2) {
+            Loggers.SERVER.warn("Failed to run tcWebHooks migration.", e2);
+        }
+    }
+    
 }

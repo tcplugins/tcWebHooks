@@ -33,13 +33,14 @@
         /js/bs/editProject.js
         /js/bs/adminActions.js
         ${jspHome}WebHook/js/editWebhook.js
+        ${jspHome}WebHook/3rd-party/highlight/highlight.min.js"
       </bs:linkScript>
 
     <script type="text/javascript">
       BS.Navigation.items = [
     	  <c:if test="${not empty project}"> 
-        	{title: "${project.name}", url: '<c:url value="../project/${project.externalid}"/>'},
-        	{title: "WebHooks", url: '<c:url value="/webhooks/index.html?projectId=${project.externalid}"/>'},
+        	{title: "${project.name}", url: '<c:url value="../project/${project.externalId}"/>'},
+        	{title: "WebHooks", url: '<c:url value="/webhooks/index.html?projectId=${project.externalId}"/>'},
           </c:if>
         {title: '${title}', selected: true}
       ];
@@ -49,23 +50,29 @@
     <jsp:attribute name="body_include">
     
     	<c:set var="showDetailLink" value="false" scope="request"/>
+		<c:set var="showReRunMigration" value="true" scope="request"/>
+    	
     	
 	    <div>
-	    <table class="settings templateTable">
-			<tbody>
-			<c:forEach items="${migrationData}" var="webhooks">
-				<%@ include file="jsp-includes/projectMigrationDetail.jsp" %>
-			</c:forEach>
-	    	</tbody>
-		</table>
+	    	<c:if test="${not empty output}">
+	    		<h2>Migration Output</h2>
+	    		The following is the output from re-running of the migration.
+	    		<pre><code class="language-plaintext"><c:out value="${output}"></c:out></code></pre>
+				<script>hljs.highlightAll();</script>
+	    	</c:if>
+	    	
+	    	<h2>Project WebHooks</h2>
+		    <table class="settings templateTable">
+				<tbody>
+					<%@ include file="jsp-includes/projectMigrationDetail.jsp" %>
+		    	</tbody>
+			</table>
 	    	<c:if test="${not empty kotlinDsls}">
-			    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.min.js"></script>
 	    		<h2>Existing WebHooks converted to KotlinDSL</h2>
 	    		<pre><code class="language-kotlin"><c:out value="${kotlinDsls}"></c:out></code></pre>
 				<script>hljs.highlightAll();</script>
 	    	</c:if> 
 	    	<c:if test="${not empty projectFeaturesXml}">
-			    <script type=text/javascript src="..${jspHome}WebHook/3rd-party/highlight/highlight.min.js"></script>
 	    		<h2>Existing WebHooks converted to Project Features XML</h2>
 	    		<pre><code class="language-xml"><c:out value="${projectFeaturesXml}"></c:out></code></pre>
 				<script>hljs.highlightAll();</script>

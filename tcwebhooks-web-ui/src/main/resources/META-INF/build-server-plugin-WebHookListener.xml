@@ -223,7 +223,9 @@
 		class="webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrator"
 		init-method="requestDeferredRegistration"
 		/>
-
+     <bean id="projectFeaturesMigrationAnalyser" 
+     	class="webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser" 
+     	/>
 	<bean id="webHookMigrationStatusService"
 		class="webhook.teamcity.settings.converter.WebHookMigrationStatusServiceImpl"
 		/>

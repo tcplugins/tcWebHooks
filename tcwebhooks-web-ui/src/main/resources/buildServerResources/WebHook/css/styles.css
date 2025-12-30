@@ -387,9 +387,14 @@ tr.templateHeading {
 }
 
 #deleteWebHookDialogSubmit, #repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit, #deleteWebHookParameterDialogSubmit,
-#deleteWebHookFilterDialogSubmit, #deleteWebHookHeaderDialogSubmit   {
+#deleteWebHookFilterDialogSubmit, #deleteWebHookHeaderDialogSubmit, #reRunMigration {
 	background-color: red;
 	background-image: linear-gradient(to bottom, #e06667, #e50000);
+}
+
+#deleteWebHookDialogSubmit:hover, #repoDeleteFilterDialogSubmit:hover, #deleteRepoDialogSubmit:hover, #deleteWebHookParameterDialogSubmit:hover,
+#deleteWebHookFilterDialogSubmit:hover, #deleteWebHookHeaderDialogSubmit:hover, #reRunMigration:hover {
+	border-color: red;
 }
 
 table.templateTable tr td.templateTableTemplateTitle {

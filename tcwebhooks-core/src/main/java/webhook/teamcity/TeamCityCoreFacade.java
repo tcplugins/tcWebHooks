@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import jetbrains.buildServer.serverSide.SProject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
 public interface TeamCityCoreFacade {
 
@@ -34,7 +35,47 @@ public interface TeamCityCoreFacade {
 		public boolean isKotlin() {
 			return vcsFormat != null && vcsFormat.equalsIgnoreCase("kotlin");
 		}
+		public ProjectIsMigratable getMigrationStatus() {
+		    if (vcsEnabled && vcsSyncEnabled) {
+		        if (isKotlin() ) {
+		            return ProjectIsMigratable.VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE;
+		        } else {
+		            return ProjectIsMigratable.VCS_XML_SYNC_ENABLED_MIGRATABLE;
+		        }
+		    } else if (vcsEnabled) {
+		        if (isKotlin() ) {
+		            return ProjectIsMigratable.VCS_KOTLIN_SYNC_DISABLED_NOT_MIGRATABLE;
+		        } else {
+		            return ProjectIsMigratable.VCS_XML_SYNC_DISABLE_NOT_MIGRATABLE;
+		        }
+		    }
+		    return ProjectIsMigratable.NON_VCS_XML_MIGRATABLE;
+		}
 	}
-
+	
+	public enum ProjectIsMigratable {
+	    
+	    VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE (false),
+	    VCS_KOTLIN_SYNC_DISABLED_NOT_MIGRATABLE (false),
+	    VCS_XML_SYNC_ENABLED_MIGRATABLE (true),
+	    VCS_XML_SYNC_DISABLE_NOT_MIGRATABLE (false),
+	    NON_VCS_XML_MIGRATABLE (true);
+	    
+	    @Getter
+	    private final boolean isMigratable;
+	    
+	    private ProjectIsMigratable(boolean migratable) {
+	        isMigratable = migratable;
+	    }
+	}
+	
+	public enum NextMigrationStep {
+	    COMPLETED, 
+	    RERUN_MIGRATION,
+	    MANUAL_CHECK,
+	    MANUAL_MIGRATION_REQUIRED,
+	    MANUAL_CLEANUP_REQUIRED,
+	    NONE
+	}
 
 }
