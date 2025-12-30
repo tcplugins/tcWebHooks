@@ -67,14 +67,14 @@
 					<%@ include file="jsp-includes/projectMigrationDetail.jsp" %>
 		    	</tbody>
 			</table>
-	    	<c:if test="${not empty kotlinDsls}">
+	    	<c:if test="${not empty migrationStatus.kotlinDsls}">
 	    		<h2>Existing WebHooks converted to KotlinDSL</h2>
-	    		<pre><code class="language-kotlin"><c:out value="${kotlinDsls}"></c:out></code></pre>
+	    		<pre><code class="language-kotlin"><c:out value="${migrationStatus.kotlinDsls}"></c:out></code></pre>
 				<script>hljs.highlightAll();</script>
 	    	</c:if> 
-	    	<c:if test="${not empty projectFeaturesXml}">
+	    	<c:if test="${not empty migrationStatus.projectFeaturesXml}">
 	    		<h2>Existing WebHooks converted to Project Features XML</h2>
-	    		<pre><code class="language-xml"><c:out value="${projectFeaturesXml}"></c:out></code></pre>
+	    		<pre><code class="language-xml"><c:out value="${migrationStatus.projectFeaturesXml}"></c:out></code></pre>
 				<script>hljs.highlightAll();</script>
 	    	</c:if> 
 	    </div>
