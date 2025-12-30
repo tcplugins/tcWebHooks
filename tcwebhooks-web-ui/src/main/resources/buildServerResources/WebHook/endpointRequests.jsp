@@ -49,6 +49,7 @@
     <jsp:attribute name="body_include">
     		<form method="post">
     		<input type="hidden" name="delete"/>
+    		<input type="hidden" name="tc-csrf-token" value="${sessionScope['tc-csrf-token']}"/>
     		<h2>View Webhook Request Payloads &nbsp; (<a href="endpoint-viewer.html">reload</a>)<button style="float:right;" class="btn btn_mini ">Clear old requests</button></h2>
 		   	</form>	
     		<p><strong>Displaying ${count} recent requests</strong>. To have items displayed here, configure a webhook to post to <em>${postURL}</em></p> 
