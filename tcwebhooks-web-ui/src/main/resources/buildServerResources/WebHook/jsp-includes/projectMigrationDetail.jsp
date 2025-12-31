@@ -2,8 +2,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
 
-						<tr id="viewProjectNameRow_${migrationStatus.project.externalId}" class="webHookRow" style="background-color: rgb(245, 245, 245);">
-							<td colspan="5" class="tagsLabel" style="padding-top: 1em; padding-bottom:1em;"><c:out value="${migrationStatus.project.name}"/> (${migrationStatus.project.externalId})
+						<tr id="viewProjectNameRow_${migrationStatus.project.externalId}" class="webHookRow migration${migrationStatus.nextMigrationStep}" style="background-color: rgb(245, 245, 245);">
+							<td colspan="5" class="tagsLabel migration${migrationStatus.nextMigrationStep}" style="padding-top: 1em; padding-bottom:1em;"><c:out value="${migrationStatus.project.name}"/> (${migrationStatus.project.externalId})
 								<c:if test="${showDetailLink}">
 									<span class="migrationDetailLink"><a href="../webhooks/migration.html?project=${migrationStatus.project.externalId}">Migration details for <c:out value="${migrationStatus.project.name}"/></a></span>
 								</c:if>
@@ -28,7 +28,7 @@
 							</td>
 						</tr>
 						<tr id="viewProjectprojectVcsStatusRow_${migrationStatus.project.externalId}" class="webHookRow">
-							<td colspan="5">
+							<td colspan="5" class="migration${migrationStatus.nextMigrationStep}">
 								<div style="float:right; padding=2em; margin-left:5em; border-left: 1px #ccc solid;">
 									<ul>
 										<li><em>KotlinDSL:</em> <strong></b><c:out value="${migrationStatus.projectVcsStatus.kotlin}"/></strong></li>
@@ -77,20 +77,25 @@
 									</p>
 							</td>
 						</tr>
-						<tr style="background-color: rgb(245, 245, 245);">
-							<th class="name">WebHook ID</th>
-							<th class="">Plugin Settings</th>
-							<th class="">Project Config (Project Feature)</th>
-							<th class="">In Cache</th>
+						<tr class="webHookRow" style="background-color: rgb(245, 245, 245);">
+							<th class="name migration${migrationStatus.nextMigrationStep}">WebHook ID</th>
+							<th class="migration${migrationStatus.nextMigrationStep}">Plugin Settings</th>
+							<th class="migration${migrationStatus.nextMigrationStep}">Project Config (Project Feature)</th>
+							<th class="migration${migrationStatus.nextMigrationStep}">In Cache</th>
 						</tr>
 					<c:forEach items="${migrationStatus.webhooks}" var="hook">
 							<tr id="viewRow_${hook.key}" class="webHookRow">
-							<td class="name">${hook.key}</td>
-							<td class="buildTemplateAction"><c:if test="${not empty hook.value.candidate}"><span style='font-size:2em;'>&#9873;</span></c:if></td>
-							<td class="buildTemplateAction"><c:if test="${not empty hook.value.migrated}"><span style='font-size:2em;'>&#9733;</span></c:if></td>
-							<td class="buildTemplateAction"><c:if test="${not empty hook.value.cached}"><span style='font-size:2em;'>&#9733;</span></c:if></td>
+							<td class="name migration${migrationStatus.nextMigrationStep}">${hook.key}</td>
+							<td class="buildTemplateAction migration${migrationStatus.nextMigrationStep}"><c:if test="${not empty hook.value.candidate}"><span style='font-size:2em;'>&#9873;</span></c:if></td>
+							<td class="buildTemplateAction migration${migrationStatus.nextMigrationStep}"><c:if test="${not empty hook.value.migrated}"><span style='font-size:2em;'>&#9733;</span></c:if></td>
+							<td class="buildTemplateAction migration${migrationStatus.nextMigrationStep}"><c:if test="${not empty hook.value.cached}"><span style='font-size:2em;'>&#9733;</span></c:if></td>
 							</tr>
 					</c:forEach>
+					<c:if test="${fn:length(migrationStatus.webhooks) == 0}">
+						<tr class="webHookRow">
+						<td colspan="5" class="migration${migrationStatus.nextMigrationStep}">There are 0 webhooks configured for this project</td>
+						</tr>
+					</c:if>
 					<tr class="blankline">
-						<td colspan="5" style="border-left:0px; border-right:0px;">&nbsp;</td>
+						<td colspan="5" class="migration${migrationStatus.nextMigrationStep}" style="border-left:0px; border-right:0px;">&nbsp;</td>
 					</tr>

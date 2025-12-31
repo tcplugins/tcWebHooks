@@ -7,6 +7,72 @@
 <c:set var="showReRunMigration" value="false" scope="request"/>
 
 	    <div>
+	    <p>
+	    The first time the tcWebHooks version 3 plugin starts, it will run the automatic migration process. 
+	    This will convert existing webhooks from the old configuration format (which stores the configuration in <code>plugin-settings.xml</code>) to the new "Project Features" format (which stores its configuration in <code>project-config.xml</code> or in the Kotlin <code>settings.kts</code> file in the project's VCS).
+	    </p>
+	    <p>
+	    There are five scenarios for migration:
+	    <ol>
+	    <li>
+	    	<strong>Project settings are not stored in VCS.</strong> - NON_VCS_XML_MIGRATABLE
+	    	<br>Migration will be attempted.
+	    	<br>Existing webhooks should migrate automatically.
+	    </li>
+	    <li>
+	    	<strong>Project settings are stored in VCS as Kotlin and <em>Allow editing project settings via UI</em> is enabled.</strong> - VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE
+	    	<br>Migration will NOT be attempted.
+	    	<br>Example Kotlin scripts will be generated, and will need to be copied into the <code>setting.kts</code> file and committed to VCS. 
+	    	<br>Existing <code>plugin-settings.xml</code> files in VCS will need to be cleaned up.
+	    </li>
+	    <li>
+	    	<strong>Project settings are stored in VCS as Kotlin and <em>Allow editing project settings via UI</em> is disabled.</strong> - VCS_KOTLIN_SYNC_DISABLED_NOT_MIGRATABLE
+	    	<br>Migration will NOT be attempted.
+	    	<br>Example Kotlin scripts will be generated, and will need to be copied into the <code>setting.kts</code> file and committed to VCS. 
+	    	<br>Existing <code>plugin-settings.xml</code> files in VCS will need to be cleaned up.
+	    </li>
+	    <li>
+	    	<strong>Project settings are stored in VCS as XML and <em>Allow editing project settings via UI</em> is enabled.</strong> - VCS_XML_SYNC_ENABLED_MIGRATABLE
+	    	<br>Migration will be attempted. 
+	    	<br>If migration is not successful, example XML files can be generated and will need to be copied into the <code>project-config.xml</code> file and committed to VCS.
+	    	<br>If migration is not successful, existing <code>plugin-settings.xml</code> files in VCS will need to be cleaned up and committed to VCS.
+	    </li>
+	    <li>
+	    	<strong>Project settings are stored in VCS as XML and <em>Allow editing project settings via UI</em> is disabled.</strong> - VCS_XML_SYNC_DISABLE_NOT_MIGRATABLE
+	    	<br>Migration will NOT be attempted.
+	    	<br>Example XML files can be generated and will need to be copied into the <code>project-config.xml</code> file and committed to VCS.
+	    	<br>Existing <code>plugin-settings.xml</code> files in VCS will need to be cleaned up and committed to VCS.
+	    </li>
+	    </ol>
+	    </p>
+	    
+	    <h2>Migration Status</h2>
+	    <p>The webhook migration is currently marked as <strong>${overallStatus}</strong>.<br>
+	    <c:choose>
+			<c:when test="${'started' eq overallStatus}">
+			This means that the migration has started but was not able to complete successfully.
+			It is important to note that the automatic migration will abort at the first error, and some projects will have been migrated whereas others may not have been reached.
+			In this scenario, review the list of project migration statuses below and follow the guidance on how to migrate them manually. 
+			</c:when>
+			<c:when test="${'completed' eq overallStatus}">
+			This is good news. It means that the automatic migration was successful and was able to be marked as completed. Any projects that were able to be migrated have completed.
+			However for those projects that cannot be migrated, manual remediation will still be required. Please review the list of project migration statuses below and follow the guidance on how to migrate them manually.
+			</c:when>
+			<c:when test="${'disabled' eq overallStatus}">
+			A 'disabled' status indicates that someone has manually set the value in TeamCity's <code>internal.properties</code> file.
+			This disables the auto-migration.
+			</c:when>
+			<c:when test="${'unknown' eq overallStatus}">
+			tcWebHooks is not able to determine the status of the auto-migration. No value was specified in TeamCity's <code>internal.properties</code> file, or it is set to a value that tcWebHooks does not understand.
+			</c:when>
+		</c:choose>
+	    </p>
+	    <p>
+	    There are <c:out value="${fn:length(migrationStatuses)}"/> projects found on this TeamCity that might have webhooks.
+	    To view detailed information to aid in migration, click the <strong><em>Migration details for...</em></strong> link in the top right of each project's migration status.
+	    This information includes example webhook configurations (in Kotlin or XML, whichever is appropriate) and has the ability to re-run the migration for that project (if that is relevant to its status).
+	    </p>
+	    <h2>Project Migration statuses</h2>
 	    <table class="settings templateTable">
 			<tbody>
 			<c:forEach items="${migrationStatuses}" var="migrationStatus">

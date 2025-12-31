@@ -26,6 +26,7 @@ import webhook.teamcity.settings.converter.PluginSettingsToProjectFeaturesMigrat
 import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser;
 import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.ProjectMigrationStatus;
 import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.WebHookTriple;
+import webhook.teamcity.settings.converter.WebHookMigrationStatusService;
 
 public class WebHookMigrationAdminPage extends AdminPage {
 	public static final String ADMIN_ID = "tcWebHooksV3Migration";
@@ -34,6 +35,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	private @NotNull WebHookFeaturesStore myWebHookFeaturesStore;
 	private TeamCityCoreFacade myTeamCityCoreFacade;
 	private @NotNull ProjectFeaturesMigrationAnalyser myProjectFeaturesMigrationAnalyser;
+	private @NotNull WebHookMigrationStatusService myWebHookMigrationStatusService;
 
 
 	public WebHookMigrationAdminPage(@NotNull PagePlaces pagePlaces, 
@@ -42,7 +44,8 @@ public class WebHookMigrationAdminPage extends AdminPage {
 								  @NotNull WebHookFeaturesStore webHookFeaturesStore,
 								  @NotNull WebHookSettingsManager webHookSettingsManager,
 								  @NotNull TeamCityCoreFacade teamCityCoreFacade,
-								  @NotNull ProjectFeaturesMigrationAnalyser projectFeaturesMigrationAnalyser
+								  @NotNull ProjectFeaturesMigrationAnalyser projectFeaturesMigrationAnalyser,
+								  @NotNull WebHookMigrationStatusService webHookMigrationStatusService
 								  ) {
 		super(pagePlaces);
 		this.myWebHookSettingsManager = webHookSettingsManager;
@@ -50,6 +53,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 		this.myWebHookFeaturesStore = webHookFeaturesStore;
 		this.myTeamCityCoreFacade = teamCityCoreFacade;
 		this.myProjectFeaturesMigrationAnalyser = projectFeaturesMigrationAnalyser;
+		this.myWebHookMigrationStatusService = webHookMigrationStatusService;
 		setPluginName(ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/migrationAdminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
@@ -71,6 +75,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	@Override
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
 		List<ProjectMigrationStatus> migrationStatuses = new ArrayList<>();
+		model.put("overallStatus", this.myWebHookMigrationStatusService.getMigrationStatus());
 
 		for (SProject myProject : myTeamCityCoreFacade.getActiveProjects()) {
 			ProjectMigrationStatus migrationStatus = new ProjectMigrationStatus().withProject(myProject);

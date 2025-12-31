@@ -885,3 +885,55 @@ table.noborder > tbody > tr> td {
 .webhookCode > pre {
 	margin-top: 5px;
 }
+
+/* Style the table green */
+tr.migrationCOMPLETED {
+	background-image: linear-gradient(to right, #009900, #cccccc);
+	color: #fff; 
+}
+
+tr.webHookRow > td.migrationCOMPLETED, tr.webHookRow > th.migrationCOMPLETED
+{
+	border-color: #1D5D24;
+	border-left: 1px solid #1D5D24;
+}
+
+tr.blankline > td.migrationCOMPLETED, tr.blankline > th.migrationCOMPLETED
+{
+	border-color: #1D5D24;
+}
+
+/* Style the table red */
+tr.migrationMANUAL_MIGRATION_REQUIRED {
+	background-image: linear-gradient(to right, #990000, #cccccc);
+	color: #fff; 
+}
+
+tr.webHookRow > td.migrationMANUAL_MIGRATION_REQUIRED, tr.webHookRow > th.migrationMANUAL_MIGRATION_REQUIRED
+{
+	border-color: #582226;
+	border-left: 1px solid #582226;
+}
+
+tr.blankline > td.migrationMANUAL_MIGRATION_REQUIRED, tr.blankline > th.migrationMANUAL_MIGRATION_REQUIRED
+{
+	border-color: #582226;
+}
+
+/* Style the table yellow */
+tr.migrationMANUAL_CLEANUP_REQUIRED, tr.migrationMANUAL_CHECK {
+	background-image: linear-gradient(to right, #ffa500, #cccccc);
+}
+
+tr.webHookRow > td.migrationMANUAL_CLEANUP_REQUIRED, tr.webHookRow > th.migrationMANUAL_CLEANUP_REQUIRED,
+tr.webHookRow > td.migrationMANUAL_CHECK, tr.webHookRow > th.migrationMANUAL_CHECK
+{
+	border-color: #7D5F26;
+	border-left: 1px solid #7D5F26;
+}
+
+tr.blankline > td.migrationMANUAL_CLEANUP_REQUIRED, tr.blankline > th.migrationMANUAL_CLEANUP_REQUIRED,
+tr.blankline > td.migrationMANUAL_CHECK, tr.blankline > th.migrationMANUAL_CHECK
+{
+	border-color: #7D5F26;
+}
