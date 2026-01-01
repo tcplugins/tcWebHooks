@@ -1,9 +1,13 @@
 package webhook.teamcity.extension.admin;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +33,11 @@ import webhook.teamcity.settings.converter.ProjectFeaturesMigrationAnalyser.WebH
 import webhook.teamcity.settings.converter.WebHookMigrationStatusService;
 
 public class WebHookMigrationAdminPage extends AdminPage {
+	private static final String FILENAME_REGEX = "^tcWebHooks-ProjectFeatures-migration-report-\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}\\.txt$";
+	private static final String QUERY_STRING_VIEW_REPORT = "viewReport";
 	public static final String ADMIN_ID = "tcWebHooksV3Migration";
+	private static final DateTimeFormatter reportFriendlyTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+
 	private final WebHookSettingsManager myWebHookSettingsManager;
 	private @NotNull PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
 	private @NotNull WebHookFeaturesStore myWebHookFeaturesStore;
@@ -57,6 +65,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 		setPluginName(ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/migrationAdminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
+        addJsFile(descriptor.getPluginResourcesPath("WebHook/js/3rd-party/highlight/highlight.min.js"));
 		setTabTitle("WebHooks Migration");
 		setPosition(PositionConstraint.after("plugins", "tcWebHooks"));
 		register();
@@ -74,8 +83,12 @@ public class WebHookMigrationAdminPage extends AdminPage {
 	
 	@Override
 	public void fillModel(Map<String, Object> model, HttpServletRequest request) {
+		if(request.getParameter(QUERY_STRING_VIEW_REPORT) != null && request.getParameter(QUERY_STRING_VIEW_REPORT).matches(FILENAME_REGEX)) {
+			model.put("migrationReport", this.pluginSettingsToProjectFeaturesMigrator.getReport(request.getParameter(QUERY_STRING_VIEW_REPORT)));
+		}
 		List<ProjectMigrationStatus> migrationStatuses = new ArrayList<>();
 		model.put("overallStatus", this.myWebHookMigrationStatusService.getMigrationStatus());
+		model.put("reportFileNames", this.pluginSettingsToProjectFeaturesMigrator.getPreviousReports().stream().map(p -> Pair.of(p.getLeft(), p.getRight().format(reportFriendlyTimeFormatter))).collect(Collectors.toList()));
 
 		for (SProject myProject : myTeamCityCoreFacade.getActiveProjects()) {
 			ProjectMigrationStatus migrationStatus = new ProjectMigrationStatus().withProject(myProject);
@@ -115,10 +128,7 @@ public class WebHookMigrationAdminPage extends AdminPage {
 			}
 			migrationStatuses.add(this.myProjectFeaturesMigrationAnalyser.populateMigrationStatusDetail(migrationStatus.withWebhooks(webhooks)));
 		}
-		//model.put("reasons", reasons);
-		//model.put("migrationData", migrationData);
 		model.put("migrationStatuses", migrationStatuses);
-		//model.put("vcsStatuses", vcsStatuses);
 	}
 	
 }

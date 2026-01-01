@@ -6,16 +6,17 @@ import org.jetbrains.annotations.NotNull;
 
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.web.openapi.ControllerAction;
 import jetbrains.buildServer.web.util.SessionUser;
 
-public abstract class AbstractWebHookAdminAction {
+public abstract class AbstractWebHookAdminAction implements ControllerAction {
 	
 	public static final String ACTION_TYPE = "action";
 	public static final String UPDATE_STATISTICS = "updateStatistics";
 	public static final String REFRESH_STATISTICS = "refreshStatistics";
 	public static final String UPDATE_ANALYTICS = "updateAnalytics";
 
-	public AbstractWebHookAdminAction() {
+	protected AbstractWebHookAdminAction() {
 		super();
 	}
 
@@ -36,6 +37,7 @@ public abstract class AbstractWebHookAdminAction {
 		return user != null && user.isSystemAdministratorRoleGranted();
 	}
 
+	@Override
 	public boolean canProcess(@NotNull HttpServletRequest request) {
 		return getAction().equals(request.getParameter(ACTION_TYPE));
 	}

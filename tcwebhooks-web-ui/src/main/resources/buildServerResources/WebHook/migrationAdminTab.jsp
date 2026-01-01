@@ -6,6 +6,16 @@
 <c:set var="showDetailLink" value="true" scope="request"/>
 <c:set var="showReRunMigration" value="false" scope="request"/>
 
+<c:choose>
+<c:when test="${not empty migrationReport}">
+
+	    		<h2>Migration Report</h2>
+	    		The following is the output from the migration report.
+	    		<pre><code class="language-plaintext"><c:out value="${migrationReport}"></c:out></code></pre>
+				<script>hljs.highlightAll();</script>
+
+</c:when>
+<c:otherwise>
 	    <div>
 	    <p>
 	    The first time the tcWebHooks version 3 plugin starts, it will run the automatic migration process. 
@@ -72,6 +82,15 @@
 	    To view detailed information to aid in migration, click the <strong><em>Migration details for...</em></strong> link in the top right of each project's migration status.
 	    This information includes example webhook configurations (in Kotlin or XML, whichever is appropriate) and has the ability to re-run the migration for that project (if that is relevant to its status).
 	    </p>
+	    <h2>Migration Reports</h2>
+	    When the migration runs, a plain text report file is generated on the TeamCity server in <code>TEAMCITY_DATA_PATH/system</code> listing all the actions performed as part of the migration, and giving example configuration (where appropriate).<br> 
+	    Previous migration reports are listed below:
+	    <ul>
+	    <c:forEach items="${reportFileNames}" var="reportFileName">
+	    	<li><a href="./admin.html?item=tcWebHooksV3Migration&viewReport=<c:out value="${reportFileName.left}"/>" title="<c:out value="${reportFileName.left}"/>">Migration Report from <c:out value="${reportFileName.right}"/></a>
+	    </c:forEach>
+	    </ul>
+	    
 	    <h2>Project Migration statuses</h2>
 	    <table class="settings templateTable">
 			<tbody>
@@ -82,3 +101,6 @@
 		</table>
 	    
 	    </div>
+
+</c:otherwise>
+</c:choose>

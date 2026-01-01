@@ -4,11 +4,17 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +24,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBException;
 
@@ -104,9 +111,6 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	public static final String TEAMCITY_INTERNAL_PROPERTY_KEY = "teamcity.plugin.tcWebHooks.pluginSettingsToProjectFeaturesMigration";
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 	private static final DateTimeFormatter logDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
-	
-	
 	
 	public void executeAutomatedMigration() {
 		// If our migration was started or completed, we don't want to attempt it again.
@@ -183,7 +187,33 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         }
     }
 
-
+    public List<Pair<String,LocalDateTime>> getPreviousReports() {
+        Path dirPath = Paths.get(this.myServerPaths.getSystemDir());
+        try(Stream<Path> filesStream = Files.list(dirPath)) {
+            return filesStream
+            .filter(Files::isRegularFile)
+            .map(path -> path.getFileName().toString())
+            .filter(path -> path.startsWith("tcWebHooks-ProjectFeatures-migration-report-"))
+            .sorted()
+            .map(path -> Pair.of(path, LocalDateTime.parse(path.substring(44, 63), dateTimeFormatter)))
+            .collect(Collectors.toList());
+        } catch (IOException e) {
+            return Collections.emptyList();
+        }
+    }
+    
+    public String getReport(String reportName) {
+        Optional<String> foundReport = getPreviousReports().stream().map(Pair::getLeft).filter(s -> s.equals(reportName)).findFirst();
+        if (foundReport.isPresent()) {
+            Path filePath = Paths.get(this.myServerPaths.getSystemDir() + File.separator + foundReport.get());
+            try {
+                return FileUtils.readFileToString(filePath.toFile(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+            }
+        }
+        return null;
+    }
+    
     private String getReportFileName(LocalDateTime now) {
         return this.myServerPaths.getSystemDir() + File.separator + "tcWebHooks-ProjectFeatures-migration-report-" + now.format(dateTimeFormatter) + ".txt";
     }
