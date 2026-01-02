@@ -65,7 +65,8 @@ public class WebHookMigrationAdminPage extends AdminPage {
 		setPluginName(ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/migrationAdminTab.jsp"));
         addCssFile(descriptor.getPluginResourcesPath("WebHook/css/styles.css"));
-        addJsFile(descriptor.getPluginResourcesPath("WebHook/js/3rd-party/highlight/highlight.min.js"));
+        addJsFile(descriptor.getPluginResourcesPath("WebHook/3rd-party/highlight/highlight.min.js"));
+        addJsFile(descriptor.getPluginResourcesPath("WebHook/js/runWebhookMigration.js"));
 		setTabTitle("WebHooks Migration");
 		setPosition(PositionConstraint.after("plugins", "tcWebHooks"));
 		register();

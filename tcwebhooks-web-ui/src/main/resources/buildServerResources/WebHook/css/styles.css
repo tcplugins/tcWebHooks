@@ -387,13 +387,14 @@ tr.templateHeading {
 }
 
 #deleteWebHookDialogSubmit, #repoDeleteFilterDialogSubmit, #deleteRepoDialogSubmit, #deleteWebHookParameterDialogSubmit,
-#deleteWebHookFilterDialogSubmit, #deleteWebHookHeaderDialogSubmit, #reRunMigration {
+#deleteWebHookFilterDialogSubmit, #deleteWebHookHeaderDialogSubmit, #reRunMigration, #confirmMigrationDialogSubmit {
 	background-color: red;
 	background-image: linear-gradient(to bottom, #e06667, #e50000);
+	border-color: #ccc;
 }
 
 #deleteWebHookDialogSubmit:hover, #repoDeleteFilterDialogSubmit:hover, #deleteRepoDialogSubmit:hover, #deleteWebHookParameterDialogSubmit:hover,
-#deleteWebHookFilterDialogSubmit:hover, #deleteWebHookHeaderDialogSubmit:hover, #reRunMigration:hover {
+#deleteWebHookFilterDialogSubmit:hover, #deleteWebHookHeaderDialogSubmit:hover, #reRunMigration:hover, #confirmMigrationDialogSubmit:hover {
 	border-color: red;
 }
 

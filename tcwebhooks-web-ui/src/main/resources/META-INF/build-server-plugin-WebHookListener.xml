@@ -68,6 +68,10 @@
      	class="webhook.teamcity.extension.admin.UpdateAnalyticsOptionAction" 
      	/>
   
+    <bean id="reRunFullMigrationAction"
+     	class="webhook.teamcity.extension.admin.ReRunFullMigrationAction" 
+     	/>
+  
 	<bean id="WebHookProjectSettingsTab"
         class="webhook.teamcity.extension.project.WebHookProjectSettingsTab"
         init-method="register" 

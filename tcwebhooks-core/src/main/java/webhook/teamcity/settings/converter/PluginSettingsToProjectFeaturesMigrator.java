@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -112,10 +111,10 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 	private static final DateTimeFormatter logDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 	
-	public void executeAutomatedMigration() {
+	public void executeAutomatedMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration, boolean allowReRun) {
 		// If our migration was started or completed, we don't want to attempt it again.
 		String existingMigrationResult = TeamCityProperties.getPropertyOrNull(TEAMCITY_INTERNAL_PROPERTY_KEY);
-		if (existingMigrationResult != null) {
+		if (!allowReRun && existingMigrationResult != null) {
 			Loggers.SERVER.info(String.format("Skipping tcWebHooks ProjectFeatures migration. Migration is already marked as '%s'", existingMigrationResult));
 		} else {
 		    LocalDateTime now = LocalDateTime.now();
@@ -125,7 +124,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
     				markMigrationAs("started", writer);
     				writer.write("Starting PluginSettings To ProjectFeatures Migration at " + now.format(dateTimeFormatter) );
     				writer.write("\n----------------------------------------------------------------------------------------\n");
-    				attemptMigration(true, now, writer);
+    				attemptMigration(failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
     				markMigrationAs("completed", writer);
     				addSectionToReport(writer, String.format("tcWebHooks PluginSettings to ProjectFeatures migration completed see '%s' for a report.", fileName));
     			} catch (ProjectFeatureMigrationException e) {
@@ -450,9 +449,19 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		private final PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
 		@Override
 		public void run() {
-			pluginSettingsToProjectFeaturesMigrator.executeAutomatedMigration();
+			pluginSettingsToProjectFeaturesMigrator.executeAutomatedMigration(true, false);
 		}
 		
+	}
+	@RequiredArgsConstructor
+	public class PluginSettingsToProjectFeaturesMigratorReRunScheduledTask implements Runnable {
+	    
+	    private final PluginSettingsToProjectFeaturesMigrator pluginSettingsToProjectFeaturesMigrator;
+	    @Override
+	    public void run() {
+	        pluginSettingsToProjectFeaturesMigrator.executeAutomatedMigration(false, true);
+	    }
+	    
 	}
 
     public Pair<String,List<WebHookConfig>> getCandidates(SProject myProject) {
@@ -486,6 +495,17 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
             Loggers.SERVER.warn("Failed to create migration report at: " + fileName);
         } catch (Exception e2) {
             Loggers.SERVER.warn("Failed to run tcWebHooks migration.", e2);
+        }
+    }
+
+    public boolean runMigrationTask() {
+        ScheduledExecutorService executorService = this.executorServices.getNormalExecutorService();
+        Loggers.SERVER.info("PluginSettingsToProjectFeaturesMigrator :: Scheduling migration to start in 60 seconds.");
+        if(this.future == null || this.future.isDone()) {
+            this.future = executorService.schedule(new PluginSettingsToProjectFeaturesMigratorReRunScheduledTask(this), 0, TimeUnit.SECONDS);
+            return true;
+        } else {
+            return false;
         }
     }
     

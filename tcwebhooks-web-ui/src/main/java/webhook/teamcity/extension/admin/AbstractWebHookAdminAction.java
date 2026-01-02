@@ -15,6 +15,8 @@ public abstract class AbstractWebHookAdminAction implements ControllerAction {
 	public static final String UPDATE_STATISTICS = "updateStatistics";
 	public static final String REFRESH_STATISTICS = "refreshStatistics";
 	public static final String UPDATE_ANALYTICS = "updateAnalytics";
+	public static final String RERUN_FULL_MIGRATION = "reRunFullMigration";
+	
 
 	protected AbstractWebHookAdminAction() {
 		super();

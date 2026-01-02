@@ -55,7 +55,7 @@
 	    </li>
 	    </ol>
 	    </p>
-	    
+	    <bs:refreshable containerId="migrationStatusContainer" pageUrl="${pageUrl}">
 	    <h2>Migration Status</h2>
 	    <p>The webhook migration is currently marked as <strong>${overallStatus}</strong>.<br>
 	    <c:choose>
@@ -83,6 +83,9 @@
 	    This information includes example webhook configurations (in Kotlin or XML, whichever is appropriate) and has the ability to re-run the migration for that project (if that is relevant to its status).
 	    </p>
 	    <h2>Migration Reports</h2>
+	    <div style="float:right; padding-left: 2em;">
+	    <button id="reRunMigration" onclick="WebHookPlugin.reRunMigration();" style="float:right; margin-top: 1em;" class="btn btn_primary submitButton">Re-run Full Migration</button>
+	     </div>
 	    When the migration runs, a plain text report file is generated on the TeamCity server in <code>TEAMCITY_DATA_PATH/system</code> listing all the actions performed as part of the migration, and giving example configuration (where appropriate).<br> 
 	    Previous migration reports are listed below:
 	    <ul>
@@ -99,8 +102,33 @@
 			</c:forEach>
 	    	</tbody>
 		</table>
-	    
+	    </bs:refreshable>
 	    </div>
 
 </c:otherwise>
 </c:choose>
+
+    <bs:dialog dialogId="confirmMigrationDialog"
+               dialogClass="confirmMigrationDialog"
+               title="Confirm Re-run Migration"
+               closeCommand="WebHookPlugin.ReRunMigrationDialog.cancelDialog()">
+        <forms:multipartForm id="confirmMigrationForm"
+                             action="save.html"
+                             targetIframe="hidden-iframe"
+                             onsubmit="return WebHookPlugin.ReRunMigrationDialog.doPost();">
+
+            <table class="runnerFormTable">
+                <tr><td id="deleteWebHookWarningMessage">Are you sure you want to re-run the Webhook Migration?
+                <p>Running the migration from this page will force the migration to run and not stop on errors. 
+                All migrations will be attempted, and the results will need to be carefully reviewed to see what 
+                manual migrations and cleanup is still required.
+                        <div id="ajaxConfirmMigrationResult"></div>
+                </td></tr>
+            </table>
+            <input type="hidden" name="action" id="MigrationAction"/>
+            <div class="popupSaveButtonsBlock">
+                <forms:submit id="confirmMigrationDialogSubmit" label="Re-run WebHook Migration"/>
+                <forms:cancel onclick="WebHookPlugin.ReRunMigrationDialog.cancelDialog()"/>
+            </div>
+        </forms:multipartForm>
+    </bs:dialog>
