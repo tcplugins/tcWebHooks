@@ -30,10 +30,11 @@
 	    	<br>Existing webhooks should migrate automatically.
 	    </li>
 	    <li>
-	    	<strong>Project settings are stored in VCS as Kotlin and <em>Allow editing project settings via UI</em> is enabled.</strong> - VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE
-	    	<br>Migration will NOT be attempted.
+	    	<strong>Project settings are stored in VCS as Kotlin and <em>Allow editing project settings via UI</em> is enabled.</strong> - VCS_KOTLIN_SYNC_ENABLED_MIGRATABLE
+	    	<br>Migration will be attempted so that existing webhooks will still work.
+	    	<br>However, they should be converted to the tcWebHooks KotlinDSL otherwise they will become unmaintainable.
 	    	<br>Example Kotlin scripts will be generated, and will need to be copied into the <code>setting.kts</code> file and committed to VCS. 
-	    	<br>Existing <code>plugin-settings.xml</code> files in VCS will need to be cleaned up.
+	    	<br>Existing <code>plugin-settings.xml</code> files in VCS might need to be cleaned up.
 	    </li>
 	    <li>
 	    	<strong>Project settings are stored in VCS as Kotlin and <em>Allow editing project settings via UI</em> is disabled.</strong> - VCS_KOTLIN_SYNC_DISABLED_NOT_MIGRATABLE

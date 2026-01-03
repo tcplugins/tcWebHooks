@@ -59,8 +59,14 @@ public class ProjectFeaturesMigrationAnalyser {
         // Now check if old ones are cleaned up, and the migrated ones and cached ones match.
         // We would consider this a successful migration.
         if (getCandidatesSize(projectMigrationStatus.webhooks) == 0 && migatedAndCachedMatch(projectMigrationStatus.webhooks)) {
-            projectMigrationStatus.status = MigrationStatus.OK;
-            projectMigrationStatus.nextMigrationStep = NextMigrationStep.COMPLETED;
+        	if(projectMigrationStatus.projectVcsStatus.isKotlin()) {
+                projectMigrationStatus.status = MigrationStatus.WARNING;
+                projectMigrationStatus.nextMigrationStep = NextMigrationStep.MANUAL_CHECK;
+                projectMigrationStatus.reason = "All webhooks appear to be migrated to the new ProjectFeatures. However, since this project is Kotlin these should be manually checked and might need to be manually migrated to KotlinDSL in <code>settings.kts</code>.";
+        	} else {
+        		projectMigrationStatus.status = MigrationStatus.OK;
+        		projectMigrationStatus.nextMigrationStep = NextMigrationStep.COMPLETED;
+        	}
         } else if (getCandidatesSize(projectMigrationStatus.webhooks) > 0 && candidatesMigratedAndCachedMatch(projectMigrationStatus.webhooks)) {
             // All our old webhooks still exist even though they are migrated
             projectMigrationStatus.reason = "The same Webhooks were found in the old configuration file (<code>plugin-settings.xml</code>) and in the new ProjectFeatures. These should have been cleaned up as part of the migration process and will need to be manually removed from <code>plugin-settings.xml</code>.";

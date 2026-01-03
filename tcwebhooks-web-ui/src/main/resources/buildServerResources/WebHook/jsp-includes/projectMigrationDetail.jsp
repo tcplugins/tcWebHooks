@@ -42,10 +42,10 @@
 									<p>
 								<c:choose>
 									<c:when test="${migrationStatus.projectVcsStatus.kotlin and migrationStatus.projectVcsStatus.vcsSyncEnabled}">
-										This project has <em>KotlinDSL VCS Settings</em> <strong>enabled</strong>. Migrations will not be attempted, and must be manually applied.<br>
-										This project has <em>Allow editing project settings via UI</em> <strong>enabled</strong>. If users have created webhooks, there may be a patch 
+										This project has <em>KotlinDSL VCS Settings</em> <strong>enabled</strong>. Migrations will be attempted, but must be manually checked.<br>
+										This project has <em>Allow editing project settings via UI</em> <strong>enabled</strong>. Migrated webhooks might be in <code>settings.kts</code> in a generic format, or if users have created webhooks, there may be a patch 
 										file committed to the repository. 
-										This patch file will need to be <a href="https://github.com/tcplugins/tcWebHooks/wiki/Migrating-webhooks-from-Kotlin-Patch-Files" target="_new">manually applied to <code>settings.kts</code></a>.
+										This <code>settings.kts</code> file and the patch file will need to be <a href="https://github.com/tcplugins/tcWebHooks/wiki/Migrating-webhooks-from-Kotlin-Patch-Files" target="_new">manually updated in <code>settings.kts</code></a>.
 									</c:when>
 									<c:when test="${migrationStatus.projectVcsStatus.kotlin and not migrationStatus.projectVcsStatus.vcsSyncEnabled}">
 										This project has <em>KotlinDSL VCS Settings</em> <strong>enabled</strong>. Migrations will not be attempted, and must be manually applied.<br>

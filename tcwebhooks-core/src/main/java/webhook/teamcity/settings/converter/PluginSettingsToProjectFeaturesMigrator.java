@@ -391,6 +391,13 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		return projectsThatRequireMigrations;
 	}
 
+	/**
+	 * Gets WebHooks from all projects that contain webhooks in a plugin-settings.xml file (by calling ProjectSettingsManager).
+	 * Checks that the plugins directory exists and is writable (so that backups can be created).
+	 * Does not check the VCS type.
+	 * @param project
+	 * @return Pair of String (reason) and List<WebHookProjectSettings>. One of reason or List will be null. The reason is why the settings are not populated.
+	 */
     private Pair<String, WebHookProjectSettings> getProjectSettingsIfItCanBeMigrated(SProject project) {
         File projectConfigDir = project.getConfigDirectory();
         File projectPluginsConfigDir = new File(projectConfigDir,"pluginData");

@@ -38,7 +38,7 @@ public interface TeamCityCoreFacade {
 		public ProjectIsMigratable getMigrationStatus() {
 		    if (vcsEnabled && vcsSyncEnabled) {
 		        if (isKotlin() ) {
-		            return ProjectIsMigratable.VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE;
+		            return ProjectIsMigratable.VCS_KOTLIN_SYNC_ENABLED_MIGRATABLE;
 		        } else {
 		            return ProjectIsMigratable.VCS_XML_SYNC_ENABLED_MIGRATABLE;
 		        }
@@ -55,7 +55,7 @@ public interface TeamCityCoreFacade {
 	
 	public enum ProjectIsMigratable {
 	    
-	    VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE (false),
+	    VCS_KOTLIN_SYNC_ENABLED_MIGRATABLE (true),
 	    VCS_KOTLIN_SYNC_DISABLED_NOT_MIGRATABLE (false),
 	    VCS_XML_SYNC_ENABLED_MIGRATABLE (true),
 	    VCS_XML_SYNC_DISABLE_NOT_MIGRATABLE (false),

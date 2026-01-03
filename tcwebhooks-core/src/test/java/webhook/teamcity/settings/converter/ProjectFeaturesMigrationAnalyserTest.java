@@ -35,7 +35,7 @@ public class ProjectFeaturesMigrationAnalyserTest {
                 .withProjectVcsStatus(new ProjectVcsStatus(true, "kotlin", true))
                 .withWebhooks(webhooks);
         ProjectMigrationStatus updatedStatus = analyser.populateMigrationStatusDetail(projectMigrationStatus);
-        assertEquals(ProjectIsMigratable.VCS_KOTLIN_SYNC_ENABLED_NOT_MIGRATABLE, updatedStatus.getProjectVcsStatus().getMigrationStatus());
+        assertEquals(ProjectIsMigratable.VCS_KOTLIN_SYNC_ENABLED_MIGRATABLE, updatedStatus.getProjectVcsStatus().getMigrationStatus());
         assertEquals(MigrationStatus.WARNING, updatedStatus.status);
     }
     
