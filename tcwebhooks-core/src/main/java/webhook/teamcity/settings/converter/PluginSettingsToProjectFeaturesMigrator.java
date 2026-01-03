@@ -111,7 +111,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 	private static final DateTimeFormatter logDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 	
-	public void executeAutomatedMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration, boolean allowReRun) {
+	public void executeAutomatedMigration(boolean failOnError, boolean allowReRun) {
 		// If our migration was started or completed, we don't want to attempt it again.
 		String existingMigrationResult = TeamCityProperties.getPropertyOrNull(TEAMCITY_INTERNAL_PROPERTY_KEY);
 		if (!allowReRun && existingMigrationResult != null) {
@@ -124,7 +124,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
     				markMigrationAs("started", writer);
     				writer.write("Starting PluginSettings To ProjectFeatures Migration at " + now.format(dateTimeFormatter) );
     				writer.write("\n----------------------------------------------------------------------------------------\n");
-    				attemptMigration(failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
+    				attemptMigration(failOnError, now, writer);
     				markMigrationAs("completed", writer);
     				addSectionToReport(writer, String.format("tcWebHooks PluginSettings to ProjectFeatures migration completed see '%s' for a report.", fileName));
     			} catch (ProjectFeatureMigrationException e) {
@@ -217,7 +217,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
         return this.myServerPaths.getSystemDir() + File.separator + "tcWebHooks-ProjectFeatures-migration-report-" + now.format(dateTimeFormatter) + ".txt";
     }
 
-    protected void attemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, Writer writer) throws ProjectFeatureMigrationException {
+    protected void attemptMigration(boolean failOnError, LocalDateTime now, Writer writer) throws ProjectFeatureMigrationException {
 		Map<SProject, WebHookProjectSettings> projectsForMigration = getProjectsThatRequireMigration(writer);
 		if (projectsForMigration.isEmpty()) {
 			addToReport(writer, "No projects require tcWebHooks ProjectFeature migration. Marking migration as completed.");
@@ -226,11 +226,18 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
 		}
 		addToReport(writer, String.format("The following projects has been selected for migration: %s", projectsForMigration.keySet().stream().map(p -> p.getExternalId()).collect(Collectors.joining(", "))));
 		for (Map.Entry<SProject, WebHookProjectSettings> e : projectsForMigration.entrySet()) {
-			determineThenAttemptMigration(failIfCantRemoveWebhookFromCurrentConfiguration, now, writer, e.getKey(), e.getValue());
+			try {
+				determineThenAttemptMigration(failOnError, now, writer, e.getKey(), e.getValue());
+			} catch (Exception ex) {
+				addToReport(writer, String.format("Exception processing project '%s'", e.getKey()), ex);
+				if (failOnError) {
+					throw ex;
+				}
+			}
 		}
 	}
 
-    private void determineThenAttemptMigration(boolean failIfCantRemoveWebhookFromCurrentConfiguration,
+    private void determineThenAttemptMigration(boolean failOnError,
             LocalDateTime now, Writer writer, SProject project, WebHookProjectSettings settings)
             throws ProjectFeatureMigrationException {
 		ProjectVcsStatus vcsStatus = myTeamCityCoreFacade.getProjectVcsStatus(project);
@@ -244,7 +251,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
             addToReport(writer, "For information on manual migration see: https://github.com/tcplugins/tcWebHooks/wiki/Manually-Migrating-WebHooks");
             addToReport(writer, "A kotlin DSL configuration of each webhook is produced below. You may need to copy and paste these configuration(s) into settings.kts inside the features block. TeamCity may also have created a patch file in the project's settings repo. This will need to be manually remediated.");
             settings.getWebHooksAsList().forEach(w -> addToReport(writer,"\n" + myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(w,12)));
-        	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
+        	attemptMigration(project, settings, failOnError, now, writer);
         } else if (vcsStatus.isVcsEnabled() && !vcsStatus.isKotlin() && !vcsStatus.isVcsSyncEnabled()) {
             addWarningToReport(writer, String.format("Project '%s' has VCS Settings enabled and Sync disabled. tcWebHooks configurations will NOT be migrated, and will have to be done by hand.", project.getExternalId()));
             addToReport(writer, "For information on manual migration see: https://github.com/tcplugins/tcWebHooks/wiki/Manually-Migrating-WebHooks");
@@ -255,11 +262,11 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
                 throw new ProjectFeatureMigrationException(String.format("Unable to create backup plugin-settings.xml file for project '%s'. All further migrations will be aborted.", project.getExternalId()), jaxbException);
             }
         } else {
-        	attemptMigration(project, settings, failIfCantRemoveWebhookFromCurrentConfiguration, now, writer);
+        	attemptMigration(project, settings, failOnError, now, writer);
         }
     }
 
-	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failIfCantRemoveWebhookFromCurrentConfiguration, LocalDateTime now, Writer writer) throws ProjectFeatureMigrationException {
+	private void attemptMigration(SProject project, WebHookProjectSettings webhookSettings, boolean failOnError, LocalDateTime now, Writer writer) throws ProjectFeatureMigrationException {
 		addSectionToReport(writer, String.format("Starting migration of project '%s'. There are '%s' webhooks to migrate", project.getExternalId(), webhookSettings.getWebHooksAsList().size()));
 		try {
 			backupExistingPluginSettings(project, now, writer);
@@ -284,7 +291,7 @@ public class PluginSettingsToProjectFeaturesMigrator implements DeferrableServic
     				    addToReport(writer, String.format("Copied webHook to ProjectFeatures. Id: '%s', Project: '%s'", addResult.getWebHookConfig().getUniqueKey(), project.getExternalId()));
     				}
     				WebHookUpdateResult deleteResult = webHookProjectSettings.deleteWebHook(w.getUniqueKey(), project.getProjectId());
-    				if (!deleteResult.isUpdated() && failIfCantRemoveWebhookFromCurrentConfiguration) {
+    				if (!deleteResult.isUpdated() && failOnError) {
     				    throw new ProjectFeatureMigrationException("Unable to delete existing webhook from Project Settings", deleteResult.getWebHookConfig());
     				} else if (!deleteResult.isUpdated()){
     				    addWarningToReport(writer, String.format("Unable to delete existing webhook from Plugin Settings. WebHook id '%s', ProjectId: '%s'", w.getUniqueKey(), project.getExternalId()));
