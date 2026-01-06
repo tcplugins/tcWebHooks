@@ -60,6 +60,7 @@ public class WebHookConfigToKotlinDslRenderer {
         .append(getAuthentication(webHookConfig))
         .append(getHeaders(webHookConfig))
         .append(getParameters(webHookConfig))
+        // TODO; Filters?
         .append(leftPad()).append("}");
         return sb.toString();
     }
@@ -72,7 +73,7 @@ public class WebHookConfigToKotlinDslRenderer {
             sb.append(leftPad(1)).append("authentication = ").append(factory.getKotlinDslName()).append(" {\n");
             for (WebHookAuthenticationParameter param : factory.getParameterList()) {
                 if (authenticationConfig.getParameters().containsKey(param.getKey())) {
-                    sb.append(leftPad(2)).append(param.getKotlinDslKey()).append(" = \"").append(authenticationConfig.getParameters().get(param.getKey())).append("\"\n");
+                    sb.append(leftPad(2)).append(param.getKotlinDslKey()).append(" = \"").append(escapeKotlinString(authenticationConfig.getParameters().get(param.getKey()))).append("\"\n");
                 }
             }
             sb.append(leftPad(2)).append("preemptive = ").append(authenticationConfig.getPreemptive().toString()).append("\n")
@@ -139,7 +140,7 @@ public class WebHookConfigToKotlinDslRenderer {
         if (!webHookConfig.getHeaders().isEmpty()) {
             sb.append(leftPad(1)).append("headers {\n");
             for (WebHookHeaderConfig h : webHookConfig.getHeaders()) {
-                sb.append(leftPad(2)).append("header(\"").append(h.getName()).append("\", \"").append(h.getValue()).append("\")\n");
+                sb.append(leftPad(2)).append("header(\"").append(escapeKotlinString(h.getName())).append("\", \"").append(escapeKotlinString(h.getValue())).append("\")\n");
             }
             sb.append(leftPad(1)).append("}\n");
         }
@@ -152,11 +153,11 @@ public class WebHookConfigToKotlinDslRenderer {
             sb.append(leftPad(1)).append("parameters {\n");
             for (WebHookParameterModel p : webHookConfig.getParams()) {
                 if (isSimpleParameter(p)) {
-                    sb.append(leftPad(2)).append("parameter(\"").append(p.getName()).append("\", \"").append(p.getValue()).append("\")\n");
+                    sb.append(leftPad(2)).append("parameter(\"").append(escapeKotlinString(p.getName())).append("\", \"").append(escapeKotlinString(p.getValue())).append("\")\n");
                 } else {
                     sb.append(leftPad(2)).append("parameter(\n")
-                      .append(leftPad(3)).append("name = \"").append(p.getName()).append("\",\n")
-                      .append(leftPad(3)).append("value = \"").append(p.getValue()).append("\"");
+                      .append(leftPad(3)).append("name = \"").append(escapeKotlinString(p.getName())).append("\",\n")
+                      .append(leftPad(3)).append("value = \"").append(escapeKotlinString(p.getValue())).append("\"");
                     if (p.getSecure() != null ) {
                         sb.append(",\n").append(leftPad(3)).append("secure = ").append(p.getSecure());
                     }
@@ -195,6 +196,20 @@ public class WebHookConfigToKotlinDslRenderer {
     }
     private String leftPad(int indentMultiplier) {
         return StringUtils.leftPad("", leftPad + (indentMultiplier * INDENT_SIZE_SPACES));
+    }
+    
+    /**
+     * Converts strings like "${buildIsPersonal}" to "${'$'}{buildIsPersonal}"
+     * since that appears to be how they should be formatted in settings.kts
+     * @param stringToBeEscaped
+     * @return
+     */
+    private String escapeKotlinString(String stringToBeEscaped) {
+        if (stringToBeEscaped != null && !stringToBeEscaped.contains("${'$'}{") && stringToBeEscaped.contains("${")) {
+            return stringToBeEscaped.replace("${", "${'$'}{");
+        } else {
+            return stringToBeEscaped;
+        }
     }
 
 }
