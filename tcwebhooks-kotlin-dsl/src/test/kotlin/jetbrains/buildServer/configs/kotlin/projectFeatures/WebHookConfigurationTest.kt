@@ -27,6 +27,13 @@ class WebHookConfigurationTest {
                     param("vcs.project.name", "my-example-build-type")
                 }
             }
+        val yetAnotherExampleBuildType = BuildType {
+                name = "My Other Example Build Type"
+                id = AbsoluteId("MyProject_YetAnotherExampleBuildType")
+                params {
+                    param("vcs.project.name", "my-other-example-build-type")
+                }
+            }
 
         hook = WebHookConfiguration {
                 webHookId = "SmallKotlinProject_WebHook_01"
@@ -43,10 +50,12 @@ class WebHookConfigurationTest {
                     subProjectBuilds = true
 
                     // Use an already defined build type.
-                    buildType{airTouchDiscoveryConsole}
+                    buildType(airTouchDiscoveryConsole)
+                    // Pass in a function rather than an object
+                    buildType{anotherExampleBuildType}
 
                     // Just pass the build type as a String, as that's all we use anyway
-                    buildTypeId{anotherExampleBuildType.id.toString()}
+                    buildTypeId(yetAnotherExampleBuildType.id.toString())
                 }
 
                 buildStates {
@@ -170,7 +179,7 @@ class WebHookConfigurationTest {
     @Test
     fun getEnabledBuildTypes() {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildTypes", value = "selectedProjectBuilds" )))
-        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildTypeIds", value= "MyProject_AirTouchDiscoveryConsole, MyProject_AnotherExampleBuildType")))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildTypeIds", value= "MyProject_AirTouchDiscoveryConsole, MyProject_AnotherExampleBuildType, MyProject_YetAnotherExampleBuildType")))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "subProjectBuilds", value = "true" )))
     }
 

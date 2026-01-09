@@ -243,6 +243,13 @@ open class WebHookConfiguration() : ProjectFeature() {
                  */
                 myBuildTypes.add(myBuildTypeFunction().id.toString())
             }
+            fun buildType(myBuildType: BuildType) {
+                myBuildTypes.add(myBuildType.id.toString())
+            }
+
+            fun buildTypeId(myBuildTypeId: String) {
+                myBuildTypes.add(myBuildTypeId)
+            }
 
             fun buildTypeId(myBuildTypeIdFunction: () -> String) {
                 myBuildTypes.add(myBuildTypeIdFunction())
