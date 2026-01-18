@@ -8,7 +8,7 @@
 		<version>${currentVersion}</version>
 		<relativePath>..</relativePath>
 	</parent>-->
-	<artifactId>tcwebhooks-kotlin-dsl</artifactId>
+	<artifactId>configs-dsl-kotlin-tcwebhooks-latest</artifactId>
 	<groupId>org.jetbrains.teamcity</groupId>
 	<!--
 		Set the version to 1.0-SNAPSHOT

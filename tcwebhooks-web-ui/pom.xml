@@ -137,9 +137,9 @@
 						<echo message=" - Copying kotlin-dsl jars to dist-core/kotlin-dsl" />
 						<copy todir="${project.build.directory}/dist-core/kotlin-dsl/">
 							  <fileset dir="${project.basedir}/../tcwebhooks-kotlin-dsl/target/">
-		    						<include name="tcwebhooks-kotlin-dsl-*.jar" />
+		    						<include name="configs-dsl-kotlin-tcwebhooks-latest-*.jar" />
 		    						<!-- Don't incude source jar for now -->
-		    						<exclude name="tcwebhooks-kotlin-dsl-*sources.jar" />
+		    						<exclude name="configs-dsl-kotlin-tcwebhooks-latest-*sources.jar" />
 		    				  </fileset>
 		    			</copy>
 		    			
