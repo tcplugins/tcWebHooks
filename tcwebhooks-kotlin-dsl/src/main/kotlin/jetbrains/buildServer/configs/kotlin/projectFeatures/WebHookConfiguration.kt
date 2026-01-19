@@ -287,6 +287,8 @@ open class WebHookConfiguration() : ProjectFeature() {
             buildRemovedFromQueue?.let { this.feature.param("buildRemovedFromQueue" , enabledAsSting(buildRemovedFromQueue!!)) }
             buildStarted?.let { this.feature.param("buildStarted" , enabledAsSting(buildStarted!!)) }
             changesLoaded?.let { this.feature.param("changesLoaded" , enabledAsSting(changesLoaded!!)) }
+            buildInterrupted?.let { this.feature.param("buildInterrupted" , enabledAsSting(buildInterrupted!!)) }
+            beforeBuildFinish?.let { this.feature.param("beforeBuildFinish" , enabledAsSting(beforeBuildFinish!!)) }
             buildSuccessful?.let { this.feature.param("buildSuccessful" , enabledAsSting(buildSuccessful!!)) }
             buildFixed?.let { this.feature.param("buildFixed" , enabledAsSting(buildFixed!!)) }
             buildFailed?.let { this.feature.param("buildFailed" , enabledAsSting(buildFailed!!)) }
@@ -317,6 +319,8 @@ open class WebHookConfiguration() : ProjectFeature() {
          * Triggered after the build has started and VCS changes have been assembled.
          */
         var changesLoaded: Boolean? = null
+        var buildInterrupted : Boolean? = null
+        var beforeBuildFinish : Boolean? = null
         /**
          * Triggered every time a build successfully completes.
          */

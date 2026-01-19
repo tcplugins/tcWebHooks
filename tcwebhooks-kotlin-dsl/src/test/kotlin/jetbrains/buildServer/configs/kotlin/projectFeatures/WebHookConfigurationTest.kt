@@ -66,6 +66,8 @@ class WebHookConfigurationTest {
                     buildPinned = true
                     buildFixed = true
                     serviceMessageReceived = true
+                    buildInterrupted = true
+                    beforeBuildFinish = true
                 }
 
                 authentication = basic {
@@ -174,6 +176,8 @@ class WebHookConfigurationTest {
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "testsUnmuted", value = "disabled" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildPinned", value = "enabled" )))
         assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildFixed", value = "enabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "buildInterrupted", value = "enabled" )))
+        assertThat(hook.params, CoreMatchers.hasItem(Parameter(name = "beforeBuildFinish", value = "enabled" )))
     }
 
     @Test
