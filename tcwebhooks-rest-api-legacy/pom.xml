@@ -123,8 +123,10 @@
  -->	        
 			<plugin>
 		        <artifactId>maven-antrun-plugin</artifactId>
+		        <version>1.8</version>
 		        <executions>
 		          <execution>
+					<id>package</id>
 		            <phase>package</phase>
 		            <configuration>
 		              <target>
@@ -143,27 +145,27 @@
 						<echo message=" - Copying dep jar to dist-REST/server" />
 						<copy todir="${project.build.directory}/dist-REST/server/">
 							  <fileset dir="${project.build.directory}/">
-		    						<include name="*-jar-with-dependencies.jar" />
-		    				  </fileset>
-		    			</copy>
-		    			
-		    			<echo message=" - Creating REST ZIP file" />
-		    			<zip destfile="${project.build.directory}/tcWebHooks-REST-API-${version}-legacy.zip" 
-		    				 basedir="${project.build.directory}/dist-REST"
-		    			 />
+									<include name="*-jar-with-dependencies.jar" />
+							  </fileset>
+						</copy>
+						
+						<echo message=" - Creating REST ZIP file" />
+						<mkdir
+							dir="${project.build.directory}/../../target" />
+						<zip
+							destfile="${project.build.directory}/../../target/tcWebHooks-REST-API-${version}-legacy.zip" 
+							 basedir="${project.build.directory}/dist-REST"
+						 />
 		
-		               </target>
-		            </configuration>
-		            <goals>
-		              <goal>run</goal>
-		            </goals>
-		          </execution>
-		        </executions>
-      		</plugin>		        
-	        
-	        
-	         
-        </plugins>		
+						</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 	<dependencies>
 		<dependency>

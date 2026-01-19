@@ -111,8 +111,10 @@
 	        
 			<plugin>
 		        <artifactId>maven-antrun-plugin</artifactId>
+		        <version>1.8</version>
 		        <executions>
 		          <execution>
+					<id>package</id>
 		            <phase>package</phase>
 		            <configuration>
 		              <target>
@@ -144,19 +146,21 @@
 		    			</copy>
 		    			
 		    			<echo message=" - Creating core ZIP file" />
-		    			<zip destfile="${project.build.directory}/tcWebHooks-${version}.zip" 
-		    				 basedir="${project.build.directory}/dist-core"
-		    			 />
-		    			 
-		               </target>
-		            </configuration>
-		            <goals>
-		              <goal>run</goal>
-		            </goals>
-		          </execution>
-		        </executions>
-      		</plugin>		        
-
+						<mkdir
+							dir="${project.build.directory}/../../target" />
+						<zip
+							destfile="${project.build.directory}/../../target/tcWebHooks-${version}.zip" 
+							 basedir="${project.build.directory}/dist-core"
+						 />
+						 
+					</target>
+					</configuration>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>  
   </build>
   

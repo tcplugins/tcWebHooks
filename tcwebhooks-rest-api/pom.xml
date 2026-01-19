@@ -96,8 +96,10 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
 				<executions>
 					<execution>
+						<id>package</id>
 						<phase>package</phase>
 						<configuration>
 							<target>
@@ -130,8 +132,10 @@
 								</copy>
 
 								<echo message=" - Creating REST ZIP file" />
+								<mkdir
+									dir="${project.build.directory}/../../target" />
 								<zip
-									destfile="${project.build.directory}/tcWebHooks-REST-API-${version}.zip"
+									destfile="${project.build.directory}/../../target/tcWebHooks-REST-API-${version}.zip"
 									basedir="${project.build.directory}/dist-REST"
 								/>
 
