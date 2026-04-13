@@ -19,7 +19,7 @@
 											>
 											<input type="hidden" name="action" value="runMigration"/>
 											<input type="hidden" name="tc-csrf-token" value="${sessionScope['tc-csrf-token']}"/>
-											<button style="float:right;" class="btn" id="reRunMigration">Re-run Migration for this project</button>
+											<button style="float:right;" class="btn btn_primary" id="reRunMigration">Re-run Migration for this project</button>
 											</form>
 										</c:otherwise>
 										</c:choose>
