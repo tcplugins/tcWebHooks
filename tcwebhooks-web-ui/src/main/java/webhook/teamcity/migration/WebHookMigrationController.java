@@ -160,6 +160,16 @@ public class WebHookMigrationController extends BaseController {
 	    					}
     					}
     					migrationStatus.setKotlinDsls(sb.toString());
+    					webhookConfigs = migrated.getWebHooksAsList();
+    					sb = new StringBuilder();
+    					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
+    						for(WebHookConfig c : webhookConfigs) {
+    							sb
+    							.append(myWebHookConfigToKotlinDslRenderer.renderAsKotlinDsl(c))
+    							.append("\n\n");
+    						}
+    					}
+    					migrationStatus.setMigratedKotlinDsls(sb.toString());
     				} else if (migrationStatus.getProjectVcsStatus().isVcsEnabled() && !migrationStatus.getProjectVcsStatus().isVcsSyncEnabled()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
@@ -167,6 +177,12 @@ public class WebHookMigrationController extends BaseController {
     						sb.append(myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(webhookConfigs, myProject));
     					}
     					migrationStatus.setProjectFeaturesXml(sb.toString());
+    					webhookConfigs = migrated.getWebHooksAsList();
+    					sb = new StringBuilder();
+    					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
+    						sb.append(myWebHookConfigToProjectFeatureXmlRenderer.renderAsXml(webhookConfigs, myProject));
+    					}
+    					migrationStatus.setMigratedProjectFeaturesXml(sb.toString());
     				}
     				this.myProjectFeaturesMigrationAnalyser.populateMigrationStatusDetail(migrationStatus);
     			}

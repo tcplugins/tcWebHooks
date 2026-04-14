@@ -77,6 +77,18 @@
 	    		<pre><code class="language-xml"><c:out value="${migrationStatus.projectFeaturesXml}"></c:out></code></pre>
 				<script>hljs.highlightAll();</script>
 	    	</c:if> 
+	    	<c:if test="${not empty migrationStatus.migratedKotlinDsls}">
+	    		<h2>Migrated WebHooks shown  as KotlinDSL</h2>
+	    		The following webhooks have been migrated already. They are shown here for convenience.
+	    		<pre><code class="language-kotlin"><c:out value="${migrationStatus.migratedKotlinDsls}"></c:out></code></pre>
+				<script>hljs.highlightAll();</script>
+	    	</c:if> 
+	    	<c:if test="${not empty migrationStatus.migratedProjectFeaturesXml}">
+	    		<h2>Migrated WebHooks shown as Project Features XML</h2>
+	    		The following webhooks have been migrated already. They are shown here for convenience.
+	    		<pre><code class="language-xml"><c:out value="${migrationStatus.migratedProjectFeaturesXml}"></c:out></code></pre>
+				<script>hljs.highlightAll();</script>
+	    	</c:if> 
 	    </div>
 	    
     </jsp:attribute>

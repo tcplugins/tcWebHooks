@@ -131,7 +131,11 @@ public class ProjectFeaturesMigrationAnalyser {
         @With
         String kotlinDsls;
         @With
+        String migratedKotlinDsls;
+        @With
         String projectFeaturesXml;
+        @With
+        String migratedProjectFeaturesXml;
         @With
         NextMigrationStep nextMigrationStep;
     }
