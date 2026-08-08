@@ -138,7 +138,7 @@ WebHooksPlugin.Parameters = OO.extend(WebHooksPlugin, {
 		getParameterData: function (projectId, parameterId, action, data) {
 			var dialog = this;
     		$j.ajax ({
-    			url: window['base_uri'] + '/app/rest/webhooks/parameters/' + projectId + '/id:' + parameterId + '?fields=**',
+    			url: window['base_uri'] + '/app/rest/webhooks/parameters/' + projectId + '/id:' + parameterId + '?fields=*',
     		    type: "GET",
     		    headers : {
     		        'Accept' : 'application/json'
