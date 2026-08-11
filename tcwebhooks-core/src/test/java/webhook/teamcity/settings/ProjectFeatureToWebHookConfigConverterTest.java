@@ -2,6 +2,7 @@ package webhook.teamcity.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -207,6 +208,19 @@ public class ProjectFeatureToWebHookConfigConverterTest {
         WebHookConfig webhook = ConfigLoaderUtil.getSpecificWebHookInConfig(1, new File("src/test/resources/plugin-settings-with-lots-of-examples.xml"));
         ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
         converter.convert(webhook);
+	}
+	
+	@Test
+	public void testConvertWithComplicatedUrl() throws JDOMException, IOException {
+	    BuildTypeIdResolver buildTypeIdResolver = new ProjectAndBuildTypeResolverImpl(projectManager);
+	    WebHookAuthenticatorProvider authenticatorProvider = new WebHookAuthenticatorProvider();
+	    authenticatorProvider.registerAuthType(new BearerAuthenticatorFactory(authenticatorProvider));
+	    authenticatorProvider.registerAuthType(new UsernamePasswordAuthenticatorFactory(authenticatorProvider));
+        List<SProjectFeatureDescriptor> webhooksAsProjectFeatures = ConfigLoaderUtil.getListOfProjectFeatures(new File("src/test/resources/testMigrationConfigurations/projects/FirstProject/project-config.xml"));
+	    ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(authenticatorProvider, buildTypeIdResolver);
+        WebHookConfig webHookConfig = converter.convert(webhooksAsProjectFeatures.get(14));
+        assertEquals("id_820867735", webHookConfig.getUniqueKey());
+        assertNotNull(webHookConfig.getUrl());
 	}
 
 }

@@ -220,6 +220,18 @@
         <param name="webHookId" value="RootProjectId_WebHook_09" />
       </parameters>
     </extension>
+    <extension id="PROJECT_EXT_15" type="tcWebHooks">
+      <parameters>
+        <param name="buildFailed" value="enabled" />
+        <param name="buildInterrupted" value="enabled" />
+        <param name="buildTypeIds" value="RootProjectId_TcChatBot" />
+        <param name="buildTypes" value="selectedProjectBuilds" />
+        <param name="subProjectBuilds" value="true" />
+        <param name="template" value="MsTeams" />
+        <param name="url" value="https://default210a2a429e5ab6f7ae01bd386fa514.b1.environment.api.example.com:443/workflows/acbbb0a7410cc481376479c7e944f019/triggers/manual/paths/invoke?api-version=1&amp;sp=%2Ftriggers%2Fmanual%2Frun&amp;sv=1.0&amp;sig=1pD1ixcb4faBMhbKuJTTe6KW3_pbSLjYl3IG9Ogbcfk" />
+        <param name="webHookId" value="id_820867735" />
+      </parameters>
+    </extension>
   </project-extensions>
   <cleanup />
 </project>
