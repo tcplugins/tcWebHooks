@@ -170,7 +170,7 @@ public class WebHookMigrationController extends BaseController {
     						}
     					}
     					migrationStatus.setMigratedKotlinDsls(sb.toString());
-    				} else if (migrationStatus.getProjectVcsStatus().isVcsEnabled() && !migrationStatus.getProjectVcsStatus().isVcsSyncEnabled()) {
+    				} else { //if (migrationStatus.getProjectVcsStatus().isVcsEnabled() && !migrationStatus.getProjectVcsStatus().isVcsSyncEnabled()) {
     					List<WebHookConfig> webhookConfigs = candidates.getRight();
     					StringBuilder sb = new StringBuilder();
     					if (webhookConfigs != null && ! webhookConfigs.isEmpty()) {
