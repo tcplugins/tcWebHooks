@@ -6,8 +6,8 @@
 	<properties>
     	<majorVersion>3.0.0-alpha.4</majorVersion>
     	<buildNumber>snapshot</buildNumber>
-    	<!--gitHash>${GIT_HASH}</gitHash-->
-    	<!--gitBranch>${GIT_BRANCH}</gitBranch-->
+    	<gitHash>${GIT_HASH}</gitHash>
+    	<gitBranch>${GIT_BRANCH}</gitBranch>
     	<currentVersion>${majorVersion}-build.${buildNumber}</currentVersion>
     	<!-- Set the TeamCity version, so that we reference these jars in Maven -->
     	<teamcityVersion>2019.1</teamcityVersion>
