@@ -121,6 +121,10 @@
      	class="webhook.teamcity.endpoint.WebHookEndPointViewerController" 
      	/>
      	
+    <bean id="webHookDokkaDocsController" 
+     	class="webhook.teamcity.extension.WebHookDokkaDocsController" 
+     	/>
+     	
     <bean id="webHookHistoryController" 
      	class="webhook.teamcity.history.WebHookHistoryController"
      	/>
@@ -177,6 +181,9 @@
      <bean id="webHookMigrationAdminPage" 
      	class="webhook.teamcity.extension.admin.WebHookMigrationAdminPage" 
      	/>
+     <bean id="webHookKotlinDslAdminPage" 
+     	class="webhook.teamcity.extension.admin.WebHookKotlinDslAdminPage" 
+     	/>
      <bean id="webHookMigrationHealthReports" 
      	class="webhook.teamcity.migration.WebHookMigrationHealthReports" 
 		init-method="init"
@@ -232,6 +239,14 @@
      	/>
 	<bean id="webHookMigrationStatusService"
 		class="webhook.teamcity.settings.converter.WebHookMigrationStatusServiceImpl"
+		/>
+		
+	<bean id="dslDiagnosticsService"
+		class="webhook.teamcity.diagnostics.DslDiagnosticsServiceImpl"
+		/>
+		
+	<bean id="mavenFileResolver"
+		class="webhook.teamcity.diagnostics.HttpMavenFileResolver"
 		/>
 		
 	<bean id="webHookConfigToKotlinDslRenderer"

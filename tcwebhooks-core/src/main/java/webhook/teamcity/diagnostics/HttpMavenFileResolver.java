@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import webhook.teamcity.Loggers;
 import webhook.teamcity.exception.DslDiagnotisticsException;
 
-
 @AllArgsConstructor
 public class HttpMavenFileResolver implements MavenFileResolver {
 	
@@ -67,7 +66,20 @@ public class HttpMavenFileResolver implements MavenFileResolver {
 	}
 	
 	private String getMavenRepoUrl() {
-		return this.serverSettings.getRootUrl() + MAVEN_BASE_URL;
+		if (isRunningInDocker()) {
+			return "http://localhost:8111" + MAVEN_BASE_URL;
+		} else {
+			return this.serverSettings.getRootUrl() + MAVEN_BASE_URL;
+		}
 	}
+	
+	private boolean isRunningInDocker() {
+		// Check 1: Look for JetBrains' own runtime container flag
+		boolean hasDockerEnvVar = System.getenv().containsKey("TEAMCITY_IN_DOCKER");
 
+		// Check 2: Look for the universal Unix container boundary marker
+		boolean hasDockerFileMarker = new java.io.File("/.dockerenv").exists();
+
+		return hasDockerEnvVar || hasDockerFileMarker;
+	}
 }

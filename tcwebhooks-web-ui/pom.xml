@@ -38,6 +38,11 @@
 	          <exclude>*.properties</exclude>
 	        </excludes>
 	      </resource>
+	      <resource>
+	        <directory>../tcwebhooks-kotlin-dsl/target/dokka</directory>
+	        <targetPath>buildServerResources/dokka</targetPath>
+	        <filtering>false</filtering>
+	      </resource>
 	    </resources>
 		
 		<pluginManagement>
