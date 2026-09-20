@@ -21,7 +21,8 @@ public class WebHookKotlinDslAdminPage extends AdminPage {
 	public static final String ADMIN_ID = "tcWebHooksKotlinDsl";
 
 	private final DslDiagnosticsService myDslDiagnosticsService;
-	private TeamCityCoreFacade myTeamCityCoreFacade;
+	private final TeamCityCoreFacade myTeamCityCoreFacade;
+	private final ServerSettings myServerSettings;
 
 
 	public WebHookKotlinDslAdminPage(@NotNull PagePlaces pagePlaces, 
@@ -33,6 +34,7 @@ public class WebHookKotlinDslAdminPage extends AdminPage {
 		super(pagePlaces);
 		this.myDslDiagnosticsService = dslDiagnosticsService;
 		this.myTeamCityCoreFacade = teamCityCoreFacade;
+		this.myServerSettings = serverSettings;
 
 		setPluginName(ADMIN_ID);
 		setIncludeUrl(descriptor.getPluginResourcesPath("WebHook/kotlinDslAdminTab.jsp"));
@@ -68,6 +70,7 @@ public class WebHookKotlinDslAdminPage extends AdminPage {
 				.filter(p -> this.myTeamCityCoreFacade.getProjectVcsStatus(p).isKotlin()).count();
 		
 		model.put("countOfActiveKotlinProjects", countOfActiveKotlinProjects);
+		model.put("rootUrl", this.myServerSettings.getRootUrl());
 	}
 	
 }
