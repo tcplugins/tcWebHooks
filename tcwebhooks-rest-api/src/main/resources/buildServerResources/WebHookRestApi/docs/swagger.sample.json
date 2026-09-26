@@ -1,0 +1,575 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "tcWebHooks REST API",
+    "version": "generated-sample",
+    "description": "Sample API specification used for docs rendering and local validation."
+  },
+  "basePath": "/app/rest/webhooks",
+  "schemes": ["https"],
+  "consumes": ["application/json", "application/xml"],
+  "produces": ["application/json", "application/xml"],
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Use a TeamCity token as: Bearer <token>"
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "definitions": {
+    "LinkRef": {
+      "type": "object",
+      "description": "Hyperlink object used by index resources.",
+      "properties": {
+        "href": {
+          "type": "string",
+          "example": "/app/rest/webhooks/configurations"
+        }
+      }
+    },
+    "WebHooksIndexItems": {
+      "type": "object",
+      "required": ["configurations", "parameters", "templates"],
+      "properties": {
+        "configurations": {
+          "$ref": "#/definitions/LinkRef"
+        },
+        "parameters": {
+          "$ref": "#/definitions/LinkRef"
+        },
+        "templates": {
+          "$ref": "#/definitions/LinkRef"
+        },
+        "tcWebHooksVersion": {
+          "type": "string",
+          "example": "2.0.4"
+        },
+        "tcWebHooksRestApiVersion": {
+          "type": "string",
+          "example": "2.0.4-rest"
+        }
+      },
+      "example": {
+        "configurations": { "href": "/app/rest/webhooks/configurations" },
+        "parameters": { "href": "/app/rest/webhooks/parameters" },
+        "templates": { "href": "/app/rest/webhooks/templates" },
+        "tcWebHooksVersion": "2.0.4",
+        "tcWebHooksRestApiVersion": "2.0.4-rest"
+      }
+    },
+    "Information": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "example": "Using WebHooks in myCompany Inc."
+        },
+        "url": {
+          "type": "string",
+          "example": "http://intranet.mycompany.com/docs/UsingWebHooks"
+        },
+        "further-reading": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "WebhooksMainConfig": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/Information"
+        }
+      },
+      "example": {
+        "info": {
+          "text": "Using WebHooks in myCompany Inc.",
+          "url": "http://intranet.mycompany.com/docs/UsingWebHooks",
+          "further-reading": true
+        }
+      }
+    },
+    "TemplateSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "template.id:slackcompact"
+        },
+        "name": {
+          "type": "string",
+          "example": "Slack (Compact)"
+        },
+        "description": {
+          "type": "string",
+          "example": "Compact Slack notification"
+        },
+        "href": {
+          "type": "string",
+          "example": "/app/rest/webhooks/templates/template.id:slackcompact"
+        }
+      }
+    },
+    "TemplateCollection": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "example": 2
+        },
+        "templates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TemplateSummary"
+          }
+        }
+      },
+      "example": {
+        "count": 2,
+        "templates": [
+          {
+            "id": "template.id:slackcompact",
+            "name": "Slack (Compact)",
+            "description": "Compact Slack notification",
+            "href": "/app/rest/webhooks/templates/template.id:slackcompact"
+          },
+          {
+            "id": "template.id:flowdock",
+            "name": "Flowdock",
+            "description": "Flowdock room messages",
+            "href": "/app/rest/webhooks/templates/template.id:flowdock"
+          }
+        ]
+      }
+    },
+    "TemplateExecutionRequest": {
+      "type": "object",
+      "required": ["templateId", "projectId", "buildState"],
+      "properties": {
+        "templateId": {
+          "type": "string",
+          "example": "template.id:slackcompact"
+        },
+        "projectId": {
+          "type": "string",
+          "example": "_Root"
+        },
+        "buildState": {
+          "type": "string",
+          "example": "buildFinished"
+        },
+        "branchName": {
+          "type": "string",
+          "example": "refs/heads/main"
+        },
+        "payloadFormat": {
+          "type": "string",
+          "example": "json"
+        }
+      },
+      "example": {
+        "templateId": "template.id:slackcompact",
+        "projectId": "_Root",
+        "buildState": "buildFinished",
+        "branchName": "refs/heads/main",
+        "payloadFormat": "json"
+      }
+    },
+    "TemplateExecutionResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "ok"
+        },
+        "renderedPayload": {
+          "type": "string",
+          "example": "{\"text\":\"Build MyProject #42 finished\"}"
+        }
+      },
+      "example": {
+        "status": "ok",
+        "renderedPayload": "{\"text\":\"Build MyProject #42 finished\"}"
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "example": "templateId"
+        },
+        "message": {
+          "type": "string",
+          "example": "Template id is required"
+        }
+      }
+    },
+    "ErrorResult": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Request payload failed validation"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValidationError"
+          }
+        }
+      },
+      "example": {
+        "message": "Request payload failed validation",
+        "errors": [
+          {
+            "field": "templateId",
+            "message": "Template id is required"
+          }
+        ]
+      }
+    },
+    "ProjectWebhook": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "id:1234"
+        },
+        "url": {
+          "type": "string",
+          "example": "https://hooks.slack.com/services/T000/B000/XXX"
+        },
+        "template": {
+          "type": "string",
+          "example": "template.id:slackcompact"
+        },
+        "enabled": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "ProjectWebhooks": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "example": 1
+        },
+        "webhooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProjectWebhook"
+          }
+        }
+      },
+      "example": {
+        "count": 1,
+        "webhooks": [
+          {
+            "id": "id:1234",
+            "url": "https://hooks.slack.com/services/T000/B000/XXX",
+            "template": "template.id:slackcompact",
+            "enabled": true
+          }
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Get API index",
+        "description": "Returns top-level links for configurations, templates and parameters.",
+        "x-purpose": "Discover entry points for the tcWebHooks REST resources before calling specific endpoints.",
+        "x-notes": [
+          "Use this endpoint as a lightweight health and routing check.",
+          "Version fields are useful for compatibility debugging during upgrades."
+        ],
+        "responses": {
+          "200": {
+            "description": "Index payload",
+            "schema": {
+              "$ref": "#/definitions/WebHooksIndexItems"
+            },
+            "examples": {
+              "application/json": {
+                "configurations": { "href": "/app/rest/webhooks/configurations" },
+                "parameters": { "href": "/app/rest/webhooks/parameters" },
+                "templates": { "href": "/app/rest/webhooks/templates" },
+                "tcWebHooksVersion": "2.0.4",
+                "tcWebHooksRestApiVersion": "2.0.4-rest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/server": {
+      "get": {
+        "summary": "Get server webhook settings",
+        "description": "Returns current global settings used by webhook rendering and UI hints.",
+        "x-purpose": "Read server-level defaults used by the plugin UI and rendering helpers.",
+        "x-notes": [
+          "This endpoint is read-only for users without global config permissions.",
+          "Fields may be absent when unset rather than present with null values."
+        ],
+        "responses": {
+          "200": {
+            "description": "Current server configuration",
+            "schema": {
+              "$ref": "#/definitions/WebhooksMainConfig"
+            },
+            "examples": {
+              "application/json": {
+                "info": {
+                  "text": "Using WebHooks in myCompany Inc.",
+                  "url": "http://intranet.mycompany.com/docs/UsingWebHooks",
+                  "further-reading": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update server webhook settings",
+        "description": "Updates the global info block shown in webhook settings pages.",
+        "x-purpose": "Persist admin-facing informational text and links shown in the webhook configuration area.",
+        "x-notes": [
+          "Returns 204 on success with no body.",
+          "Validation failures should be handled as 422 and surfaced to UI users."
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Server webhook settings payload.",
+            "schema": {
+              "$ref": "#/definitions/WebhooksMainConfig"
+            },
+            "x-examples": {
+              "application/json": {
+                "info": {
+                  "text": "Using WebHooks in another company Inc.",
+                  "url": "http://intranet.other-company.local/docs/webhooks",
+                  "further-reading": false
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Settings updated"
+          },
+          "422": {
+            "description": "Invalid payload",
+            "schema": {
+              "$ref": "#/definitions/ErrorResult"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Request payload failed validation",
+                "errors": [
+                  {
+                    "field": "info.text",
+                    "message": "Info text must not be empty"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates": {
+      "get": {
+        "summary": "List templates",
+        "description": "Returns available webhook templates visible to the caller.",
+        "x-purpose": "Enumerate template ids and metadata for template selection and automation.",
+        "x-notes": [
+          "Use the fields query to limit payload size in large installations.",
+          "Pair this with template detail endpoints when full content is required."
+        ],
+        "parameters": [
+          {
+            "name": "locator",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Optional TeamCity locator for filtering.",
+            "example": "project:_Root"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Fields projection expression.",
+            "example": "templates(id,name,description),count"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template collection",
+            "schema": {
+              "$ref": "#/definitions/TemplateCollection"
+            },
+            "examples": {
+              "application/json": {
+                "count": 2,
+                "templates": [
+                  {
+                    "id": "template.id:slackcompact",
+                    "name": "Slack (Compact)",
+                    "description": "Compact Slack notification",
+                    "href": "/app/rest/webhooks/templates/template.id:slackcompact"
+                  },
+                  {
+                    "id": "template.id:flowdock",
+                    "name": "Flowdock",
+                    "description": "Flowdock room messages",
+                    "href": "/app/rest/webhooks/templates/template.id:flowdock"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/template-test/execute": {
+      "post": {
+        "summary": "Execute a test webhook payload",
+        "description": "Renders and executes a template request using supplied test data.",
+        "x-purpose": "Validate and preview real rendered payload behavior before saving webhook changes.",
+        "x-notes": [
+          "Prefer this in CI checks to verify template compatibility.",
+          "Treat 422 as actionable input validation feedback."
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Template execution request payload.",
+            "schema": {
+              "$ref": "#/definitions/TemplateExecutionRequest"
+            },
+            "x-examples": {
+              "application/json": {
+                "templateId": "template.id:slackcompact",
+                "projectId": "_Root",
+                "buildState": "buildFinished",
+                "branchName": "refs/heads/main",
+                "payloadFormat": "json"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Execution result",
+            "schema": {
+              "$ref": "#/definitions/TemplateExecutionResult"
+            },
+            "examples": {
+              "application/json": {
+                "status": "ok",
+                "renderedPayload": "{\"text\":\"Build MyProject #42 finished\"}"
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResult"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Request payload failed validation",
+                "errors": [
+                  {
+                    "field": "templateId",
+                    "message": "Template id is required"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/configurations/{projectId}": {
+      "get": {
+        "summary": "List webhooks for a project",
+        "description": "Returns webhook configurations attached to the specified TeamCity project.",
+        "x-purpose": "Audit or sync project webhook configuration state.",
+        "x-notes": [
+          "projectId must be the external TeamCity id (for example _Root).",
+          "Use field projection to fetch only ids for fast inventory operations."
+        ],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "External project id.",
+            "example": "_Root"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Fields projection expression.",
+            "example": "webhooks(id,url,template,enabled),count"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project webhooks",
+            "schema": {
+              "$ref": "#/definitions/ProjectWebhooks"
+            },
+            "examples": {
+              "application/json": {
+                "count": 1,
+                "webhooks": [
+                  {
+                    "id": "id:1234",
+                    "url": "https://hooks.slack.com/services/T000/B000/XXX",
+                    "template": "template.id:slackcompact",
+                    "enabled": true
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResult"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Project not found",
+                "errors": []
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

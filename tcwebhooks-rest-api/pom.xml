@@ -9,6 +9,10 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>tcwebhooks-rest-api</artifactId>
+	<properties>
+		<teamcity.plugin.api.version>${teamcityVersion}</teamcity.plugin.api.version>
+		<teamcity.rest.runtime.version>2024.03</teamcity.rest.runtime.version>
+	</properties>
 	<!-- 	<pluginRepositories>
       <pluginRepository>
          <id>miredot</id>
@@ -59,7 +63,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -147,6 +151,27 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>generate-rest-docs</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>webhook.teamcity.server.rest.docs.OpenApiDocGenerator</mainClass>
+							<classpathScope>test</classpathScope>
+							<arguments>
+								<argument>${project.build.outputDirectory}/buildServerResources/WebHookRestApi/docs/swagger.json</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 
 		</plugins>
@@ -171,7 +196,7 @@
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>server-api</artifactId>
-			<version>${teamcityVersion}</version>
+			<version>${teamcity.plugin.api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -179,19 +204,35 @@
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
 			<artifactId>common-api</artifactId>
-			<version>${teamcityVersion}</version>
+			<version>${teamcity.plugin.api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- TeamCity/webapps/WEB-INF/lib/server.jar -->
+		<!-- TeamCity/webapps/WEB-INF/lib/common.jar -->
+		<dependency>
+			<groupId>org.jetbrains.teamcity</groupId>
+			<artifactId>common</artifactId>
+			<version>${teamcity.rest.runtime.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- TeamCity/webapps/WEB-INF/lib/common-impl.jar -->
+		<dependency>
+			<groupId>org.jetbrains.teamcity</groupId>
+			<artifactId>common-impl</artifactId>
+			<version>${teamcity.rest.runtime.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- TeamCity/webapps/WEB-INF/lib/server-core.jar -->
 		<!-- Enables:
 		     - Saving reason for the change when saving a project. 
 		     - Used to obtain the server UUID for Statistics
 		     - Obtaining Secure values from SecureDataStorage  -->
 		<dependency>
 			<groupId>org.jetbrains.teamcity</groupId>
-			<artifactId>server</artifactId>
-			<version>${teamcityServerVersion}</version>
+			<artifactId>server-core</artifactId>
+			<version>${teamcity.rest.runtime.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -256,7 +297,7 @@
 		<dependency>
 			<groupId>jetbrains.teamcity.2024</groupId>
 			<artifactId>rest-api</artifactId>
-			<version>2024.03</version>
+			<version>${teamcity.rest.runtime.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -269,14 +310,35 @@
 		<dependency>
 			<groupId>com.sun.jersey.jersey-test-framework</groupId>
 			<artifactId>jersey-test-framework-grizzly</artifactId>
-			<version>1.16</version>
+			<version>1.19</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-apache-client</artifactId>
-			<version>1.16</version>
+			<version>1.19</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+			<version>2.41</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>2.41</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.41</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -293,5 +355,55 @@
 			<version>2.28.2</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>1.6.14</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>1.6.14</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-jaxrs</artifactId>
+			<version>1.6.14</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>2.41</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet-core</artifactId>
+			<version>2.41</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
 </project>

@@ -21,6 +21,7 @@
 	<bean id="restApiCleanupRestartRequiredHealthReport" class="webhook.teamcity.server.RestApiCleanupRestartRequiredHealthReport"/-->
 	<bean id="webHookRestApiAdminPage" class="webhook.teamcity.server.rest.web.WebHookRestApiAdminPage"/>
 	<bean id="webHookRestApiActionController" class="webhook.teamcity.server.rest.web.WebHookRestApiActionController"/>
+	<bean id="webHookRestApiDocsController" class="webhook.teamcity.server.rest.web.WebHookRestApiDocsController"/>
 	<bean id="fixPluginZipFileAction" class="webhook.teamcity.server.rest.web.action.FixPluginZipFileAction"/>
 
 	<bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>

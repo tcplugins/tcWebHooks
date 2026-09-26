@@ -27,6 +27,10 @@
 	        </div>
 	        
 	        <p>The WebHook REST API extends the TeamCity REST API plugin and uses the JAXB library to read and write to the webhooks templates configuration file. </p>
+	        <p>
+	        	<strong>REST API reference docs:</strong>
+	        	<a href="#" onclick="window.location = window['base_uri'] + '/webhooks/rest-api/index.html'; return false;">Open tcWebHooks REST API documentation</a>
+	        </p>
 	        <p>Unfortunately, the  TeamCity REST API comes bundled with an old version of the JAXB libraries. This means that when the WebHooks API tries to write to the <i>webhooks-templates.xml</i> configuration file, it fails with a ClassCastException. See <a href="https://github.com/tcplugins/tcWebHooks/issues/43">issue 43 on github for more details</a>.<p/>
 	        <p>This page gives you an indication on whether this problem is present on your TeamCity installation. It also has a tool which attempts to fix any problematic REST API installations.</p>
 	        

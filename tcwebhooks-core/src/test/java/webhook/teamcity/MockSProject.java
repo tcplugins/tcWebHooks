@@ -700,6 +700,17 @@ public class MockSProject implements SProject {
 
 	@Override
 	public boolean updateFeature(String featureId, String newType, Map<String, String> newParams) {
+		for (int i = 0; i < this.features.size(); i++) {
+			SProjectFeatureDescriptor existing = this.features.get(i);
+			if (existing != null && featureId.equals(existing.getId())) {
+				Map<String, String> paramsCopy = new HashMap<>();
+				if (newParams != null) {
+					paramsCopy.putAll(newParams);
+				}
+				this.features.set(i, new MockSProjectFeatureDescriptor(newType, this.projectId, paramsCopy, featureId));
+				return true;
+			}
+		}
 		return false;
 	}
 
