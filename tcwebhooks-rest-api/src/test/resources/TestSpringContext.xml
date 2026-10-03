@@ -17,7 +17,8 @@
     <bean id="projectManager" class="webhook.teamcity.test.springmock.MockProjectManager"/>
     <bean id="projectSettingsManager" class="webhook.teamcity.test.springmock.MockProjectSettingsManager"/>
     <bean id="configActionFactory" class="webhook.teamcity.test.springmock.MockConfigActionFactory"/>
-
+<!--     <bean id="eventDispatcher" class="webhook.teamcity.test.springmock.MockEventDispatcher"/>
+ -->
     <bean id="restControllerExtensionInitializer" class="webhook.teamcity.server.rest.RESTControllerExtensionInitializer"/>
 
     <bean id="mainConfigManager" class="webhook.teamcity.server.rest.util.mainconfig.MainConfigManager"/>
@@ -26,17 +27,21 @@
     <bean id="webHookManager" class="webhook.teamcity.server.rest.data.WebHookManager"/>
     <bean id="webHookParameterFinder" class="webhook.teamcity.server.rest.data.WebHookParameterFinder"/>
     <bean id="webHookSettingsManagerProvider" class="webhook.teamcity.server.rest.jersey.WebHookSettingsManagerProvider"/>
-
+<!--     <bean id="projectsModelListener" class="webhook.teamcity.test.springmock.MockProjectsModelListener"/>
+ -->
     <bean id="webHookUserRequestedExecutor" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="webhook.teamcity.testing.WebHookUserRequestedExecutor"/>
     </bean>
+    <bean id="buildTypeIdResolver" class="webhook.teamcity.test.springmock.MockBuildTypeIdResolver"/>
 
     <bean id="webHookContentBuilder" class="webhook.teamcity.WebHookContentBuilder"/>
     <bean id="webHookFactory" class="webhook.teamcity.WebHookFactoryImpl"/>
     <bean id="webHookProjectSettings" class="webhook.teamcity.settings.WebHookProjectSettings"/>
+    <bean id="webHookFeaturesStore" class="webhook.teamcity.settings.WebHookProjectFeaturesStore"/>
     <bean id="webHookSettingsManager" class="webhook.teamcity.settings.WebHookSettingsManagerImpl"/>
     <bean id="webAddressTransformer" class="webhook.teamcity.history.WebAddressTransformerImpl"/>
     <bean id="webHookProjectSettingsFactory" class="webhook.teamcity.settings.WebHookProjectSettingsFactory"/>
+    <bean id="projectFeatureToWebHookConfigConverter" class="webhook.teamcity.settings.ProjectFeatureToWebHookConfigConverter"/>
 
     <bean id="webHookMainSettings" class="webhook.teamcity.settings.WebHookMainSettings" init-method="register"/>
 
