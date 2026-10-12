@@ -445,7 +445,7 @@ public class WebHookSettingsManagerImpl implements WebHookSettingsManager, WebHo
                 }
             }
         } finally {
-            enhancedLock.writeLock().unlock();
+            enhancedLock.readLock().unlock();
         }
         try {
             enhancedLock.writeLock().lock();
