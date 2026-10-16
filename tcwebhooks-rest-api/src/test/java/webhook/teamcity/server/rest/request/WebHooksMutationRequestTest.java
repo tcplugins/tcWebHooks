@@ -20,13 +20,19 @@ import org.jdom.JDOMException;
 import org.junit.Test;
 import org.springframework.web.context.ContextLoader;
 
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.settings.ProjectSettingsManager;
+import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.BuildStateEnum;
+import webhook.teamcity.auth.WebHookAuthenticatorProvider;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhooks;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebhook;
+import webhook.teamcity.settings.ProjectFeatureToWebHookConfigConverter;
+import webhook.teamcity.settings.WebHookConfig;
 import webhook.testframework.WebHookMockingFramework;
 import webhook.testframework.WebHookMockingFrameworkImpl;
 
@@ -249,6 +255,41 @@ public class WebHooksMutationRequestTest extends WebHookAbstractSpringAwareJerse
         ProjectSettingsManager projectSettingsManager = ContextLoader.getCurrentWebApplicationContext()
                 .getBean(ProjectSettingsManager.class);
         projectSettingsManager.readFrom(webhooksParent, PROJECT_EXTERNAL_ID);
+
+        ProjectManager projectManager = ContextLoader.getCurrentWebApplicationContext()
+                .getBean(ProjectManager.class);
+        WebHookAuthenticatorProvider authenticatorProvider = ContextLoader.getCurrentWebApplicationContext()
+                .getBean(WebHookAuthenticatorProvider.class);
+        SProject project = projectManager.findProjectByExternalId(PROJECT_EXTERNAL_ID);
+        ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(
+                authenticatorProvider,
+                new IdentityBuildTypeIdResolver());
+        for (WebHookConfig config : framework.getWebHookProjectSettings().getWebHooksConfigs()) {
+            config.setProjectInternalId(project.getProjectId());
+            project.addFeature(converter.convert(config).getType(), converter.convert(config).getParameters());
+        }
+    }
+
+    private static class IdentityBuildTypeIdResolver implements BuildTypeIdResolver {
+        @Override
+        public String getExternalBuildTypeId(String internalBuildTypeId) {
+            return internalBuildTypeId;
+        }
+
+        @Override
+        public java.util.Set<String> getExternalBuildTypeIds(java.util.Collection<String> internalBuildTypeIds) {
+            return new java.util.LinkedHashSet<>(internalBuildTypeIds);
+        }
+
+        @Override
+        public String getInternalBuildTypeId(String externalBuildTypeId) {
+            return externalBuildTypeId;
+        }
+
+        @Override
+        public java.util.Set<String> getInternalBuildTypeIds(java.util.Collection<String> externalBuildTypeIds) {
+            return new java.util.LinkedHashSet<>(externalBuildTypeIds);
+        }
     }
 }
 
