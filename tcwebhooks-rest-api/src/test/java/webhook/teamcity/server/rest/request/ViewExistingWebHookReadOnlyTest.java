@@ -26,6 +26,8 @@ import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.auth.WebHookAuthenticatorProvider;
+import webhook.teamcity.auth.basic.UsernamePasswordAuthenticatorFactory;
+import webhook.teamcity.auth.bearer.BearerAuthenticatorFactory;
 import webhook.teamcity.payload.content.ExtraParameters;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.webhook.ProjectWebHookFilter;
@@ -271,6 +273,7 @@ public class ViewExistingWebHookReadOnlyTest extends WebHookAbstractSpringAwareJ
                 .getBean(ProjectManager.class);
         WebHookAuthenticatorProvider authenticatorProvider = ContextLoader.getCurrentWebApplicationContext()
                 .getBean(WebHookAuthenticatorProvider.class);
+        registerTestAuthFactories(authenticatorProvider);
         SProject project = projectManager.findProjectByExternalId("testProject");
         ProjectFeatureToWebHookConfigConverter converter = new ProjectFeatureToWebHookConfigConverter(
                 authenticatorProvider,
@@ -279,6 +282,11 @@ public class ViewExistingWebHookReadOnlyTest extends WebHookAbstractSpringAwareJ
             config.setProjectInternalId(project.getProjectId());
             project.addFeature(converter.convert(config).getType(), converter.convert(config).getParameters());
         }
+    }
+
+    private static void registerTestAuthFactories(WebHookAuthenticatorProvider authenticatorProvider) {
+        new UsernamePasswordAuthenticatorFactory(authenticatorProvider).register();
+        new BearerAuthenticatorFactory(authenticatorProvider).register();
     }
 
     private static class IdentityBuildTypeIdResolver implements BuildTypeIdResolver {
