@@ -57,6 +57,8 @@ import webhook.teamcity.server.rest.request.WebHooksRequest;
  */
 public final class OpenApiDocGenerator {
 
+    private static final int MIN_EXPECTED_PATHS = 10;
+
     private OpenApiDocGenerator() {
     }
 
@@ -81,12 +83,18 @@ public final class OpenApiDocGenerator {
         Reader reader = new Reader(seed);
         enableScanAllResources(reader);
 
-        Swagger swagger = reader.read(resources);
-        if (swagger.getPaths() == null || swagger.getPaths().isEmpty()) {
-            swagger = buildFromJaxRsAnnotations(seed, resources);
-        }
+        Swagger readerSwagger = reader.read(resources);
+        Swagger annotationSwagger = buildFromJaxRsAnnotations(seed, resources);
+        Swagger swagger = mergeSwaggerSpecs(seed, readerSwagger, annotationSwagger);
         if (swagger.getPaths() == null || swagger.getPaths().isEmpty()) {
             throw new IllegalStateException("Generated Swagger spec contains no paths. Resource scanning did not discover REST endpoints.");
+        }
+        if (swagger.getPaths().size() < MIN_EXPECTED_PATHS) {
+            throw new IllegalStateException("Generated Swagger spec appears incomplete: found "
+                    + swagger.getPaths().size()
+                    + " paths, expected at least "
+                    + MIN_EXPECTED_PATHS
+                    + ". Check resource scanning/merging configuration.");
         }
 
         Path specFile = args != null && args.length > 0 && args[0] != null && !args[0].trim().isEmpty()
@@ -177,6 +185,76 @@ public final class OpenApiDocGenerator {
             swagger.setDefinitions(definitions);
         }
         return swagger;
+    }
+
+    private static Swagger mergeSwaggerSpecs(Swagger seed, Swagger readerSwagger, Swagger annotationSwagger) {
+        Swagger merged = annotationSwagger != null ? annotationSwagger : new Swagger();
+        merged.setInfo(seed.getInfo());
+        merged.setBasePath(seed.getBasePath());
+
+        if (readerSwagger != null && readerSwagger.getPaths() != null) {
+            for (Map.Entry<String, io.swagger.models.Path> entry : readerSwagger.getPaths().entrySet()) {
+                String pathKey = entry.getKey();
+                io.swagger.models.Path readerPath = entry.getValue();
+                io.swagger.models.Path existing = merged.getPath(pathKey);
+                merged.path(pathKey, mergePathOperations(existing, readerPath));
+            }
+        }
+
+        Map<String, Model> defs = new LinkedHashMap<>();
+        if (merged.getDefinitions() != null) {
+            defs.putAll(merged.getDefinitions());
+        }
+        if (readerSwagger != null && readerSwagger.getDefinitions() != null) {
+            defs.putAll(readerSwagger.getDefinitions());
+        }
+        if (!defs.isEmpty()) {
+            merged.setDefinitions(defs);
+        }
+
+        return merged;
+    }
+
+    private static io.swagger.models.Path mergePathOperations(io.swagger.models.Path base, io.swagger.models.Path overlay) {
+        if (base == null) {
+            return overlay;
+        }
+        if (overlay == null) {
+            return base;
+        }
+
+        io.swagger.models.Path merged = new io.swagger.models.Path();
+        merged.setGet(base.getGet());
+        merged.setPut(base.getPut());
+        merged.setPost(base.getPost());
+        merged.setDelete(base.getDelete());
+        merged.setOptions(base.getOptions());
+        merged.setHead(base.getHead());
+        merged.setPatch(base.getPatch());
+
+        if (overlay.getGet() != null) {
+            merged.setGet(overlay.getGet());
+        }
+        if (overlay.getPut() != null) {
+            merged.setPut(overlay.getPut());
+        }
+        if (overlay.getPost() != null) {
+            merged.setPost(overlay.getPost());
+        }
+        if (overlay.getDelete() != null) {
+            merged.setDelete(overlay.getDelete());
+        }
+        if (overlay.getOptions() != null) {
+            merged.setOptions(overlay.getOptions());
+        }
+        if (overlay.getHead() != null) {
+            merged.setHead(overlay.getHead());
+        }
+        if (overlay.getPatch() != null) {
+            merged.setPatch(overlay.getPatch());
+        }
+
+        return merged;
     }
 
     private static List<io.swagger.models.parameters.Parameter> extractParameters(Method method, String fullPath, Map<String, Model> definitions) {
