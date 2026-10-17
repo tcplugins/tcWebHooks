@@ -7,11 +7,16 @@
 <bs:refreshable containerId="healthReportContainer" pageUrl="${pageUrl}">       
 
 	        <div class="repoList">
+	        <h3>REST API reference documentation</h3>
+	        <div style="padding: 26px 30px; color: #fff; background: linear-gradient(120deg, #0a3b66, #1f7a8c); border: 1px solid rgba(127, 127, 127, 0.22);">
+	        	<a href="../webhooks/rest-api/index.html" style="color: #fff; font-weight: bold; font-size: 120%;">tcWebHooks REST API documentation</a>
+	        </div>
+	        	
 	        <h3>Health Report</h3>
 	        
 	        <bs:messages key="apiFixResult"/>
 	        
-	        <div>
+	        <div style="padding: 26px 30px; border: 1px solid rgba(127, 127, 127, 0.22); font-weight: bold; font-size: 120%;">
 	       	<c:choose>  
 	    		<c:when test="${hasFoundIssues}"> 
 					<div class="icon_before icon16 attentionRed">Health Status: WARNING. TeamCity REST API plugin files contain JAXB jars.</div>
@@ -27,11 +32,7 @@
 	        </div>
 	        
 	        <p>The WebHook REST API extends the TeamCity REST API plugin and uses the JAXB library to read and write to the webhooks templates configuration file. </p>
-	        <p>
-	        	<strong>REST API reference docs:</strong>
-	        	<a href="#" onclick="window.location = window['base_uri'] + '/webhooks/rest-api/index.html'; return false;">Open tcWebHooks REST API documentation</a>
-	        </p>
-	        <p>Unfortunately, the  TeamCity REST API comes bundled with an old version of the JAXB libraries. This means that when the WebHooks API tries to write to the <i>webhooks-templates.xml</i> configuration file, it fails with a ClassCastException. See <a href="https://github.com/tcplugins/tcWebHooks/issues/43">issue 43 on github for more details</a>.<p/>
+	        <p>In older TeamCity versions. the TeamCity REST API comes bundled with an old version of the JAXB libraries. This means that when the WebHooks API tries to write to the <i>webhooks-templates.xml</i> configuration file, it fails with a ClassCastException. See <a href="https://github.com/tcplugins/tcWebHooks/issues/43">issue 43 on github for more details</a>.<p/>
 	        <p>This page gives you an indication on whether this problem is present on your TeamCity installation. It also has a tool which attempts to fix any problematic REST API installations.</p>
 	        
 	        <table class="settings">

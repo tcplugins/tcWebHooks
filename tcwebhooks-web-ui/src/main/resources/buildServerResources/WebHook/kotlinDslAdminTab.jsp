@@ -11,10 +11,16 @@ For more information about <a href="https://www.jetbrains.com/help/teamcity/kotl
 DSL, see their documentation</a>.
 </p>
 <p>The tcWebHooks Kotlin DSL extends the TeamCity Kotlin DSL and adds support the <code>WebHookConfiguration</code> class which defines a WebHook as a <code>ProjectFeature</code></p>
-<h4>Kotlin Projects</h4>
+
+<h3>Kotlin Dokka Documentation for the tcWebHooks Kotlin DSL</h3>
+<div style="margin-top:3em; margin-bottom:3em;">
+<a style="padding: 30px; border: 1px solid rgba(127, 127, 127, 0.22); font-size: 120%; color: #fff; background-color: #000; font-weight: bold;" href="../app/webhooks/kotlin-dsl/configs-dsl-kotlin-tcwebhooks-latest/jetbrains.buildServer.configs.kotlin.projectFeatures/web-hook-configuration.html"><img style="vertical-align: middle;padding-right:1em;" width="30px" height="30px" src="../app/webhooks/kotlin-dsl/images/logo-icon.svg">Documentation for the tcWebHooks Kotlin DSL is available by visiting /app/webhooks/kotlin-dsl/</a>
+</div>
+
+<h3>Kotlin Projects</h3>
 There are <b><c:out value="${countOfActiveKotlinProjects}"></c:out></b> projects configured to use the Kotlin DSL.
 
-<h4>tcWebHooks Kotlin DSL Availability</h4>
+<h3>tcWebHooks Kotlin DSL Availability</h3>
 In the <code>pom.xml</code> of a Kotlin DSL proejct we add the following:
 <b>Add a repository which points to our teamcity server</b>
 <code>
@@ -56,7 +62,7 @@ a reference to the <code>configs-dsl-kotlin-tcwebhooks-latest</code> artifact. T
 <c:otherwise>
 		<h4>tcWebHooks Kotlin DSL Maven Status</h4>
 		<div>
-		<table class="settings templateTable">
+		<table class="templateTable">
 		<tr><td>TeamCity Kotlin DSL update</td><td>${dslDiagnosticsResult.lastTeamCityDslUpdate}</td></tr>
 		<tr><td>tcWebHooks Kotlin DSL found</td><td>${dslDiagnosticsResult.tcWebHooksDslFound}</td></tr>
 		<tr><td>tcWebHooks Kotlin DSL version</td><td>${dslDiagnosticsResult.tcWebHooksDslVersion}</td></tr>
@@ -67,7 +73,3 @@ a reference to the <code>configs-dsl-kotlin-tcwebhooks-latest</code> artifact. T
 </c:otherwise>
 </c:choose>
 
-<h4>Kotlin Dokka Documentation for the tcWebHooks Kotlin DSL</h4>
-<p>The following is also available at <a href="../app/webhooks/kotlin-dsl/">/app/webhooks/kotlin-dsl/</a>.</p>
-
-<iframe src="../app/webhooks/kotlin-dsl/" width="100%" height="2048px"></iframe>
