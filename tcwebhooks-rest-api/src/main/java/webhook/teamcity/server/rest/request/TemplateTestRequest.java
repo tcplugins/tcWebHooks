@@ -19,7 +19,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -35,7 +34,6 @@ import webhook.teamcity.server.rest.model.template.TemplateTestHistoryItem.Error
 import webhook.teamcity.server.rest.request.validator.ExecuteWebHookTemplateRequestValidator;
 import webhook.teamcity.server.rest.request.validator.PreviewWebHookTemplateRequestValidator;
 import webhook.teamcity.settings.config.WebHookTemplateConfig;
-import webhook.teamcity.testing.WebHookUserRequestedExecutor;
 import webhook.teamcity.testing.model.WebHookRenderResult;
 import webhook.teamcity.testing.model.WebHookTemplateExecutionRequest;
 

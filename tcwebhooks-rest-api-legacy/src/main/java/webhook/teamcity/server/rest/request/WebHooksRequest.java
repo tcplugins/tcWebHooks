@@ -70,7 +70,6 @@ public class WebHooksRequest {
 
 	public static final String API_WEBHOOKS_URL = Constants.API_URL + "/configurations";
 	private static final String NO_WEBHOOK_FOUND_BY_THAT_ID = "No webhook found by that id";
-	private static final String EXISTING_WEBHOOK_FOUND_BY_THAT_ID = "An existing webhook was found by that id. Please use PUT to update existing Webhooks";
 	private static final String WEBHOOK_CONTAINED_INVALID_DATA = "WebHook contained invalid data";
 
 

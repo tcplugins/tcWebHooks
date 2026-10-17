@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
-import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 
 @XmlRootElement(name = "parameters")

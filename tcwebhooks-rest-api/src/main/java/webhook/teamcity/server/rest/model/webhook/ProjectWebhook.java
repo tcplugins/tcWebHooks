@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.inject.Inject;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -29,8 +28,6 @@ import webhook.teamcity.BuildStateEnum;
 import webhook.teamcity.BuildTypeIdResolver;
 import webhook.teamcity.ProjectIdResolver;
 import webhook.teamcity.payload.content.ExtraParameters;
-import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
-import webhook.teamcity.server.rest.WebHookWebLinks;
 import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.CustomMessageTemplate;
 import webhook.teamcity.settings.WebHookConfig;

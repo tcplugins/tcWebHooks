@@ -17,7 +17,6 @@ import javax.ws.rs.core.Context;
 
 import org.jetbrains.annotations.NotNull;
 
-import jetbrains.buildServer.ServiceLocator;
 import jetbrains.buildServer.server.rest.data.Locator;
 import jetbrains.buildServer.server.rest.data.PermissionChecker;
 import jetbrains.buildServer.server.rest.errors.AuthorizationFailedException;
@@ -25,7 +24,6 @@ import jetbrains.buildServer.server.rest.errors.NotFoundException;
 import jetbrains.buildServer.server.rest.model.Fields;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.auth.Permission;
-import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.data.WebHookConfigurationValidator;
 import webhook.teamcity.server.rest.data.WebHookDataProvider;
 import webhook.teamcity.server.rest.data.WebHookManager;
@@ -62,7 +60,6 @@ public class WebHooksRequest extends BaseRequest {
 
 	public static final String API_WEBHOOKS_URL = Constants.API_URL + "/configurations";
 	private static final String NO_WEBHOOK_FOUND_BY_THAT_ID = "No webhook found by that id";
-	private static final String EXISTING_WEBHOOK_FOUND_BY_THAT_ID = "An existing webhook was found by that id. Please use PUT to update existing Webhooks";
 	private static final String WEBHOOK_CONTAINED_INVALID_DATA = "WebHook contained invalid data";
 
 

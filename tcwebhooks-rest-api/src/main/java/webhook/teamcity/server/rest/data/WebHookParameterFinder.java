@@ -14,7 +14,6 @@ import jetbrains.buildServer.serverSide.SProject;
 import webhook.teamcity.server.rest.WebHookApiUrlBuilder;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameter;
 import webhook.teamcity.server.rest.model.parameter.ProjectWebhookParameters;
-import webhook.teamcity.server.rest.util.WebHookBeanContext;
 import webhook.teamcity.settings.project.WebHookParameter;
 import webhook.teamcity.settings.project.WebHookParameterStore;
 import webhook.teamcity.settings.project.WebHookParameterStoreFactory;
